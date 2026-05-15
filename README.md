@@ -72,6 +72,13 @@ cp share/KOptions/inputs.yaml .
 
 ---
 
+Here is the newly structured **Section 3**. I have broken out the steps exactly as you requested to make the logical flow much clearer.
+
+I also updated the "Missing Libraries" section to clearly present the two distinct choices developers face (Auto-download vs. Local Path), complete with the crucial reminder that they must press **`c`** again after changing dependency settings to clear the errors.
+
+You can replace your current Section 3 with this block:
+
+
 ## 🎛️ 3. Advanced Configuration (Using `ccmake`)
 
 For developers, remembering long terminal flags (`-DKOPS_ENABLE_SINGLE_PRECISION=ON`) is tedious. **`ccmake`** is a visual, terminal-based GUI that lets you toggle project settings interactively.
@@ -81,48 +88,84 @@ For developers, remembering long terminal flags (`-DKOPS_ENABLE_SINGLE_PRECISION
 **Step 1: Launch the interface**
 
 Instead of the standard `cmake` command, run:
-
 ```bash
 ccmake -B build
-
 ```
+*(If the `build` folder already exists, just type `ccmake build`. 
+It is recommended to add the flag -DCMAKE_EXPORT_COMPILE_COMMANDS=ON so that a JSON file will be generate in the build folder, containing all flags used.)*.
 
-*(If the `build` folder already exists, just type `ccmake build`)*.
 
 **Step 2: Initial Configuration**
 
 When the screen opens, it might be empty.
 
-* Press **`c`** to run the initial configuration. CMake will scan your system and populate the screen with options.
+* Press **`c`** to run the initial configuration. CMake will scan your system and populate the screen with all available options.
 
-**Step 3: Toggle your KOPS & Hardware Settings**
 
-You will see a list of variables. Use your **Up/Down arrow keys** to navigate.
+**Step 3: Handling Dependencies (Kokkos & YAML-CPP)**
+
+If CMake cannot find Kokkos or YAML-CPP installed on your system, it will display an error at the bottom of the screen. You have two ways to resolve this:
+
+* **Option A: Auto-Download**
+* Scroll to `KOPS_ENABLE_FETCHCONTENT` and press **`Enter`** to toggle it to `ON`.
+* Press **`c`** to re-configure. CMake will automatically download and link the missing libraries, clearing the error.
+
+
+* **Option B: Provide Local Paths**
+* * Scroll to `KOPS_ENABLE_FETCHCONTENT` and press **`Enter`** to toggle it to `OFF`.
+* Scroll to `Kokkos_ROOT` and/or `yaml-cpp_ROOT` and press **`Enter`** to edit.
+* Type the absolute path to your local installations and press **`Enter`** to save.
+* *(Note: For Kokkos, you must provide the directory containing the `KokkosConfig.cmake` file, which is usually located in `/lib/cmake/Kokkos` inside your installation directory).*
+* Press **`c`** to re-configure and clear the error.
+
+
+**Step 4: Toggle Hardware Settings (If using FetchContent)**
+
+> **Crucial Note:** The hardware variables listed below will **only appear** if you set `KOPS_ENABLE_FETCHCONTENT=ON` in Step 3.
+> If you linked to a pre-installed, local version of Kokkos, you can safely skip this step! Local installations are already pre-compiled with their hardware backends (OpenMP/CUDA) and CPU architectures permanently baked in.
+> More details about hardware settings are given in Section 4.
+
+If you are downloading and building Kokkos from source, use your **Up/Down arrow keys** to configure it for your machine:
 
 * **Hardware Backends:** Toggle `Kokkos_ENABLE_OPENMP`, `Kokkos_ENABLE_SERIAL`, or `Kokkos_ENABLE_CUDA` to `ON`/`OFF` depending on your target system (see Section 4).
-* **Hardware Architecture:** Look for variables starting with `Kokkos_ARCH_` to optimize for your specific CPU or GPU (e.g., `Kokkos_ARCH_ZEN2` or `Kokkos_ARCH_AMPERE80`) (see Section 5).
-* **Floating Point Precision:** Move to `KOPS_ENABLE_SINGLE_PRECISION` and press **`Enter`** to toggle it between `ON` and `OFF` (see Section 5).
-* **Optimization Flags:** Move to `CMAKE_BUILD_TYPE` and type `Debug` or `Release` (see Section 5).
+* **Hardware Architecture:** Look for variables starting with `Kokkos_ARCH_` to optimize the build for your specific CPU or GPU (e.g., `Kokkos_ARCH_ZEN2` or `Kokkos_ARCH_AMPERE86`) and toggle the correct one to `ON`. Ensure all other architectures are set to `OFF`.
 
-**Step 4: Fixing Missing Libraries**
+**Step 5: Choose the Floating-Point Precision**
 
-If you have Kokkos or YAML-CPP installed locally but CMake couldn't find them, the interface will show an error at the bottom of the screen.
+* Scroll to `KOPS_ENABLE_SINGLE_PRECISION` and press **`Enter`** to toggle it.
+* Leave it **`OFF`** for standard 64-bit `double` precision (Default).
+* Toggle it **`ON`** for 32-bit `float` precision (Highly recommended for massive GPU throughput where absolute precision is secondary).
 
-* Find the `Kokkos_ROOT` and/or `yaml-cpp_ROOT` variables.
-* Press **`Enter`** to edit them, type the absolute path to your installations (e.g., `/opt/kokkos` and `/usr/local/yaml-cpp`), and press **`Enter`** to save.
+**Step 6: Select the Build Profile**
 
-**Step 5: Generate and Exit**
+* Scroll to `CMAKE_BUILD_TYPE`.
+* Press **`Enter`** repeatedly to cycle through the available optimization profiles: `Release`, `Debug`, `RelWithDebInfo`, or `MinSizeRel`. *(See Section 5 for detailed profile specifications).*
 
-* Press **`c`** again to confirm your new settings.
-* Once everything is resolved, the option to generate will appear. Press **`g`** to generate the build files and exit.
+**Step 7: Generate and Exit**
 
-You can now compile normally using `cmake --build build -j 4`.
+* Press **`c`** one final time to confirm your new settings.
+* Once everything is resolved, the option to generate will appear. Press **`g`** to generate the build files and exit the interface.
 
----
+**Step 8: Compile and Install**
 
-Here is the fully finalized, professional version of **Section 4**. It seamlessly incorporates the technical reality of SIMD floating-point processing and provides the exact, step-by-step instructions for unlocking the hidden architecture flags in `ccmake`.
+Now that your custom configuration is generated, you can compile and install the engine using standard CMake commands from your terminal:
 
-You can replace your entire Section 4 in the `README.md` with this block:
+```bash
+# Compile using 4 CPU cores
+cmake --build build -j 4
+
+# Install the executable and share files to your specified prefix
+cmake --install build
+
+```
+*(Note: it is recommended to add the verbose flag -v to the command above, to have more details about the compilation and installation process.)*.
+
+
+
+
+
+
+
 
 ---
 
@@ -222,32 +265,49 @@ Kokkos will automatically find and use your GPU. If you have a multi-GPU system 
 ```
 ***
 
-## 🔬 5. Further Technical Specifications & Build Modes
+## 🔬 5. More About  Build Modes
 
-### Precision Control
 
-The engine uses a dynamic `Real` typedef.
+KOptions leverages modern CMake generator expressions to strictly control compiler optimizations, sanitizers, and hardware tuning.
 
-* **Double Precision (Default):** Standard IEEE-754 64-bit float.
-* **Single Precision:** Enabled via `KOPS_ENABLE_SINGLE_PRECISION=ON`. Reduces memory bandwidth by 50%, highly recommended for GPU runs where absolute precision is secondary to speed.
+> **Note on Code Quality:** Regardless of the chosen build profile, the engine always compiles with strict C++ warnings enabled (`-Wall`, `-Wextra`, `-Wpedantic`, `-Wshadow`, `-Wnon-virtual-dtor`) for both GCC and Clang to ensure baseline safety.
 
-### Build Profiles
+You can set the build type during configuration using `-DCMAKE_BUILD_TYPE=<Profile>`.
 
-**Release Mode (`-DCMAKE_BUILD_TYPE=Release`)**
-Tuned for maximum computational throughput.
+#### 1. Release Mode (`Release`)
 
-* `-march=native`: Generates CPU-specific vectorization instructions (e.g., AVX-512).
-* **Link Time Optimization (LTO):** Flattens the call stack across translation units.
-* *Warning:* Binaries compiled in Release mode are highly optimized for the host machine and may not be portable to older CPU architectures.
+**Goal:** Maximum computational throughput.
+**When to use:** For actual production runs and massive Monte Carlo simulations.
 
-**Debug Mode (`-DCMAKE_BUILD_TYPE=Debug`)**
-Tuned for safety and diagnostics.
+* **`-O3` & `-march=native`:** Enables aggressive vectorization, loop unrolling, and generates instructions tailored to your specific physical CPU (e.g., AVX2/AVX-512).
+* **Link Time Optimization (`-flto`):** Flattens the call stack across translation units, allowing the compiler to inline functions across different `.cpp` files.
+* **Fast Math (`-fno-math-errno`):** Skips updating `errno` after math calls, unlocking faster SIMD operations.
+* *Warning:* Binaries compiled in Release mode are tied to the host machine's architecture and may crash if copied to an older CPU.
 
-* Disables optimizations (`-O0`) and includes debug symbols (`-g`).
-* **AddressSanitizer (ASan):** Actively monitors memory to instantly catch out-of-bounds array access and memory leaks.
-* **UndefinedBehaviorSanitizer (UBSan):** Catches integer overflows and division-by-zero during stochastic calculations.
-* *Warning:* Performance will be massively degraded; use only for development and testing.
+#### 2. Debug Mode (`Debug`)
 
+**Goal:** 100% Transparency and Memory Safety.
+**When to use:** During active development, fixing crashes, or writing new pricing models.
+
+* **`-O0` & `-g`:** Completely disables optimizations and embeds debug symbols so you can step through the code line-by-line in GDB/LLDB.
+* **AddressSanitizer (ASan):** Injects hidden checks to instantly catch memory leaks, use-after-free, and out-of-bounds array access.
+* **UndefinedBehaviorSanitizer (UBSan):** Instantly traps mathematical anomalies like integer overflows or division-by-zero during stochastic calculations.
+* *Warning:* Performance will be massively degraded due to the heavy memory monitoring.
+
+#### 3. Release with Debug Info (`RelWithDebInfo`)
+
+**Goal:** Production-level speed, but with a map attached.
+**When to use:** **Profiling.** Use this when your simulation is running slowly and you need to find the exact line of C++ code causing the bottleneck using tools like `perf`, Intel VTune, or Valgrind.
+
+* Retains all the aggressive speed optimizations of Release mode (`-O3`, `-flto`, `-march=native`).
+* Adds debug symbols (`-g`) and keeps the frame pointer (`-fno-omit-frame-pointer`) so the profiler can read the call stack and tell you exactly which function is eating up CPU cycles.
+
+#### 4. Minimum Size Release (`MinSizeRel`)
+
+**Goal:** Shrink the final binary size.
+**When to use:** Almost never in Quantitative Finance or HPC.
+
+* **`-Os`:** Tells the compiler to optimize for a smaller file size rather than speed (e.g., it will refuse to unroll loops, saving disk space but costing CPU cycles). Included for completeness for embedded deployment.
 ---
 
 ## 6. Mathematical Framework

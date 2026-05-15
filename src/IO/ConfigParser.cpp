@@ -1,0 +1,157 @@
+#include <filesystem>
+#include <string>
+
+#include <yaml-cpp/yaml.h>
+
+#include "../../include/IO/ConfigParser.hpp"
+#include "../../include/IO/ConfigKeys.hpp"
+#include "../../include/IO/ConfigKeysEnumMaps.hpp"
+
+
+namespace KOps::Config {
+    // Short alias for cleaner code within this file
+    namespace K = KOps::Keys;
+    namespace KI = KOps::Implemented;
+
+    // Helper to cast string_view to string for yaml-cpp (older versions compatibility)
+    inline std::string str(std::string_view sv) {
+        return std::string(sv);
+    }
+
+    UInputs Parser::parse(const std::string &filename) {
+        // ---------------------------------------------------------
+        // 1. Sanity Check
+        // ---------------------------------------------------------
+        if (!std::filesystem::exists(filename)) {
+            throw std::runtime_error("Config Error: File not found -> " + filename);
+        }
+
+        // ---------------------------------------------------------
+        // 2. Load YAML
+        // ---------------------------------------------------------
+        YAML::Node root;
+        try {
+            root = YAML::LoadFile(filename);
+        } catch (const YAML::ParserException &e) {
+            throw std::runtime_error("Config Error: Invalid YAML syntax -> " + std::string(e.what()));
+        }
+
+        UInputs conf;
+
+        // ---------------------------------------------------------
+        // 3. Model Section (Heston / Bates)
+        // ---------------------------------------------------------
+        if (root[str(KK::Model)]) {
+            const auto &node = root[str(KK::Model)];
+
+            // Check for Heston Sub-block
+            if (node[str(KK::MathModelParams::HestonBlock)]) {
+                const auto &h = node[str(KK::MathModelParams::HestonBlock)];
+
+                if (h[str(KK::MathModelParams::r)])
+                    conf.model.heston.r = h[str(KK::MathModelParams::r)].as<Real>();
+                if (h[str(KK::MathModelParams::q)])
+                    conf.model.heston.q = h[str(KK::MathModelParams::q)].as<Real>();
+                if (h[str(KK::MathModelParams::k)])
+                    conf.model.heston.k = h[str(KK::MathModelParams::k)].as<Real>();
+                if (h[str(KK::MathModelParams::theta)])
+                    conf.model.heston.theta = h[str(KK::MathModelParams::theta)].as<Real>();
+                if (h[str(KK::MathModelParams::sigma)])
+                    conf.model.heston.sigma = h[str(KK::MathModelParams::sigma)].as<Real>();
+                if (h[str(KK::MathModelParams::rho)])
+                    conf.model.heston.rho = h[str(KK::MathModelParams::rho)].as<Real>();
+            }
+
+            // Check for Bates Sub-block (Placeholder for future)
+            if (node[str(KK::MathModelParams::BatesBlock)]) {
+                // Implementation for Bates parameters would go here
+            }
+        } else {
+            throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Model) + "' missing.");
+        }
+
+        // ---------------------------------------------------------
+        // 4. Initialization Section
+        // ---------------------------------------------------------
+        if (root[str(KK::Init)]) {
+            const auto &node = root[str(KK::Init)];
+
+            if (node[str(KK::InitParams::Price)])
+                conf.init.S0 = node[str(KK::InitParams::Price)].as<Real>();
+
+            if (node[str(KK::InitParams::Variance)])
+                conf.init.v0 = node[str(KK::InitParams::Variance)].as<Real>();
+        } else {
+            throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Init) + "' missing.");
+        }
+
+        // ---------------------------------------------------------
+        // 5. Numerics Section
+        // ---------------------------------------------------------
+        if (root[str(KK::Numerics)]) {
+            const auto &node = root[str(KK::Numerics)];
+
+            if (node[str(KK::NumSchemeParams::Scheme)]) {
+                conf.scheme.num_scheme = KI::string_to_enum<KI::NumScheme>(
+                    node[str(KK::NumSchemeParams::Scheme)].as<std::string>(),
+                    str(KK::Numerics) + "." + str(KK::NumSchemeParams::Scheme)
+                );
+            }
+        }
+
+        // ---------------------------------------------------------
+        // 6. Time Section
+        // ---------------------------------------------------------
+        if (root[str(KK::Time)]) {
+            const auto &node = root[str(KK::Time)];
+
+            if (node[str(KK::TimeParams::T_End)])
+                conf.time.t_end = node[str(KK::TimeParams::T_End)].as<Real>();
+
+            if (node[str(KK::TimeParams::DT)])
+                conf.time.dt = node[str(KK::TimeParams::DT)].as<Real>();
+        } else {
+            throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Time) + "' missing.");
+        }
+
+        // ---------------------------------------------------------
+        // 7. Monte Carlo Section
+        // ---------------------------------------------------------
+        if (root[str(KK::MC)]) {
+            const auto &node = root[str(KK::MC)];
+
+            if (node[str(KK::MCParams::N_Realizations)])
+                conf.mc.N_Paths = node[str(KK::MCParams::N_Realizations)].as<int>();
+        } else {
+            throw std::runtime_error("Config Error: Mandatory block '" + str(KK::MC) + "' missing.");
+        }
+
+        // ---------------------------------------------------------
+        // 9. Output Section
+        // ---------------------------------------------------------
+        if (root[str(KK::Output)]) {
+            const auto &node = root[str(KK::Output)];
+
+            if (node[str(KK::OutParams::Name_Out_File)])
+                conf.output.filename_out = node[str(KK::OutParams::Name_Out_File)].as<std::string>();
+
+            if (node[str(KK::OutParams::Name_Log_File)])
+                conf.output.filename_log = node[str(KK::OutParams::Name_Log_File)].as<std::string>();
+
+            if (node[str(KK::OutParams::Format)]) {
+                conf.output.format = KI::string_to_enum<KI::IOFormat>(
+                    node[str(KK::OutParams::Format)].as<std::string>(),
+                    str(KK::Output) + "." + str(KK::OutParams::Format)
+                );
+            }
+        }
+
+        // ---------------------------------------------------------
+        // 10. Final Validation
+        // ---------------------------------------------------------
+        conf.print_summary();
+        conf.validate();
+
+        return conf;
+    }
+} // namespace Labes

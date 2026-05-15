@@ -1,0 +1,31 @@
+# ==========================================
+# KOptions: Heston Model Configuration
+# ==========================================
+
+Model:
+  Heston:
+    r: 0.05       # Risk-free interest rate
+    q: 0.0        # Continuous dividend yield
+    k: 2.0        # Mean reversion speed of the variance (kappa)
+    theta: 0.04   # Long-term mean of the variance
+    sigma: 0.3    # Volatility of the variance (vol-of-vol)
+    rho: -0.7     # Correlation between price and variance Brownian motions
+
+Init:
+  Price: 100.0    # Initial asset price (S0)
+  Variance: 0.04  # Initial variance (v0)
+
+Numerics:
+  Scheme: Euler   # Available schemes: Euler, Milstein, AndersonQE
+
+Time:
+  T_End: 1.0      # Time to maturity (in years)
+  DT: 0.005       # Time step size (dt)
+
+MC:
+  N_Paths: 100000 # Number of Monte Carlo realizations/paths
+
+Output:
+  Name_Out_File: "KOptions.out"
+  Name_Log_File: "KOptions.log"
+  Format: TXT     # Available formats: TXT, BIN
