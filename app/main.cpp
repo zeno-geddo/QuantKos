@@ -5,8 +5,7 @@
 
 #include "../include/IO/InputHelp.hpp"
 #include "../include/IO/ConfigParser.hpp"
-//#include "../include/core/Mesh.hpp"
-//#include "../include/core/Solver.hpp"
+#include "../include/core/Distpatcher.hpp"
 
 
 int main(int argc, char *argv[]) {
@@ -29,32 +28,22 @@ int main(int argc, char *argv[]) {
     Kokkos::initialize(argc, argv);
     int exit_code = 0;
     {
-
         namespace KC = KOps::Config;
-        //namespace KS = KS::Config;
-
+        namespace KE = KOps::Engine;
         try {
-            // --- Parse YAML Configuration ---
+            // 1. Parse YAML Configuration
             const std::string input_file = argv[1];
             KC::UInputs conf = KC::Parser::parse(input_file);
 
-            // --- Allocate MEMORY for MonteCarlo ---
-            // auto mc = Labes::MC(conf.grid);
-            // mc.initialize_variables(conf.init);
-            // mc.print_memory_info();
-
-            // 3. Create Solver
-            //auto solver = KOps::Solver(conf);
-
-            // 4. Dispatch and launch the simulation (Evaluates config ONCE)
-            // solver.launch_simulation();
+            // 2. Dispatch and Launch MC simulation
+            auto MCDisp = KE::MCDispatcher(conf);
+            MCDisp.launch_montecarlo();
         } catch (const std::exception &e) {
             // Capture all validation/parsing/runtime errors
             std::cerr << "\n********************************************************\n";
             std::cerr << "FATAL ERROR: " << e.what() << "\n";
             std::cerr << "********************************************************\n";
 
-            // Note: Kokkos::finalize() is called outside the scope.
             exit_code = 1;
         }
     } // GPU memory is safely deallocated here

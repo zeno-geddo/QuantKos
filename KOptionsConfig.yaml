@@ -20,10 +20,13 @@ Numerics:
 
 Time:
   T_End: 1.0      # Time to maturity (in years)
-  DT: 0.005       # Time step size (dt)
+  Inp_DT: 0.005       # Time step size (dt)
 
 MC:
   N_Paths: 100000 # Number of Monte Carlo realizations/paths
+  Batch_Size: 0 # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
+  Max_VRAM_MB: 256
+  Max_CPU_RAM_MB: 4000
 
 Output:
   Name_Out_File: "KOptions.out"

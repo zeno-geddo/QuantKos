@@ -63,7 +63,9 @@ namespace KOps::Keys {
     // ------------------------------------------------------------------------
     namespace TimeParams {
         static constexpr std::string_view T_End = "T_End";
+        static constexpr std::string_view Inp_DT = "Inp_DT";
         static constexpr std::string_view DT = "DT";
+        static constexpr std::string_view N_TSteps = "N_TSteps";
     }
 
     // ------------------------------------------------------------------------
@@ -71,6 +73,9 @@ namespace KOps::Keys {
     // ------------------------------------------------------------------------
     namespace MCParams {
         static constexpr std::string_view N_Realizations = "N_Paths";
+        static constexpr std::string_view Batch_Size = "Batch_Size";
+        static constexpr std::string_view Max_VRAM_MB = "Max_VRAM_MB";
+        static constexpr std::string_view Max_CPU_RAM_MB = "Max_CPU_RAM_MB";
     }
 
 
@@ -78,7 +83,6 @@ namespace KOps::Keys {
     // Output Parameters
     // ------------------------------------------------------------------------
     namespace OutParams {
-        static constexpr std::string_view N_Paths_Out_Batches = "N_Paths_Out_Batches";
         static constexpr std::string_view Name_Log_File = "Name_Log_File";
         static constexpr std::string_view Name_Out_File = "Name_Out_File";
         static constexpr std::string_view Format = "Format";

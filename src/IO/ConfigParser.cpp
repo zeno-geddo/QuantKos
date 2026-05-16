@@ -92,7 +92,7 @@ namespace KOps::Config {
             const auto &node = root[str(KK::Numerics)];
 
             if (node[str(KK::NumSchemeParams::Scheme)]) {
-                conf.scheme.num_scheme = KI::string_to_enum<KI::NumScheme>(
+                conf.scheme.id_scheme = KI::string_to_enum<KI::NumScheme>(
                     node[str(KK::NumSchemeParams::Scheme)].as<std::string>(),
                     str(KK::Numerics) + "." + str(KK::NumSchemeParams::Scheme)
                 );
@@ -108,8 +108,8 @@ namespace KOps::Config {
             if (node[str(KK::TimeParams::T_End)])
                 conf.time.t_end = node[str(KK::TimeParams::T_End)].as<Real>();
 
-            if (node[str(KK::TimeParams::DT)])
-                conf.time.dt = node[str(KK::TimeParams::DT)].as<Real>();
+            if (node[str(KK::TimeParams::Inp_DT)])
+                conf.time.inp_dt = node[str(KK::TimeParams::Inp_DT)].as<Real>();
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Time) + "' missing.");
         }
@@ -119,9 +119,14 @@ namespace KOps::Config {
         // ---------------------------------------------------------
         if (root[str(KK::MC)]) {
             const auto &node = root[str(KK::MC)];
-
             if (node[str(KK::MCParams::N_Realizations)])
                 conf.mc.N_Paths = node[str(KK::MCParams::N_Realizations)].as<int>();
+            if (node[str(KK::MCParams::Batch_Size)])
+                conf.mc.batch_size = node[str(KK::MCParams::Batch_Size)].as<int>();
+            if (node[str(KK::MCParams::Max_VRAM_MB)])
+                conf.mc.batch_size = node[str(KK::MCParams::Max_VRAM_MB)].as<long long>();
+            if (node[str(KK::MCParams::Max_CPU_RAM_MB)])
+                conf.mc.batch_size = node[str(KK::MCParams::Max_CPU_RAM_MB)].as<long long>();
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::MC) + "' missing.");
         }
