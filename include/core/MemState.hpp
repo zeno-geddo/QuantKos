@@ -1,89 +1,73 @@
 #pragma once
 
-#include <iostream>
+#include <string>
 #include <Kokkos_Core.hpp>
-#include <Kokkos_Random.hpp>
 
-#include "SDESolver.hpp"
-#include "./../IO/Config.hpp"
-#include "./../IO/OutManager.hpp"
 #include "./Typedefs.hpp"
-#include "./MemState.hpp"
+#include "./../IO/Config.hpp"
 
 
 namespace KOps::Engine {
-    
-    namespace KI = KOps::Implemented;
-    namespace KC = KOps::Config;
     namespace KT = KOps::Types;
-    namespace KO = KOps::Out;
+    namespace KC = KOps::Config;
 
+    using DevView = Kokkos::View<KT::Real **>; // DefaultExecutionSpace by default
+    using HostView = DevView::HostMirror;
 
-    template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
-    class MCRunner {
+    // ------------------------------------------------------------------------
+    // STATE SDE (Requires 1 copy)
+    // ------------------------------------------------------------------------
+    class BatchState {
     public:
-        // Export these types for cleaner downstream integration or testing
-        //using RNGPool      = Kokkos::Random_XorShift64_Pool<>;
+        DevView d_batch_view; // Device Views (GPU)
+        HostView h_batch_view; // Host Mirrors (CPU)
+        int engine_batch_size;
+        int num_steps;
 
-        explicit MCRunner(const KC::UInputs &conf) : config(conf) {
+
+        explicit BatchState(const KC::UInputs &conf) : config(conf) {
+            // Memory is allocated during the construction of the class
+            allocate_batch_memory();
         }
 
-        // ====================================================================
-        // LEVEL 3: The Actual Simulation Engine (Fully Resolved at Compile Time)
-        // ====================================================================
 
-        void run_mc_simulation() {
-            // NOTE : the total number of simulations are performed in batches to handle cases when not enough memory is available
+        void deep_copy_to_host() const { Kokkos::deep_copy(h_batch_view, d_batch_view); }
+        void deep_copy_to_device() const { Kokkos::deep_copy(d_batch_view, h_batch_view); }
 
-            std::cout << "Starting Monte Carlo Simulation..." << std::endl;
 
-            // 1. Initialize Helper Classes needed during the MC
-            BatchState state(config); // Handles the Memory
-            SDESolver<ModelPolicy, SchemePolicy> solver(config); // Handles the Temporal integration
-            KO::OutputManager writer(config.output); // Handles the outputs
+        [[nodiscard]] size_t device_memory_bytes() const {
+            size_t total = 0;
 
-            // 2. Initialize Random Number Generator Pool
-            initialize_rng_pool();
+            auto add_dev_mem = [&total](const DevView &dev) {
+                // use inline lambdas
+                total += dev.required_allocation_size(dev.extent(0), dev.extent(1));
+            };
 
-            // 3. Run all batches
-            run_all_mc_batches();
+            add_dev_mem(d_batch_view);
 
-            std::cout << "Simulation completed successfully!" << std::endl;
+            return total;
+        }
+
+        [[nodiscard]] size_t host_memory_bytes() const {
+            size_t total = 0;
+
+            // Define a quick inline lambda to handle the shallow copy check
+            auto add_host_mem = [&total](const DevView &dev, const HostView &host) {
+                if (host.data() != nullptr && host.data() != dev.data()) {
+                    total += host.required_allocation_size(host.extent(0), host.extent(1));
+                }
+            };
+
+            add_host_mem(d_batch_view, h_batch_view);
+
+            return total;
         }
 
     private:
         const KC::UInputs config;
 
-        void initialize_rng_pool() {
-        }
 
-        void run_all_mc_batches() {
-            // Loop over the batches
-            run_sims_of_current_batch();
-            save_batch_to_disk();
-        }
-
-        void run_sims_of_current_batch() {
-            // Kokkos Loop over all sims of the batch
-            // Call the fd scheme that evolves in time a single sim
-        }
-
-        void save_batch_to_disk() {
-        }
-    };
-}
-
-
-/*using DeviceBatchView = Kokkos::View<KT::Real **> ; // DefaultExecutionSpace by default// DefaultExecutionSpace by default // DefaultExecutionSpace by default
-        using HostBatchView = DeviceBatchView::HostMirror;
-
-        DeviceBatchView d_batch_view;
-        HostBatchView h_batch_view;
-        int engine_batch_size;
-        int num_steps;
-
-        void allocate_memory() {
-
+        void allocate_batch_memory() {
             // 1. Determine the layout strategy chosen by the config/auto-tuner
             if (config.mc.batch_size == -1) {
                 engine_batch_size = config.mc.N_Paths;
@@ -112,7 +96,7 @@ namespace KOps::Engine {
             num_steps = config.time.N_time_steps;
             std::cout << "  [Memory Allocation] Allocating reusable buffers ("
                   << engine_batch_size << " x " << num_steps << ")..." << std::endl;
-            d_batch_view = DeviceBatchView("gpu_paths_batch_buffer", engine_batch_size, num_steps);
+            d_batch_view = DevView("gpu_paths_batch_buffer", engine_batch_size, num_steps);
             h_batch_view = Kokkos::create_mirror_view(d_batch_view);
         }
 
@@ -129,12 +113,12 @@ namespace KOps::Engine {
             // This ensures that every single GPU warp launched is packed with active execution threads, maximizing your hardware saturation
             return (calculated_paths / 32) * 32;
 
-
 #else
             const double cpu_budget_bytes = static_cast<double>(config.mc.Max_CPU_RAM_MB) * 1024.0 * 1024.0;
 
             return static_cast<int>(cpu_budget_bytes / bytes_per_sde_path); //Integet division
 
 #endif
-        }*/
-
+        }
+    };
+}

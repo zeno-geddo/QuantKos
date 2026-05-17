@@ -45,8 +45,8 @@ namespace KOps::Config {
             const auto &node = root[str(KK::Model)];
 
             // Check for Heston Sub-block
-            if (node[str(KK::MathModelParams::HestonBlock)]) {
-                const auto &h = node[str(KK::MathModelParams::HestonBlock)];
+            if (node[str(KK::MathModelParams::IDHestonBlock)]) {
+                const auto &h = node[str(KK::MathModelParams::IDHestonBlock)];
 
                 if (h[str(KK::MathModelParams::r)])
                     conf.model.heston.r = h[str(KK::MathModelParams::r)].as<Real>();
@@ -63,7 +63,7 @@ namespace KOps::Config {
             }
 
             // Check for Bates Sub-block (Placeholder for future)
-            if (node[str(KK::MathModelParams::BatesBlock)]) {
+            if (node[str(KK::MathModelParams::IDBatesBlock)]) {
                 // Implementation for Bates parameters would go here
             }
         } else {

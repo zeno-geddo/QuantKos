@@ -43,13 +43,13 @@ namespace KOps::HELP {
         // Model Section
         // ---------------------------------------------------------
         std::cout << K::Model << ":\n"
-                  << "  # Parameters of Heston model\n"
-                  << "  " << K::MathModelParams::r << ": 1.\n"
-                  << "  " << K::MathModelParams::q << ": 1.\n"
-                  << "  " << K::MathModelParams::k << ": 1.\n"
-                  << "  " << K::MathModelParams::theta << ": 1.\n"
-                  << "  " << K::MathModelParams::sigma << ": 1.\n"
-                  << "  " << K::MathModelParams::rho << ": 1.\n"
+                  << "  " << K::MathModelParams::IDHestonBlock <<" :\n"
+                  << "    " << K::MathModelParams::r << ": 0.05     # Risk-free interest rate\n"
+                  << "    " << K::MathModelParams::q << ": 0.       # Continuous dividend yield\n"
+                  << "    " << K::MathModelParams::k << ": 2.       # Mean reversion speed of the variance (kappa)\n"
+                  << "    " << K::MathModelParams::theta << ": 0.04 # Long-term mean of the variance\n"
+                  << "    " << K::MathModelParams::sigma << ": 0.3  # Volatility of the variance (vol-of-vol)\n"
+                  << "    " << K::MathModelParams::rho << ": 0.7    # Correlation between price and variance Brownian motions\n"
 
                   << "\n  # Parameters of Bates model\n"
                   << "  # ...to be done ...\n";
@@ -58,8 +58,8 @@ namespace KOps::HELP {
         // Initialization Section
         // ---------------------------------------------------------
         std::cout << K::Init << ":\n"
-                  << "  " << K::InitParams::Price << ": 100.\n "
-                  << "  " << K::InitParams::Variance << ": 1.\n";
+                  << "  " << K::InitParams::Price << ": 100.         # Initial asset price (S0)\n "
+                  << "  " << K::InitParams::Variance << ": 0.04      # Initial variance (v0)\n";
         // ---------------------------------------------------------
 
 
@@ -73,19 +73,21 @@ namespace KOps::HELP {
         // Time Section
         // ---------------------------------------------------------
         std::cout << K::Time << ":\n"
-                  << "  " << K::TimeParams::T_End << ": 6000.\n"
-                  << "  " << K::TimeParams::DT << ": 60.\n";
+                  << "  " << K::TimeParams::T_End << ": 1.       # Time to maturity (in years)\n"
+                  << "  " << K::TimeParams::Inp_DT << ": 0.005   # Time step size (dt)\n";
 
         // ---------------------------------------------------------
         // MC Section
         // ---------------------------------------------------------
         std::cout << K::MC << ":\n"
-                  << "  " << K::MCParams::N_Realizations << ": 1000\n";
+                  << "  " << K::MCParams::N_Realizations << ": 1000     # Number of Monte Carlo realizations/paths\n"
+                  << "  " << K::MCParams::Batch_Size << ": 0            # Number of paths run in parallel before saving (0 means auto-computed based on hardware)\n"
+                  << "  " << K::MCParams::Max_VRAM_MB << ": 256         # Max Available VRAM \n"
+                  << "  " << K::MCParams::Max_CPU_RAM_MB << ": 4000     # Max Available RAM \n";
 
         // Output Section
         // ---------------------------------------------------------
         std::cout << K::Output << ":\n"
-                  << "  " << K::OutParams::N_Paths_Out_Batches << ": 200\n"
                   << "  " << K::OutParams::Name_Out_File << ": \"output\"\n"
                   << "  " << K::OutParams::Name_Log_File << ": \"sim.log\"\n"
                   << "  " << K::OutParams::Format << ":  " << get_allowed_options<KI::IOFormat>() << "\n";

@@ -25,8 +25,8 @@ Time:
 MC:
   N_Paths: 100000 # Number of Monte Carlo realizations/paths
   Batch_Size: 0 # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
-  Max_VRAM_MB: 256
-  Max_CPU_RAM_MB: 4000
+  Max_VRAM_MB: 256 # Max Available VRAM
+  Max_CPU_RAM_MB: 4000 # Max Available RAM
 
 Output:
   Name_Out_File: "KOptions.out"

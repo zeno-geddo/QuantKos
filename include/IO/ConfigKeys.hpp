@@ -25,8 +25,8 @@ namespace KOps::Keys {
     // ------------------------------------------------------------------------
     namespace MathModelParams {
         // Possible Sub-Blocks
-        static constexpr std::string_view HestonBlock = "Heston";
-        static constexpr std::string_view BatesBlock = "Bates";
+        static constexpr std::string_view IDHestonBlock = "Heston";
+        static constexpr std::string_view IDBatesBlock = "Bates";
 
         // Heston Sub-block
         static constexpr std::string_view r = "r"; //
