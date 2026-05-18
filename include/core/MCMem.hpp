@@ -26,7 +26,13 @@ namespace KOps::Engine {
         explicit MCBatchMem(const KC::UInputs &conf) : config(conf) {
             // Memory is allocated during the construction of the class
             allocate_batch_memory();
+            std::cout << "  [MCBatchMem] Memory allocated correctly." << std::endl;
+
         }
+
+        //-------------------------------------------
+        // SYNCH
+        //-------------------------------------------
 
         // Full-View Synchronizers
         void deep_copy_to_host() const { Kokkos::deep_copy(h_batch_view, d_batch_view); }
@@ -59,6 +65,15 @@ namespace KOps::Engine {
             Kokkos::deep_copy(d_sub, h_sub);
         }
 
+        //-------------------------------------------
+        // MEMORY INFO
+        //-------------------------------------------
+
+        // Hardware Interrogation
+        [[nodiscard]] std::string execution_space_name() const {
+            return Kokkos::DefaultExecutionSpace::name();
+        }
+
         // Get allocated memory size
         [[nodiscard]] size_t device_memory_bytes() const {
             // span: distance between lowest and highest address, must be contiguous memory to work
@@ -72,6 +87,41 @@ namespace KOps::Engine {
                 return h_batch_view.span() * sizeof(KT::Real);
             }
             return 0; // 0 duplicate bytes allocated if running natively on a host CPU
+        }
+
+        [[nodiscard]] double device_memory_mb() const {
+            return static_cast<double>(device_memory_bytes()) / (1024.0 * 1024.0);
+        }
+
+        [[nodiscard]] double total_paths_footprint_mb() const {
+            size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.N_time_steps) * sizeof(KT::Real);
+            return static_cast<double>(total_bytes) / (1024.0 * 1024.0);
+        }
+
+        //-------------------------------------------
+        // BATCH INFO
+        //-------------------------------------------
+
+        [[nodiscard]] int total_batch_loops() const {
+            const int n_batches = n_full_batches();
+            const int left_over   = n_sims_left_over_after_full_batches();
+            return n_batches + (left_over > 0 ? 1 : 0);
+        }
+
+        [[nodiscard]] int n_full_batches() const {
+            return config.mc.N_Paths / n_sims_per_batch;
+        }
+
+        [[nodiscard]] int n_sims_left_over_after_full_batches() const {
+            return config.mc.N_Paths % n_sims_per_batch;
+        }
+
+        [[nodiscard]] int get_curr_batch_size(int batch_idx) const {
+            const int n_full_batches = config.mc.N_Paths / n_sims_per_batch;
+            if (batch_idx < n_full_batches) {
+                return n_sims_per_batch;
+            }
+            return config.mc.N_Paths % n_sims_per_batch;
         }
 
     private:
@@ -105,7 +155,7 @@ namespace KOps::Engine {
 
             // Allocate the views using our newly stored class attributes
             std::cout << "  [Memory Allocation] Allocating reusable buffers ("
-                  << n_sims_per_batch << " x " << config.time.N_time_steps << ")..." << std::endl;
+                    << n_sims_per_batch << " x " << config.time.N_time_steps << ")..." << std::endl;
             d_batch_view = DevView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
             h_batch_view = Kokkos::create_mirror_view(d_batch_view);
         }
