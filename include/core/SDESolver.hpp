@@ -1,50 +1,45 @@
 #pragma once
 #include <Kokkos_Core.hpp>
-#include "./../IO/Config.hpp"
+
 #include "./../IO/ConfigEnums.hpp"
+#include "SDESchemes.hpp"
+#include "Typedefs.hpp"
 
 namespace KOps::Engine {
     namespace KI = KOps::Implemented;
-    namespace KC = KOps::Config;
+    namespace KT = KOps::Types;
 
-    // Master template blueprint (fall back if no specialization is available)
+    // Placed inside namespace KOps::Engine
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
-    struct SDESolver {
+    struct EvolveSDE {
+        // 1. The Execution Context (The data the GPU needs)
+        DevView local_batch_view;
+        typename RNGenerator::PoolType local_pool;
 
-        explicit SDESolver(const KC::UInputs& config) {
-            // This protects you at runtime if you accidentally try to run an unimplemented scheme
-            throw std::runtime_error("SDESolver math kernel not yet implemented for this scheme combination!");
-        }
+        int n_t_steps;
+        KT::Real S0;
+        KT::Real v0;
 
+        // The trivially copyable mathematical solver
+        SDESchemes<ModelPolicy, SchemePolicy> scheme;
 
-    };
-
-    // ========================================================================
-    // SPECIALIZATION: Heston + Euler Maruyama
-    // ========================================================================
-    template<>
-    struct SDESolver<KI::MathModel::Heston, KI::NumScheme::Euler> {
-        double r, k, theta, sigma, rho, dt;
-
-        explicit SDESolver(const KC::UInputs& config) {
-            r     = config.model.heston.r;
-            k     = config.model.heston.k;
-            theta = config.model.heston.theta;
-            sigma = config.model.heston.sigma;
-            rho   = config.model.heston.rho;
-            dt    = config.time.inp_dt;
-        }
-
+        // 2. The Execution Operator (Replaces KOKKOS_LAMBDA)
         KOKKOS_INLINE_FUNCTION
-        void evolve_step(double& S, double& v, double Z1, double Z2) const {
-            // TEMP SCHEME
-            double W1 = Z1;
-            double W2 = rho * Z1 + Kokkos::sqrt(1.0 - rho * rho) * Z2;
+        void operator()(const int n_p) const {
+            auto rn_generator = local_pool.get_state();
 
-            S = S + r * S * dt + Kokkos::sqrt(v) * S * Kokkos::sqrt(dt) * W1;
-            v = v + k * (theta - v) * dt + sigma * Kokkos::sqrt(v) * Kokkos::sqrt(dt) * W2;
-            v = v > 0.0 ? v : 0.0;
+            KT::Real S = S0;
+            KT::Real v = v0;
+
+            for (int n_t = 0; n_t < n_t_steps; ++n_t) {
+                auto [next_S, next_v] = scheme.evolve_step(S, v, rn_generator);
+
+                S = next_S;
+                v = next_v;
+
+                local_batch_view(n_p, n_t) = S;
+            }
+            local_pool.free_state(rn_generator);
         }
     };
-
 }

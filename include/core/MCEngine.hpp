@@ -4,15 +4,15 @@
 #include <Kokkos_Core.hpp>
 #include <Kokkos_Random.hpp>
 
-#include "SDESolver.hpp"
+#include "SDESchemes.hpp"
 #include "./../IO/Config.hpp"
 #include "./../IO/OutManager.hpp"
 #include "./Typedefs.hpp"
-#include "./MemState.hpp"
+#include "./MCMem.hpp"
+#include "./RandNGenerator.hpp"
 
 
 namespace KOps::Engine {
-    
     namespace KI = KOps::Implemented;
     namespace KC = KOps::Config;
     namespace KT = KOps::Types;
@@ -22,9 +22,6 @@ namespace KOps::Engine {
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
     class MCRunner {
     public:
-        // Export these types for cleaner downstream integration or testing
-        //using RNGPool      = Kokkos::Random_XorShift64_Pool<>;
-
         explicit MCRunner(const KC::UInputs &conf) : config(conf) {
         }
 
@@ -38,15 +35,13 @@ namespace KOps::Engine {
             std::cout << "Starting Monte Carlo Simulation..." << std::endl;
 
             // 1. Initialize Helper Classes needed during the MC
-            BatchState state(config); // Handles the Memory
-            SDESolver<ModelPolicy, SchemePolicy> solver(config); // Handles the Temporal integration
-            KO::OutputManager writer(config.output); // Handles the outputs
+            MCBatchMem BatchMem(config); // Handles the Memory
+            RNGenerator RNGen(config); // Handles the Random number
+            SDESchemes<ModelPolicy, SchemePolicy> Scheme(config); // Handles the Temporal integration
+            KO::OutputManager OWriter(config.output); // Handles the outputs
 
-            // 2. Initialize Random Number Generator Pool
-            initialize_rng_pool();
-
-            // 3. Run all batches
-            run_all_mc_batches();
+            // 2. Run all batches
+            run_all_mc_batches(BatchMem, RNGen, Scheme, OWriter);
 
             std::cout << "Simulation completed successfully!" << std::endl;
         }
@@ -54,87 +49,65 @@ namespace KOps::Engine {
     private:
         const KC::UInputs config;
 
-        void initialize_rng_pool() {
+        void run_all_mc_batches(MCBatchMem &BatchMem,
+                                const RNGenerator &RNGen,
+                                const SDESchemes<ModelPolicy, SchemePolicy> &Scheme,
+                                KO::OutputManager &OWriter) {
+            const int total_paths = config.mc.N_Paths;
+            const int batch_size = BatchMem.n_sims_per_batch;
+
+            const int n_full_batches = total_paths / batch_size;
+            const int n_sims_left_over = total_paths % batch_size;
+            const int total_batch_loops = n_full_batches + (n_sims_left_over > 0 ? 1 : 0);
+
+            for (int b = 0; b < total_batch_loops; ++b) {
+                std::cout << "    -> Processing Batch " << b + 1 << "/" << total_batch_loops << "...\r" << std::flush;
+
+                // Fire off the compute kernel
+                int current_batch_size = (b < n_full_batches) ? batch_size : n_sims_left_over;
+                run_sims_of_current_batch(current_batch_size, BatchMem, RNGen, Scheme);
+
+                // Synch the host and dev
+                BatchMem.deep_copy_to_host(current_batch_size);
+
+                //Save batch to disk (TO BE DONE)
+                //OWriter.xxxx()
+            }
+            std::cout << std::endl;
         }
 
-        void run_all_mc_batches() {
-            // Loop over the batches
-            run_sims_of_current_batch();
-            save_batch_to_disk();
-        }
+        void run_sims_of_current_batch(int n_active_paths,
+                                       MCBatchMem &BatchMem,
+                                       const RNGenerator &RNGen,
+                                       const SDESchemes<ModelPolicy, SchemePolicy> &Scheme) {
+            auto local_batch_view = BatchMem.d_batch_view;
+            auto local_pool = RNGen.get_pool();
 
-        void run_sims_of_current_batch() {
-            // Kokkos Loop over all sims of the batch
-            // Call the fd scheme that evolves in time a single sim
-        }
+            const int n_t_steps = config.time.N_time_steps;
+            const KT::Real S0 = config.init.S0;
+            const KT::Real v0 = config.init.v0;
 
-        void save_batch_to_disk() {
+            // The boundary limit 'active_paths' completely protects the matrix boundaries safely
+            Kokkos::parallel_for("EvolveSDEs", n_active_paths, KOKKOS_LAMBDA(const int n_p)
+            {
+                auto rn_generator = local_pool.get_state();
+
+                KT::Real S = S0;
+                KT::Real v = v0;
+
+                for (int n_t = 0; n_t < n_t_steps; ++n_t) {
+                    auto [next_S, next_v] = Scheme.evolve_step(S, v, rn_generator);
+
+                    S = next_S;
+                    v = next_v;
+
+                    local_batch_view(n_p, n_t) = S; // Fast native layout indexing math!
+                }
+                local_pool.free_state(rn_generator);
+            }
+            )
+            ;
+            Kokkos::fence();
         }
     };
 }
-
-
-/*using DeviceBatchView = Kokkos::View<KT::Real **> ; // DefaultExecutionSpace by default// DefaultExecutionSpace by default // DefaultExecutionSpace by default
-        using HostBatchView = DeviceBatchView::HostMirror;
-
-        DeviceBatchView d_batch_view;
-        HostBatchView h_batch_view;
-        int engine_batch_size;
-        int num_steps;
-
-        void allocate_memory() {
-
-            // 1. Determine the layout strategy chosen by the config/auto-tuner
-            if (config.mc.batch_size == -1) {
-                engine_batch_size = config.mc.N_Paths;
-            } else if (config.mc.batch_size == 0) {
-                engine_batch_size = determine_optimal_batch_size();
-            } else {
-                engine_batch_size = config.mc.batch_size;
-            }
-
-            // 2. High-Bound Safety: Optimization clamp (No error needed)
-            if (engine_batch_size > config.mc.N_Paths) {
-                engine_batch_size = config.mc.N_Paths;
-            }
-
-            // 3. Low-Bound Safety: Throw a hard exception if the budget is unrunnable
-            if (engine_batch_size < 1) {
-                throw std::runtime_error(
-                    "[Critical Error] The assigned VRAM/RAM hardware budget is too restrictive "
-                    "to accommodate even a single Monte Carlo path timeline simulation. "
-                    "Please increase your memory budget or increase your time step size (dt)."
-                );
-            }
-
-
-            // Allocate the views using our newly stored class attributes
-            num_steps = config.time.N_time_steps;
-            std::cout << "  [Memory Allocation] Allocating reusable buffers ("
-                  << engine_batch_size << " x " << num_steps << ")..." << std::endl;
-            d_batch_view = DeviceBatchView("gpu_paths_batch_buffer", engine_batch_size, num_steps);
-            h_batch_view = Kokkos::create_mirror_view(d_batch_view);
-        }
-
-
-        [[nodiscard]] int determine_optimal_batch_size() const {
-            const double bytes_per_sde_path = config.time.N_time_steps * sizeof(KT::Real);
-
-#if defined(KOKKOS_ENABLE_CUDA) || defined(KOKKOS_ENABLE_HIP) || defined(KOKKOS_ENABLE_SYCL)
-            const double gpu_budget_bytes = static_cast<double>(config.mc.Max_VRAM_MB) * 1024.0 * 1024.0;
-
-            int calculated_paths = static_cast<int>(gpu_budget_bytes / bytes_per_sde_path);
-
-            // Integer division to get multiples of 32 (1 warps or wavefronts)
-            // This ensures that every single GPU warp launched is packed with active execution threads, maximizing your hardware saturation
-            return (calculated_paths / 32) * 32;
-
-
-#else
-            const double cpu_budget_bytes = static_cast<double>(config.mc.Max_CPU_RAM_MB) * 1024.0 * 1024.0;
-
-            return static_cast<int>(cpu_budget_bytes / bytes_per_sde_path); //Integet division
-
-#endif
-        }*/
-

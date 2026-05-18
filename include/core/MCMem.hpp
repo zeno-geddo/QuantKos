@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <Kokkos_Core.hpp>
 
 #include "./Typedefs.hpp"
@@ -12,55 +11,67 @@ namespace KOps::Engine {
     namespace KC = KOps::Config;
 
     using DevView = Kokkos::View<KT::Real **>; // DefaultExecutionSpace by default
-    using HostView = DevView::HostMirror;
+    using HostView = DevView::host_mirror_type;
 
     // ------------------------------------------------------------------------
     // STATE SDE (Requires 1 copy)
     // ------------------------------------------------------------------------
-    class BatchState {
+    class MCBatchMem {
     public:
         DevView d_batch_view; // Device Views (GPU)
         HostView h_batch_view; // Host Mirrors (CPU)
-        int engine_batch_size;
-        int num_steps;
+        int n_sims_per_batch;
 
-
-        explicit BatchState(const KC::UInputs &conf) : config(conf) {
+        // Explicit to initialize it explicitly
+        explicit MCBatchMem(const KC::UInputs &conf) : config(conf) {
             // Memory is allocated during the construction of the class
             allocate_batch_memory();
         }
 
-
+        // Full-View Synchronizers
         void deep_copy_to_host() const { Kokkos::deep_copy(h_batch_view, d_batch_view); }
         void deep_copy_to_device() const { Kokkos::deep_copy(d_batch_view, h_batch_view); }
 
+        // ABSTRACT OVERLOAD of Full-View Synchronizers: Slices and syncs only the active rows
+        void deep_copy_to_host(int n_active_paths) const {
+            // If asked for the full size, forward them to the faster full-view copy automatically!
+            if (n_active_paths == n_sims_per_batch) {
+                deep_copy_to_host();
+                return;
+            }
 
+            // Targeted slice sync for remainder edge cases
+            auto d_sub = Kokkos::subview(d_batch_view, Kokkos::pair<int, int>(0, n_active_paths), Kokkos::ALL);
+            auto h_sub = Kokkos::subview(h_batch_view, Kokkos::pair<int, int>(0, n_active_paths), Kokkos::ALL);
+            Kokkos::deep_copy(h_sub, d_sub);
+        }
+
+        void deep_copy_to_device(int n_active_paths) const {
+            // If asked for the full size, forward them to the faster full-view copy automatically!
+            if (n_active_paths == n_sims_per_batch) {
+                deep_copy_to_device();
+                return;
+            }
+
+            // Targeted slice sync for remainder edge cases
+            auto d_sub = Kokkos::subview(d_batch_view, Kokkos::pair<int, int>(0, n_active_paths), Kokkos::ALL);
+            auto h_sub = Kokkos::subview(h_batch_view, Kokkos::pair<int, int>(0, n_active_paths), Kokkos::ALL);
+            Kokkos::deep_copy(d_sub, h_sub);
+        }
+
+        // Get allocated memory size
         [[nodiscard]] size_t device_memory_bytes() const {
-            size_t total = 0;
-
-            auto add_dev_mem = [&total](const DevView &dev) {
-                // use inline lambdas
-                total += dev.required_allocation_size(dev.extent(0), dev.extent(1));
-            };
-
-            add_dev_mem(d_batch_view);
-
-            return total;
+            // span: distance between lowest and highest address, must be contiguous memory to work
+            return d_batch_view.span() * sizeof(KT::Real);
         }
 
         [[nodiscard]] size_t host_memory_bytes() const {
-            size_t total = 0;
-
-            // Define a quick inline lambda to handle the shallow copy check
-            auto add_host_mem = [&total](const DevView &dev, const HostView &host) {
-                if (host.data() != nullptr && host.data() != dev.data()) {
-                    total += host.required_allocation_size(host.extent(0), host.extent(1));
-                }
-            };
-
-            add_host_mem(d_batch_view, h_batch_view);
-
-            return total;
+            // Only count host memory if it's a true separate physical allocation (GPU builds)
+            if (h_batch_view.data() != nullptr && h_batch_view.data() != d_batch_view.data()) {
+                // span: distance between lowest and highest address, must be contiguous memory to work
+                return h_batch_view.span() * sizeof(KT::Real);
+            }
+            return 0; // 0 duplicate bytes allocated if running natively on a host CPU
         }
 
     private:
@@ -70,20 +81,20 @@ namespace KOps::Engine {
         void allocate_batch_memory() {
             // 1. Determine the layout strategy chosen by the config/auto-tuner
             if (config.mc.batch_size == -1) {
-                engine_batch_size = config.mc.N_Paths;
+                n_sims_per_batch = config.mc.N_Paths;
             } else if (config.mc.batch_size == 0) {
-                engine_batch_size = determine_optimal_batch_size();
+                n_sims_per_batch = determine_optimal_batch_size();
             } else {
-                engine_batch_size = config.mc.batch_size;
+                n_sims_per_batch = config.mc.batch_size;
             }
 
             // 2. High-Bound Safety: Optimization clamp (No error needed)
-            if (engine_batch_size > config.mc.N_Paths) {
-                engine_batch_size = config.mc.N_Paths;
+            if (n_sims_per_batch > config.mc.N_Paths) {
+                n_sims_per_batch = config.mc.N_Paths;
             }
 
             // 3. Low-Bound Safety: Throw a hard exception if the budget is unrunnable
-            if (engine_batch_size < 1) {
+            if (n_sims_per_batch < 1) {
                 throw std::runtime_error(
                     "[Critical Error] The assigned VRAM/RAM hardware budget is too restrictive "
                     "to accommodate even a single Monte Carlo path timeline simulation. "
@@ -93,10 +104,9 @@ namespace KOps::Engine {
 
 
             // Allocate the views using our newly stored class attributes
-            num_steps = config.time.N_time_steps;
             std::cout << "  [Memory Allocation] Allocating reusable buffers ("
-                  << engine_batch_size << " x " << num_steps << ")..." << std::endl;
-            d_batch_view = DevView("gpu_paths_batch_buffer", engine_batch_size, num_steps);
+                  << n_sims_per_batch << " x " << config.time.N_time_steps << ")..." << std::endl;
+            d_batch_view = DevView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
             h_batch_view = Kokkos::create_mirror_view(d_batch_view);
         }
 
