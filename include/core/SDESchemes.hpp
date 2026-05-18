@@ -17,13 +17,19 @@ namespace KOps::Engine {
 
     // Master template blueprint (fall back if no specialization is available), it is trivially copiable struct!
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
-    struct SDESchemes {
+    struct SDEScheme {
 
-        explicit SDESchemes(const KC::UInputs& config) {
+        explicit SDEScheme(const KC::UInputs& config) {
             // This protects you at runtime if you accidentally try to run an unimplemented scheme
             throw std::runtime_error("SDESolver math kernel not yet implemented for this scheme combination!");
         }
 
+        // Dummy fallback function to allow un-specialized paths to compile successfully
+        template<typename RNGeneratorType>
+        KOKKOS_INLINE_FUNCTION
+        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType& rn_generator) const {
+            return {S_n, v_n};
+        }
 
     };
 
@@ -31,11 +37,11 @@ namespace KOps::Engine {
     // SPECIALIZATION: Heston + Euler Maruyama
     // ========================================================================
     template<>
-    struct SDESchemes<KI::MathModel::Heston, KI::NumScheme::Euler> {
+    struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::Euler> {
         KT::Real r, k, theta, sigma, rho, dt;
 
         // Constructor
-        explicit SDESchemes(const KC::UInputs& config) {
+        explicit SDEScheme(const KC::UInputs& config) {
             r     = config.model.heston.r;
             k     = config.model.heston.k;
             theta = config.model.heston.theta;
@@ -52,8 +58,8 @@ namespace KOps::Engine {
             constexpr KT::Real zero = static_cast<KT::Real>(0.0); // ok, but do not use static inside gpus!
             constexpr KT::Real one  = static_cast<KT::Real>(1.0); // ok, but do not use static inside gpus!
 
-            KT::Real Z1 = rn_generator.template normal<KT::Real>();
-            KT::Real Z2 = rn_generator.template normal<KT::Real>();
+            KT::Real Z1 = static_cast<KT::Real>(rn_generator.normal());
+            KT::Real Z2 = static_cast<KT::Real>(rn_generator.normal());
 
             KT::Real W1 = Z1;
             KT::Real W2 = rho * Z1 + Kokkos::sqrt(one - rho * rho) * Z2;

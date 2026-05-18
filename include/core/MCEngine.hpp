@@ -1,15 +1,43 @@
 #pragma once
 
 #include <iostream>
-#include <Kokkos_Core.hpp>
-#include <Kokkos_Random.hpp>
 
-#include "SDESchemes.hpp"
+#include "./SDESolver.hpp"
 #include "./../IO/Config.hpp"
 #include "./../IO/OutManager.hpp"
 #include "./Typedefs.hpp"
 #include "./MCMem.hpp"
 #include "./RandNGenerator.hpp"
+
+
+
+
+
+//       [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
+//
+//  MCRunner Loop Fires
+//           │
+//           ▼
+//  SDESolver::execute_batch()
+//           │
+//           ▼
+//  Instantiate IntegrationKernel
+//  (Flattens data onto CPU Stack)
+//           │
+//           ▼
+//  Kokkos::parallel_for()  =======[ PCIe Bus Pass ]=======>  GPU Spawns N Threads
+//                                                                     │
+//                                                                     ▼
+//                                                          kernel.operator()(n_p)
+//                                                                     │
+//                                                                     ▼
+//                                                          Time Loop (0 to N_Steps)
+//                                                                     │
+//                                                                     ▼
+//                                                          scheme.evolve_step()
+//                                                                     │
+//                                                                     ▼
+//                                                          Coalesced VRAM Write
 
 
 namespace KOps::Engine {
@@ -37,11 +65,11 @@ namespace KOps::Engine {
             // 1. Initialize Helper Classes needed during the MC
             MCBatchMem BatchMem(config); // Handles the Memory
             RNGenerator RNGen(config); // Handles the Random number
-            SDESchemes<ModelPolicy, SchemePolicy> Scheme(config); // Handles the Temporal integration
+            SDESolver<ModelPolicy, SchemePolicy> Solver(config); // Handles the Temporal integration
             KO::OutputManager OWriter(config.output); // Handles the outputs
 
             // 2. Run all batches
-            run_all_mc_batches(BatchMem, RNGen, Scheme, OWriter);
+            run_all_mc_batches(BatchMem, RNGen, Solver, OWriter);
 
             std::cout << "Simulation completed successfully!" << std::endl;
         }
@@ -51,8 +79,8 @@ namespace KOps::Engine {
 
         void run_all_mc_batches(MCBatchMem &BatchMem,
                                 const RNGenerator &RNGen,
-                                const SDESchemes<ModelPolicy, SchemePolicy> &Scheme,
-                                KO::OutputManager &OWriter) {
+                                const SDESolver<ModelPolicy, SchemePolicy> &Solver,
+                                KO::OutputManager &OWriter) const {
             const int total_paths = config.mc.N_Paths;
             const int batch_size = BatchMem.n_sims_per_batch;
 
@@ -65,7 +93,7 @@ namespace KOps::Engine {
 
                 // Fire off the compute kernel
                 int current_batch_size = (b < n_full_batches) ? batch_size : n_sims_left_over;
-                run_sims_of_current_batch(current_batch_size, BatchMem, RNGen, Scheme);
+                Solver.execute_batch(current_batch_size, BatchMem, RNGen);
 
                 // Synch the host and dev
                 BatchMem.deep_copy_to_host(current_batch_size);
@@ -75,8 +103,10 @@ namespace KOps::Engine {
             }
             std::cout << std::endl;
         }
+    };
+}
 
-        void run_sims_of_current_batch(int n_active_paths,
+        /*void run_sims_of_current_batch(int n_active_paths,
                                        MCBatchMem &BatchMem,
                                        const RNGenerator &RNGen,
                                        const SDESchemes<ModelPolicy, SchemePolicy> &Scheme) {
@@ -109,5 +139,4 @@ namespace KOps::Engine {
             ;
             Kokkos::fence();
         }
-    };
-}
+    };*/
