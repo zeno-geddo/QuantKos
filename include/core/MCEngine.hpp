@@ -62,7 +62,7 @@ namespace KOps::Engine {
             MCBatchMem BatchMem(config); // Handles the Memory
             RNGenerator RNGen(config); // Handles the Random number
             SDESolver<ModelPolicy, SchemePolicy> Solver(config); // Handles the Temporal integration
-            KO::OutputManager OWriter(config.output); // Handles the outputs
+            KO::OutputManager OWriter(config); // Handles the outputs
 
             // 2. Print MC Info
             print_info_planned_mc(BatchMem);
@@ -126,7 +126,7 @@ namespace KOps::Engine {
 
                 Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel
                 BatchMem.deep_copy_to_host(current_batch_size); // Synch the host and dev
-                //OWriter.xxxx() //Save batch to disk (TO BE DONE)
+                OWriter.save_batch(current_batch_size, BatchMem);  //Save batch to disk
 
                 const double elapsed_sec = get_elapsed_seconds(start_time);
 

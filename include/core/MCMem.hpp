@@ -1,9 +1,13 @@
 #pragma once
 
 #include <Kokkos_Core.hpp>
+#include <type_traits>
+
 
 #include "./Typedefs.hpp"
 #include "./../IO/Config.hpp"
+
+
 
 
 namespace KOps::Engine {
@@ -11,7 +15,7 @@ namespace KOps::Engine {
     namespace KC = KOps::Config;
 
     using DevView = Kokkos::View<KT::Real **>; // DefaultExecutionSpace by default
-    using HostView = DevView::host_mirror_type;
+    using HostView = DevView::host_mirror_type; // Kokkos forces the host to have the same layout as the device?
 
     // ------------------------------------------------------------------------
     // STATE SDE (Requires 1 copy)
@@ -96,6 +100,33 @@ namespace KOps::Engine {
         [[nodiscard]] double total_paths_footprint_mb() const {
             size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.N_time_steps) * sizeof(KT::Real);
             return static_cast<double>(total_bytes) / (1024.0 * 1024.0);
+        }
+
+        // Give host layout
+        [[nodiscard]] bool is_host_row_major() const {
+            // Check if the layout is Row-Major (C-Style)
+            // Evaluates completely at compile-time. The compiler will optimize this
+            // to a hardcoded 'return true;' or 'return false;' in the binary.
+            return std::is_same_v<
+                typename decltype(h_batch_view)::array_layout,
+                Kokkos::LayoutRight // right indices are contiguous
+            >;
+        }
+
+        [[nodiscard]] bool is_host_col_major() const {
+            // Check if the layout is Col-Major (Fortran-Style)
+            // Evaluates completely at compile-time. The compiler will optimize this
+            // to a hardcoded 'return true;' or 'return false;' in the binary.
+            return std::is_same_v<
+                typename decltype(h_batch_view)::array_layout,
+                Kokkos::LayoutLeft // left indices are contiguous
+            >;
+        }
+
+        // Check if the memory block is physically contiguous
+        [[nodiscard]] bool is_host_contiguous() const {
+            // Dynamically checks the actual memory slice, catching non-contiguous subviews or LayoutStride edge cases.
+            return h_batch_view.span_is_contiguous();
         }
 
         //-------------------------------------------
