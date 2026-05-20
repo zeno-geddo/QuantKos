@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <filesystem>
+#include <string_view>
 #include <vector>
 #include <sstream>
 #include "ConfigKeys.hpp"
@@ -11,6 +13,45 @@ namespace KOps::HELP {
 
     namespace K = KOps::Keys;
     namespace KI = KOps::Implemented;
+
+    inline void print_welcome_msg() {
+
+        constexpr std::string_view indent = "    ";
+
+        std::cout << "\n\n" << indent << "====================================================================\n"
+                  << indent << "                              KOptions                              \n"
+                  << indent << "====================================================================\n"
+                  << indent << "    Framework         : Parallel SDE Option Pricing Engine          \n"
+                  << indent << "    Compute Backend   : C++ and Kokkos for Performance Portability  \n"
+                  << indent << "--------------------------------------------------------------------\n"
+                  << indent << "    Author            : Zeno Geddo                                  \n"
+                  << indent << "    Version           : v0.1.0 (Beta)                               \n"
+                  << indent << "    Build Year        : 2026                                        \n"
+                  << indent << "    License           : ...........                                 \n"
+                  << indent << "    Contact           : zeno.geddo@gmail.com                        \n"
+                  << indent << "====================================================================\n"
+                  << std::endl;
+    }
+
+    inline void print_usage(std::string_view executable_path) {
+        // Extract just the filename out of the absolute path wrapper
+        std::filesystem::path prog_path(executable_path);
+        std::string filename = prog_path.filename().string();
+
+        std::cout << "    [Usage Guide]\n"
+                  << "      Execution Command Syntax:\n"
+                  << "        ./" << filename << " <path_to_config_file.yaml>\n\n"
+                  << "      Example Command Usage:\n"
+                  << "        ./" << filename << " ../config/heston_euler.yaml\n\n"
+                  << "    --------------------------------------------------------\n"
+                  << "    Note: The configuration input file must be a validated \n"
+                  << "          YAML/JSON specification containing comprehensive \n"
+                  << "          model parameters, grid intervals, and realization counts.\n"
+                  << "    ========================================================\n"
+                  << std::endl;
+    }
+
+
 
     // ------------------------------------------------------------------------
     // Helper to generate a string of allowed options: "# [Opt1, Opt2, ...]"
@@ -30,12 +71,8 @@ namespace KOps::HELP {
         return ss.str();
     }
 
-    inline void print_usage(const char* prog_name) {
-        std::cout << "Usage: " << prog_name << " <config_file.yaml>\n\n";
-    }
-
     inline void print_example_config() {
-        std::cout << "--- Template Configuration File ---\n"
+        std::cout << "\n--- Template Configuration File ---\n"
                   << "# Copy this structure into your .yaml file, and chose one one of the implementation between '[' and ']' ...\n\n";
 
 

@@ -20,7 +20,7 @@ Numerics:
 
 Time:
   T_End: 1.0      # Time to maturity (in years)
-  Inp_DT: 0.005       # Time step size (dt)
+  Inp_DT: 0.005   # Time step size (dt)
 
 MC:
   N_Paths: 100000 # Number of Monte Carlo realizations/paths

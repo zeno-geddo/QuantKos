@@ -9,17 +9,24 @@
 
 
 int main(int argc, char *argv[]) {
+
+    namespace KH = KOps::HELP;
+
+    // 1. Print input message
+    KH::print_welcome_msg();
+
     // 1. Handle "Help" specifically (Before Kokkos starts)
     if (argc >= 2 && (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")) {
-        KOps::HELP::print_usage(argv[0]);
-        KOps::HELP::print_example_config();
+        KH::print_usage(argv[0]);
+        KH::print_example_config();
         return 0; // Success
     }
 
     // 2. Handle "Wrong Input" (No arguments provided)
     if (argc < 2) {
         std::cerr << "Error: No configuration file provided.\n";
-        KOps::HELP::print_usage(argv[0]);
+        KH::print_usage(argv[0]);
+        KH::print_example_config();
         std::cerr << "Run '" << argv[0] << " --help' for an example configuration.\n";
         return 1; // Failure
     }

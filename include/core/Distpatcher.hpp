@@ -18,9 +18,9 @@ namespace KOps::Engine {
         explicit MCDispatcher(const KC::UInputs& conf) : config(conf) {}
 
         void launch_montecarlo() {
-            std::cout << "\nStarting Monte Carlo Simulation..." << std::endl;
+            std::cout << "\n>>> Starting Monte Carlo Simulation...\n" << std::endl;
             dispatch_model();
-            std::cout << "\nSimulation completed successfully!" << std::endl;
+            std::cout << "\n>>> Simulation completed successfully!\n" << std::endl;
         }
 
     private:

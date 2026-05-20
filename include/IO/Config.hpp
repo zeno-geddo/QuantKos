@@ -46,17 +46,16 @@ namespace KOps::Config {
             // To be done in the future ...
         }
 
-        void print() const {
-            std::cout << "  [" << KK::Model << "]\n"
-                    << "    ID Model                                                                    :       " << id_model << "\n"
-                    << "    Parameters Heston Model :"
-                    << "    .... (" << KK::MathModelParams::r << ")                                     :       " << heston.r << "\n"
-                    << "    .... (" << KK::MathModelParams::r << ")                                     :       " << heston.r << "\n"
-                    << "    .... (" << KK::MathModelParams::q << ")                                     :       " << heston.q << "\n"
-                    << "    Mean reversion speed of the variance (" << KK::MathModelParams::k << ")     :       " << heston.k << "\n"
-                    << "    Mean reversion level of the variance (" << KK::MathModelParams::theta << ") :       " << heston.theta << "\n"
-                    << "    Volatility of the variance (" << KK::MathModelParams::sigma << ")           :       " << heston.sigma << "\n"
-                    << "    Correlation between Brownian motions (" << KK::MathModelParams::rho << ")   :       " << heston.rho << "\n";
+        void print(std::string_view indent = "") const {
+            std::cout << indent << "  [" << KK::Model << "]\n"
+                    << indent << "    ID Model       :   " << id_model << "\n"
+                    << indent << "    Parameters Heston Model :\n"
+                    << indent << "      Risk-free interest rate (" << KK::MathModelParams::r << ")                  :   " << heston.r << "\n"
+                    << indent << "      Continuous dividend yield (" << KK::MathModelParams::r << ")                :   " << heston.r << "\n"
+                    << indent << "      Mean reversion speed of the variance (" << KK::MathModelParams::k << ")     :   " << heston.k << "\n"
+                    << indent << "      Mean reversion level of the variance (" << KK::MathModelParams::theta << ") :   " << heston.theta << "\n"
+                    << indent << "      Volatility of the variance (" << KK::MathModelParams::sigma << ")           :   " << heston.sigma << "\n"
+                    << indent << "      Correlation between price and variance Brownian motions (" << KK::MathModelParams::rho << ")   :   " << heston.rho << "\n";
         }
     };
 
@@ -70,10 +69,10 @@ namespace KOps::Config {
             if (S0 <= 0.0) throw std::runtime_error(config_err_msg(KK::Init, KK::InitParams::Price, "must be positive."));
         }
 
-        void print() const {
-            std::cout << "  [" << KK::Init << "]\n"
-                    << "    Initial Price (S0)     :     " << S0 << "\n"
-                    << "    Initial Variance (v0)  :     " << v0 << "\n";
+        void print(std::string_view indent = "") const {
+            std::cout << indent << "  [" << KK::Init << "]\n"
+                    << indent << "    Initial Price (S0)     :    " << S0 << "\n"
+                    << indent << "    Initial Variance (v0)  :    " << v0 << "\n";
         }
     };
 
@@ -85,9 +84,9 @@ namespace KOps::Config {
         void validate() const {
         }
 
-        void print() const {
-            std::cout << "  [" << KK::Numerics << "]\n"
-                    << "    Numerical Scheme:  " <<  enum_to_string(id_scheme) << "\n";
+        void print(std::string_view indent = "") const {
+            std::cout << indent << "  [" << KK::Numerics << "]\n"
+                    << indent << "    Numerical Scheme    :  " <<  enum_to_string(id_scheme) << "\n";
         }
 
 
@@ -123,12 +122,12 @@ namespace KOps::Config {
 
         }
 
-        void print() const {
-            std::cout << "  [" << KK::Time << "]\n"
-                    << "    End Time (" << KK::TimeParams::T_End << ")\t:\t" << t_end << "\n"
-                    << "    User Input Time Step (" << KK::TimeParams::Inp_DT << ")\t:\t" << inp_dt << "\n"
-                    << "    Actual Time Step (" << KK::TimeParams::DT << ")\t:\t" << dt << "\n"
-                    << "    Number Actual Time Steps (" << KK::TimeParams::N_TSteps << ")\t:\t" << N_time_steps << "\n";
+        void print(std::string_view indent = "") const {
+            std::cout << indent << "  [" << KK::Time << "]\n"
+                    << indent << "    End Time (" << KK::TimeParams::T_End << ")                     :   " << t_end << "\n"
+                    << indent << "    User Input Time Step (" << KK::TimeParams::Inp_DT << ")        :   " << inp_dt << "\n"
+                    << indent << "    Actual Time Step (" << KK::TimeParams::DT << ")                :   " << dt << "\n"
+                    << indent << "    Number Actual Time Steps (" << KK::TimeParams::N_TSteps << ")  :   " << N_time_steps << "\n";
         }
     };
 
@@ -150,12 +149,12 @@ namespace KOps::Config {
             if (Max_CPU_RAM_MB <= 0) throw std::runtime_error(config_err_msg(KK::MC, KK::MCParams::Max_CPU_RAM_MB, "must be a positive integer."));
         }
 
-        void print() const {
-            std::cout << "  [" << KK::MC << "]\n"
-                    << "    Number of Realizations :      " << N_Paths << "\n"
-                    << "    Batch Size required :         " << N_Paths << "\n"
-                    << "    User VRAM Limit :             " << Max_VRAM_MB << "\n"
-                    << "    User CPU RAM Limit :          " << Max_CPU_RAM_MB << "\n";
+        void print(std::string_view indent = "") const {
+            std::cout << indent << "  [" << KK::MC << "]\n"
+                    << indent << "    Number of Realizations   :    " << N_Paths << "\n"
+                    << indent << "    Batch Size required      :    " << N_Paths << "\n"
+                    << indent << "    User VRAM Limit          :    " << Max_VRAM_MB << "\n"
+                    << indent << "    User CPU RAM Limit       :    " << Max_CPU_RAM_MB << "\n";
         }
     };
 
@@ -166,12 +165,14 @@ namespace KOps::Config {
         std::string filename_log = "KOptions.log";
         KI::IOFormat format = KI::IOFormat::TXT;
 
-        void print() const {
-            std::cout << "  [" << KK::Output << "]\n"
-                    << "    Name Output File:     " << filename_out << "\n"
-                    << "    Format Output File:   " << enum_to_string(format) << "\n"
-                    << "    Name Log File:        " << filename_log << "\n";
+        void print(std::string_view indent = "") const {
+            std::cout << indent << "  [" << KK::Output << "]\n"
+                    << indent << "    Name Output File    :     " << filename_out << "\n"
+                    << indent << "    Format Output File  :     " << enum_to_string(format) << "\n"
+                    << indent << "    Name Log File       :     " << filename_log << "\n";
         }
+
+        void validate() const {}
     };
 
     // Master Configuration
@@ -183,30 +184,34 @@ namespace KOps::Config {
         MCConfig mc;
         OutputConfig output;
 
-        void validate() const {
+        void validate() {
             model.validate();
             init.validate();
             scheme.validate();
+            time.validate();
             mc.validate();
-            std::cout << ">>> Input configuration validated successfully. \n" << std::endl;
+            output.validate();
+            std::cout << ">>> Input configuration validated successfully." << std::endl;
         }
 
         void print_summary() const {
-            std::cout << "========================================================\n";
-            std::cout << "          KOptions SIMULATION CONFIGURATION             \n";
-            std::cout << "========================================================\n";
-            model.print();
-            std::cout << "--------------------------------------------------------\n";
-            init.print();
-            std::cout << "--------------------------------------------------------\n";
-            scheme.print();
-            std::cout << "--------------------------------------------------------\n";
-            time.print();
-            std::cout << "--------------------------------------------------------\n";
-            mc.print();
-            std::cout << "--------------------------------------------------------\n";
-            output.print();
-            std::cout << "========================================================\n" << std::endl;
+            constexpr std::string_view indent = "    ";
+
+            std::cout << "\n" << indent << "========================================================\n";
+            std::cout << indent << "                      MC CONFIGURATION                    \n";
+            std::cout << indent << "========================================================\n";
+            model.print(indent);
+            std::cout << indent << "--------------------------------------------------------\n";
+            init.print(indent);
+            std::cout << indent << "--------------------------------------------------------\n";
+            scheme.print(indent);
+            std::cout << indent << "--------------------------------------------------------\n";
+            time.print(indent);
+            std::cout << indent << "--------------------------------------------------------\n";
+            mc.print(indent);
+            std::cout << indent << "--------------------------------------------------------\n";
+            output.print(indent);
+            std::cout << indent << "========================================================\n" << std::endl;
         }
     };
 }

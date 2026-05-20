@@ -19,6 +19,8 @@ namespace KOps::Config {
     }
 
     UInputs Parser::parse(const std::string &filename) {
+        std::cout << "\n>>> Start Parsing User Inputs..." << std::endl;
+
         // ---------------------------------------------------------
         // 1. Sanity Check
         // ---------------------------------------------------------
