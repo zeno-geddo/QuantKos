@@ -151,10 +151,10 @@ namespace KOps::Config {
 
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::MC << "]\n"
-                    << indent << "    Number of Realizations   :    " << N_Paths << "\n"
-                    << indent << "    Batch Size required      :    " << N_Paths << "\n"
-                    << indent << "    User VRAM Limit          :    " << Max_VRAM_MB << "\n"
-                    << indent << "    User CPU RAM Limit       :    " << Max_CPU_RAM_MB << "\n";
+                    << indent << "    Number of Realizations    :    " << N_Paths << "\n"
+                    << indent << "    Batch Size required       :    " << batch_size << "\n"
+                    << indent << "    User VRAM Limit (MB)      :    " << Max_VRAM_MB << "\n"
+                    << indent << "    User CPU RAM Limit (MB)   :    " << Max_CPU_RAM_MB << "\n";
         }
     };
 

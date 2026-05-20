@@ -126,9 +126,9 @@ namespace KOps::Config {
             if (node[str(KK::MCParams::Batch_Size)])
                 conf.mc.batch_size = node[str(KK::MCParams::Batch_Size)].as<int>();
             if (node[str(KK::MCParams::Max_VRAM_MB)])
-                conf.mc.batch_size = node[str(KK::MCParams::Max_VRAM_MB)].as<long long>();
+                conf.mc.Max_VRAM_MB = node[str(KK::MCParams::Max_VRAM_MB)].as<long long>();
             if (node[str(KK::MCParams::Max_CPU_RAM_MB)])
-                conf.mc.batch_size = node[str(KK::MCParams::Max_CPU_RAM_MB)].as<long long>();
+                conf.mc.Max_CPU_RAM_MB = node[str(KK::MCParams::Max_CPU_RAM_MB)].as<long long>();
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::MC) + "' missing.");
         }
@@ -156,8 +156,8 @@ namespace KOps::Config {
         // ---------------------------------------------------------
         // 10. Final Validation
         // ---------------------------------------------------------
-        conf.print_summary();
         conf.validate();
+        conf.print_summary();
 
         return conf;
     }

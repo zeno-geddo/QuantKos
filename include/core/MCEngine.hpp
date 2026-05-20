@@ -119,7 +119,8 @@ namespace KOps::Engine {
             std::cout << "                         MC PROGRESS              \n";
             std::cout << "  --------------------------------------------------------\n"<< std::endl;
             const auto start_time = std::chrono::steady_clock::now();
-            print_batches_progress_bar(0, n_total_batch_loops, 0.);
+            double elapsed_seconds = 0.;
+            print_batches_progress_bar(0, n_total_batch_loops, elapsed_seconds);
 
             for (int b = 0; b < n_total_batch_loops; ++b) {
                 const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
@@ -128,10 +129,10 @@ namespace KOps::Engine {
                 BatchMem.deep_copy_to_host(current_batch_size); // Synch the host and dev
                 OWriter.save_batch(current_batch_size, BatchMem);  //Save batch to disk
 
-                const double elapsed_sec = get_elapsed_seconds(start_time);
-
-                print_batches_progress_bar(b, n_total_batch_loops, elapsed_sec);
+                elapsed_seconds = get_elapsed_seconds(start_time);
+                print_batches_progress_bar(b, n_total_batch_loops, elapsed_seconds);
             }
+            print_batches_progress_bar(n_total_batch_loops, n_total_batch_loops, elapsed_seconds);
             std::cout << "\n\n  ========================================================\n" << std::endl;
         }
 
