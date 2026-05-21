@@ -29,6 +29,7 @@ MC:
   Max_CPU_RAM_MB: 4000 # Max Available RAM
 
 Output:
+  out_dir: "./install/outputs"
   Name_Out_File: "KOptions.out"
   Name_Log_File: "KOptions.log"
   Format: BIN     # Available formats: TXT, BIN

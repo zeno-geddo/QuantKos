@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <stdexcept>
+#include <filesystem>
 
 #include <Kokkos_Core.hpp>
 
@@ -31,7 +32,8 @@ namespace KOps::Out {
     class OutputManager {
     public:
         explicit OutputManager(const KC::UInputs &conf) : config(conf) {
-            open_out_stream();
+            full_out_path = std::filesystem::path(config.output.out_dir) / config.output.filename_out;
+            open_out_stream(full_out_path);
         }
 
         // Destructor automatically flushes and closes the file safely!
@@ -61,7 +63,7 @@ namespace KOps::Out {
             std::cout << indent << "                   I/O OUTPUT MANAGER                 \n";
             std::cout << indent << "========================================================\n";
             std::cout << indent << " [Export Configuration]\n";
-            std::cout << indent << "   Target File Path     :  " << config.output.filename_out << "\n";
+            std::cout << indent << "   Target File Path     :  " << full_out_path << "\n";
 
             if (config.output.format == KI::IOFormat::BIN) {
                 std::cout << indent << "   Export Format        :  High-Performance Binary\n";
@@ -78,7 +80,7 @@ namespace KOps::Out {
                 std::cout << indent << "   |-- MATRIX PAYLOAD\n";
                 std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.time.N_time_steps << " cols\n";
                 std::cout << indent << "       |-- Ordering     : Row-Major (C-Style Sequential)\n";
-                std::cout << indent << "       |-- Contents     : ¨Price time series\n";
+                std::cout << indent << "       |-- Contents     : Price time series\n";
             } else {
                 std::cout << indent << "   Export Format        :  Standard Text Debugging\n";
                 std::cout << indent << "--------------------------------------------------------\n";
@@ -93,14 +95,14 @@ namespace KOps::Out {
     private:
         const KC::UInputs config;
         std::ofstream out_stream; // The persistent hardware file pipe
+        std::filesystem::path full_out_path;
 
-
-        void open_out_stream() {
+        void open_out_stream(const std::filesystem::path &path_out_file) {
             // Open Stream for lifetime of the application
             if (config.output.format == KI::IOFormat::BIN) {
-                out_stream.open(config.output.filename_out, std::ios::out | std::ios::binary);
+                out_stream.open(path_out_file.string(), std::ios::out | std::ios::binary);
                 if (!out_stream.is_open()) {
-                    throw std::runtime_error("Failed to open binary output file: " + config.output.filename_out);
+                    throw std::runtime_error("Failed to open binary output file: " + path_out_file.string());
                 }
                 write_global_bin_header();
             } else {

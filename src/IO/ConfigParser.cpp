@@ -19,7 +19,7 @@ namespace KOps::Config {
     }
 
     UInputs Parser::parse(const std::string &filename) {
-        std::cout << "\n>>> Start Parsing User Inputs..." << std::endl;
+        std::cout << "\n>>> Start Parsing User Inputs...\n" << std::endl;
 
         // ---------------------------------------------------------
         // 1. Sanity Check
@@ -138,6 +138,9 @@ namespace KOps::Config {
         // ---------------------------------------------------------
         if (root[str(KK::Output)]) {
             const auto &node = root[str(KK::Output)];
+
+            if (node[str(KK::OutParams::out_dir)])
+                conf.output.out_dir = node[str(KK::OutParams::out_dir)].as<std::string>();
 
             if (node[str(KK::OutParams::Name_Out_File)])
                 conf.output.filename_out = node[str(KK::OutParams::Name_Out_File)].as<std::string>();

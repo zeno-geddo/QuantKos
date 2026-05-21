@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <iostream>
 #include <cmath>
+#include <filesystem>
+
 #include "../core/Typedefs.hpp"
 #include "../IO/ConfigEnums.hpp"
 #include "../IO/ConfigKeys.hpp"
@@ -161,18 +163,44 @@ namespace KOps::Config {
 
     // Substructure: IO & Diagnostics
     struct OutputConfig {
+        std::string out_dir = "outputs";
         std::string filename_out = "KOptions.out";
         std::string filename_log = "KOptions.log";
         KI::IOFormat format = KI::IOFormat::TXT;
 
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Output << "]\n"
+                    << indent << "    Output Directory    :     " << out_dir << "\n"
                     << indent << "    Name Output File    :     " << filename_out << "\n"
                     << indent << "    Format Output File  :     " << enum_to_string(format) << "\n"
                     << indent << "    Name Log File       :     " << filename_log << "\n";
         }
 
-        void validate() const {}
+        void validate() const {
+
+            // Check if a file path is empty
+            if (filename_out.empty()) {
+                throw std::runtime_error("[Configuration Error] Output filename ('filename_out') cannot be empty!");
+            }
+
+            // Create Output directories if given
+            if (!out_dir.empty()) {
+                try {
+                    // Generates full tree tree structure (e.g., "build/outputs/bin") safely.
+                    // Does absolutely nothing if the directory already exists.
+                    std::filesystem::create_directories(out_dir);
+                }
+                catch (const std::filesystem::filesystem_error& e) {
+                    // If OS denies creation (No permissions, invalid disk path, etc.), crash instantly!
+                    throw std::runtime_error(
+                        "[Configuration Error] The assigned output directory '" + out_dir +
+                        "' could not be prepared or accessed.\nDetails: " + e.what()
+                    );
+                }
+            }
+
+
+        }
     };
 
     // Master Configuration
@@ -191,7 +219,7 @@ namespace KOps::Config {
             time.validate();
             mc.validate();
             output.validate();
-            std::cout << ">>> Input configuration validated successfully." << std::endl;
+            std::cout << ">>> Input configuration validated successfully.\n" << std::endl;
         }
 
         void print_summary() const {

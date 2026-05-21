@@ -83,6 +83,7 @@ namespace KOps::Keys {
     // Output Parameters
     // ------------------------------------------------------------------------
     namespace OutParams {
+        static constexpr std::string_view out_dir = "out_dir";
         static constexpr std::string_view Name_Log_File = "Name_Log_File";
         static constexpr std::string_view Name_Out_File = "Name_Out_File";
         static constexpr std::string_view Format = "Format";

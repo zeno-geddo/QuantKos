@@ -57,9 +57,3 @@ int main(int argc, char *argv[]) {
     Kokkos::finalize();
     return exit_code;
 }
-
-
-//FATAL ERROR: Error: Kokkos::deep_copy with no available copy mechanism: from source view ("gpu_paths_batch_buffer") to destination view ("gpu_paths_batch_buffer_mirror").
-//There is no common execution space that can access both source's space
-//(Cuda) and destination's space (Host), so source and destination
-//must be contiguous and have the same layout.

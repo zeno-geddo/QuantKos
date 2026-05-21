@@ -385,6 +385,7 @@ MC:
 
 
 Output:
+  out_dir: "outputs"
   Name_Out_File: "KOptions.out"
   Name_Log_File: "KOptions.log"
   Format: TXT     # Available formats: TXT, BIN
