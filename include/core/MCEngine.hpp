@@ -64,8 +64,9 @@ namespace KOps::Engine {
             SDESolver<ModelPolicy, SchemePolicy> Solver(config); // Handles the Temporal integration
             KO::OutputManager OWriter(config); // Handles the outputs
 
-            // 2. Print MC Info
+            // 2. Print Pre-Execution Diagnostics
             print_info_planned_mc(BatchMem);
+            OWriter.print_info_planned_outputs();
 
             // 3. Run all batches
             run_all_mc_batches(BatchMem, RNGen, Solver, OWriter);
@@ -126,7 +127,7 @@ namespace KOps::Engine {
                 const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
 
                 Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel
-                BatchMem.deep_copy_to_host(current_batch_size); // Synch the host and dev
+                BatchMem.deep_copy_to_host(); // Synch the host and dev
                 OWriter.save_batch(current_batch_size, BatchMem);  //Save batch to disk
 
                 elapsed_seconds = get_elapsed_seconds(start_time);

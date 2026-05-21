@@ -54,6 +54,42 @@ namespace KOps::Out {
             }
         }
 
+        void print_info_planned_outputs() const {
+            constexpr std::string_view indent = "  ";
+
+            std::cout << "\n" << indent << "========================================================\n";
+            std::cout << indent << "                   I/O OUTPUT MANAGER                 \n";
+            std::cout << indent << "========================================================\n";
+            std::cout << indent << " [Export Configuration]\n";
+            std::cout << indent << "   Target File Path     :  " << config.output.filename_out << "\n";
+
+            if (config.output.format == KI::IOFormat::BIN) {
+                std::cout << indent << "   Export Format        :  High-Performance Binary\n";
+                std::cout << indent << "--------------------------------------------------------\n";
+                std::cout << indent << " [Binary File Layout Structure]\n";
+                std::cout << indent << "   |-- GLOBAL HEADER (" << sizeof(BinHeader) << " Bytes)\n";
+                std::cout << indent << "   |   |-- Magic Key    : 'KOPT' (4 bytes)\n";
+                std::cout << indent << "   |   |-- Version      : 1 (int32)\n";
+                std::cout << indent << "   |   |-- Precision    : " << sizeof(KT::Real) << " bytes per value (int32)\n";
+                std::cout << indent << "   |   |-- Total Paths  : " << config.mc.N_Paths << " (int32)\n";
+                std::cout << indent << "   |   |-- Time Steps   : " << config.time.N_time_steps << " (int32)\n";
+                std::cout << indent << "   |   |-- Time dt      : " << config.time.dt << " (float64)\n";
+                std::cout << indent << "   |\n";
+                std::cout << indent << "   |-- MATRIX PAYLOAD\n";
+                std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.time.N_time_steps << " cols\n";
+                std::cout << indent << "       |-- Ordering     : Row-Major (C-Style Sequential)\n";
+                std::cout << indent << "       |-- Contents     : ¨Price time series\n";
+            } else {
+                std::cout << indent << "   Export Format        :  Standard Text Debugging\n";
+                std::cout << indent << "--------------------------------------------------------\n";
+                std::cout << indent << " [Text File Layout Structure]\n";
+                std::cout << indent << "   |-- MATRIX PAYLOAD\n";
+                std::cout << indent << "       |-- Format       : Delimited row values\n";
+                std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.time.N_time_steps << " cols\n";
+            }
+            std::cout << indent << "========================================================\n" << std::endl;
+        }
+
     private:
         const KC::UInputs config;
         std::ofstream out_stream; // The persistent hardware file pipe

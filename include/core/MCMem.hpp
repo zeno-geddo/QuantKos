@@ -42,33 +42,6 @@ namespace KOps::Engine {
         void deep_copy_to_host() const { Kokkos::deep_copy(h_batch_view, d_batch_view); }
         void deep_copy_to_device() const { Kokkos::deep_copy(d_batch_view, h_batch_view); }
 
-        // ABSTRACT OVERLOAD of Full-View Synchronizers: Slices and syncs only the active rows
-        void deep_copy_to_host(int n_active_paths) const {
-            // If asked for the full size, forward them to the faster full-view copy automatically!
-            if (n_active_paths == n_sims_per_batch) {
-                deep_copy_to_host();
-                return;
-            }
-
-            // Targeted slice sync for remainder edge cases
-            auto d_sub = Kokkos::subview(d_batch_view, Kokkos::pair<int, int>(0, n_active_paths), Kokkos::ALL);
-            auto h_sub = Kokkos::subview(h_batch_view, Kokkos::pair<int, int>(0, n_active_paths), Kokkos::ALL);
-            Kokkos::deep_copy(h_sub, d_sub);
-        }
-
-        void deep_copy_to_device(int n_active_paths) const {
-            // If asked for the full size, forward them to the faster full-view copy automatically!
-            if (n_active_paths == n_sims_per_batch) {
-                deep_copy_to_device();
-                return;
-            }
-
-            // Targeted slice sync for remainder edge cases
-            auto d_sub = Kokkos::subview(d_batch_view, Kokkos::pair<int, int>(0, n_active_paths), Kokkos::ALL);
-            auto h_sub = Kokkos::subview(h_batch_view, Kokkos::pair<int, int>(0, n_active_paths), Kokkos::ALL);
-            Kokkos::deep_copy(d_sub, h_sub);
-        }
-
         //-------------------------------------------
         // MEMORY INFO
         //-------------------------------------------
@@ -198,16 +171,18 @@ namespace KOps::Engine {
 #if defined(KOKKOS_ENABLE_CUDA) || defined(KOKKOS_ENABLE_HIP) || defined(KOKKOS_ENABLE_SYCL)
             const double gpu_budget_bytes = static_cast<double>(config.mc.Max_VRAM_MB) * 1024.0 * 1024.0;
 
-            int calculated_paths = static_cast<int>(gpu_budget_bytes / bytes_per_sde_path);
+            const int calculated_paths = static_cast<int>(gpu_budget_bytes / bytes_per_sde_path);
 
             // Integer division to get multiples of 32 (1 warps or wavefronts)
-            // This ensures that every single GPU warp launched is packed with active execution threads, maximizing your hardware saturation
+            // First, it ensures that every single GPU warp launched is packed with active execution threads (warp is 100% full)
+            // Second, it aligns data boundaries with the physical architecture of the GPU chip
+            // (data are read by 32 blocks, so you just make single memory transaction to read data for a single warp)
             return (calculated_paths / 32) * 32;
 
 #else
             const double cpu_budget_bytes = static_cast<double>(config.mc.Max_CPU_RAM_MB) * 1024.0 * 1024.0;
 
-            return static_cast<int>(cpu_budget_bytes / bytes_per_sde_path); //Integet division
+            return static_cast<int>(cpu_budget_bytes / bytes_per_sde_path); //Integer division
 
 #endif
         }
