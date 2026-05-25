@@ -125,6 +125,8 @@ namespace KOps::Config {
                 conf.mc.N_Paths = node[str(KK::MCParams::N_Realizations)].as<int>();
             if (node[str(KK::MCParams::Batch_Size)])
                 conf.mc.batch_size = node[str(KK::MCParams::Batch_Size)].as<int>();
+            if (node[str(KK::MCParams::RNG_Seed)])
+                conf.mc.rng_seed = node[str(KK::MCParams::RNG_Seed)].as<u_int64_t>();
             if (node[str(KK::MCParams::Max_VRAM_MB)])
                 conf.mc.Max_VRAM_MB = node[str(KK::MCParams::Max_VRAM_MB)].as<long long>();
             if (node[str(KK::MCParams::Max_CPU_RAM_MB)])

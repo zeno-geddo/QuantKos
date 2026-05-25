@@ -25,6 +25,7 @@ Time:
 MC:
   N_Paths: 100000 # Number of Monte Carlo realizations/paths
   Batch_Size: 0 # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
+  RNG_Seed: 88471920573105
   Max_VRAM_MB: 256 # Max Available VRAM (Default 256 MB)
   Max_CPU_RAM_MB: 4000 # Max Available RAM
 

@@ -74,6 +74,7 @@ namespace KOps::Keys {
     namespace MCParams {
         static constexpr std::string_view N_Realizations = "N_Paths";
         static constexpr std::string_view Batch_Size = "Batch_Size";
+        static constexpr std::string_view RNG_Seed = "RNG_Seed";
         static constexpr std::string_view Max_VRAM_MB = "Max_VRAM_MB";
         static constexpr std::string_view Max_CPU_RAM_MB = "Max_CPU_RAM_MB";
     }

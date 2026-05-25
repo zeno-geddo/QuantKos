@@ -57,10 +57,11 @@ namespace KOps::Engine {
 
         void run_mc_simulation() {
             // NOTE : the total number of simulations are performed in batches to handle cases when not enough memory is available
+            // NOTE : The global random number pool is created once. States advance dynamically. So using the same pool for different batches is the correct approach
 
             // 1. Initialize Helper Classes needed during the MC
             MCBatchMem BatchMem(config); // Handles the Memory
-            RNGenerator RNGen(config); // Handles the Random number
+            RNGManager RNGen(config); // Handles the Random number (Must initialize here and not in the batch loop!!!)
             SDESolver<ModelPolicy, SchemePolicy> Solver(config); // Handles the Temporal integration
             KO::OutputManager OWriter(config); // Handles the outputs
 
@@ -108,7 +109,7 @@ namespace KOps::Engine {
 
 
         void run_all_mc_batches(MCBatchMem &BatchMem,
-                                const RNGenerator &RNGen,
+                                const RNGManager &RNGen,
                                 const SDESolver<ModelPolicy, SchemePolicy> &Solver,
                                 KO::OutputManager &OWriter) const {
             const int full_batch_size = BatchMem.n_sims_per_batch;

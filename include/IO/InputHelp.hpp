@@ -117,10 +117,11 @@ namespace KOps::HELP {
         // MC Section
         // ---------------------------------------------------------
         std::cout << K::MC << ":\n"
-                  << "  " << K::MCParams::N_Realizations << ": 1000     # Number of Monte Carlo realizations/paths\n"
-                  << "  " << K::MCParams::Batch_Size << ": 0            # Number of paths run in parallel before saving (0 means auto-computed based on hardware)\n"
-                  << "  " << K::MCParams::Max_VRAM_MB << ": 256         # Max Available VRAM \n"
-                  << "  " << K::MCParams::Max_CPU_RAM_MB << ": 4000     # Max Available RAM \n";
+                  << "  " << K::MCParams::N_Realizations << ": 1000       # Number of Monte Carlo realizations/paths\n"
+                  << "  " << K::MCParams::Batch_Size << ": 0              # Number of paths run in parallel before saving (0 means auto-computed based on hardware)\n"
+                  << "  " << K::MCParams::RNG_Seed << ": 184467440737095  # Random Number Generator Seed (uint62_t, must be > 0)\n"
+                  << "  " << K::MCParams::Max_VRAM_MB << ": 256           # Max Available VRAM \n"
+                  << "  " << K::MCParams::Max_CPU_RAM_MB << ": 4000       # Max Available RAM \n";
 
         // Output Section
         // ---------------------------------------------------------
