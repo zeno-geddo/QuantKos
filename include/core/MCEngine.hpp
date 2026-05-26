@@ -9,6 +9,7 @@
 #include "./Typedefs.hpp"
 #include "./MCMem.hpp"
 #include "./RandNGenerator.hpp"
+#include "./Risk.hpp"
 
 
 //       [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
@@ -127,18 +128,25 @@ namespace KOps::Engine {
             double elapsed_seconds = 0.;
             print_batches_progress_bar(0, n_total_batch_loops, elapsed_seconds);
 
+            RiskQuantifier RiskQ = RiskQuantifier(config.mc.N_Paths);
+
             for (int b = 0; b < n_total_batch_loops; ++b) {
                 const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
 
                 Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel
                 BatchMem.deep_copy_to_host(); // Synch the host and dev
+                RiskQ.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size); // Store payoffs to then sort them
                 OWriter.save_paths_batch(current_batch_size, BatchMem);  //Save batch to disk
 
                 elapsed_seconds = get_elapsed_seconds(start_time);
                 print_batches_progress_bar(b, n_total_batch_loops, elapsed_seconds);
+
             }
             print_batches_progress_bar(n_total_batch_loops, n_total_batch_loops, elapsed_seconds);
             std::cout << "\n\n  ========================================================\n" << std::endl;
+
+            RiskQ.compute_metrics(config.model.heston.r, config.time.t_end);
+            RiskQ.print_report();
         }
 
         [[nodiscard]] double get_elapsed_seconds(const std::chrono::steady_clock::time_point &start_time) const {
@@ -182,3 +190,4 @@ namespace KOps::Engine {
         }
     };
 }
+
