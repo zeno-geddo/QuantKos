@@ -45,7 +45,7 @@ namespace KOps::Engine {
     namespace KO = KOps::Out;
 
 
-    template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
+    template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
     class MCRunner {
     public:
         explicit MCRunner(const KC::UInputs &conf) : config(conf) {
@@ -62,12 +62,12 @@ namespace KOps::Engine {
             // 1. Initialize Helper Classes needed during the MC
             MCBatchMem BatchMem(config); // Handles the Memory
             RNGManager RNGen(config); // Handles the Random number (Must initialize here and not in the batch loop!!!)
-            SDESolver<ModelPolicy, SchemePolicy> Solver(config); // Handles the Temporal integration
+            SDESolver<ModelPolicy, SchemePolicy, OptType, OptRight> Solver(config); // Handles the Temporal integration
             KO::OutputManager OWriter(config); // Handles the outputs
 
             // 2. Print Pre-Execution Diagnostics
             print_info_planned_mc(BatchMem);
-            OWriter.print_info_planned_outputs();
+            OWriter.print_paths_info_planned_outputs();
 
             // 3. Run all batches
             run_all_mc_batches(BatchMem, RNGen, Solver, OWriter);
@@ -97,20 +97,23 @@ namespace KOps::Engine {
             std::cout << indent << "   Time Step                   :  " << config.time.dt << "\n";
             std::cout << indent << "--------------------------------------------------------\n";
             std::cout << indent << " [Memory & Streaming Control]\n";
-            std::cout << indent << "   Total N Batches to Launch :  " << BatchMem.total_batch_loops() << "\n";
-            std::cout << indent << "   Full Batches to Launch    :  " << BatchMem.n_full_batches() << "\n";
-            std::cout << indent << "   N Sims Per Full Batch     :  " << BatchMem.n_sims_per_batch << "\n";
-            std::cout << indent << "   Partial Batches to Launch :  " << BatchMem.total_batch_loops() - BatchMem.n_full_batches() << "\n";
-            std::cout << indent << "   N Sims Per Partial Batch  :  " << BatchMem.n_sims_left_over_after_full_batches() << "\n";
-            std::cout << indent << "   Batch MEM Footprint       :  " << BatchMem.device_memory_mb() << " MB\n";
-            std::cout << indent << "   Full MC MEM Footprint     :  " << BatchMem.total_paths_footprint_mb() << " MB\n";
+            std::cout << indent << "   Total N Batches to Launch      :  " << BatchMem.total_batch_loops() << "\n";
+            std::cout << indent << "   Full Batches to Launch         :  " << BatchMem.n_full_batches() << "\n";
+            std::cout << indent << "   N Sims Per Full Batch          :  " << BatchMem.n_sims_per_batch << "\n";
+            std::cout << indent << "   Partial Batches to Launch      :  " << BatchMem.total_batch_loops() - BatchMem.n_full_batches() << "\n";
+            std::cout << indent << "   N Sims Per Partial Batch       :  " << BatchMem.n_sims_left_over_after_full_batches() << "\n";
+            std::cout << indent << "   Batch Paths MEM Footprint      :  " << BatchMem.bytes_to_mb(BatchMem.device_paths_memory_bytes()) << " MB\n";
+            std::cout << indent << "   Batch Payoffs MEM Footprint    :  " << BatchMem.bytes_to_mb(BatchMem.device_payoffs_memory_bytes()) << " MB\n";
+            std::cout << indent << "   Batch TOT MEM Footprint        :  " << BatchMem.bytes_to_mb(BatchMem.tot_device_memory_bytes()) << " MB\n";
+            std::cout << indent << "   Full MC Paths MEM Footprint    :  " << BatchMem.total_paths_footprint_mb() << " MB\n";
+            std::cout << indent << "   Full MC Payoffs MEM Footprint  :  " << BatchMem.total_payoffs_footprint_mb() << " MB\n";
             std::cout << indent << "========================================================\n" << std::endl;
         }
 
 
         void run_all_mc_batches(MCBatchMem &BatchMem,
                                 const RNGManager &RNGen,
-                                const SDESolver<ModelPolicy, SchemePolicy> &Solver,
+                                const SDESolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
                                 KO::OutputManager &OWriter) const {
             const int full_batch_size = BatchMem.n_sims_per_batch;
             const int n_full_batches = BatchMem.n_full_batches();
@@ -119,7 +122,7 @@ namespace KOps::Engine {
 
             std::cout << "  ========================================================\n";
             std::cout << "                         MC PROGRESS              \n";
-            std::cout << "  --------------------------------------------------------\n"<< std::endl;
+            std::cout << "  ========================================================\n"<< std::endl;
             const auto start_time = std::chrono::steady_clock::now();
             double elapsed_seconds = 0.;
             print_batches_progress_bar(0, n_total_batch_loops, elapsed_seconds);
@@ -129,7 +132,7 @@ namespace KOps::Engine {
 
                 Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel
                 BatchMem.deep_copy_to_host(); // Synch the host and dev
-                OWriter.save_batch(current_batch_size, BatchMem);  //Save batch to disk
+                OWriter.save_paths_batch(current_batch_size, BatchMem);  //Save batch to disk
 
                 elapsed_seconds = get_elapsed_seconds(start_time);
                 print_batches_progress_bar(b, n_total_batch_loops, elapsed_seconds);

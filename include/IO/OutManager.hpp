@@ -33,7 +33,7 @@ namespace KOps::Out {
     public:
         explicit OutputManager(const KC::UInputs &conf) : config(conf) {
             full_out_path = std::filesystem::path(config.output.out_dir) / config.output.filename_out;
-            open_out_stream(full_out_path);
+            open_paths_out_stream(full_out_path);
         }
 
         // Destructor automatically flushes and closes the file safely!
@@ -44,19 +44,19 @@ namespace KOps::Out {
         }
 
         // High-level API exposed to the runner loop
-        void save_batch(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
+        void save_paths_batch(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
             // Check the runtime configuration enum directly
             switch (config.output.format) {
                 case KI::IOFormat::BIN:
-                    write_binary_chunk(current_batch_size, BatchMem);
+                    write_paths_binary_chunk(current_batch_size, BatchMem);
                     break;
                 case KI::IOFormat::TXT:
-                    write_text_chunk(current_batch_size, BatchMem);
+                    write_paths_text_chunk(current_batch_size, BatchMem);
                     break;
             }
         }
 
-        void print_info_planned_outputs() const {
+        void print_paths_info_planned_outputs() const {
             constexpr std::string_view indent = "  ";
 
             std::cout << "\n" << indent << "========================================================\n";
@@ -97,31 +97,31 @@ namespace KOps::Out {
         std::ofstream out_stream; // The persistent hardware file pipe
         std::filesystem::path full_out_path;
 
-        void open_out_stream(const std::filesystem::path &path_out_file) {
+        void open_paths_out_stream(const std::filesystem::path &path_out_file) {
             // Open Stream for lifetime of the application
             if (config.output.format == KI::IOFormat::BIN) {
                 out_stream.open(path_out_file.string(), std::ios::out | std::ios::binary);
                 if (!out_stream.is_open()) {
                     throw std::runtime_error("Failed to open binary output file: " + path_out_file.string());
                 }
-                write_global_bin_header();
+                write_paths_global_bin_header();
             } else {
                 throw std::runtime_error("TXT OUT NOT YET IMPLEMENTED");
             }
         }
 
 
-        void write_global_text_header() {
+        void write_paths_global_text_header() {
             // Simple text-based formatting for 1D/2D debugging
         }
 
 
-        void write_text_chunk(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
+        void write_paths_text_chunk(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
             // Simple text-based formatting for 1D/2D debugging
         }
 
 
-        void write_global_bin_header() {
+        void write_paths_global_bin_header() {
             // 1. Setup Header Data
             BinHeader header;
             header.total_n_sims = config.mc.N_Paths;
@@ -134,7 +134,7 @@ namespace KOps::Out {
         }
 
 
-        void write_binary_chunk(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
+        void write_paths_binary_chunk(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
             // Calculate exactly how many bytes this specific batch occupies (N_sims x n_t_steps x sizeReal)
             // This is flexible and allows to consider cases where the batch is not complete
             const size_t bytes_to_write = static_cast<size_t>(current_batch_size) *

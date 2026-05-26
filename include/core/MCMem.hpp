@@ -8,23 +8,32 @@
 #include "./../IO/Config.hpp"
 
 
-
-
 namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
 
-    using DevView = Kokkos::View<KT::Real **>; // DefaultExecutionSpace by default
-    using HostView = DevView::host_mirror_type; // Kokkos forces the host to have the same layout as the device?
+    using DevPathsView = Kokkos::View<KT::Real **>; // DefaultExecutionSpace by default
+    using HostPathsView = DevPathsView::host_mirror_type; // Kokkos forces the host to have the same layout as the device?
+
+    using DevPayoffView  = Kokkos::View<KT::Real *>;
+    using HostPayoffView = DevPayoffView::host_mirror_type;
 
     // ------------------------------------------------------------------------
-    // STATE SDE (Requires 1 copy)
+    // STATE SDE
     // ------------------------------------------------------------------------
     class MCBatchMem {
     public:
-        DevView d_batch_view; // Device Views (GPU)
-        HostView h_batch_view; // Host Mirrors (CPU)
         int n_sims_per_batch;
+
+        // Device Views
+        DevPathsView d_batch_view;
+        DevPayoffView d_payoffs;
+
+        // Host Views
+        HostPathsView h_batch_view;
+        HostPayoffView h_payoffs;
+
+
 
         // Explicit to initialize it explicitly
         explicit MCBatchMem(const KC::UInputs &conf) : config(conf) {
@@ -39,8 +48,14 @@ namespace KOps::Engine {
         //-------------------------------------------
 
         // Full-View Synchronizers
-        void deep_copy_to_host() const { Kokkos::deep_copy(h_batch_view, d_batch_view); }
-        void deep_copy_to_device() const { Kokkos::deep_copy(d_batch_view, h_batch_view); }
+        void deep_copy_to_host() const {
+            Kokkos::deep_copy(h_batch_view, d_batch_view);
+            Kokkos::deep_copy(h_payoffs, d_payoffs);
+        }
+        void deep_copy_to_device() const {
+            Kokkos::deep_copy(d_batch_view, h_batch_view);
+            Kokkos::deep_copy(d_payoffs, h_payoffs);
+        }
 
         //-------------------------------------------
         // MEMORY INFO
@@ -52,12 +67,22 @@ namespace KOps::Engine {
         }
 
         // Get allocated memory size
-        [[nodiscard]] size_t device_memory_bytes() const {
+        [[nodiscard]] size_t device_paths_memory_bytes() const {
             // span: distance between lowest and highest address, must be contiguous memory to work
             return d_batch_view.span() * sizeof(KT::Real);
         }
 
-        [[nodiscard]] size_t host_memory_bytes() const {
+        [[nodiscard]] size_t device_payoffs_memory_bytes() const {
+            // span: distance between lowest and highest address, must be contiguous memory to work
+            return d_payoffs.span() * sizeof(KT::Real);
+        }
+
+        [[nodiscard]] size_t tot_device_memory_bytes() const {
+            // span: distance between lowest and highest address, must be contiguous memory to work
+            return device_paths_memory_bytes() + device_payoffs_memory_bytes();
+        }
+
+        [[nodiscard]] size_t host_paths_memory_bytes() const {
             // Only count host memory if it's a true separate physical allocation (GPU builds)
             if (h_batch_view.data() != nullptr && h_batch_view.data() != d_batch_view.data()) {
                 // span: distance between lowest and highest address, must be contiguous memory to work
@@ -66,12 +91,30 @@ namespace KOps::Engine {
             return 0; // 0 duplicate bytes allocated if running natively on a host CPU
         }
 
-        [[nodiscard]] double device_memory_mb() const {
-            return static_cast<double>(device_memory_bytes()) / (1024.0 * 1024.0);
+        [[nodiscard]] size_t host_payoffs_memory_bytes() const {
+            // Only count host memory if it's a true separate physical allocation (GPU builds)
+            if (h_payoffs.data() != nullptr && h_payoffs.data() != h_payoffs.data()) {
+                // span: distance between lowest and highest address, must be contiguous memory to work
+                return h_payoffs.span() * sizeof(KT::Real);
+            }
+            return 0; // 0 duplicate bytes allocated if running natively on a host CPU
+        }
+
+        [[nodiscard]] size_t tot_host_memory_bytes() const {
+            return host_paths_memory_bytes() + host_payoffs_memory_bytes();
+        }
+
+        [[nodiscard]] double bytes_to_mb(size_t n_bytes) const {
+            return static_cast<double>(n_bytes) / (1024.0 * 1024.0);
         }
 
         [[nodiscard]] double total_paths_footprint_mb() const {
             size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.N_time_steps) * sizeof(KT::Real);
+            return static_cast<double>(total_bytes) / (1024.0 * 1024.0);
+        }
+
+        [[nodiscard]] double total_payoffs_footprint_mb() const {
+            size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * sizeof(KT::Real);
             return static_cast<double>(total_bytes) / (1024.0 * 1024.0);
         }
 
@@ -157,11 +200,17 @@ namespace KOps::Engine {
             }
 
 
-            // Allocate the views using our newly stored class attributes
+            // Allocate the PATHS views using our newly stored class attributes
             std::cout << "  [Memory Allocation] Allocating reusable buffers ("
-                    << n_sims_per_batch << " x " << config.time.N_time_steps << ")..." << std::endl;
-            d_batch_view = DevView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
+                    << n_sims_per_batch << " x " << config.time.N_time_steps << ") for the paths of the MC batches..." << std::endl;
+            d_batch_view = DevPathsView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
             h_batch_view = Kokkos::create_mirror_view(d_batch_view);
+
+            // Allocate the PAYOFFS views
+            std::cout << "  [Memory Allocation] Allocating reusable buffers ("
+                   << n_sims_per_batch << ") for the payoffs of the MC batches..." << std::endl;
+            d_payoffs = DevPayoffView("gpu_payoffs_batch_buffer", n_sims_per_batch);
+            h_payoffs = Kokkos::create_mirror_view(d_payoffs);
         }
 
 

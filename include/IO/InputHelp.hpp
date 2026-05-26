@@ -24,7 +24,7 @@ namespace KOps::HELP {
                   << indent << "    Framework         : Parallel SDE Option Pricing Engine          \n"
                   << indent << "    Compute Backend   : C++ and Kokkos for Performance Portability  \n"
                   << indent << "--------------------------------------------------------------------\n"
-                  << indent << "    Author            : Zeno Geddo                                  \n"
+                  << indent << "    Author            : Zeno GEDDO                                  \n"
                   << indent << "    Version           : v0.1.0 (Beta)                               \n"
                   << indent << "    Build Year        : 2026                                        \n"
                   << indent << "    License           : ...........                                 \n"
@@ -74,6 +74,14 @@ namespace KOps::HELP {
     inline void print_example_config() {
         std::cout << "\n--- Template Configuration File ---\n"
                   << "# Copy this structure into your .yaml file, and chose one one of the implementation between '[' and ']' ...\n\n";
+
+        // ---------------------------------------------------------
+        // Option Section
+        // ---------------------------------------------------------
+        std::cout << K::Options << ":\n"
+                   << "  " << K::OptionsParams::OptionType << "  : European    # Type of the option\n"
+                   << "  " << K::OptionsParams::OptionRight << "  : Call       # (Call or Put)\n"
+                   << "  " << K::OptionsParams::StrikePrice << "  : 150        # Strike Price\n";
 
 
         // ---------------------------------------------------------
