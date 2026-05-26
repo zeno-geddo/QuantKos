@@ -5,6 +5,7 @@
 Options:
   OptionType: European
   OptionRight: Call
+  StrikePrice: 150
 
 Model:
   Heston:
@@ -16,7 +17,7 @@ Model:
     rho: -0.7     # Correlation between price and variance Brownian motions
 
 Init:
-  Price: 100.0    # Initial asset price (S0)
+  Price: 100.0    # Initial asset price (S0) (spot price)
   Variance: 0.04  # Initial variance (v0)
 
 Numerics:

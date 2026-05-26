@@ -357,6 +357,11 @@ Here is a complete example of a valid configuration file:
 # KOptions: Heston Model Configuration
 # ==========================================
 
+Options:
+  OptionType: European
+  OptionRight: Call
+  StrikePrice: 150
+
 Model:
   Heston:
     r: 0.05       # Risk-free interest rate

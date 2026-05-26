@@ -27,6 +27,7 @@ namespace KOps::Keys {
     namespace OptionsParams {
         static constexpr std::string_view OptionType = "OptionType";
         static constexpr std::string_view OptionRight = "OptionRight";
+        static constexpr std::string_view StrikePrice = "StrikePrice";
     }
 
     // ------------------------------------------------------------------------
@@ -54,7 +55,7 @@ namespace KOps::Keys {
     // Initialization Parameters (Initial Conditions)
     // ------------------------------------------------------------------------
     namespace InitParams {
-        static constexpr std::string_view Price = "Price"; // Initial Price
+        static constexpr std::string_view Price = "Price"; // Initial Price (Spot Price)
         static constexpr std::string_view Variance = "Variance"; // Initial Variance
     }
 

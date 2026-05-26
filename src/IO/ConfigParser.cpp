@@ -44,7 +44,7 @@ namespace KOps::Config {
         // 3. Option Section (Heston / Bates)
         // ---------------------------------------------------------
         if (root[str(KK::Options)]) {
-            const auto &node = root[str(KK::Model)];
+            const auto &node = root[str(KK::Options)];
 
             if (node[str(KK::OptionsParams::OptionType)]) {
                 conf.options.opt_type = KI::string_to_enum<KI::OptType>(
@@ -56,6 +56,10 @@ namespace KOps::Config {
                 conf.options.opt_right = KI::string_to_enum<KI::OptRight>(
                     node[str(KK::OptionsParams::OptionRight)].as<std::string>(),
                     str(KK::Options) + "." + str(KK::OptionsParams::OptionRight));
+            }
+
+            if (node[str(KK::OptionsParams::StrikePrice)]) {
+                conf.options.K = node[str(KK::OptionsParams::StrikePrice)].as<Real>();
             }
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Options) + "' missing.");
