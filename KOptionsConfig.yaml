@@ -2,6 +2,10 @@
 # KOptions: Heston Model Configuration
 # ==========================================
 
+Options:
+  OptionType: European
+  OptionRight: Call
+
 Model:
   Heston:
     r: 0.05       # Risk-free interest rate

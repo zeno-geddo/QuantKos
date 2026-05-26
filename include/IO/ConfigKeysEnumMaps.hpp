@@ -17,6 +17,27 @@ namespace KOps::Implemented {
         static const std::map<std::string, T> &get();
     };
 
+    // --- Specialization: OptionType ---
+    template<>
+    inline const std::map<std::string, OptType> &StrEnumMap<OptType>::get() {
+        static const std::map<std::string, OptType> m = {
+            {"European", OptType::European},
+            {"Asian", OptType::Asian},
+        };
+        return m;
+    }
+
+    // --- Specialization: OptionRight ---
+    template<>
+    inline const std::map<std::string, OptRight> &StrEnumMap<OptRight>::get() {
+        static const std::map<std::string, OptRight> m = {
+            {"Call", OptRight::Call},
+            {"Put", OptRight::Put},
+        };
+        return m;
+    }
+
+
     // --- Specialization: MathModel ---
     template<>
     inline const std::map<std::string, MathModel> &StrEnumMap<MathModel>::get() {

@@ -25,6 +25,23 @@ namespace KOps::Config {
     namespace KK = KOps::Keys;
     using Real = KOps::Types::Real;
 
+    // Substructure: Options types and tigh
+    struct OptionsConfig {
+        KI::OptType opt_type = KI::OptType::European;
+        KI::OptRight opt_right = KI::OptRight::Call;
+
+        void validate() const {
+
+        }
+
+        void print(std::string_view indent = "") const {
+            std::cout << indent << "  [" << KK::Options << "]\n";
+            std::cout << indent << "      Option Type      :     " << enum_to_string(opt_type) << "\n";
+            std::cout << indent << "      Option Right     :     " << enum_to_string(opt_right) << "\n";
+        }
+    };
+
+
     // Substructure: Physics & Model
     struct MathModelConfig {
         KI::MathModel id_model = KI::MathModel::Heston;
@@ -233,6 +250,7 @@ namespace KOps::Config {
 
     // Master Configuration
     struct UInputs {
+        OptionsConfig options;
         MathModelConfig model;
         InitConfig init;
         NumSchemeConfig scheme;
@@ -241,6 +259,8 @@ namespace KOps::Config {
         OutputConfig output;
 
         void validate() {
+            options.validate();
+            model.validate();
             model.validate();
             init.validate();
             scheme.validate();
@@ -256,6 +276,8 @@ namespace KOps::Config {
             std::cout << "\n" << indent << "========================================================\n";
             std::cout << indent << "                      MC CONFIGURATION                    \n";
             std::cout << indent << "========================================================\n";
+            options.print(indent);
+            std::cout << indent << "--------------------------------------------------------\n";
             model.print(indent);
             std::cout << indent << "--------------------------------------------------------\n";
             init.print(indent);

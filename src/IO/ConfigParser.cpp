@@ -41,6 +41,28 @@ namespace KOps::Config {
         UInputs conf;
 
         // ---------------------------------------------------------
+        // 3. Option Section (Heston / Bates)
+        // ---------------------------------------------------------
+        if (root[str(KK::Options)]) {
+            const auto &node = root[str(KK::Model)];
+
+            if (node[str(KK::OptionsParams::OptionType)]) {
+                conf.options.opt_type = KI::string_to_enum<KI::OptType>(
+                    node[str(KK::OptionsParams::OptionType)].as<std::string>(),
+                    str(KK::Options) + "." + str(KK::OptionsParams::OptionType));
+            }
+
+            if (node[str(KK::OptionsParams::OptionRight)]) {
+                conf.options.opt_right = KI::string_to_enum<KI::OptRight>(
+                    node[str(KK::OptionsParams::OptionRight)].as<std::string>(),
+                    str(KK::Options) + "." + str(KK::OptionsParams::OptionRight));
+            }
+        } else {
+            throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Options) + "' missing.");
+        }
+
+
+        // ---------------------------------------------------------
         // 3. Model Section (Heston / Bates)
         // ---------------------------------------------------------
         if (root[str(KK::Model)]) {

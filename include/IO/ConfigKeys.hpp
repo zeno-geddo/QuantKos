@@ -13,12 +13,21 @@ namespace KOps::Keys {
     // ------------------------------------------------------------------------
     // Top-Level Blocks
     // ------------------------------------------------------------------------
+    static constexpr std::string_view Options = "Options";
     static constexpr std::string_view Model = "Model";
     static constexpr std::string_view Init = "Init";
     static constexpr std::string_view Numerics = "Numerics";
     static constexpr std::string_view Time = "Time";
     static constexpr std::string_view MC = "MC";
     static constexpr std::string_view Output = "Output";
+
+    // ------------------------------------------------------------------------
+    // Option Parameters
+    // ------------------------------------------------------------------------
+    namespace OptionsParams {
+        static constexpr std::string_view OptionType = "OptionType";
+        static constexpr std::string_view OptionRight = "OptionRight";
+    }
 
     // ------------------------------------------------------------------------
     // Model Parameters
