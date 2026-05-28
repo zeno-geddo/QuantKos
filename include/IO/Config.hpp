@@ -103,7 +103,7 @@ namespace KOps::Config {
                     << indent << "    Parameters :\n"
                     << indent << "      Risk-free interest rate (" << KK::MathModelParams::r <<
                     ")                  :   " << heston.r << "\n"
-                    << indent << "      Continuous dividend yield (" << KK::MathModelParams::r <<
+                    << indent << "      Continuous dividend yield (" << KK::MathModelParams::q <<
                     ")                :   " << heston.q << "\n"
                     << indent << "      Mean reversion speed of the variance (" << KK::MathModelParams::k <<
                     ")     :   " << heston.k << "\n"
