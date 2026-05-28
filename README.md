@@ -392,6 +392,6 @@ MC:
 
 Output:
   out_dir: "outputs"
-  Name_Out_File: "KOptions.out"
+  Name_Paths_Out_File: "KOptionsPaths.paths"
   Name_Log_File: "KOptions.log"
   Format: TXT     # Available formats: TXT, BIN

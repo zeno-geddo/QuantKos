@@ -33,23 +33,22 @@ namespace KOps::Config {
 
         void validate(Real Spot_price) const {
             // Check if Strike price make sense (compared to the spot price)
-            if (K <= 0.0) throw std::runtime_error(
+            if (K <= 0.0)
+                throw std::runtime_error(
                     config_err_msg(KK::Options, KK::OptionsParams::StrikePrice, "must be positive."));
 
             Real min_meaningful_strike = Spot_price * static_cast<Real>(0.0001);
             if (K < min_meaningful_strike) {
                 throw std::runtime_error("Config Error: Strike price (K) is too close to zero. "
-                                         "Must be at least 1000 times smaller than the initial asset price (S0) to prevent numerical problems.");
+                    "Must be at least 1000 times smaller than the initial asset price (S0) to prevent numerical problems.");
             }
 
 
             Real max_meaningful_strike = Spot_price * static_cast<Real>(10000);
             if (K > max_meaningful_strike) {
                 throw std::runtime_error("Config Error: Strike price (K) is absurdly high (exceeds 10000x of S0). "
-                                         "This will likely result in zero-variance path generation and statistical breakdown.");
+                    "This will likely result in zero-variance path generation and statistical breakdown.");
             }
-
-
         }
 
         void print(std::string_view indent = "") const {
@@ -83,13 +82,29 @@ namespace KOps::Config {
         }
 
         void print(std::string_view indent = "") const {
+            // Assemble the equations
+            std::string str_math_model = "";
+            if (id_model == KI::MathModel::Heston) {
+                // Use string concatenation (+) and convert string_view to string smoothly
+                std::string ind(indent);
+                str_math_model =
+                        ind + "\t\t\t dSt = (r - q)·St·dt + √(vt)·St·dW1,t\n" +
+                        ind + "\t\t\t dvt = κ·(θ - vt)·dt + σ·√(vt)·dW2,t\n" +
+                        ind + "\t\t\t where E[dW1,t·dW2,t] = ρ·dt\n";
+            } else if (id_model == KI::MathModel::Bates) {
+                str_math_model = "... ";
+            }
+
             std::cout << indent << "  [" << KK::Model << "]\n"
                     << indent << "    ID Model       :   " << id_model << "\n"
-                    << indent << "    Parameters Heston Model :\n"
+                    << indent << "    --------------------------------------------------------\n"
+                    << str_math_model
+                    << indent << "    --------------------------------------------------------\n"
+                    << indent << "    Parameters :\n"
                     << indent << "      Risk-free interest rate (" << KK::MathModelParams::r <<
                     ")                  :   " << heston.r << "\n"
                     << indent << "      Continuous dividend yield (" << KK::MathModelParams::r <<
-                    ")                :   " << heston.r << "\n"
+                    ")                :   " << heston.q << "\n"
                     << indent << "      Mean reversion speed of the variance (" << KK::MathModelParams::k <<
                     ")     :   " << heston.k << "\n"
                     << indent << "      Mean reversion level of the variance (" << KK::MathModelParams::theta <<
@@ -232,22 +247,22 @@ namespace KOps::Config {
     // Substructure: IO & Diagnostics
     struct OutputConfig {
         std::string out_dir = "outputs";
-        std::string filename_out = "KOptions.out";
+        std::string filename_paths_out = "KOptions.paths";
         std::string filename_log = "KOptions.log";
         KI::IOFormat format = KI::IOFormat::TXT;
 
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Output << "]\n"
-                    << indent << "    Output Directory    :     " << out_dir << "\n"
-                    << indent << "    Name Output File    :     " << filename_out << "\n"
-                    << indent << "    Format Output File  :     " << enum_to_string(format) << "\n"
-                    << indent << "    Name Log File       :     " << filename_log << "\n";
+                    << indent << "    Output Directory         :     " << out_dir << "\n"
+                    << indent << "    Format Output Files      :     " << enum_to_string(format) << "\n"
+                    << indent << "    Name Output File Paths   :     " << filename_paths_out << "\n"
+                    << indent << "    Name Log File            :     " << filename_log << "\n";
         }
 
         void validate() const {
             // Check if a file path is empty
-            if (filename_out.empty()) {
-                throw std::runtime_error("[Configuration Error] Output filename ('filename_out') cannot be empty!");
+            if (filename_paths_out.empty()) {
+                // ...
             }
 
             // Create Output directories if given

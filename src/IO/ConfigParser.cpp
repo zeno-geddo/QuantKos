@@ -170,8 +170,8 @@ namespace KOps::Config {
             if (node[str(KK::OutParams::out_dir)])
                 conf.output.out_dir = node[str(KK::OutParams::out_dir)].as<std::string>();
 
-            if (node[str(KK::OutParams::Name_Out_File)])
-                conf.output.filename_out = node[str(KK::OutParams::Name_Out_File)].as<std::string>();
+            if (node[str(KK::OutParams::Name_Paths_Out_File)])
+                conf.output.filename_paths_out = node[str(KK::OutParams::Name_Paths_Out_File)].as<std::string>();
 
             if (node[str(KK::OutParams::Name_Log_File)])
                 conf.output.filename_log = node[str(KK::OutParams::Name_Log_File)].as<std::string>();

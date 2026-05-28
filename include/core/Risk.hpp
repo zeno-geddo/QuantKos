@@ -7,70 +7,104 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include "Typedefs.hpp"
+#include "./../IO/Config.hpp"
+
 namespace KOps::Engine {
+    namespace KT = KOps::Types;
+    namespace KC = KOps::Config;
 
     class RiskQuantifier {
     public:
-        // 1. Define a clean struct to hold the final computed metrics
-        struct ResultMetrics {
-            double option_price = 0.0;
-            double standard_error = 0.0;
-            double p1 = 0.0;
-            double median = 0.0;
-            double p99 = 0.0;
+        struct RiskMetrics {
+            KT::Real option_price = -999.;
+            KT::Real standard_error = -999.;
+            KT::Real p0 = -999.;
+            KT::Real p1 = -999.;
+            KT::Real p5 = -999.;
+            KT::Real p10 = -999.;
+            KT::Real p20 = -999.;
+            KT::Real p30 = -999.;
+            KT::Real p40 = -999.;
+            KT::Real median = -999.;
+            KT::Real p60 = -999.;
+            KT::Real p70 = -999.;
+            KT::Real p80 = -999.;
+            KT::Real p90 = -999.;
+            KT::Real p95 = -999.;
+            KT::Real p99 = -999.;
+            KT::Real p100 = -999.;
             bool is_computed = false; // Safety flag
         };
 
-        explicit RiskQuantifier(const int total_paths) {
-            N = static_cast<double>(total_paths);
-            all_payoffs.reserve(total_paths);
+        explicit RiskQuantifier(const KC::UInputs &conf) : config(conf) {
+            all_payoffs.reserve(conf.mc.N_Paths);
         }
 
-        // Called inside the batch loop
-        void accumulate_batch_payoffs(const HostPayoffView &h_payoffs, const int batch_size) {
-            for (int i = 0; i < batch_size; ++i) {
-                const KT::Real p = static_cast<KT::Real>(h_payoffs(i));
+        // To be called inside the batch loop
+        void accumulate_batch_payoffs(const HostPayoffView &h_payoffs, const int curr_batch_size) {
+            for (int i = 0; i < curr_batch_size; ++i) {
+                const KT::Real p = h_payoffs(i);
                 total_payoff_sum += p;
                 total_squared_payoff_sum += (p * p);
                 all_payoffs.push_back(p);
             }
         }
 
-        // 2. Pure Computation Phase (No I/O)
-        void compute_metrics(const double r, const double T_End) {
+        void compute_risks_metrics() {
+            const KT::Real N = config.mc.N_Paths;
             if (all_payoffs.empty() || N <= 0) {
                 throw std::runtime_error("Cannot compute metrics: No paths accumulated.");
             }
 
-            // Core Statistics
-            const double sample_mean = total_payoff_sum / N;
-            const double discount_factor = std::exp(-r * T_End);
+            const auto start_time = std::chrono::steady_clock::now();
 
+            // Option Price
+            const KT::Real sample_mean = total_payoff_sum / N;
+            const KT::Real discount_factor = std::exp(-config.model.heston.r * config.time.t_end);
             metrics.option_price = sample_mean * discount_factor;
 
-            const double sample_variance = (total_squared_payoff_sum / N) - (sample_mean * sample_mean);
-            // Ensure variance doesn't go slightly negative due to floating point inaccuracies
-            const double safe_variance = std::max(0.0, sample_variance);
+            // Variance Option Price
+            const KT::Real sample_variance = (total_squared_payoff_sum / N) - (sample_mean * sample_mean);
+            const KT::Real safe_variance = std::max(0.0, sample_variance); // Ensure alvays positive
             metrics.standard_error = std::sqrt(safe_variance / N) * discount_factor;
 
-            // Percentile Sorting
+            // Percentile Coptutation
             std::sort(all_payoffs.begin(), all_payoffs.end());
 
-            metrics.p1     = all_payoffs[static_cast<size_t>(N * 0.01)] * discount_factor;
+            metrics.p0 = all_payoffs[0] * discount_factor;
+            metrics.p1 = all_payoffs[static_cast<size_t>(N * 0.01)] * discount_factor;
+            metrics.p5 = all_payoffs[static_cast<size_t>(N * 0.05)] * discount_factor;
+            metrics.p10 = all_payoffs[static_cast<size_t>(N * 0.10)] * discount_factor;
+            metrics.p20 = all_payoffs[static_cast<size_t>(N * 0.20)] * discount_factor;
+            metrics.p30 = all_payoffs[static_cast<size_t>(N * 0.30)] * discount_factor;
+            metrics.p40 = all_payoffs[static_cast<size_t>(N * 0.40)] * discount_factor;
             metrics.median = all_payoffs[static_cast<size_t>(N * 0.50)] * discount_factor;
-            metrics.p99    = all_payoffs[static_cast<size_t>(N * 0.99)] * discount_factor;
+            metrics.p60 = all_payoffs[static_cast<size_t>(N * 0.60)] * discount_factor;
+            metrics.p70 = all_payoffs[static_cast<size_t>(N * 0.70)] * discount_factor;
+            metrics.p80 = all_payoffs[static_cast<size_t>(N * 0.80)] * discount_factor;
+            metrics.p90 = all_payoffs[static_cast<size_t>(N * 0.90)] * discount_factor;
+            metrics.p95 = all_payoffs[static_cast<size_t>(N * 0.95)] * discount_factor;
+            metrics.p99 = all_payoffs[static_cast<size_t>(N * 0.99)] * discount_factor;
+            metrics.p100 = all_payoffs[all_payoffs.size() - 1] * discount_factor;
 
             // Mark as successfully computed
             metrics.is_computed = true;
+
+            // Store time
+            const auto end_time = std::chrono::steady_clock::now();
+            const std::chrono::duration<double> elapsed =  end_time - start_time;
+            computation_time = elapsed.count();
         }
 
         // 3. Pure Reporting Phase (Uses the stored metrics)
         void print_report() const {
             if (!metrics.is_computed) {
-                throw std::runtime_error("Attempted to print report before computing metrics. Call compute_metrics() first.");
+                throw std::runtime_error(
+                    "Attempted to print report before computing metrics. Call compute_metrics() first.");
             }
 
-            std::cout << "\n\n  ========================================================\n";
+            std::cout << "  ========================================================\n";
             std::cout << "                     SIMULATION RESULTS\n";
             std::cout << "  ========================================================\n";
             std::cout << std::fixed << std::setprecision(6);
@@ -78,14 +112,28 @@ namespace KOps::Engine {
             std::cout << "   Statistical Std Error    :  " << metrics.standard_error << "\n";
             std::cout << "  --------------------------------------------------------\n";
             std::cout << "   [Discounted Payout Distribution Tail Metrics]\n";
-            std::cout << "   1st Percentile (Lower)   :  " << metrics.p1 << "\n";
+            std::cout << "   Min  (Lower)             :  " << metrics.p0 << "\n";
+            std::cout << "   1st  Percentile          :  " << metrics.p1 << "\n";
+            std::cout << "   5th  Percentile          :  " << metrics.p5 << "\n";
+            std::cout << "   10th Percentile          :  " << metrics.p10 << "\n";
+            std::cout << "   20th Percentile          :  " << metrics.p20 << "\n";
+            std::cout << "   30th Percentile          :  " << metrics.p30 << "\n";
+            std::cout << "   40th Percentile          :  " << metrics.p40 << "\n";
             std::cout << "   50th Percentile (Median) :  " << metrics.median << "\n";
-            std::cout << "   99th Percentile (Upper)  :  " << metrics.p99 << "\n";
+            std::cout << "   60th Percentile          :  " << metrics.p60 << "\n";
+            std::cout << "   70th Percentile          :  " << metrics.p70 << "\n";
+            std::cout << "   80th Percentile          :  " << metrics.p80 << "\n";
+            std::cout << "   90th Percentile          :  " << metrics.p90 << "\n";
+            std::cout << "   95th Percentile          :  " << metrics.p95 << "\n";
+            std::cout << "   99th Percentile          :  " << metrics.p99 << "\n";
+            std::cout << "   Max  (Upper)             :  " << metrics.p100 << "\n";
+            std::cout << "  --------------------------------------------------------\n";
+            std::cout << "   Time Spent to Compute Metrics   :  " << computation_time << "s \n";
             std::cout << "  ========================================================\n" << std::endl;
         }
 
         // 4. Getter so other parts of the program can use the raw numbers
-        [[nodiscard]] const ResultMetrics& get_metrics() const {
+        [[nodiscard]] const RiskMetrics &get_metrics() const {
             if (!metrics.is_computed) {
                 throw std::runtime_error("Metrics have not been computed yet.");
             }
@@ -93,13 +141,11 @@ namespace KOps::Engine {
         }
 
     private:
-        double N;
-        double total_payoff_sum = 0.0;
-        double total_squared_payoff_sum = 0.0;
+        const KC::UInputs config;
         std::vector<KT::Real> all_payoffs;
-
-        // The attribute holding the results
-        ResultMetrics metrics;
+        KT::Real total_payoff_sum = 0.;
+        KT::Real total_squared_payoff_sum = 0.;
+        double computation_time = 0.;
+        RiskMetrics metrics;
     };
-
 } // namespace KOps::Engine

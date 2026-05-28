@@ -135,7 +135,7 @@ namespace KOps::HELP {
         // ---------------------------------------------------------
         std::cout << K::Output << ":\n"
                   << "  " << K::OutParams::out_dir << ": \"install/outputs\"\n"
-                  << "  " << K::OutParams::Name_Out_File << ": \"KOptions.out\"\n"
+                  << "  " << K::OutParams::Name_Paths_Out_File << ": \"KOptionsPaths.paths\"\n"
                   << "  " << K::OutParams::Name_Log_File << ": \"KOptions.log\"\n"
                   << "  " << K::OutParams::Format << ":  " << get_allowed_options<KI::IOFormat>() << "\n";
     }
