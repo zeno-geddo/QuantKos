@@ -41,7 +41,7 @@
 
 namespace KOps::Engine {
     namespace KI = KOps::Implemented;
-    namespace KC = KOps::Config;
+
     namespace KT = KOps::Types;
     namespace KO = KOps::Out;
 

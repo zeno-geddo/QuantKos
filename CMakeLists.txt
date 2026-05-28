@@ -119,12 +119,11 @@ add_subdirectory(src)
 # 6. Build the App and Tests (Consumers)
 # -----------------------------------------------------------------------------
 add_subdirectory(app)
-
-# if(LABES_ENABLE_TESTS)
-# enable_testing()
-# add_subdirectory(tests)
-# message(STATUS "Activated build in unit tests")
-# endif()
+if(KOPS_ENABLE_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+ message(STATUS "Activated build in unit tests")
+endif()
 
 
 # -----------------------------------------------------------------------------
