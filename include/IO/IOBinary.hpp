@@ -143,6 +143,87 @@ namespace KOps::IO::Binary {
     // ========================================================================
     // THE BINARY READER RESPONSIBLE
     // ========================================================================
-    class BinReader {
+    class BinReader : public KIO::ReaderBlueprint {
+    public:
+        explicit BinReader(const Config::UInputs &conf) : config(conf) {
+            if (!config.output.filename_paths_out.empty()) {
+                load_header_paths_file();
+            }
+        }
+
+        std::vector<KT::Real> read_prices_at_target_time(double current_time) override {
+            if (!inp_stream.is_open()) {
+                throw std::runtime_error("[BinReader Error] Cannot read prices, file stream is closed.");
+            }
+
+            // Map continuous time to discrete index (a row major layour is assumed)
+            int target_col_idx = static_cast<int>(std::round(current_time / bin_header.dt)) - 1;
+            // Check That required time is in time domain
+            if (target_col_idx < 0 || target_col_idx >= bin_header.n_time_steps) {
+                throw std::runtime_error("[BinReader Error] Requested time " + std::to_string(current_time) +
+                                         " is outside the simulated time grid bounds.");
+            }
+            // Check that the required time is in the time grid and do not required interpolation
+            double actual_grid_time = (target_col_idx + 1) * bin_header.dt;
+            if (std::abs(current_time - actual_grid_time) > 1e-10) {
+                throw std::runtime_error("Requested time  " + std::to_string(current_time) +
+                                         " does not align perfectly with the discrete simulation grid (dt = " +
+                                         std::to_string(bin_header.dt) + ")."
+                );
+            }
+
+            // Allocate the vector containing the prices at target times
+            std::vector<KT::Real> target_prices(bin_header.total_n_sims);
+
+            // Calculate the memory strides
+            std::streampos start_offset_bytes = sizeof(BinHeader) + (target_col_idx * sizeof(KT::Real)); //Absolute location in a file from beginning
+            std::streamoff row_stride_bytes = bin_header.n_time_steps * sizeof(KT::Real); // jumping of a simulation (relative distance)
+
+            // Read Prices
+            for (int i = 0; i < bin_header.total_n_sims; ++i) {
+                // Calculate absolute byte position for this specific element by adding a relative distance (streamoff) to the starting point
+                std::streampos element_pos = start_offset_bytes + (static_cast<std::streamoff>(i) * row_stride_bytes);
+                // Jump to the exact byte location on the disk (Start measuring the element position from beginning of the file)
+                inp_stream.seekg(element_pos, std::ios::beg);
+                // Read exactly one floating point number into our vector
+                inp_stream.read(reinterpret_cast<char*>(&target_prices[i]), sizeof(KT::Real));
+            }
+
+            // Clear any EOF flags that might have triggered, allowing future reads
+            inp_stream.clear();
+
+            return target_prices;
+
+        }
+
+        ~BinReader() override {
+            if (inp_stream.is_open()) inp_stream.close();
+        }
+
+    private:
+        KC::UInputs config;
+        BinHeader bin_header;
+        std::ifstream inp_stream;
+
+        void load_header_paths_file() {
+            // Open File Paths
+            auto file_out_paths = std::filesystem::path(config.output.out_dir) / config.output.filename_paths_out;
+            inp_stream.open(file_out_paths.string(), std::ios::in | std::ios::binary);
+            if (!inp_stream.is_open()) {
+                throw std::runtime_error("[BinReader Error] Failed to open file: " + file_out_paths.string());
+            }
+            // Read header
+            inp_stream.read(reinterpret_cast<char *>(&bin_header), sizeof(BinHeader));
+            // Check if heaser is ok
+            if (bin_header.file_key[0] != 'K' || bin_header.file_key[1] != 'O' ||
+                bin_header.file_key[2] != 'P' || bin_header.file_key[3] != 'T') {
+                throw std::runtime_error(
+                    "[BinReader Error] Magic key mismatch. File is corrupted or not a KOptions.paths file.");
+            }
+            if (bin_header.byte_precision != sizeof(KT::Real)) {
+                throw std::runtime_error(
+                    "[BinReader Error] Build precision mismatch. Data cannot safely map into target system precision.");
+            }
+        }
     };
 }

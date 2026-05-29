@@ -1,16 +1,17 @@
-
 #include <map>
 #include <string>
 #include <cmath>
 
 #include "../IO/Config.hpp"
 #include "../core/Distpatcher.hpp"
+#include "../IO/IOBinary.hpp"
 
 namespace KOps::Tests::NoNoise {
     namespace KC = KOps::Config;
     namespace KE = KOps::Engine;
     namespace KT = KOps::Types;
     namespace KI = KOps::Implemented;
+    namespace KB = KOps::IO::Binary;
 
     inline double get_exact_solution(const KOps::Config::UInputs &conf) {
         // Expected: S_T = S_0 * exp((r - q) * T)
@@ -75,8 +76,8 @@ namespace KOps::Tests::NoNoise {
             config.output.filename_paths_out = name_out_file;
 
             // Check and print params
-            std::cout << indent << "[   INFO   ] MODEL   : " << KI::enum_to_string(config.model.id_model) ;
-            std::cout << indent << "[   INFO   ] SCHEME  : " << KI::enum_to_string(config.scheme.id_scheme) ;
+            std::cout << indent << "[   INFO   ] MODEL   : " << KI::enum_to_string(config.model.id_model);
+            std::cout << indent << "[   INFO   ] SCHEME  : " << KI::enum_to_string(config.scheme.id_scheme);
 
             std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
             config.validate();
@@ -90,14 +91,35 @@ namespace KOps::Tests::NoNoise {
 
             // Load the data Saved
             std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
+            KB::BinReader binReader(config);
+            std::vector<KT::Real> simulated_prices = binReader.read_prices_at_target_time(config.time.t_end);
 
             // Check if last Price at T_Final is correct
-            test_passed = true;
+            for (size_t i = 0; i < simulated_prices.size(); ++i) {
+                // We use 1e-5 to account for floating point drift during 365 compounded steps
+                if (std::abs(simulated_prices[i] - expected_S_T) > 1e-8) {
+                    std::cerr << indent << "[  FAILED  ] Path " << i << " deviated! Expected: "
+                            << expected_S_T << ", Got: " << simulated_prices[i] << "\n";
+                    test_passed = false;
+                    break;
+                }
+                std::cout << indent << "[   PASSED   ] Path " << i <<
+                        "(Simulated : " << simulated_prices[i] << ", Expected : " << expected_S_T << ")!\n";
+            }
         }
 
 
+        // Clean up out binary file generated
+        std::filesystem::path file_out_paths = std::filesystem::path(config.output.out_dir) / config.output.
+                                               filename_paths_out;
+        if (std::filesystem::exists(file_out_paths)) {
+            std::filesystem::remove(file_out_paths);
+        }
+
+        if (test_passed) {
+            std::cout << indent << "[   PASSED   ] All terminal prices match the theoretical drift.\n";
+        }
         std::cout << "====================================================================\n" << std::endl;
         return test_passed;
     }
 }
-
