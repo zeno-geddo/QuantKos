@@ -113,9 +113,11 @@ namespace KOps::Tests::RNG {
             std::cout << indent << "[  PASSED  ] Standard Normal Distribution Check \n";
         }
 
+
+        std::cout << indent << "====================================================================\n" << std::endl;
+
         return test_passed;
 
-        std::cout << "====================================================================\n" << std::endl;
     }
 }
 

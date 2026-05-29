@@ -51,9 +51,9 @@ namespace KOps::Tests::NoNoise {
 
         std::string_view indent{"   "};
         std::cout << "\n\n" << indent << "====================================================================\n"
-                << indent << "          TEST 2 : Zero Variance Forward Growth Check             \n"
+                << indent << "          TEST 3 : Zero Variance Forward Growth Check             \n"
                 << indent << "====================================================================\n";
-        std::cout << indent << "\n\n[   RUN   ] Zero Variance Forward Growth Check\n";
+        std::cout << indent << "[   RUN   ] Zero Variance Forward Growth Check\n";
 
         bool test_passed = true;
         auto config = getDefaultConfig();
@@ -76,9 +76,10 @@ namespace KOps::Tests::NoNoise {
             config.output.filename_paths_out = name_out_file;
 
             // Check and print params
-            std::cout << indent << "[   INFO   ] MODEL   : " << KI::enum_to_string(config.model.id_model);
-            std::cout << indent << "[   INFO   ] SCHEME  : " << KI::enum_to_string(config.scheme.id_scheme);
+            std::cout << indent << "[   INFO   ] MODEL   : " << KI::enum_to_string(config.model.id_model) << "\n";
+            std::cout << indent << "[   INFO   ] SCHEME  : " << KI::enum_to_string(config.scheme.id_scheme) << "\n";
 
+            std::cout  << indent << ">>> Calling the solver ...\n";
             std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
             config.validate();
             config.print_summary();
@@ -91,6 +92,7 @@ namespace KOps::Tests::NoNoise {
 
             // Load the data Saved
             std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
+            std::cout  << indent << ">>> Go back to the tester ...\n";
             KB::BinReader binReader(config);
             std::vector<KT::Real> simulated_prices = binReader.read_prices_at_target_time(config.time.t_end);
 
@@ -104,7 +106,7 @@ namespace KOps::Tests::NoNoise {
                     break;
                 }
                 std::cout << indent << "[   PASSED   ] Path " << i <<
-                        "(Simulated : " << simulated_prices[i] << ", Expected : " << expected_S_T << ")!\n";
+                        " (Simulated : " << simulated_prices[i] << ", Expected : " << expected_S_T << ")\n";
             }
         }
 
@@ -119,7 +121,7 @@ namespace KOps::Tests::NoNoise {
         if (test_passed) {
             std::cout << indent << "[   PASSED   ] All terminal prices match the theoretical drift.\n";
         }
-        std::cout << "====================================================================\n" << std::endl;
+        std::cout << indent << "====================================================================\n" << std::endl;
         return test_passed;
     }
 }
