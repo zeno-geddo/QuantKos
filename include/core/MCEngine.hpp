@@ -43,7 +43,7 @@ namespace KOps::Engine {
     namespace KI = KOps::Implemented;
 
     namespace KT = KOps::Types;
-    namespace KO = KOps::Out;
+    namespace KIO = KOps::IO;
 
 
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
@@ -64,7 +64,7 @@ namespace KOps::Engine {
             MCBatchMem BatchMem(config); // Handles the Memory
             RNGManager RNGen(config); // Handles the Random number (Must initialize here and not in the batch loop!!!)
             SDESolver<ModelPolicy, SchemePolicy, OptType, OptRight> Solver(config); // Handles the Temporal integration
-            KO::OutputManager OWriter(config); // Handles the outputs
+            KIO::OutputManager OWriter(config); // Handles the outputs
 
             // 2. Print Pre-Execution Diagnostics
             print_info_planned_mc(BatchMem);
@@ -115,7 +115,7 @@ namespace KOps::Engine {
         void run_all_mc_batches(MCBatchMem &BatchMem,
                                 const RNGManager &RNGen,
                                 const SDESolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
-                                KO::OutputManager &OWriter) const {
+                                KIO::OutputManager &OWriter) const {
             const int full_batch_size = BatchMem.n_sims_per_batch;
             const int n_full_batches = BatchMem.n_full_batches();
             const int n_sims_left_over = BatchMem.n_sims_left_over_after_full_batches();

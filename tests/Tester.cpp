@@ -1,26 +1,25 @@
 #include <iostream>
 #include <Kokkos_Core.hpp>
 
-#include "./RNGenTest.hpp"
-#include "./PutCallParityTest.hpp"
-#include "./NoNoiseTest.hpp"
+#include "./../include/tests/RNGenTest.hpp"
+#include "./../include/tests/PutCallParityTest.hpp"
+#include "./../include/tests/NoNoiseTest.hpp"
 
 int main(int argc, char *argv[]) {
-    // 1. Turn on the hardware ONCE
     Kokkos::initialize(argc, argv);
-
     int failed_tests = 0;
+    {
+        namespace KTE = KOps::Tests;
 
-    // 2. Run the math (The GPU is active and ready for all of them)
-    if (!KOps::Tests::RNG::run_test()) {
-        failed_tests++;
+        if (!KTE::RNG::run_test()) {
+            failed_tests++;
+        }
+
+        if (!KTE::NoNoise::run_test()) {
+            failed_tests++;
+        }
+
     }
-
-    if (!KOps::Tests::NoNoise::run_tests()) {
-        failed_tests++;
-    }
-
-    // 3. Turn off the hardware ONCE
     Kokkos::finalize();
 
     return failed_tests == 0 ? 0 : 1;

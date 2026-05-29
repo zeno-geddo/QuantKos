@@ -1,185 +1,227 @@
 #pragma once
 
-#include <fstream>
-#include <string>
+#include <memory>
 #include <stdexcept>
-#include <filesystem>
 
 #include <Kokkos_Core.hpp>
 
 #include "./Config.hpp"
 #include "./ConfigEnums.hpp"
+#include "./IOBinary.hpp"
 #include "./../core/MCMem.hpp"
 #include "./../core/Typedefs.hpp"
 
-namespace KOps::Out {
+namespace KOps::IO {
     namespace KC = KOps::Config;
     namespace KI = KOps::Implemented;
     namespace KT = KOps::Types;
     namespace KE = KOps::Engine;
-
-
-    struct BinHeader {
-        const char file_key[4] = {'K', 'O', 'P', 'T'};
-        int version = 1;
-        int byte_precision = sizeof(KT::Real);
-        int total_n_sims;
-        int n_time_steps;
-        KT::Real dt; // Allows to reconstruct the grid (works only for static time grid)
-    };
+    namespace KB = KOps::IO::Binary;
 
 
     class OutputManager {
     public:
-        explicit OutputManager(const KC::UInputs &conf) : config(conf) {
-            if (!config.output.filename_paths_out.empty()) {
-                full_paths_out_path = std::filesystem::path(config.output.out_dir) / config.output.filename_paths_out;
-                open_paths_out_stream(full_paths_out_path);
+        explicit OutputManager(const Config::UInputs &conf) {
+            // If the user didn't specify an output file, just leave active_writer as a nullptr.
+            if (conf.output.filename_paths_out.empty()) {
+                return;
+            }
+
+            /// Route to the correct specific writer based on the enum
+            switch (conf.output.format) {
+                case Implemented::IOFormat::BIN:
+                    active_writer = std::make_unique<KB::BinWriter>(conf);
+                    break;
+                case Implemented::IOFormat::TXT:
+                    // active_writer = std::make_unique<Text::TxtWriter>(conf);
+                    throw std::runtime_error("TXT writer not yet implemented.");
+                    break;
+                default:
+                    throw std::runtime_error("Unknown output format requested.");
             }
         }
 
-        // Destructor automatically flushes and closes the file safely!
-        ~OutputManager() {
-            if (out_paths_stream.is_open()) {
-                out_paths_stream.close();
-            }
-        }
-
-        // High-level API exposed to the runner loop
-        void save_paths_batch_if_needed(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
-            // Check the runtime configuration enum directly
-            switch (config.output.format) {
-                case KI::IOFormat::BIN:
-                    if (!config.output.filename_paths_out.empty()) {
-                        write_paths_binary_chunk(current_batch_size, BatchMem);
-                    }
-                    break;
-                case KI::IOFormat::TXT:
-                    if (!config.output.filename_paths_out.empty()) {
-                        write_paths_text_chunk(current_batch_size, BatchMem);
-                    }
-                    break;
+        void save_paths_batch_if_needed(const int current_batch_size, const Engine::MCBatchMem &BatchMem) {
+            if (active_writer) {
+                active_writer->save_paths_batch_if_needed(current_batch_size, BatchMem);
             }
         }
 
         void print_paths_info_planned_outputs() const {
-            constexpr std::string_view indent = "  ";
-
-            std::cout << "\n" << indent << "========================================================\n";
-            std::cout << indent << "                   I/O OUTPUT MANAGER                 \n";
-            std::cout << indent << "========================================================\n";
-
-            if (!config.output.filename_paths_out.empty()) {
-                std::cout << indent << " [Export Configuration]\n";
-                std::cout << indent << "   Target File Path     :  " << full_paths_out_path << "\n";
-
-                if (config.output.format == KI::IOFormat::BIN) {
-                    std::cout << indent << "   Export Format        :  High-Performance Binary\n";
-                    std::cout << indent << "--------------------------------------------------------\n";
-                    std::cout << indent << " [Binary File Layout Structure]\n";
-                    std::cout << indent << "   |-- GLOBAL HEADER (" << sizeof(BinHeader) << " Bytes)\n";
-                    std::cout << indent << "   |   |-- Magic Key    : 'KOPT' (4 bytes)\n";
-                    std::cout << indent << "   |   |-- Version      : 1 (int32)\n";
-                    std::cout << indent << "   |   |-- Precision    : " << sizeof(KT::Real) <<
-                            " bytes per value (int32)\n";
-                    std::cout << indent << "   |   |-- Total Paths  : " << config.mc.N_Paths << " (int32)\n";
-                    std::cout << indent << "   |   |-- Time Steps   : " << config.time.N_time_steps << " (int32)\n";
-                    std::cout << indent << "   |   |-- Time dt      : " << config.time.dt << " (float64)\n";
-                    std::cout << indent << "   |\n";
-                    std::cout << indent << "   |-- MATRIX PAYLOAD\n";
-                    std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.
-                            time.N_time_steps << " cols\n";
-                    std::cout << indent << "       |-- Ordering     : Row-Major (C-Style Sequential)\n";
-                    std::cout << indent << "       |-- Contents     : Price time series\n";
-                } else {
-                    std::cout << indent << "   Export Format        :  Standard Text Debugging\n";
-                    std::cout << indent << "--------------------------------------------------------\n";
-                    std::cout << indent << " [Text File Layout Structure]\n";
-                    std::cout << indent << "   |-- MATRIX PAYLOAD\n";
-                    std::cout << indent << "       |-- Format       : Delimited row values\n";
-                    std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.
-                            time.N_time_steps << " cols\n";
-                }
+            if (active_writer) {
+                active_writer->print_planned_outputs_summary();
             } else {
-                std::cout << indent << "  No outputs files will be saved since filenames were not specified.\n";
+                std::cout << "  No outputs files will be saved since filenames were not specified.\n";
             }
-            std::cout << indent << "========================================================\n" << std::endl;
         }
 
     private:
-        const KC::UInputs config;
-        std::ofstream out_paths_stream; // The persistent hardware file pipe
-        std::filesystem::path full_paths_out_path;
-
-        void open_paths_out_stream(const std::filesystem::path &path_out_file) {
-            // Open Stream for lifetime of the application
-            if (config.output.format == KI::IOFormat::BIN) {
-                out_paths_stream.open(path_out_file.string(), std::ios::out | std::ios::binary);
-                if (!out_paths_stream.is_open()) {
-                    throw std::runtime_error("Failed to open binary output file: " + path_out_file.string());
-                }
-                write_paths_global_bin_header();
-            } else {
-                throw std::runtime_error("TXT OUT NOT YET IMPLEMENTED !!! ");
-            }
-        }
-
-
-        void write_paths_global_text_header() {
-            // Simple text-based formatting for 1D/2D debugging
-        }
-
-
-        void write_paths_text_chunk(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
-            // Simple text-based formatting for 1D/2D debugging
-        }
-
-
-        void write_paths_global_bin_header() {
-            // 1. Setup Header Data
-            BinHeader header;
-            header.total_n_sims = config.mc.N_Paths;
-            header.n_time_steps = config.time.N_time_steps;
-            header.dt = config.time.dt;
-
-            // 2. Dump Header Struct directly to disk
-            // reinterpret_cast forces the compiler to treat the memory address as an array of raw, unsigned bytes (const char*).
-            out_paths_stream.write(reinterpret_cast<const char *>(&header), sizeof(BinHeader));
-        }
-
-
-        void write_paths_binary_chunk(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
-            // Calculate exactly how many bytes this specific batch occupies (N_sims x n_t_steps x sizeReal)
-            // This is flexible and allows to consider cases where the batch is not complete
-            const size_t bytes_to_write = static_cast<size_t>(current_batch_size) *
-                                          static_cast<size_t>(config.time.N_time_steps) * sizeof(KT::Real);
-
-            // Fetch the raw C-style pointer from the Kokkos Host View
-            const KT::Real *raw_data_ptr = BatchMem.h_batch_view.data();
-
-            // PATH A: The Fast Track (Only runs if the layout is physically contiguous)
-            if (BatchMem.is_host_contiguous() && BatchMem.is_host_row_major()) {
-                // Dump it to the SSD in one hardware instruction
-                out_paths_stream.write(reinterpret_cast<const char *>(raw_data_ptr), bytes_to_write);
-            }
-
-            // PATH B: The Universal Buffered Fallback
-            else {
-                // 1. Allocate a contiguous memory buffer for exactly one row
-                std::vector<KT::Real> row_buffer(config.time.N_time_steps);
-                const size_t row_bytes = config.time.N_time_steps * sizeof(KT::Real);
-
-                // Loop through row-by-row
-                for (int i = 0; i < current_batch_size; ++i) {
-                    // 2. Read the scattered RAM data (whatever layout it is) into our clean buffer
-                    for (size_t j = 0; j < config.time.N_time_steps; ++j) {
-                        row_buffer[j] = BatchMem.h_batch_view(i, j);
-                    }
-
-                    // 3. Dump the ENTIRE ROW to the SSD in exactly one hardware instruction
-                    out_paths_stream.write(reinterpret_cast<const char *>(row_buffer.data()), row_bytes);
-                }
-            }
-        }
+        // Polymorphic pointer that can hold ANY writer (BIN, TXT, etc.)
+        std::unique_ptr<WriterBlueprint> active_writer;
     };
+
+
+    // struct BinHeader {
+    //     const char file_key[4] = {'K', 'O', 'P', 'T'};
+    //     int version = 1;
+    //     int byte_precision = sizeof(KT::Real);
+    //     int total_n_sims;
+    //     int n_time_steps;
+    //     KT::Real dt; // Allows to reconstruct the grid (works only for static time grid)
+    // };
+    //
+    //
+    // class OutputManager {
+    // public:
+    //     explicit OutputManager(const KC::UInputs &conf) : config(conf) {
+    //         if (!config.output.filename_paths_out.empty()) {
+    //             full_paths_out_path = std::filesystem::path(config.output.out_dir) / config.output.filename_paths_out;
+    //             open_paths_out_stream(full_paths_out_path);
+    //         }
+    //     }
+    //
+    //     // Destructor automatically flushes and closes the file safely!
+    //     ~OutputManager() {
+    //         if (out_paths_stream.is_open()) {
+    //             out_paths_stream.close();
+    //         }
+    //     }
+    //
+    //     // High-level API exposed to the runner loop
+    //     void save_paths_batch_if_needed(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
+    //         // Check the runtime configuration enum directly
+    //         switch (config.output.format) {
+    //             case KI::IOFormat::BIN:
+    //                 if (!config.output.filename_paths_out.empty()) {
+    //                     write_paths_binary_chunk(current_batch_size, BatchMem);
+    //                 }
+    //                 break;
+    //             case KI::IOFormat::TXT:
+    //                 if (!config.output.filename_paths_out.empty()) {
+    //                     write_paths_text_chunk(current_batch_size, BatchMem);
+    //                 }
+    //                 break;
+    //         }
+    //     }
+    //
+    //     void print_paths_info_planned_outputs() const {
+    //         constexpr std::string_view indent = "  ";
+    //
+    //         std::cout << "\n" << indent << "========================================================\n";
+    //         std::cout << indent << "                   I/O OUTPUT MANAGER                 \n";
+    //         std::cout << indent << "========================================================\n";
+    //
+    //         if (!config.output.filename_paths_out.empty()) {
+    //             std::cout << indent << " [Export Configuration]\n";
+    //             std::cout << indent << "   Target File Path     :  " << full_paths_out_path << "\n";
+    //
+    //             if (config.output.format == KI::IOFormat::BIN) {
+    //                 std::cout << indent << "   Export Format        :  High-Performance Binary\n";
+    //                 std::cout << indent << "--------------------------------------------------------\n";
+    //                 std::cout << indent << " [Binary File Layout Structure]\n";
+    //                 std::cout << indent << "   |-- GLOBAL HEADER (" << sizeof(BinHeader) << " Bytes)\n";
+    //                 std::cout << indent << "   |   |-- Magic Key    : 'KOPT' (4 bytes)\n";
+    //                 std::cout << indent << "   |   |-- Version      : 1 (int32)\n";
+    //                 std::cout << indent << "   |   |-- Precision    : " << sizeof(KT::Real) <<
+    //                         " bytes per value (int32)\n";
+    //                 std::cout << indent << "   |   |-- Total Paths  : " << config.mc.N_Paths << " (int32)\n";
+    //                 std::cout << indent << "   |   |-- Time Steps   : " << config.time.N_time_steps << " (int32)\n";
+    //                 std::cout << indent << "   |   |-- Time dt      : " << config.time.dt << " (float64)\n";
+    //                 std::cout << indent << "   |\n";
+    //                 std::cout << indent << "   |-- MATRIX PAYLOAD\n";
+    //                 std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.
+    //                         time.N_time_steps << " cols\n";
+    //                 std::cout << indent << "       |-- Ordering     : Row-Major (C-Style Sequential)\n";
+    //                 std::cout << indent << "       |-- Contents     : Price time series\n";
+    //             } else {
+    //                 std::cout << indent << "   Export Format        :  Standard Text Debugging\n";
+    //                 std::cout << indent << "--------------------------------------------------------\n";
+    //                 std::cout << indent << " [Text File Layout Structure]\n";
+    //                 std::cout << indent << "   |-- MATRIX PAYLOAD\n";
+    //                 std::cout << indent << "       |-- Format       : Delimited row values\n";
+    //                 std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.
+    //                         time.N_time_steps << " cols\n";
+    //             }
+    //         } else {
+    //             std::cout << indent << "  No outputs files will be saved since filenames were not specified.\n";
+    //         }
+    //         std::cout << indent << "========================================================\n" << std::endl;
+    //     }
+    //
+    // private:
+    //     const KC::UInputs config;
+    //     std::ofstream out_paths_stream; // The persistent hardware file pipe
+    //     std::filesystem::path full_paths_out_path;
+    //
+    //     void open_paths_out_stream(const std::filesystem::path &path_out_file) {
+    //         // Open Stream for lifetime of the application
+    //         if (config.output.format == KI::IOFormat::BIN) {
+    //             out_paths_stream.open(path_out_file.string(), std::ios::out | std::ios::binary);
+    //             if (!out_paths_stream.is_open()) {
+    //                 throw std::runtime_error("Failed to open binary output file: " + path_out_file.string());
+    //             }
+    //             write_paths_global_bin_header();
+    //         } else {
+    //             throw std::runtime_error("TXT OUT NOT YET IMPLEMENTED !!! ");
+    //         }
+    //     }
+    //
+    //
+    //     void write_paths_global_text_header() {
+    //         // Simple text-based formatting for 1D/2D debugging
+    //     }
+    //
+    //
+    //     void write_paths_text_chunk(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
+    //         // Simple text-based formatting for 1D/2D debugging
+    //     }
+    //
+    //
+    //     void write_paths_global_bin_header() {
+    //         // 1. Setup Header Data
+    //         BinHeader header;
+    //         header.total_n_sims = config.mc.N_Paths;
+    //         header.n_time_steps = config.time.N_time_steps;
+    //         header.dt = config.time.dt;
+    //
+    //         // 2. Dump Header Struct directly to disk
+    //         // reinterpret_cast forces the compiler to treat the memory address as an array of raw, unsigned bytes (const char*).
+    //         out_paths_stream.write(reinterpret_cast<const char *>(&header), sizeof(BinHeader));
+    //     }
+    //
+    //
+    //     void write_paths_binary_chunk(const int current_batch_size, const KE::MCBatchMem &BatchMem) {
+    //         // Calculate exactly how many bytes this specific batch occupies (N_sims x n_t_steps x sizeReal)
+    //         // This is flexible and allows to consider cases where the batch is not complete
+    //         const size_t bytes_to_write = static_cast<size_t>(current_batch_size) *
+    //                                       static_cast<size_t>(config.time.N_time_steps) * sizeof(KT::Real);
+    //
+    //         // Fetch the raw C-style pointer from the Kokkos Host View
+    //         const KT::Real *raw_data_ptr = BatchMem.h_batch_view.data();
+    //
+    //         // PATH A: The Fast Track (Only runs if the layout is physically contiguous)
+    //         if (BatchMem.is_host_contiguous() && BatchMem.is_host_row_major()) {
+    //             // Dump it to the SSD in one hardware instruction
+    //             out_paths_stream.write(reinterpret_cast<const char *>(raw_data_ptr), bytes_to_write);
+    //         }
+    //
+    //         // PATH B: The Universal Buffered Fallback
+    //         else {
+    //             // 1. Allocate a contiguous memory buffer for exactly one row
+    //             std::vector<KT::Real> row_buffer(config.time.N_time_steps);
+    //             const size_t row_bytes = config.time.N_time_steps * sizeof(KT::Real);
+    //
+    //             // Loop through row-by-row
+    //             for (int i = 0; i < current_batch_size; ++i) {
+    //                 // 2. Read the scattered RAM data (whatever layout it is) into our clean buffer
+    //                 for (size_t j = 0; j < config.time.N_time_steps; ++j) {
+    //                     row_buffer[j] = BatchMem.h_batch_view(i, j);
+    //                 }
+    //
+    //                 // 3. Dump the ENTIRE ROW to the SSD in exactly one hardware instruction
+    //                 out_paths_stream.write(reinterpret_cast<const char *>(row_buffer.data()), row_bytes);
+    //             }
+    //         }
+    //     }
+    // };
 }
