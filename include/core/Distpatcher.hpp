@@ -17,10 +17,11 @@ namespace KOps::Engine {
         explicit MCDispatcher(const KC::UInputs &conf) : config(conf) {
         }
 
-        void launch_montecarlo() {
+        MCResults launch_montecarlo() {
             std::cout << "\n>>> Starting Monte Carlo Simulation...\n" << std::endl;
-            dispatch_model();
+            MCResults results = dispatch_model();
             std::cout << "\n>>> Simulation completed successfully!\n" << std::endl;
+            return results;
         }
 
     private:
@@ -29,14 +30,12 @@ namespace KOps::Engine {
         // ====================================================================
         // LEVEL 1: Dispatch the SDE Model (The Entry Point)
         // ====================================================================
-        void dispatch_model() {
+        MCResults dispatch_model() {
             switch (config.model.id_model) {
                 case KI::MathModel::Heston:
-                    dispatch_scheme<KI::MathModel::Heston>();
-                    break;
+                    return dispatch_scheme<KI::MathModel::Heston>();
                 case KI::MathModel::Bates:
-                    dispatch_scheme<KI::MathModel::Bates>();
-                    break;
+                    return dispatch_scheme<KI::MathModel::Bates>();
                 default:
                     throw std::runtime_error("Unknown SDE Model");
             }
@@ -46,17 +45,14 @@ namespace KOps::Engine {
         // LEVEL 2: Dispatch the Discretization Scheme
         // ====================================================================
         template<KI::MathModel ModelPolicy>
-        void dispatch_scheme() {
+        MCResults dispatch_scheme() {
             switch (config.scheme.id_scheme) {
                 case KI::NumScheme::Euler:
-                    dispatch_opt_style<ModelPolicy, KI::NumScheme::Euler>();
-                    break;
+                    return dispatch_opt_style<ModelPolicy, KI::NumScheme::Euler>();
                 case KI::NumScheme::Milstein:
-                    dispatch_opt_style<ModelPolicy, KI::NumScheme::Milstein>();
-                    break;
+                    return dispatch_opt_style<ModelPolicy, KI::NumScheme::Milstein>();
                 case KI::NumScheme::AndersonQE:
-                    dispatch_opt_style<ModelPolicy, KI::NumScheme::AndersonQE>();
-                    break;
+                    return dispatch_opt_style<ModelPolicy, KI::NumScheme::AndersonQE>();
                 default:
                     throw std::runtime_error("Unknown Discretization Scheme");
             }
@@ -66,14 +62,12 @@ namespace KOps::Engine {
         // LEVEL 3: Dispatch the Option Style (European, Asian, etc.)
         // ====================================================================
         template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
-        void dispatch_opt_style() {
+        MCResults dispatch_opt_style() {
             switch (config.options.opt_type) {
                 case KI::OptType::European:
-                    dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::European>();
-                    break;
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::European>();
                 case KI::OptType::Asian:
-                    dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::Asian>();
-                    break;
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::Asian>();
                 default:
                     throw std::runtime_error("Unknown Option Style");
             }
@@ -85,14 +79,12 @@ namespace KOps::Engine {
         // All templates are now resolved. Instantiate the actual MCRunner here.
         // ====================================================================
         template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType>
-        void dispatch_opt_right() {
+        MCResults dispatch_opt_right() {
             switch (config.options.opt_right) {
                 case KI::OptRight::Call:
-                    MCRunner<ModelPolicy, SchemePolicy, OptType, KI::OptRight::Call>(config).run_mc_simulation();
-                    break;
+                    return MCRunner<ModelPolicy, SchemePolicy, OptType, KI::OptRight::Call>(config).run_mc_simulation();
                 case KI::OptRight::Put:
-                    MCRunner<ModelPolicy, SchemePolicy, OptType, KI::OptRight::Put>(config).run_mc_simulation();
-                    break;
+                    return MCRunner<ModelPolicy, SchemePolicy, OptType, KI::OptRight::Put>(config).run_mc_simulation();
                 default:
                     throw std::runtime_error("Unknown Option Right");
             }

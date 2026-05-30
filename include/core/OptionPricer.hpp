@@ -14,9 +14,9 @@ namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
 
-    class RiskQuantifier {
+    class OptionPricer {
     public:
-        struct RiskMetrics {
+        struct Results {
             KT::Real option_price = -999.;
             KT::Real standard_error = -999.;
             KT::Real p0 = -999.;
@@ -37,7 +37,7 @@ namespace KOps::Engine {
             bool is_computed = false; // Safety flag
         };
 
-        explicit RiskQuantifier(const KC::UInputs &conf) : config(conf) {
+        explicit OptionPricer(const KC::UInputs &conf) : config(conf) {
             all_payoffs.reserve(conf.mc.N_Paths);
         }
 
@@ -51,7 +51,7 @@ namespace KOps::Engine {
             }
         }
 
-        void compute_risks_metrics() {
+        void evaluate_option_price() {
             const KT::Real N = config.mc.N_Paths;
             if (all_payoffs.empty() || N <= 0) {
                 throw std::runtime_error("Cannot compute metrics: No paths accumulated.");
@@ -59,46 +59,30 @@ namespace KOps::Engine {
 
             const auto start_time = std::chrono::steady_clock::now();
 
-            // Option Price
+            // Compute Option Price
             const KT::Real sample_mean = total_payoff_sum / N;
             const KT::Real discount_factor = std::exp(-config.model.heston.r * config.time.t_end);
             metrics.option_price = sample_mean * discount_factor;
 
-            // Variance Option Price
+            // Compute Variance Option Price
             const KT::Real sample_variance = (total_squared_payoff_sum / N) - (sample_mean * sample_mean);
             const KT::Real safe_variance = std::max(0.0, sample_variance); // Ensure alvays positive
             metrics.standard_error = std::sqrt(safe_variance / N) * discount_factor;
 
-            // Percentile Coptutation
-            std::sort(all_payoffs.begin(), all_payoffs.end());
-
-            metrics.p0 = all_payoffs[0] * discount_factor;
-            metrics.p1 = all_payoffs[static_cast<size_t>(N * 0.01)] * discount_factor;
-            metrics.p5 = all_payoffs[static_cast<size_t>(N * 0.05)] * discount_factor;
-            metrics.p10 = all_payoffs[static_cast<size_t>(N * 0.10)] * discount_factor;
-            metrics.p20 = all_payoffs[static_cast<size_t>(N * 0.20)] * discount_factor;
-            metrics.p30 = all_payoffs[static_cast<size_t>(N * 0.30)] * discount_factor;
-            metrics.p40 = all_payoffs[static_cast<size_t>(N * 0.40)] * discount_factor;
-            metrics.median = all_payoffs[static_cast<size_t>(N * 0.50)] * discount_factor;
-            metrics.p60 = all_payoffs[static_cast<size_t>(N * 0.60)] * discount_factor;
-            metrics.p70 = all_payoffs[static_cast<size_t>(N * 0.70)] * discount_factor;
-            metrics.p80 = all_payoffs[static_cast<size_t>(N * 0.80)] * discount_factor;
-            metrics.p90 = all_payoffs[static_cast<size_t>(N * 0.90)] * discount_factor;
-            metrics.p95 = all_payoffs[static_cast<size_t>(N * 0.95)] * discount_factor;
-            metrics.p99 = all_payoffs[static_cast<size_t>(N * 0.99)] * discount_factor;
-            metrics.p100 = all_payoffs[all_payoffs.size() - 1] * discount_factor;
+            // Analyze shape of option price distribution
+            analyze_option_price_distribution(discount_factor, N);
 
             // Mark as successfully computed
             metrics.is_computed = true;
 
             // Store time
             const auto end_time = std::chrono::steady_clock::now();
-            const std::chrono::duration<double> elapsed =  end_time - start_time;
+            const std::chrono::duration<double> elapsed = end_time - start_time;
             computation_time = elapsed.count();
         }
 
         // 3. Pure Reporting Phase (Uses the stored metrics)
-        void print_report() const {
+        void print_info_option_price() const {
             if (!metrics.is_computed) {
                 throw std::runtime_error(
                     "Attempted to print report before computing metrics. Call compute_metrics() first.");
@@ -133,7 +117,7 @@ namespace KOps::Engine {
         }
 
         // 4. Getter so other parts of the program can use the raw numbers
-        [[nodiscard]] const RiskMetrics &get_metrics() const {
+        [[nodiscard]] const Results &get_option_price_data() const {
             if (!metrics.is_computed) {
                 throw std::runtime_error("Metrics have not been computed yet.");
             }
@@ -146,6 +130,29 @@ namespace KOps::Engine {
         KT::Real total_payoff_sum = 0.;
         KT::Real total_squared_payoff_sum = 0.;
         double computation_time = 0.;
-        RiskMetrics metrics;
+        Results metrics;
+
+
+        void analyze_option_price_distribution(KT::Real discount_factor, KT::Real N_paths) {
+            // Compute the percentiles
+
+            std::sort(all_payoffs.begin(), all_payoffs.end());
+
+            metrics.p0 = all_payoffs[0] * discount_factor;
+            metrics.p1 = all_payoffs[static_cast<size_t>(N_paths * 0.01)] * discount_factor;
+            metrics.p5 = all_payoffs[static_cast<size_t>(N_paths * 0.05)] * discount_factor;
+            metrics.p10 = all_payoffs[static_cast<size_t>(N_paths * 0.10)] * discount_factor;
+            metrics.p20 = all_payoffs[static_cast<size_t>(N_paths * 0.20)] * discount_factor;
+            metrics.p30 = all_payoffs[static_cast<size_t>(N_paths * 0.30)] * discount_factor;
+            metrics.p40 = all_payoffs[static_cast<size_t>(N_paths * 0.40)] * discount_factor;
+            metrics.median = all_payoffs[static_cast<size_t>(N_paths * 0.50)] * discount_factor;
+            metrics.p60 = all_payoffs[static_cast<size_t>(N_paths * 0.60)] * discount_factor;
+            metrics.p70 = all_payoffs[static_cast<size_t>(N_paths * 0.70)] * discount_factor;
+            metrics.p80 = all_payoffs[static_cast<size_t>(N_paths * 0.80)] * discount_factor;
+            metrics.p90 = all_payoffs[static_cast<size_t>(N_paths * 0.90)] * discount_factor;
+            metrics.p95 = all_payoffs[static_cast<size_t>(N_paths * 0.95)] * discount_factor;
+            metrics.p99 = all_payoffs[static_cast<size_t>(N_paths * 0.99)] * discount_factor;
+            metrics.p100 = all_payoffs[all_payoffs.size() - 1] * discount_factor;
+        }
     };
 } // namespace KOps::Engine

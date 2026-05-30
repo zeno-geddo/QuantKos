@@ -90,7 +90,7 @@ namespace KOps::Tests::NoNoise {
                 MCDisp.launch_montecarlo();
             }
 
-            // Load the data Saved
+            //  Read the data back from disks (this also tests that writing and loading works correclty)
             std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
             std::cout  << indent << ">>> Go back to the tester ...\n";
             KB::BinReader binReader(config);
