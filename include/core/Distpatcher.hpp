@@ -19,7 +19,7 @@ namespace KOps::Engine {
 
         MCResults launch_montecarlo() {
             std::cout << "\n>>> Starting Monte Carlo Simulation...\n" << std::endl;
-            MCResults results = dispatch_model();
+            const MCResults results = dispatch_model();
             std::cout << "\n>>> Simulation completed successfully!\n" << std::endl;
             return results;
         }

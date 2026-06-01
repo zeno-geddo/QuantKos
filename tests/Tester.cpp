@@ -5,6 +5,7 @@
 #include "./../include/tests/PutCallParityTest.hpp"
 #include "./../include/tests/NoNoiseTest.hpp"
 #include "./../include/tests/BinaryFormatTest.hpp"
+#include "./../include/tests/BlackScholesTest.hpp"
 
 struct TestSuite {
     std::string name;
@@ -26,7 +27,8 @@ int main(int argc, char *argv[]) {
         const std::vector<TestSuite> tests_to_run = {
             {"Random Number Generator", KTE::RNG::run_test},
             {"Binary File Format I/O", KTE::IOBIN::run_test},
-            {"Zero-Variance SDE Drift", KTE::NoNoise::run_test}
+            {"Zero-Variance SDE Drift", KTE::NoNoise::run_test},
+            {"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test}
         };
 
         // Run Tests
