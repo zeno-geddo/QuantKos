@@ -6,6 +6,7 @@
 #include "./../include/tests/NoNoiseTest.hpp"
 #include "./../include/tests/BinaryFormatTest.hpp"
 #include "./../include/tests/BlackScholesTest.hpp"
+#include "./../include/tests/HestonTest.hpp"
 
 struct TestSuite {
     std::string name;
@@ -28,7 +29,8 @@ int main(int argc, char *argv[]) {
             {"Random Number Generator", KTE::RNG::run_test},
             {"Binary File Format I/O", KTE::IOBIN::run_test},
             {"Zero-Variance SDE Drift", KTE::NoNoise::run_test},
-            {"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test}
+            {"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test},
+            {"Weak Convergence to Heston", KTE::Heston::run_test},
         };
 
         // Run Tests
