@@ -15,6 +15,7 @@ namespace KOps::Types {
     constexpr Real real_zero = static_cast<Real>(0.0);
     constexpr Real real_one = static_cast<Real>(1.0);
     constexpr Real real_05 = static_cast<Real>(0.5);
+    constexpr Real real_025 = static_cast<Real>(0.25);
 }
 
 

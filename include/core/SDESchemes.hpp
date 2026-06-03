@@ -45,6 +45,7 @@ namespace KOps::Engine {
     // ========================================================================
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::Euler> {
+        // Weak Convergence 1., Strong convergence 0.5
         // Precomputed constant scalar invariants (Computed once on CPU Host)
         KT::Real one_minus_k_dt;
         KT::Real k_theta_dt;
@@ -90,18 +91,86 @@ namespace KOps::Engine {
             const KT::Real Z_v = Z_1;
             const KT::Real Z_S = rho * Z_1 + rho_complement * Z_2;
 
-            // EVOLVE & TRUNCATE VARIANCE (Fused Multiply-Add (FMA) optimized variance step)
-            const KT::Real sqrt_v_n = Kokkos::sqrt(v_n);
-            KT::Real v_np1 = v_n * one_minus_k_dt + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v;
-            v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
-
             // EVOLVE ASSET (NOTE: MUST USE OLD VARIANCE TO RESPECT ITO INTEGRAL, REQUIRING WITH THE VAL AT BEGINNIG OF TIME SETP)
             // Mathematically: (r - q)dt - (v_n * 0.5 * dt) + (sqrt(v_n) * sqrt(dt)) * Z_S
+            const KT::Real sqrt_v_n = Kokkos::sqrt(v_n);
             const KT::Real exponent = r_minus_q_dt - (v_n * half_dt) + (sqrt_v_n * sqrt_dt) * Z_S;
             const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Special Function Unit (SFU) Call
 
-            return {S_np1, v_np1};
+            // EVOLVE & TRUNCATE VARIANCE (Fused Multiply-Add (FMA) optimized variance step)
+            KT::Real v_np1 = v_n * one_minus_k_dt + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v;
+            v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
 
+            return {S_np1, v_np1};
+        }
+    };
+
+
+    template<>
+    struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::Milstein> {
+        // Weak Convergence 1., Strong convergence 1.
+        // Precomputed constant scalar invariants
+        KT::Real r_minus_q_dt;
+        KT::Real half_dt;
+        KT::Real sqrt_dt;
+        KT::Real rho;
+        KT::Real rho_complement;
+
+        // Milstein-specific invariants
+        KT::Real k_theta_dt;
+        KT::Real sigma_sqrt_dt;
+        KT::Real quarter_sigma_sq_dt;
+        KT::Real implicit_denominator_v; // 1 / (1 + k * dt)
+
+        explicit SDEScheme(const KC::UInputs &config) {
+            const KT::Real r = config.model.heston.r;
+            const KT::Real q = config.model.heston.q;
+            const KT::Real k = config.model.heston.k;
+            const KT::Real theta = config.model.heston.theta;
+            const KT::Real sigma = config.model.heston.sigma;
+            rho = config.model.heston.rho;
+            const KT::Real dt = config.time.dt;
+
+            sqrt_dt = Kokkos::sqrt(dt);
+            rho_complement = Kokkos::sqrt(KT::real_one - rho * rho);
+
+            r_minus_q_dt = (r - q) * dt;
+            half_dt = KT::real_05 * dt;
+
+            // Precompute Milstein invariants
+            k_theta_dt = k * theta * dt;
+            sigma_sqrt_dt = sigma * sqrt_dt;
+            quarter_sigma_sq_dt = KT::real_025 * sigma * sigma * dt;
+
+            // Host precomputes denominator to eliminate GPU division
+            implicit_denominator_v = KT::real_one / (KT::real_one + k * dt);
+        }
+
+        template<typename RNGeneratorType>
+
+
+        KOKKOS_INLINE_FUNCTION
+        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+            // Get Random Normal Variables
+            const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
+            const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+
+            // Cholesky Decomposition for correlated Brownian Motion
+            const KT::Real Z_v = Z_1;
+            const KT::Real Z_S = rho * Z_1 + rho_complement * Z_2;
+
+
+            // EVOLVE EVOLUTION (Evaluated at t_n to respect Ito calculus)
+            const KT::Real sqrt_v_n = Kokkos::sqrt(v_n);
+            const KT::Real exponent = r_minus_q_dt - (v_n * half_dt) + (sqrt_v_n * sqrt_dt) * Z_S;
+            const KT::Real S_np1 = S_n * Kokkos::exp(exponent);
+
+            // EVOLVE & TRUNCATE VARIANCE VARIANCE EVOLVE: Equation 7.26 (Algebraic Implicit Milstein)
+            const KT::Real milstein_correction = quarter_sigma_sq_dt * (Z_v * Z_v - KT::real_one);
+            KT::Real v_np1 = implicit_denominator_v *
+                             (v_n + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v + milstein_correction);
+            v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
+            return {S_np1, v_np1};
         }
     };
 }

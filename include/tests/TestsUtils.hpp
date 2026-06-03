@@ -13,9 +13,10 @@ namespace KOps::Tests::Utils {
     namespace KE = KOps::Engine;
 
 
-    inline std::map<KI::MathModel, KI::NumScheme> get_models_to_test() {
-        static const std::map<KI::MathModel, KI::NumScheme> models_to_test = {
-            {KI::MathModel::Heston, KI::NumScheme::Euler}
+    inline std::vector<std::pair<KI::MathModel, KI::NumScheme>> get_models_to_test() {
+        static const std::vector<std::pair<KI::MathModel, KI::NumScheme>> models_to_test = {
+            {KI::MathModel::Heston, KI::NumScheme::Euler},
+            {KI::MathModel::Heston, KI::NumScheme::Milstein}
         };
         return models_to_test;
     }
@@ -121,7 +122,7 @@ namespace KOps::Tests::Utils {
         const std::string_view test_name,
         KC::UInputs config,
         const KT::Real expected_option_price,
-        const std::map<KI::MathModel, KI::NumScheme> &models_to_test,
+        const std::vector<std::pair<KI::MathModel, KI::NumScheme>> &models_to_test,
         const std::vector<int> &time_grid_resolutions,
         const std::string_view indent = "   ") {
         std::cout << "\n\n" << indent << "====================================================================\n"
