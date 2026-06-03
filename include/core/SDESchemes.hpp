@@ -41,7 +41,7 @@ namespace KOps::Engine {
     // SPECIALIZATION: Heston + Euler Maruyama
     // BOOK : The Heston model and its extensions in matlab and C#
     // Eq 7.8 -> v_n+1 = v_n + k(theta - v_n)dt + sigma * sqrt(v_n) * sqrt(dt) * Z_v
-    // Eq 7.12 -> S_n+1 = S_n * exp( (r - q - v_n+1 * 1/2) * dt + sqrt(v_n+1) sqrt(dt) * Z_S)
+    // Eq 7.12 -> S_n+1 = S_n * exp( (r - q - v_n+1 * 1/2) * dt + sqrt(v_n) sqrt(dt) * Z_S)
     // ========================================================================
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::Euler> {
@@ -93,12 +93,11 @@ namespace KOps::Engine {
             // EVOLVE & TRUNCATE VARIANCE (Fused Multiply-Add (FMA) optimized variance step)
             const KT::Real sqrt_v_n = Kokkos::sqrt(v_n);
             KT::Real v_np1 = v_n * one_minus_k_dt + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v;
-            v_np1 = v_np1 > KT::real_zero ? v_np1 : KT::real_zero;
+            v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
 
-            // EVOLVE ASSET WITH NEW VARIANCE
-            // Mathematically: (r - q)dt - (v_np1 * 0.5 * dt) + (sqrt(v_np1) * sqrt(dt)) * Z_S
-            const KT::Real sqrt_v_np1 = Kokkos::sqrt(v_np1);
-            const KT::Real exponent = r_minus_q_dt - (v_np1 * half_dt) + (sqrt_v_np1 * sqrt_dt) * Z_S;
+            // EVOLVE ASSET (NOTE: MUST USE OLD VARIANCE TO RESPECT ITO INTEGRAL, REQUIRING WITH THE VAL AT BEGINNIG OF TIME SETP)
+            // Mathematically: (r - q)dt - (v_n * 0.5 * dt) + (sqrt(v_n) * sqrt(dt)) * Z_S
+            const KT::Real exponent = r_minus_q_dt - (v_n * half_dt) + (sqrt_v_n * sqrt_dt) * Z_S;
             const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Special Function Unit (SFU) Call
 
             return {S_np1, v_np1};

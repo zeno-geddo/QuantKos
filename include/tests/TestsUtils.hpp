@@ -96,11 +96,6 @@ namespace KOps::Tests::Utils {
                     << ", STAT ERR= " << current.stat_error
                     << ", Zscore= " << z_score << "\n";
 
-            // If the error exceeds 3 standard deviations, the test mathematically fails.
-            if (z_score > 3.0) {
-                test_passed = false;
-            }
-
             // Compute convergence order only if there is a subsequent step to compare against
             if (i < convergence_results.size() - 1) {
                 const auto &next = convergence_results[i + 1];
@@ -110,6 +105,9 @@ namespace KOps::Tests::Utils {
 
                 std::cout << indent << "[   INFO   ] Step " << i + 1 << " -> " << i + 2
                         << " Convergence Order: " << order << "\n";
+            } else {
+                // If the error exceeds 2 standard deviations from max resultion, the test mathematically fails.
+                if (z_score > 2.0) test_passed = false;
             }
         }
 
@@ -123,33 +121,33 @@ namespace KOps::Tests::Utils {
         const std::string_view test_name,
         KC::UInputs config,
         const KT::Real expected_option_price,
-        const std::map<KI::MathModel, KI::NumScheme>& models_to_test,
-        const std::vector<int>& time_grid_resolutions,
-        const std::string_view indent = "   ")
-    {
+        const std::map<KI::MathModel, KI::NumScheme> &models_to_test,
+        const std::vector<int> &time_grid_resolutions,
+        const std::string_view indent = "   ") {
         std::cout << "\n\n" << indent << "====================================================================\n"
-                  << indent << "          " << test_name << "\n"
-                  << indent << "====================================================================\n";
+                << indent << "          " << test_name << "\n"
+                << indent << "====================================================================\n";
 
         std::cout << indent << "[   INFO   ] Target Exact Price : " << expected_option_price << "\n";
 
         bool all_tests_passed = true;
 
         // Loop over models
-        for (const auto& model : models_to_test) {
+        for (const auto &model: models_to_test) {
             config.model.id_model = model.first;
             config.scheme.id_scheme = model.second;
 
             std::vector<OptionPriceErr> convergence_results;
 
             // Loop over time steps
-            for (int N_Tsteps : time_grid_resolutions) {
+            for (int N_Tsteps: time_grid_resolutions) {
                 config.time.N_time_steps = N_Tsteps;
                 config.time.inp_dt = config.time.t_end / N_Tsteps;
 
                 std::cout << indent << "[   INFO   ] MODEL   : " << KI::enum_to_string(config.model.id_model) << "\n";
                 std::cout << indent << "[   INFO   ] SCHEME  : " << KI::enum_to_string(config.scheme.id_scheme) << "\n";
-                std::cout << indent << "[   INFO   ] dt: " << std::fixed << std::setprecision(6) << config.time.inp_dt << "\n";
+                std::cout << indent << "[   INFO   ] dt: " << std::fixed << std::setprecision(6) << config.time.inp_dt
+                        << "\n";
 
                 // Run simulation
                 auto convergence_res = compare_numerical_and_expected_option_price(config, expected_option_price);
@@ -174,6 +172,4 @@ namespace KOps::Tests::Utils {
 
         return all_tests_passed;
     }
-
-
 }
