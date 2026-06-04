@@ -198,7 +198,7 @@ namespace KOps::Engine {
         KT::Real theta_m_factor; // theta * (1 - e^{-k dt})
         KT::Real s2_factor_1; // (sigma^2 * e^{-k dt} / k) * (1 - e^{-k dt})
         KT::Real s2_factor_2; // (theta * sigma^2 / (2k)) * (1 - e^{-k dt})^2
-        KT::Real K1, K2, K3, K4;
+        KT::Real K1, K2, K3, K4, A;
 
         explicit SDEScheme(const KC::UInputs &config) {
             const KT::Real r = config.model.heston.r;
@@ -211,35 +211,52 @@ namespace KOps::Engine {
 
             // Base invariants
             sqrt_dt = std::sqrt(dt);
-            rho_complement = std::sqrt(KT::real_one - rho * rho);
             r_minus_q_dt = (r - q) * dt;
             half_dt = KT::real_05 * dt;
 
             // Anderson QE invariants
             inv_sqrt_2 = static_cast<KT::Real>(1.0 / std::sqrt(2.0));
             exp_minus_k_dt = std::exp(-k * dt);
-            const KT::Real one_minus_exp = KT::real_one - exp_minus_k_dt;
-            theta_m_factor = theta * one_minus_exp; // in Eq 7.41, F. Rouah
-            const KT::Real sig_sq = sigma * sigma; // in Eq 7.41, F. Rouah
-            s2_factor_1 = (sig_sq * exp_minus_k_dt / k) * one_minus_exp; // in Eq, 7.41 F. Rouah
-            s2_factor_2 = (theta * sig_sq / (KT::real_two * k)) * (one_minus_exp * one_minus_exp);
-            const KT::Real rho_div_simga = rho/sigma; // after Eq 7.47, F. Rouah
-            const KT::Real K12_fact = (k * rho_div_simga - KT::real_05); // after Eq 7.47, F. Rouah
+
+            // Handle case k =0
+            if (k < static_cast<KT::Real>(1e-8)) { // Catch case whene there is not drift
+                // Compute them with theorem de l'hopital
+                theta_m_factor = KT::real_zero;
+                s2_factor_1 = sigma * sigma * dt;
+                s2_factor_2 = KT::real_zero;
+            } else {
+                const KT::Real one_minus_exp = KT::real_one - exp_minus_k_dt;
+                theta_m_factor = theta * one_minus_exp; // in Eq 7.41, F. Rouah
+                const KT::Real sig_sq = sigma * sigma; // in Eq 7.41, F. Rouah
+                s2_factor_1 = (sig_sq * exp_minus_k_dt / k) * one_minus_exp; // in Eq, 7.41 F. Rouah
+                s2_factor_2 = (theta * sig_sq / (KT::real_two * k)) * (one_minus_exp * one_minus_exp);
+            }
+
+            // Handle case sigma=0
+            KT::Real rho_div_simga;
+            if (sigma < static_cast<KT::Real>(1e-8)) {
+                // To handle Black Scholes degeneration
+                rho_div_simga = KT::real_zero;
+                rho = KT::real_zero; // If sigma is near zero, correlation is mathematically meaningless
+            } else {
+                rho_div_simga = rho / sigma; // after Eq 7.47, F. Rouah
+            }
             const KT::Real one_m_rho2 = KT::real_one - rho * rho; // after Eq 7.47, F. Rouah
+            const KT::Real K12_fact = (k * rho_div_simga - KT::real_05); // after Eq 7.47, F. Rouah
             K1 = dt * gamma1 * K12_fact - rho_div_simga; // after Eq 7.47, F. Rouah
             K2 = dt * gamma2 * K12_fact + rho_div_simga; // after Eq 7.47, F. Rouah
             K3 = dt * gamma1 * one_m_rho2; // after Eq 7.47, F. Rouah
             K4 = dt * gamma2 * one_m_rho2; // after Eq 7.47, F. Rouah
+            // Martingale Constants precomputed for the GPU
+            A = K2 + K4 * KT::real_05; // Terms for matingale correction K0
         }
 
         template<typename RNGeneratorType>
-
         KOKKOS_INLINE_FUNCTION
         SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
             // Generate noise
             const KT::Real Z_V = static_cast<KT::Real>(local_rn_generator.normal());
             const KT::Real Z_indep = static_cast<KT::Real>(local_rn_generator.normal());
-            //const KT::Real Z_S = rho * Z_V + rho_complement * Z_indep; // Cholesky Decomposition for the Asset step
 
             // Determine Distribution Shape (Psi)
             // (Compute Conditional Mean (m) and Variance (s^2) of V(t+dt))
@@ -251,8 +268,14 @@ namespace KOps::Engine {
             // DIVERGENCE CONTROL BLOCK (for variance computation)
             // ====================================================================
             KT::Real v_np1;
-            KT::Real K0; // The Martingale correction scalar
-            if (psi <= psi_c) {
+            KT::Real M; // Terms for matingale correction used to compute K0
+            if (psi <= static_cast<KT::Real>(1e-8)) {
+                // REGIME 0: Deterministic Limit (Black-Scholes Degeneration)
+                // If psi is zero, variance is deterministic. Bypass the division-by-zero.
+                v_np1 = m;
+                M = KT::real_one; // The MGF of a deterministic constant is exactly 1.0
+                // NOte: this first if will not cause divergence because all threads will go here if using BS
+            } else if (psi <= psi_c) {
                 // REGIME 1: Quadratic (High Variance)
                 const KT::Real inv_psi = KT::real_one / psi;
                 const KT::Real b2 = KT::real_two * inv_psi - KT::real_one +
@@ -262,12 +285,10 @@ namespace KOps::Engine {
                 const KT::Real a = m / (KT::real_one + b2); // Eq. 7.42, F. Rouah
                 const KT::Real b_plus_Zv = Kokkos::sqrt(b2) + Z_V; // Eq. 7.37, F. Rouah
                 v_np1 = a * b_plus_Zv * b_plus_Zv; // Eq. 7.37, F. Rouah
-                // Martingale correction
-                const KT::Real A = K2 + K4 * KT::real_05;
-                const KT::Real M = Kokkos::exp((A * b2 * a) / (KT::real_one - KT::real_two * A * a)) /
-                                   Kokkos::sqrt(KT::real_one - KT::real_two * A * a); // Eq. 7.50, F. Rouah
-
-                K0 = -Kokkos::log(M) - (K1 + K2 * KT::real_05) * v_n; // Eq. 7.49, F. Rouah
+                // Term for Martingale correction
+                const KT::Real safe_A = Kokkos::fmin(A, (KT::real_05 / a) - static_cast<KT::Real>(1e-6));
+                const KT::Real term_Aa = KT::real_one - KT::real_two * safe_A * a;
+                M = Kokkos::exp((safe_A * b2 * a) / term_Aa) / Kokkos::sqrt(term_Aa); // Eq. 7.50, F. Rouah
             } else {
                 // REGIME 2: Exponential (Low Variance)
                 const KT::Real p = (psi - KT::real_one) / (psi + KT::real_one); // Eq. 7.43, F. Rouah
@@ -284,19 +305,18 @@ namespace KOps::Engine {
                     const KT::Real safe_U = Kokkos::fmin(U_V, KT::real_one - static_cast<KT::Real>(1e-8));
                     v_np1 = (Kokkos::log((KT::real_one - p) / (KT::real_one - safe_U))) / beta; // Eq. 7.40, F. Rouah
                 }
-                // Martingale correction
-                const KT::Real A = K2 + K4 * KT::real_05;
-                const KT::Real M = p + (beta * (KT::real_one - p)) / (beta - A); // Eq. 7.51, F. Rouah
-                K0 = -Kokkos::log(M) - (K1 + K2 * KT::real_05) * v_n; // Eq. 7.49, F. Rouah
+                // Term for Martingale correction
+                const KT::Real safe_A = Kokkos::fmin(A, beta - static_cast<KT::Real>(1e-6));
+                M = p + (beta * (KT::real_one - p)) / (beta - safe_A); // Eq. 7.51, F. Rouah
             }
 
             // ====================================================================
             // ASSET EVOLUTION (Predictor-Corrector Integration)
             // ====================================================================
-            const KT::Real sqrt_rho_comp = Kokkos::sqrt(KT::real_one - rho * rho); // Eq. 7.48, F. Rouah
+            const KT::Real K0 = -Kokkos::log(M) - (K1 + K3 * KT::real_05) * v_n; // Eq. 7.49, F. Rouah (4Martingale)
             const KT::Real integrated_sigma = (K3 * v_n + K4 * v_np1); // Eq. 7.48, F. Rouah
             const KT::Real exponent = r_minus_q_dt + K0 + (K1 * v_n + K2 * v_np1) +
-                                      (sqrt_rho_comp * Kokkos::sqrt(integrated_sigma) * Z_indep); // Eq. 7.48, F. Rouah
+                                      (Kokkos::sqrt(integrated_sigma) * Z_indep); // Eq. 7.48, F. Rouah
             const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Eq. 7.48, F. Rouah
 
             return {S_np1, v_np1};
