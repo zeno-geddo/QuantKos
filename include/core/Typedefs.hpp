@@ -14,8 +14,10 @@ namespace KOps::Types {
     // Globally accessible compile-time type-safe literals
     constexpr Real real_zero = static_cast<Real>(0.0);
     constexpr Real real_one = static_cast<Real>(1.0);
+    constexpr Real real_two = static_cast<Real>(2.0);
     constexpr Real real_05 = static_cast<Real>(0.5);
     constexpr Real real_025 = static_cast<Real>(0.25);
+    constexpr Real real_1p5 = static_cast<Real>(1.5);
 }
 
 

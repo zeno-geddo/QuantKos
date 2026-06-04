@@ -81,6 +81,9 @@ namespace KOps::Engine {
         }
 
         template<typename RNGeneratorType>
+
+
+
         KOKKOS_INLINE_FUNCTION
         SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
             // Get Random Normal Variables
@@ -149,6 +152,7 @@ namespace KOps::Engine {
         template<typename RNGeneratorType>
 
 
+
         KOKKOS_INLINE_FUNCTION
         SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
             // Get Random Normal Variables
@@ -170,6 +174,131 @@ namespace KOps::Engine {
             KT::Real v_np1 = implicit_denominator_v *
                              (v_n + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v + milstein_correction);
             v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
+            return {S_np1, v_np1};
+        }
+    };
+
+    template<>
+    struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::AndersonQE> {
+        // Precomputed constant scalar invariants
+        KT::Real r_minus_q_dt;
+        KT::Real half_dt;
+        KT::Real sqrt_dt;
+        KT::Real rho;
+        KT::Real rho_complement;
+
+        // QE-Specific Structural Constants
+        KT::Real psi_c = KT::real_1p5; // 1.5 as in Anderson
+        KT::Real gamma1 = KT::real_05; // Central Predictor-Corrector
+        KT::Real gamma2 = KT::real_05;
+        KT::Real inv_sqrt_2; // For the Error Function (Normal CDF)
+
+        // QE-Specific invariants
+        KT::Real exp_minus_k_dt;
+        KT::Real theta_m_factor; // theta * (1 - e^{-k dt})
+        KT::Real s2_factor_1; // (sigma^2 * e^{-k dt} / k) * (1 - e^{-k dt})
+        KT::Real s2_factor_2; // (theta * sigma^2 / (2k)) * (1 - e^{-k dt})^2
+        KT::Real K1, K2, K3, K4;
+
+        explicit SDEScheme(const KC::UInputs &config) {
+            const KT::Real r = config.model.heston.r;
+            const KT::Real q = config.model.heston.q;
+            const KT::Real k = config.model.heston.k;
+            const KT::Real theta = config.model.heston.theta;
+            const KT::Real sigma = config.model.heston.sigma;
+            rho = config.model.heston.rho;
+            const KT::Real dt = config.time.dt;
+
+            // Base invariants
+            sqrt_dt = std::sqrt(dt);
+            rho_complement = std::sqrt(KT::real_one - rho * rho);
+            r_minus_q_dt = (r - q) * dt;
+            half_dt = KT::real_05 * dt;
+
+            // Anderson QE invariants
+            inv_sqrt_2 = static_cast<KT::Real>(1.0 / std::sqrt(2.0));
+            exp_minus_k_dt = std::exp(-k * dt);
+            const KT::Real one_minus_exp = KT::real_one - exp_minus_k_dt;
+            theta_m_factor = theta * one_minus_exp; // in Eq 7.41, F. Rouah
+            const KT::Real sig_sq = sigma * sigma; // in Eq 7.41, F. Rouah
+            s2_factor_1 = (sig_sq * exp_minus_k_dt / k) * one_minus_exp; // in Eq, 7.41 F. Rouah
+            s2_factor_2 = (theta * sig_sq / (KT::real_two * k)) * (one_minus_exp * one_minus_exp);
+            const KT::Real rho_div_simga = rho/sigma; // after Eq 7.47, F. Rouah
+            const KT::Real K12_fact = (k * rho_div_simga - KT::real_05); // after Eq 7.47, F. Rouah
+            const KT::Real one_m_rho2 = KT::real_one - rho * rho; // after Eq 7.47, F. Rouah
+            K1 = dt * gamma1 * K12_fact - rho_div_simga; // after Eq 7.47, F. Rouah
+            K2 = dt * gamma2 * K12_fact + rho_div_simga; // after Eq 7.47, F. Rouah
+            K3 = dt * gamma1 * one_m_rho2; // after Eq 7.47, F. Rouah
+            K4 = dt * gamma2 * one_m_rho2; // after Eq 7.47, F. Rouah
+        }
+
+        template<typename RNGeneratorType>
+
+        KOKKOS_INLINE_FUNCTION
+        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+            // Generate noise
+            const KT::Real Z_V = static_cast<KT::Real>(local_rn_generator.normal());
+            const KT::Real Z_indep = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_S = rho * Z_V + rho_complement * Z_indep; // Cholesky Decomposition for the Asset step
+
+            // Determine Distribution Shape (Psi)
+            // (Compute Conditional Mean (m) and Variance (s^2) of V(t+dt))
+            const KT::Real m = v_n * exp_minus_k_dt + theta_m_factor; // (Eq. 7.41, F. Rouah)
+            const KT::Real s2 = v_n * s2_factor_1 + s2_factor_2; // (Eq. 7.41, F. Rouah)
+            const KT::Real psi = s2 / (m * m); // (After Eq. 7.42, F. Rouah)
+
+            // ====================================================================
+            // DIVERGENCE CONTROL BLOCK (for variance computation)
+            // ====================================================================
+            KT::Real v_np1;
+            KT::Real K0; // The Martingale correction scalar
+            if (psi <= psi_c) {
+                // REGIME 1: Quadratic (High Variance)
+                const KT::Real inv_psi = KT::real_one / psi;
+                const KT::Real b2 = KT::real_two * inv_psi - KT::real_one +
+                                    Kokkos::sqrt(KT::real_two * inv_psi *
+                                                 (KT::real_two * inv_psi - KT::real_one)
+                                    ); // Eq. 7.42, F. Rouah
+                const KT::Real a = m / (KT::real_one + b2); // Eq. 7.42, F. Rouah
+                const KT::Real b_plus_Zv = Kokkos::sqrt(b2) + Z_V; // Eq. 7.37, F. Rouah
+                v_np1 = a * b_plus_Zv * b_plus_Zv; // Eq. 7.37, F. Rouah
+                // Martingale correction
+                const KT::Real A = K2 + K4 * KT::real_05;
+                const KT::Real M = Kokkos::exp((A * b2 * a) / (KT::real_one - KT::real_two * A * a)) /
+                                   Kokkos::sqrt(KT::real_one - KT::real_two * A * a); // Eq. 7.50, F. Rouah
+
+                K0 = -Kokkos::log(M) - (K1 + K2 * KT::real_05) * v_n; // Eq. 7.49, F. Rouah
+            } else {
+                // REGIME 2: Exponential (Low Variance)
+                const KT::Real p = (psi - KT::real_one) / (psi + KT::real_one); // Eq. 7.43, F. Rouah
+                const KT::Real beta = (KT::real_one - p) / m; // Eq. 7.43, F. Rouah
+
+                // Recover the Uniform variable U_V from Z_V : U_V = CDF(Z_V).
+                const KT::Real U_V = KT::real_05 * (KT::real_one + Kokkos::erf(Z_V * inv_sqrt_2)); // Eq. 7.40, F. Rouah
+
+                // Update v
+                if (U_V <= p) {
+                    v_np1 = KT::real_zero; // Eq. 7.40, F. Rouah
+                } else {
+                    // Protect against log singularity at U_V == 1.0
+                    const KT::Real safe_U = Kokkos::fmin(U_V, KT::real_one - static_cast<KT::Real>(1e-8));
+                    v_np1 = (Kokkos::log((KT::real_one - p) / (KT::real_one - safe_U))) / beta; // Eq. 7.40, F. Rouah
+                }
+                // Martingale correction
+                const KT::Real A = K2 + K4 * KT::real_05;
+                const KT::Real M = p + (beta * (KT::real_one - p)) / (beta - A); // Eq. 7.51, F. Rouah
+                K0 = -Kokkos::log(M) - (K1 + K2 * KT::real_05) * v_n; // Eq. 7.49, F. Rouah
+            }
+
+            // ====================================================================
+            // ASSET EVOLUTION (Predictor-Corrector Integration)
+            // ====================================================================
+            const KT::Real sqrt_rho_comp = Kokkos::sqrt(KT::real_one - rho * rho); // Eq. 7.48, F. Rouah
+            const KT::Real integrated_sigma = (K3 * v_n + K4 * v_np1); // Eq. 7.48, F. Rouah
+            const KT::Real exponent = r_minus_q_dt + K0 + (K1 * v_n + K2 * v_np1) +
+                                      (sqrt_rho_comp * Kokkos::sqrt(integrated_sigma) * Z_indep); // Eq. 7.48, F. Rouah
+            const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Eq. 7.48, F. Rouah
+
             return {S_np1, v_np1};
         }
     };
