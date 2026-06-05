@@ -56,6 +56,11 @@ namespace KOps::IO::Binary {
         }
 
         void save_paths_batch_if_needed(int current_batch_size, const Engine::MCBatchMem &BatchMem) override {
+            // Return without writing if no file is specified
+            if (config.output.filename_paths_out.empty()) {
+                return;
+            }
+
             //Calculate exactly how many bytes this specific batch occupies (N_sims x n_t_steps x sizeReal)
             // This is flexible and allows to consider cases where the batch is not complete
             const size_t bytes_to_write = static_cast<size_t>(current_batch_size) *

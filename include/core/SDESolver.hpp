@@ -93,6 +93,7 @@ namespace KOps::Engine {
     public:
         explicit SDESolver(const KC::UInputs &config)
             : config(config), Scheme(config) {
+            // Note: Scheme obj struct created here during initialization, all threat will then use it
         }
 
         void execute_batch(const int n_active_sims_in_batch, MCBatchMem &BatchMem, const RNGManager &RNGen) const {

@@ -133,7 +133,7 @@ namespace KOps::Engine {
             // NOTE : the total number of simulations are performed in batches to handle cases when not enough memory is available
             // NOTE : The global random number pool is created once. States advance dynamically. So using the same pool for different batches is the correct approach
 
-            // 1. Initialize Helper Classes needed during the MC
+            // 1. Initialize Helper Classes needed during the MC (keep in this local function scope)
             MCBatchMem BatchMem(config); // Handles the Memory
             RNGManager RNGen(config); // Handles the Random number (Must initialize here and not in the batch loop!!!)
             SDESolver<ModelPolicy, SchemePolicy, OptType, OptRight> Solver(config); // Handles the Temporal integration
@@ -205,10 +205,9 @@ namespace KOps::Engine {
             MCTracker.start_tracking();
             for (int b = 0; b < n_total_batch_loops; ++b) {
                 const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
-
                 Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel
                 BatchMem.deep_copy_to_host(); // Synch the host and dev
-                OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size); // Store payoffs to then sort them
+                OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size); // Store payoffs to then sort them for percentiles
                 OWriter.save_paths_batch_if_needed(current_batch_size, BatchMem);  //Save batch to disk
 
                 MCTracker.update_progress(b + 1);

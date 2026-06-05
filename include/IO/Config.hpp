@@ -53,11 +53,18 @@ namespace KOps::Config {
         }
 
         void print(std::string_view indent = "") const {
+            const bool is_barrier_option = (opt_type == KI::OptType::BarrierDownAndIn ||
+                                            opt_type == KI::OptType::BarrierDownAndOut ||
+                                            opt_type == KI::OptType::BarrierUpAndIn ||
+                                            opt_type == KI::OptType::BarrierUpAndOut);
+
             std::cout << indent << "  [" << KK::Options << "]\n";
             std::cout << indent << "      Option Type        :     " << enum_to_string(opt_type) << "\n";
             std::cout << indent << "      Option Right       :     " << enum_to_string(opt_right) << "\n";
             std::cout << indent << "      Strike Price (K)   :     " << StrikePrice << "\n";
-            std::cout << indent << "      Barrier Price      :     " << BarrierPrice << "\n";
+            if (is_barrier_option) {
+                std::cout << indent << "      Barrier Price      :     " << BarrierPrice << "\n";
+            }
         }
     };
 
@@ -128,6 +135,9 @@ namespace KOps::Config {
             if (S0 <= 0.0)
                 throw std::runtime_error(
                     config_err_msg(KK::Init, KK::InitParams::Price, "must be positive."));
+            if (v0 < 0.0)
+                throw std::runtime_error(
+                    config_err_msg(KK::Init, KK::InitParams::Variance, "must be positive."));
         }
 
         void print(std::string_view indent = "") const {

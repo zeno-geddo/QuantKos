@@ -36,6 +36,6 @@ MC:
 
 Output:
   out_dir: "./install/outputs"
-  Name_Paths_Out_File: "" # KOptionsPaths.paths
+  Name_Paths_Out_File: "temp.paths" # KOptionsPaths.paths
   Name_Log_File: "KOptions.log"
   Format: BIN     # Available formats: TXT, BIN

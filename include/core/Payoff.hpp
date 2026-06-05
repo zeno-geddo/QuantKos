@@ -43,7 +43,7 @@ namespace KOps::Engine {
             : S_sum(KT::real_zero), S_max(S0), S_min(S0) {
         }
 
-        // Inline Step Tracker (Called inside the time loop)
+        // Tract the target price (To be called inside the time loop)
         KOKKOS_INLINE_FUNCTION void track_current_price(const KT::Real S) {
             if constexpr (OptType == KI::OptType::Asian) {
                 S_sum += S;
@@ -62,20 +62,20 @@ namespace KOps::Engine {
             }
         }
 
-        // Inline Final Payoff Resolver (Called outside the time loop)
+        // Final Payoff Resolver (To be called outside the time loop)
         KOKKOS_INLINE_FUNCTION KT::Real evaluate_final_payoff(const KT::Real S,
                                                               const KT::Real Strike,
                                                               const KT::Real BarrierPrice,
                                                               const int n_t_steps) const {
             KT::Real payoff = KT::real_zero;
-
+            // STANDARD OPTIONS LOGIC
             if constexpr (OptType == KI::OptType::European) {
                 payoff = Payoff<OptRight>::evaluate_payoff(S, Strike);
             } else if constexpr (OptType == KI::OptType::Asian) {
                 const KT::Real avg_price = S_sum / static_cast<KT::Real>(n_t_steps);
                 payoff = Payoff<OptRight>::evaluate_payoff(avg_price, Strike);
             }
-            // BARRIER LOGIC
+            // BARRIER OPTIONS LOGIC
             else if constexpr (OptType == KI::OptType::BarrierUpAndOut) {
                 if (S_max < BarrierPrice) {
                     // Survived

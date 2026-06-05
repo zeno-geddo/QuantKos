@@ -5,7 +5,7 @@ namespace KOps::Implemented {
 
     enum class OptType {
         // Standard Options
-        European, // The standard vanilla option
+        European, // The standard vanilla option.
         Asian, // The average rate option.
 
         // Barrier Option

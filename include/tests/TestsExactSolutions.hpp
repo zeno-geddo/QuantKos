@@ -183,7 +183,7 @@ namespace KOps::Tests::ExactSolutions {
             const double T = conf.time.t_end;
             const double S0 = conf.init.S0;
 
-            // Compute the probabilities (We truncate the infinite integral at phi_max = upper_bound).
+            // Compute the probabilities (The infinite integral is truncated at phi_max = upper_bound).
             double P1 = Probability(conf, 1, upper_bound);
             double P2 = Probability(conf, 2, upper_bound);
 
