@@ -29,23 +29,24 @@ namespace KOps::Config {
     struct OptionsConfig {
         KI::OptType opt_type = KI::OptType::European;
         KI::OptRight opt_right = KI::OptRight::Call;
-        Real K = 100.; //
+        Real StrikePrice = 100.; //
+        Real BarrierPrice = 100.; //
 
         void validate(Real Spot_price) const {
             // Check if Strike price make sense (compared to the spot price)
-            if (K <= 0.0)
+            if (StrikePrice <= 0.0)
                 throw std::runtime_error(
                     config_err_msg(KK::Options, KK::OptionsParams::StrikePrice, "must be positive."));
 
             Real min_meaningful_strike = Spot_price * static_cast<Real>(0.0001);
-            if (K < min_meaningful_strike) {
+            if (StrikePrice < min_meaningful_strike) {
                 throw std::runtime_error("Config Error: Strike price (K) is too close to zero. "
                     "Must be at least 1000 times smaller than the initial asset price (S0) to prevent numerical problems.");
             }
 
 
             Real max_meaningful_strike = Spot_price * static_cast<Real>(10000);
-            if (K > max_meaningful_strike) {
+            if (StrikePrice > max_meaningful_strike) {
                 throw std::runtime_error("Config Error: Strike price (K) is absurdly high (exceeds 10000x of S0). "
                     "This will likely result in zero-variance path generation and statistical breakdown.");
             }
@@ -55,7 +56,8 @@ namespace KOps::Config {
             std::cout << indent << "  [" << KK::Options << "]\n";
             std::cout << indent << "      Option Type        :     " << enum_to_string(opt_type) << "\n";
             std::cout << indent << "      Option Right       :     " << enum_to_string(opt_right) << "\n";
-            std::cout << indent << "      Strike Price (K)   :     " << K << "\n";
+            std::cout << indent << "      Strike Price (K)   :     " << StrikePrice << "\n";
+            std::cout << indent << "      Barrier Price      :     " << BarrierPrice << "\n";
         }
     };
 

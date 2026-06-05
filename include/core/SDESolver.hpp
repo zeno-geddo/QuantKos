@@ -39,6 +39,7 @@ namespace KOps::Engine {
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
     struct IntegrationKernel {
         // 1. Trivially Copiable Attributes (The Execution Context, The data the GPU needs)
+        SDEScheme<ModelPolicy, SchemePolicy> Scheme; // The trivially copyable mathematical solver
         DevPathsView local_paths_batch_view;
         DevPayoffView local_payoff_batch_view;
         RNGManager::GlobalRNGPool rng_pool;
@@ -46,7 +47,8 @@ namespace KOps::Engine {
         KT::Real S0;
         KT::Real v0;
         KT::Real Strike;
-        SDEScheme<ModelPolicy, SchemePolicy> Scheme; // The trivially copyable mathematical solver
+        KT::Real BarrierPrice;
+
 
         // 2. The Execution Operator (Better than KOKKOS_LAMBDA)
         KOKKOS_INLINE_FUNCTION
@@ -58,32 +60,27 @@ namespace KOps::Engine {
             // Initialize Loop Variables
             KT::Real S = S0;
             KT::Real v = v0;
-            KT::Real S_target = KT::real_zero; // Placeholder for asian and barrier options
+            PayoffTracker<OptType, OptRight> PTracker(S);
 
-            // Evolve in tima the current path
+            // Evolve in time the current path
             for (int n_t = 0; n_t < n_t_steps; ++n_t) {
+                // Get new state
                 auto [next_S, next_v] = Scheme.evolve_step(S, v, rn_generator);
                 S = next_S;
                 v = next_v;
+
+                // Store Price if necessary
                 local_paths_batch_view(n_p, n_t) = S;
 
-                if constexpr (OptType == KI::OptType::Asian) {
-                    S_target += S;
-                }
-
+                // Track Price
+                PTracker.track_current_price(S);
             }
 
-            // Resolve reference price for payoff (Compile time branch)
-            KT::Real reference_price;
-            if constexpr (OptType == KI::OptType::Asian) {
-                reference_price = S_target / static_cast<KT::Real>(n_t_steps);
-            } else if constexpr (OptType == KI::OptType::European) {
-                reference_price = S;
-            }
-
-            // Evaluate Payoff
-            local_payoff_batch_view(n_p) = Payoff<OptRight>::evaluate(reference_price, Strike);
-
+            // Evaluate Payoff using the tracker state
+            local_payoff_batch_view(n_p) = PTracker.evaluate_final_payoff(S,
+                                                                          Strike,
+                                                                          BarrierPrice,
+                                                                          n_t_steps);
         }
     };
 
@@ -102,14 +99,15 @@ namespace KOps::Engine {
             // 1. Package data from the subsystems into the execution functor
             // Note: the pull is the same for all batches, it does not have to be reinitialized !
             IntegrationKernel<ModelPolicy, SchemePolicy, OptType, OptRight> kernel{
+                Scheme,
                 BatchMem.d_batch_view,
                 BatchMem.d_payoffs,
                 RNGen.get_global_rng_pool(),
                 config.time.N_time_steps,
                 config.init.S0,
                 config.init.v0,
-                config.options.K,
-                Scheme
+                config.options.StrikePrice,
+                config.options.BarrierPrice
             };
 
             // 2. Safely isolate the parallel launch boundary inside the class

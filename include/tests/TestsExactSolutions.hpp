@@ -37,7 +37,7 @@ namespace KOps::Tests::ExactSolutions {
             }
 
             KT::Real S = conf.init.S0;
-            KT::Real K = conf.options.K;
+            KT::Real K = conf.options.StrikePrice;
             KT::Real T = conf.time.t_end;
             KT::Real r = conf.model.heston.r;
             KT::Real q = conf.model.heston.q;
@@ -59,7 +59,7 @@ namespace KOps::Tests::ExactSolutions {
         // ========================================================================
         double integrand_albrecher_fromulation(double phi, const KC::UInputs &conf, int j) {
             const auto p = conf.model.heston;
-            const double K = conf.options.K;
+            const double K = conf.options.StrikePrice;
             const double T = conf.time.t_end;
             const double S0 = conf.init.S0;
             const double v0 = conf.init.v0;
@@ -179,7 +179,7 @@ namespace KOps::Tests::ExactSolutions {
             }
 
             const auto p = conf.model.heston;
-            const double K = conf.options.K;
+            const double K = conf.options.StrikePrice;
             const double T = conf.time.t_end;
             const double S0 = conf.init.S0;
 

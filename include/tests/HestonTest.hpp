@@ -28,7 +28,7 @@ namespace KOps::Tests::Heston {
 
         config.options.opt_type = KI::OptType::European;
         config.options.opt_right = KI::OptRight::Call;
-        config.options.K = 100.0;
+        config.options.StrikePrice = 100.0;
 
         config.init.S0 = 100.;
         config.init.v0 = 0.05; // Starting variance

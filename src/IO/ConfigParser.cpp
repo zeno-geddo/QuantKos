@@ -59,7 +59,10 @@ namespace KOps::Config {
             }
 
             if (node[str(KK::OptionsParams::StrikePrice)]) {
-                conf.options.K = node[str(KK::OptionsParams::StrikePrice)].as<Real>();
+                conf.options.StrikePrice = node[str(KK::OptionsParams::StrikePrice)].as<Real>();
+            }
+            if (node[str(KK::OptionsParams::BarrierPrice)]) {
+                conf.options.BarrierPrice = node[str(KK::OptionsParams::BarrierPrice)].as<Real>();
             }
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Options) + "' missing.");

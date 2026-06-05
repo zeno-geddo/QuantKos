@@ -28,6 +28,7 @@ namespace KOps::Keys {
         static constexpr std::string_view OptionType = "OptionType";
         static constexpr std::string_view OptionRight = "OptionRight";
         static constexpr std::string_view StrikePrice = "StrikePrice";
+        static constexpr std::string_view BarrierPrice = "BarrierPrice";
     }
 
     // ------------------------------------------------------------------------

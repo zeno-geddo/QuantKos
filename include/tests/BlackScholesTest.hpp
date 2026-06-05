@@ -26,7 +26,7 @@ namespace KOps::Tests::BlackScholes {
 
         config.options.opt_type = KI::OptType::European;
         config.options.opt_right = KI::OptRight::Call;
-        config.options.K = 100.0;
+        config.options.StrikePrice = 100.0;
 
         config.init.S0 = 100.;
         config.init.v0 = 0.04; // This implies the volatility is 0.20, similat to that of the S&P500
