@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../IO/Config.hpp"
+#include "../../core/config/Config.hpp"
+#include "../../core/analytical/HestonExact.hpp"
 #include "TestsUtils.hpp"
-#include "TestsExactSolutions.hpp"
 
 
 namespace KOps::Tests::Heston {
@@ -10,7 +10,7 @@ namespace KOps::Tests::Heston {
     namespace KT = KOps::Types;
     namespace KI = KOps::Implemented;
     namespace KTU = KOps::Tests::Utils;
-    namespace KES = KOps::Tests::ExactSolutions;
+    namespace KH = KOps::Engine::Analytical::Heston;
 
 
     inline KC::UInputs getDefaultConfigGoodIntegrand() {
@@ -49,7 +49,7 @@ namespace KOps::Tests::Heston {
     bool run_test() {
         std::string id_test {"TEST 5 : Weak Convergence to Heston SDE exact option price"};
         auto config = getDefaultConfigGoodIntegrand();
-        KT::Real exact_price = KES::Heston::get_exact_call_option_price(config);
+        const KT::Real exact_price = KH::get_exact_eu_call_option_price(config);
         return KTU::run_weak_convergence_test(id_test,
                                               config,
                                               exact_price,

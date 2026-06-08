@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Typedefs.hpp"
-#include "./../IO/ConfigEnums.hpp"
+#include "../Typedefs.hpp"
+#include "../config/ConfigEnums.hpp"
 
 namespace KOps::Engine {
     namespace KI = KOps::Implemented;

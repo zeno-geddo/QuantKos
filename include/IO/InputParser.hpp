@@ -1,7 +1,7 @@
 # pragma once
 
 #include <string>
-#include "Config.hpp"
+#include "./../core/config/Config.hpp"
 
 namespace KOps::Config {
 

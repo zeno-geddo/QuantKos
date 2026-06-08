@@ -2,9 +2,9 @@
 #include <string>
 #include <cmath>
 
-#include "../IO/Config.hpp"
-#include "../core/Distpatcher.hpp"
-#include "../IO/IOBinary.hpp"
+#include "../../core/config/Config.hpp"
+#include "../../core/engine/Distpatcher.hpp"
+#include "../../IO/IOBinary.hpp"
 
 namespace KOps::Tests::NoNoise {
     namespace KC = KOps::Config;

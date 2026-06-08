@@ -3,10 +3,10 @@
 #include <memory>
 #include <stdexcept>
 
-#include "./Config.hpp"
-#include "./ConfigEnums.hpp"
+#include "./../core/config/Config.hpp"
+#include "./../core/config/ConfigEnums.hpp"
 #include "./IOBinary.hpp"
-#include "./../core/MCMem.hpp"
+#include "../core/engine/MCMem.hpp"
 #include "./../core/Typedefs.hpp"
 
 namespace KOps::IO {

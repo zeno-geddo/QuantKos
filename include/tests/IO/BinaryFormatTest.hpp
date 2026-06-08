@@ -6,10 +6,9 @@
 #include <filesystem>
 #include <Kokkos_Core.hpp>
 
-// Include your headers here
-#include "../IO/Config.hpp"
-#include "../IO/IOBinary.hpp"
-#include "../core/MCMem.hpp"
+#include "../../core/config/Config.hpp"
+#include "../../IO/IOBinary.hpp"
+#include "../../core/engine/MCMem.hpp"
 
 namespace KOps::Tests::IOBIN {
     namespace KC = KOps::Config;

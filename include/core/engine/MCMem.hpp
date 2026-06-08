@@ -4,8 +4,8 @@
 #include <type_traits>
 
 
-#include "./Typedefs.hpp"
-#include "./../IO/Config.hpp"
+#include "../Typedefs.hpp"
+#include "../config/Config.hpp"
 
 
 namespace KOps::Engine {

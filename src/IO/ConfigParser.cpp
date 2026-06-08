@@ -3,9 +3,9 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "../../include/IO/ConfigParser.hpp"
-#include "../../include/IO/ConfigKeys.hpp"
-#include "../../include/IO/ConfigKeysEnumMaps.hpp"
+#include "../../include/IO/InputParser.hpp"
+#include "../../include/core/config/ConfigKeys.hpp"
+#include "../../include/core/config/ConfigKeysEnumMaps.hpp"
 
 
 namespace KOps::Config {

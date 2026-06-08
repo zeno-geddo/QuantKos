@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../IO/Config.hpp"
+#include "../../core/config/Config.hpp"
 #include "TestsUtils.hpp"
-#include "TestsExactSolutions.hpp"
+#include "../../core/analytical/BlackScholesExact.hpp"
 
 
 namespace KOps::Tests::BlackScholes {
@@ -10,7 +10,7 @@ namespace KOps::Tests::BlackScholes {
     namespace KT = KOps::Types;
     namespace KI = KOps::Implemented;
     namespace KTU = KOps::Tests::Utils;
-    namespace KES = KOps::Tests::ExactSolutions;
+    namespace KBS = KOps::Engine::Analytical::BlackScholes;
 
 
     inline KC::UInputs getDefaultConfig() {
@@ -45,7 +45,7 @@ namespace KOps::Tests::BlackScholes {
     bool run_test() {
         std::string id_test {"TEST 4 : Weak Convergence to Black-Scholes SDE exact option price"};
         auto config = getDefaultConfig();
-        KT::Real exact_price = KES::BlackScholes::get_exact_call_option_price(config);
+        const KT::Real exact_price = KBS::get_exact_eu_call_option_price(config);
         return KTU::run_weak_convergence_test(id_test,
                                               config,
                                               exact_price,

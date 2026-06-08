@@ -3,13 +3,13 @@
 #include <iostream>
 #include <chrono> // for timing
 
-#include "./SDESolver.hpp"
-#include "./../IO/Config.hpp"
-#include "./../IO/OutManager.hpp"
-#include "./Typedefs.hpp"
-#include "./MCMem.hpp"
-#include "./RandNGenerator.hpp"
-#include "./OptionPricer.hpp"
+#include "../schemes/markovian/MSolver.hpp"
+#include "../config/Config.hpp"
+#include "../../IO/OutManager.hpp"
+#include "../Typedefs.hpp"
+#include "MCMem.hpp"
+#include "../schemes/RandNGenerator.hpp"
+#include "../options/OptionPricer.hpp"
 
 
 namespace KOps::Engine {
@@ -136,7 +136,7 @@ namespace KOps::Engine {
             // 1. Initialize Helper Classes needed during the MC (keep in this local function scope)
             MCBatchMem BatchMem(config); // Handles the Memory
             RNGManager RNGen(config); // Handles the Random number (Must initialize here and not in the batch loop!!!)
-            SDESolver<ModelPolicy, SchemePolicy, OptType, OptRight> Solver(config); // Handles the Temporal integration
+            MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> Solver(config); // Handles the Temporal integration
             OptionPricer OPricer(config); // Handles the Option Pricing
             KIO::OutputManager OWriter(config); // Handles the outputs
             MCProgressTracker MCTracker(config, BatchMem);
@@ -162,7 +162,7 @@ namespace KOps::Engine {
 
         void run_all_mc_batches(MCBatchMem &BatchMem,
                                 const RNGManager &RNGen,
-                                const SDESolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
+                                const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
                                 OptionPricer &OPricer,
                                 KIO::OutputManager &OWriter,
                                 MCProgressTracker &MCTracker

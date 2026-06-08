@@ -6,8 +6,8 @@
 #include <string_view>
 #include <vector>
 #include <sstream>
-#include "ConfigKeys.hpp"
-#include "ConfigKeysEnumMaps.hpp"
+#include "./../core/config/ConfigKeys.hpp"
+#include "./../core/config/ConfigKeysEnumMaps.hpp"
 
 namespace KOps::HELP {
 

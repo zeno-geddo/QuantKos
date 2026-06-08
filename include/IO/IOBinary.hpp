@@ -7,10 +7,10 @@
 
 #include <Kokkos_Core.hpp>
 
-#include "./Config.hpp"
-#include "./ConfigEnums.hpp"
+#include "./../core/config/Config.hpp"
+#include "./../core/config/ConfigEnums.hpp"
 #include "./IOBlueprints.hpp"
-#include "./../core/MCMem.hpp"
+#include "../core/engine/MCMem.hpp"
 #include "./../core/Typedefs.hpp"
 
 

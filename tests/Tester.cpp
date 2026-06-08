@@ -1,12 +1,14 @@
 #include <iostream>
 #include <Kokkos_Core.hpp>
 
-#include "./../include/tests/RNGenTest.hpp"
-#include "./../include/tests/PutCallParityTest.hpp"
-#include "./../include/tests/NoNoiseTest.hpp"
-#include "./../include/tests/BinaryFormatTest.hpp"
-#include "./../include/tests/BlackScholesTest.hpp"
-#include "./../include/tests/HestonTest.hpp"
+#include "./../include/tests/IO/BinaryFormatTest.hpp"
+#include "./../include/tests/RNG/RNGenTest.hpp"
+#include "./../include/tests/EUOptions/PutCallParityTest.hpp"
+#include "./../include/tests/EUOptions/NoNoiseTest.hpp"
+#include "./../include/tests/EUOptions/BlackScholesTest.hpp"
+#include "./../include/tests/EUOptions/HestonTest.hpp"
+
+
 
 struct TestSuite {
     std::string name;

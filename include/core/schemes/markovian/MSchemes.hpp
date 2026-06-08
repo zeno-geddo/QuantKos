@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Kokkos_Core.hpp>
-#include "./../IO/Config.hpp"
-#include "./../IO/ConfigEnums.hpp"
-#include "./RandNGenerator.hpp"
+#include "../../config/Config.hpp"
+#include "../../config/ConfigEnums.hpp"
+#include "../RandNGenerator.hpp"
 
 namespace KOps::Engine {
     namespace KI = KOps::Implemented;

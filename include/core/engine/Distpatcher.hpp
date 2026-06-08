@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "MCEngine.hpp"
-#include "./../IO/Config.hpp"
+#include "../config/Config.hpp"
 
 
 namespace KOps::Engine {

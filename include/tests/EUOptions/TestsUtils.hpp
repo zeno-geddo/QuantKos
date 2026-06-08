@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 
-#include "../IO/Config.hpp"
-#include "../core/Distpatcher.hpp"
+#include "../../core/config/Config.hpp"
+#include "../../core/engine/Distpatcher.hpp"
 
 
 namespace KOps::Tests::Utils {

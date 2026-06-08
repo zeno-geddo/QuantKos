@@ -4,8 +4,8 @@
 #include <Kokkos_Core.hpp>
 
 #include "../include/IO/InputHelp.hpp"
-#include "../include/IO/ConfigParser.hpp"
-#include "../include/core/Distpatcher.hpp"
+#include "../include/IO/InputParser.hpp"
+#include "../include/core/engine/Distpatcher.hpp"
 
 
 int main(int argc, char *argv[]) {

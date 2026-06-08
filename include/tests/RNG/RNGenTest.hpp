@@ -2,9 +2,9 @@
 #include <cmath>
 #include <Kokkos_Core.hpp>
 
-#include "../core/RandNGenerator.hpp"
-#include "../IO/Config.hpp"
-#include "../core/Typedefs.hpp"
+#include "../../core/schemes/RandNGenerator.hpp"
+#include "../../core/config/Config.hpp"
+#include "../../core/Typedefs.hpp"
 
 namespace KOps::Tests::RNG {
     namespace KT = KOps::Types;

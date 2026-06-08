@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "Typedefs.hpp"
-#include "./../IO/Config.hpp"
+#include "../Typedefs.hpp"
+#include "../config/Config.hpp"
 
 namespace KOps::Engine {
     namespace KT = KOps::Types;

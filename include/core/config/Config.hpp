@@ -8,10 +8,10 @@
 #include <cmath>
 #include <filesystem>
 
-#include "../core/Typedefs.hpp"
-#include "../IO/ConfigEnums.hpp"
-#include "../IO/ConfigKeys.hpp"
-#include "../IO/ConfigKeysEnumMaps.hpp"
+#include "../Typedefs.hpp"
+#include "ConfigEnums.hpp"
+#include "ConfigKeys.hpp"
+#include "ConfigKeysEnumMaps.hpp"
 
 
 namespace KOps::Config {

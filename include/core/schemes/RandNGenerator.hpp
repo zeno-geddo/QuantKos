@@ -2,7 +2,7 @@
 
 #include <Kokkos_Core.hpp>
 #include <Kokkos_Random.hpp>
-#include "./../IO/Config.hpp"
+#include "../config/Config.hpp"
 
 namespace KOps::Engine {
     namespace KC = KOps::Config;

@@ -1,5 +1,5 @@
 #pragma once
-#include "./../core/MCMem.hpp"
+#include "../core/engine/MCMem.hpp"
 #include "./../core/Typedefs.hpp"
 
 namespace KOps::IO {

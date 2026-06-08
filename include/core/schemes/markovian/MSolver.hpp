@@ -1,12 +1,12 @@
 #pragma once
 #include <Kokkos_Core.hpp>
 
-#include "./../IO/ConfigEnums.hpp"
-#include "SDESchemes.hpp"
-#include "Typedefs.hpp"
-#include "./MCMem.hpp"
-#include "./RandNGenerator.hpp"
-#include "./Payoff.hpp"
+#include "../../config/ConfigEnums.hpp"
+#include "MSchemes.hpp"
+#include "../../Typedefs.hpp"
+#include "../../engine/MCMem.hpp"
+#include "../RandNGenerator.hpp"
+#include "../../options/Payoff.hpp"
 
 
 //-------------------------------------------------------------------------------
@@ -89,9 +89,9 @@ namespace KOps::Engine {
     // THE EXECUTOR BRIDGE (Class-Level Parallel Launch Coordinator)
     // ========================================================================
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
-    class SDESolver {
+    class MSolver {
     public:
-        explicit SDESolver(const KC::UInputs &config)
+        explicit MSolver(const KC::UInputs &config)
             : config(config), Scheme(config) {
             // Note: Scheme obj struct created here during initialization, all threat will then use it
         }
