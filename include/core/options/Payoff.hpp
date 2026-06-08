@@ -49,16 +49,32 @@ namespace KOps::Engine {
                 S_sum += S;
             }
             // Group all options that care about the path CEILING
-            else if constexpr ( //OptType == KI::OptType::LookbackMax ||
+            else if constexpr (
+                // Barrier types
                 OptType == KI::OptType::BarrierUpAndOut ||
-                OptType == KI::OptType::BarrierUpAndIn) {
+                OptType == KI::OptType::BarrierUpAndIn ||
+                // Lookback types
+                (OptType == KI::OptType::LookbackFixedStrike && OptRight == KI::OptRight::Call) ||
+                (OptType == KI::OptType::LookbackFloatingStrike && OptRight == KI::OptRight::Put)
+            ) {
                 S_max = Kokkos::fmax(S_max, S);
             }
             // Group all options that care about the path FLOOR
-            else if constexpr ( //OptType == KI::OptType::LookbackMin ||
+            else if constexpr (
+                // Barrier types
                 OptType == KI::OptType::BarrierDownAndOut ||
-                OptType == KI::OptType::BarrierDownAndIn) {
+                OptType == KI::OptType::BarrierDownAndIn ||
+                // Lookback types
+                (OptType == KI::OptType::LookbackFixedStrike && OptRight == KI::OptRight::Put) ||
+                (OptType == KI::OptType::LookbackFloatingStrike && OptRight == KI::OptRight::Call)
+            ) {
                 S_min = Kokkos::fmin(S_min, S);
+            }
+            // Fallback, path-independent option not requiring tracking .
+            else {
+                // European,
+                // DigitalCashOrNothing,
+                // DigitalAssetOrNothing
             }
         }
 
@@ -68,14 +84,18 @@ namespace KOps::Engine {
                                                               const KT::Real BarrierPrice,
                                                               const int n_t_steps) const {
             KT::Real payoff = KT::real_zero;
+            // --------------------------------------------------------
             // STANDARD OPTIONS LOGIC
+            // --------------------------------------------------------
             if constexpr (OptType == KI::OptType::European) {
                 payoff = Payoff<OptRight>::evaluate_payoff(S, Strike);
             } else if constexpr (OptType == KI::OptType::Asian) {
                 const KT::Real avg_price = S_sum / static_cast<KT::Real>(n_t_steps);
                 payoff = Payoff<OptRight>::evaluate_payoff(avg_price, Strike);
             }
+            // --------------------------------------------------------
             // BARRIER OPTIONS LOGIC
+            // --------------------------------------------------------
             else if constexpr (OptType == KI::OptType::BarrierUpAndOut) {
                 if (S_max < BarrierPrice) {
                     // Survived
@@ -97,6 +117,48 @@ namespace KOps::Engine {
                     payoff = Payoff<OptRight>::evaluate_payoff(S, Strike);
                 }
             }
+            // --------------------------------------------------------
+            // LOOKBACK OPTIONS LOGIC
+            // --------------------------------------------------------
+            else if constexpr (OptType == KI::OptType::LookbackFixedStrike) {
+                // Fixed Strike: Substitute S_max or S_min as the Reference Price
+                if constexpr (OptRight == KI::OptRight::Call) {
+                    payoff = Payoff<OptRight>::evaluate_payoff(S_max, Strike);
+                } else {
+                    // Put
+                    payoff = Payoff<OptRight>::evaluate_payoff(S_min, Strike);
+                }
+            } else if constexpr (OptType == KI::OptType::LookbackFloatingStrike) {
+                // Floating Strike: Reference Price is S, Strike is substituted with S_min or S_max
+                if constexpr (OptRight == KI::OptRight::Call) {
+                    // Evaluates: max(S - S_min, 0)
+                    payoff = Payoff<OptRight>::evaluate_payoff(S, S_min);
+                } else {
+                    // Put
+                    // Evaluates: max(S_max - S, 0)
+                    payoff = Payoff<OptRight>::evaluate_payoff(S, S_max);
+                }
+            }
+            // --------------------------------------------------------
+            // BINARY OPTIONS LOGIC
+            // --------------------------------------------------------
+            else if constexpr (OptType == KI::OptType::BinaryCashOrNothing) {
+                // Normalized to pay exactly 1.0 unit of cash if In-The-Money
+                constexpr  KT::Real cash_payout = 1.0;
+                if constexpr (OptRight == KI::OptRight::Call) {
+                    payoff = (S > Strike) ? cash_payout : KT::real_zero;
+                } else { // Put
+                    payoff = (S < Strike) ? cash_payout : KT::real_zero;
+                }
+            } else if constexpr (OptType == KI::OptType::BinaryAssetOrNothing) {
+                // Pays the actual terminal asset price if In-The-Money
+                if constexpr (OptRight == KI::OptRight::Call) {
+                    payoff = (S > Strike) ? S : KT::real_zero;
+                } else { // Put
+                    payoff = (S < Strike) ? S : KT::real_zero;
+                }
+            }
+
 
             return payoff;
         }

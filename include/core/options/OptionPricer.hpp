@@ -19,6 +19,7 @@ namespace KOps::Engine {
         struct Results {
             KT::Real option_price = -999.;
             KT::Real standard_error = -999.;
+            KT::Real prob_itm = -999.; // Probability of finishing ITM
             KT::Real p0 = -999.;
             KT::Real p1 = -999.;
             KT::Real p5 = -999.;
@@ -59,14 +60,25 @@ namespace KOps::Engine {
 
             const auto start_time = std::chrono::steady_clock::now();
 
-            // Compute Option Price
-            const KT::Real sample_mean = total_payoff_sum / N;
+            // Compute discount factor
             const KT::Real discount_factor = std::exp(-config.model.heston.r * config.time.t_end);
-            metrics.option_price = sample_mean * discount_factor;
 
-            // Compute Variance Option Price
-            const KT::Real sample_variance = (total_squared_payoff_sum / N) - (sample_mean * sample_mean);
-            const KT::Real safe_variance = std::max(0.0, sample_variance); // Ensure alvays positive
+
+            // Compute stats
+            const KT::Real sample_mean = total_payoff_sum / N;
+
+            size_t itm_count = 0;
+            KT::Real sum_sq_diff = 0.0;
+            for(const auto& p : all_payoffs) {
+                sum_sq_diff += (p - sample_mean) * (p - sample_mean);
+                if (p > 1e-12) itm_count++; // Count paths that survived/won
+            }
+
+            const KT::Real safe_variance = sum_sq_diff / (N - 1.0); // Unbiased sample variance
+            metrics.prob_itm = static_cast<KT::Real>(itm_count) / N;
+
+            // Apply Discounting to get the Option Price etc.
+            metrics.option_price = sample_mean * discount_factor;
             metrics.standard_error = std::sqrt(safe_variance / N) * discount_factor;
 
             // Analyze shape of option price distribution
@@ -94,6 +106,7 @@ namespace KOps::Engine {
             std::cout << std::fixed << std::setprecision(6);
             std::cout << "   Estimated Option Price   :  " << metrics.option_price << "\n";
             std::cout << "   Statistical Std Error    :  " << metrics.standard_error << "\n";
+            std::cout << "   Probability of ITM       :  " << (metrics.prob_itm * 100.0) << " %\n";
             std::cout << "  --------------------------------------------------------\n";
             std::cout << "   [Discounted Payout Distribution Tail Metrics]\n";
             std::cout << "   Min  (Lower)             :  " << metrics.p0 << "\n";

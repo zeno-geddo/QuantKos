@@ -4,15 +4,31 @@
 namespace KOps::Implemented {
 
     enum class OptType {
-        // Standard Options
+        // ------------------------------------------------
+        // Standard Options (Terminal & Averages)
+        // ------------------------------------------------
         European, // The standard vanilla option.
         Asian, // The average rate option.
 
-        // Barrier Option
+        // ------------------------------------------------
+        // Barrier Option (Conditional Survival/Activation)
+        // ------------------------------------------------
         BarrierUpAndOut, // Starts active. If the asset price rises above the barrier, the option instantly becomes worthless (dies).
         BarrierDownAndOut, // Starts active. If the asset price drops below the barrier, the option dies.
         BarrierUpAndIn, // Starts dead. It only becomes a valid option if the asset price rises and touches the upper barrier.
-        BarrierDownAndIn // Starts dead. It only becomes a valid option if the asset price drops and touches the lower barrier.
+        BarrierDownAndIn, // Starts dead. It only becomes a valid option if the asset price drops and touches the lower barrier.
+
+        // ------------------------------------------------
+        // Lookback Options (Extrema Tracking)
+        // ------------------------------------------------
+        LookbackFloatingStrike, // Strike floats to the absolute min (Call) or max (Put)
+        LookbackFixedStrike,    // Strike is fixed, but payoff uses the absolute max (Call) or min (Put)
+        //
+        // ------------------------------------------------
+        // Binary Options ( options
+        // ------------------------------------------------
+        BinaryCashOrNothing, // Pays a fixed cash amount if In-The-Money (ITM) // ? should add such amount as input ?
+        BinaryAssetOrNothing // Pays the terminal asset price if ITM
     };
 
     enum class OptRight {
