@@ -4,7 +4,7 @@
 #include "../../config/ConfigEnums.hpp"
 #include "MSchemes.hpp"
 #include "../../Typedefs.hpp"
-#include "../../engine/MCMem.hpp"
+#include "../../engine/memory/PathsMCBatchMem.hpp"
 #include "../RandNGenerator.hpp"
 #include "../../options/Payoff.hpp"
 
@@ -96,7 +96,7 @@ namespace KOps::Engine {
             // Note: Scheme obj struct created here during initialization, all threat will then use it
         }
 
-        void execute_batch(const int n_active_sims_in_batch, MCBatchMem &BatchMem, const RNGManager &RNGen) const {
+        void execute_batch(const int n_active_sims_in_batch, PathsMCBatchMem &BatchMem, const RNGManager &RNGen) const {
             // 1. Package data from the subsystems into the execution functor
             // Note: the pull is the same for all batches, it does not have to be reinitialized !
             IntegrationKernel<ModelPolicy, SchemePolicy, OptType, OptRight> kernel{

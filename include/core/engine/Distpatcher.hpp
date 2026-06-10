@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "MCEngine.hpp"
+#include "FMCEngine.hpp"
 #include "../config/Config.hpp"
 
 
@@ -64,10 +64,38 @@ namespace KOps::Engine {
         template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
         MCResults dispatch_opt_style() {
             switch (config.options.opt_type) {
+                // BASIC OPTIONS
                 case KI::OptType::European:
                     return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::European>();
                 case KI::OptType::Asian:
                     return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::Asian>();
+
+                // BARRIER OPTIONS
+                case KI::OptType::BarrierUpAndOut:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::BarrierUpAndOut>();
+                case KI::OptType::BarrierDownAndOut:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::BarrierDownAndOut>();
+                case KI::OptType::BarrierUpAndIn:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::BarrierUpAndIn>();
+                case KI::OptType::BarrierDownAndIn:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::BarrierDownAndIn>();
+
+                // LOOKBACK OPTIONS
+                case KI::OptType::LookbackFloatingStrike:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::LookbackFloatingStrike>();
+                case KI::OptType::LookbackFixedStrike:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::LookbackFixedStrike>();
+
+                // BINARY OPTIONS
+                case KI::OptType::BinaryCashOrNothing:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::BinaryCashOrNothing>();
+                case KI::OptType::BinaryAssetOrNothing:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::BinaryAssetOrNothing>();
+
+                // BACKWARD OPTIONS
+                case KI::OptType::American:
+                    return dispatch_opt_right<ModelPolicy, SchemePolicy, KI::OptType::American>();
+
                 default:
                     throw std::runtime_error("Unknown Option Style");
             }
@@ -75,18 +103,34 @@ namespace KOps::Engine {
 
 
         // ====================================================================
-        // LEVEL 4: Dispatch the Option Right (The Leaf Node)
-        // All templates are now resolved. Instantiate the actual MCRunner here.
+        // LEVEL 4: Dispatch the Option Right
         // ====================================================================
         template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType>
         MCResults dispatch_opt_right() {
             switch (config.options.opt_right) {
                 case KI::OptRight::Call:
-                    return MCRunner<ModelPolicy, SchemePolicy, OptType, KI::OptRight::Call>(config).run_mc_simulation();
+                    return execute_selected_runner<ModelPolicy, SchemePolicy, OptType, KI::OptRight::Call>();
                 case KI::OptRight::Put:
-                    return MCRunner<ModelPolicy, SchemePolicy, OptType, KI::OptRight::Put>(config).run_mc_simulation();
+                    return execute_selected_runner<ModelPolicy, SchemePolicy, OptType, KI::OptRight::Put>();
                 default:
                     throw std::runtime_error("Unknown Option Right");
+            }
+        }
+
+        // ====================================================================
+        // LEVEL 5: Compile-Time Router
+        // All templates are now resolved. Instantiate the actual MCRunner here.
+        // ====================================================================
+        template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
+        MCResults execute_selected_runner() {
+            if constexpr (OptType == KI::OptType::American) {
+                // If it is American, the compiler ONLY consider this branch.
+                // Notice the new architectural name: ForwardBackwardMCRunner
+                return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).run_mc_simulation();
+                // return ForwardBackwardMCRunner<ModelPolicy, SchemePolicy, OptRight>(config).run_mc_simulation();
+            } else {
+                // For all other options, the compiler ONLY consider this branch.
+                return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).run_mc_simulation();
             }
         }
     };

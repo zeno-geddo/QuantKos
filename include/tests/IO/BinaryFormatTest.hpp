@@ -8,7 +8,7 @@
 
 #include "../../core/config/Config.hpp"
 #include "../../IO/IOBinary.hpp"
-#include "../../core/engine/MCMem.hpp"
+#include "../../core/engine/memory/PathsMCBatchMem.hpp"
 
 namespace KOps::Tests::IOBIN {
     namespace KC = KOps::Config;
@@ -46,7 +46,7 @@ namespace KOps::Tests::IOBIN {
         std::cout << indent << "[   INFO   ] Phase 1: Generating and Writing predictable matrix...\n";
         {
             // Allocate Memory Manager
-            KE::MCBatchMem dummy_batch(config);
+            KE::PathsMCBatchMem dummy_batch(config);
 
             // Fill the host view with predictable data: value = (path_id * 1000) + time_step
             for (int i = 0; i < config.mc.N_Paths; ++i) {

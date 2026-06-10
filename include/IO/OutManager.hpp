@@ -6,7 +6,7 @@
 #include "./../core/config/Config.hpp"
 #include "./../core/config/ConfigEnums.hpp"
 #include "./IOBinary.hpp"
-#include "../core/engine/MCMem.hpp"
+#include "../core/engine/memory/PathsMCBatchMem.hpp"
 #include "./../core/Typedefs.hpp"
 
 namespace KOps::IO {
@@ -47,7 +47,7 @@ namespace KOps::IO {
             }
         }
 
-        void save_paths_batch_if_needed(const int current_batch_size, const Engine::MCBatchMem &BatchMem) {
+        void save_paths_batch_if_needed(const int current_batch_size, const Engine::PathsMCBatchMem &BatchMem) {
             if (active_writer) {
                 active_writer->save_paths_batch_if_needed(current_batch_size, BatchMem);
             }

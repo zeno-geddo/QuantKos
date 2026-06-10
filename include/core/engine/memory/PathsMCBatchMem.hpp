@@ -4,28 +4,25 @@
 #include <type_traits>
 
 
-#include "../Typedefs.hpp"
-#include "../config/Config.hpp"
+#include "../../Typedefs.hpp"
+#include "../../config/Config.hpp"
+#include "./MemoryTypes.hpp"
 
 
 namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
 
-    using DevPathsView = Kokkos::View<KT::Real **>; // DefaultExecutionSpace by default
-    using HostPathsView = DevPathsView::host_mirror_type; // Kokkos forces the host to have the same layout as the device?
-
-    using DevPayoffView  = Kokkos::View<KT::Real *>;
-    using HostPayoffView = DevPayoffView::host_mirror_type;
 
     // ------------------------------------------------------------------------
-    // STATE SDE
+    // Class managing the memory for markovian models, when the entire times grid is kept
+    // but only a subsets of the total paths are kept to not saturate memory
     // ------------------------------------------------------------------------
-    class MCBatchMem {
+    class PathsMCBatchMem {
     public:
         int n_sims_per_batch;
 
-        // Device Views
+        // Device Views (N_sims_per_batch, TotN_T_steps)
         DevPathsView d_batch_view;
         DevPayoffView d_payoffs;
 
@@ -36,7 +33,7 @@ namespace KOps::Engine {
 
 
         // Explicit to initialize it explicitly
-        explicit MCBatchMem(const KC::UInputs &conf) : config(conf) {
+        explicit PathsMCBatchMem(const KC::UInputs &conf) : config(conf) {
             // Memory is allocated during the construction of the class
             allocate_batch_memory();
             std::cout << "  [MCBatchMem] Memory allocated correctly." << std::endl;

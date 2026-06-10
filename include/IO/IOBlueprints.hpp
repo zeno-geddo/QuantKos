@@ -1,5 +1,5 @@
 #pragma once
-#include "../core/engine/MCMem.hpp"
+#include "../core/engine/memory/PathsMCBatchMem.hpp"
 #include "./../core/Typedefs.hpp"
 
 namespace KOps::IO {
@@ -12,7 +12,7 @@ namespace KOps::IO {
         virtual ~WriterBlueprint() = default;
 
         // Methods that all specific writers must implement
-        virtual void save_paths_batch_if_needed(int current_batch_size, const Engine::MCBatchMem &BatchMem) = 0;
+        virtual void save_paths_batch_if_needed(int current_batch_size, const Engine::PathsMCBatchMem &BatchMem) = 0;
         virtual void print_planned_outputs_summary() const = 0;
     };
 

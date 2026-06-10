@@ -23,12 +23,18 @@ namespace KOps::Implemented {
         // ------------------------------------------------
         LookbackFloatingStrike, // Strike floats to the absolute min (Call) or max (Put)
         LookbackFixedStrike,    // Strike is fixed, but payoff uses the absolute max (Call) or min (Put)
-        //
+
+
         // ------------------------------------------------
         // Binary Options ( options
         // ------------------------------------------------
         BinaryCashOrNothing, // Pays a fixed cash amount if In-The-Money (ITM) // ? should add such amount as input ?
-        BinaryAssetOrNothing // Pays the terminal asset price if ITM
+        BinaryAssetOrNothing, // Pays the terminal asset price if ITM
+
+        // ------------------------------------------------
+        // Backwards path dependent options
+        // ------------------------------------------------
+        American,
     };
 
     enum class OptRight {

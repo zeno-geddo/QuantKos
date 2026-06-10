@@ -10,7 +10,7 @@
 #include "./../core/config/Config.hpp"
 #include "./../core/config/ConfigEnums.hpp"
 #include "./IOBlueprints.hpp"
-#include "../core/engine/MCMem.hpp"
+#include "../core/engine/memory/PathsMCBatchMem.hpp"
 #include "./../core/Typedefs.hpp"
 
 
@@ -55,7 +55,7 @@ namespace KOps::IO::Binary {
             if (out_paths_stream.is_open()) out_paths_stream.close();
         }
 
-        void save_paths_batch_if_needed(int current_batch_size, const Engine::MCBatchMem &BatchMem) override {
+        void save_paths_batch_if_needed(int current_batch_size, const Engine::PathsMCBatchMem &BatchMem) override {
             // Return without writing if no file is specified
             if (config.output.filename_paths_out.empty()) {
                 return;

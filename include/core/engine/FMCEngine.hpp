@@ -7,28 +7,21 @@
 #include "../config/Config.hpp"
 #include "../../IO/OutManager.hpp"
 #include "../Typedefs.hpp"
-#include "MCMem.hpp"
+#include "./MCResults.hpp"
+#include "./memory/PathsMCBatchMem.hpp"
 #include "../schemes/RandNGenerator.hpp"
 #include "../options/OptionPricer.hpp"
 
 
 namespace KOps::Engine {
     namespace KI = KOps::Implemented;
-
     namespace KT = KOps::Types;
     namespace KIO = KOps::IO;
 
 
-    struct MCResults {
-        const Config::UInputs& MCConfig; // Just give the address, it will be valid since it lives in the main
-        const OptionPricer::Results OptionPrice; // Copy the structure so that it is ok when simulation scope end
-    };
-
-
-
     class MCProgressTracker {
     public:
-        explicit MCProgressTracker(const Config::UInputs &conf, const MCBatchMem &mem)
+        explicit MCProgressTracker(const Config::UInputs &conf, const PathsMCBatchMem &mem)
             : config(conf), batch_mem(mem) {}
 
         void start_tracking() {
@@ -81,7 +74,7 @@ namespace KOps::Engine {
 
     private:
         const Config::UInputs &config;
-        const MCBatchMem &batch_mem;
+        const PathsMCBatchMem &batch_mem;
         std::chrono::steady_clock::time_point start_time;
 
         void print_progress_bar(const int n_current_batch) {
@@ -121,9 +114,9 @@ namespace KOps::Engine {
 
 
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
-    class MCRunner {
+    class ForwardMCRunner {
     public:
-        explicit MCRunner(const KC::UInputs &conf) : config(conf) {
+        explicit ForwardMCRunner(const KC::UInputs &conf) : config(conf) {
         }
 
         // ====================================================================
@@ -134,7 +127,7 @@ namespace KOps::Engine {
             // NOTE : The global random number pool is created once. States advance dynamically. So using the same pool for different batches is the correct approach
 
             // 1. Initialize Helper Classes needed during the MC (keep in this local function scope)
-            MCBatchMem BatchMem(config); // Handles the Memory
+            PathsMCBatchMem BatchMem(config); // Handles the Memory
             RNGManager RNGen(config); // Handles the Random number (Must initialize here and not in the batch loop!!!)
             MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> Solver(config); // Handles the Temporal integration
             OptionPricer OPricer(config); // Handles the Option Pricing
@@ -160,7 +153,7 @@ namespace KOps::Engine {
         const KC::UInputs config;
 
 
-        void run_all_mc_batches(MCBatchMem &BatchMem,
+        void run_all_mc_batches(PathsMCBatchMem &BatchMem,
                                 const RNGManager &RNGen,
                                 const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
                                 OptionPricer &OPricer,
