@@ -16,7 +16,7 @@ namespace KOps::Engine {
 
     class OptionPricer {
     public:
-        struct MCResults {
+        struct MCUtils {
             KT::Real option_price = -999.;
             KT::Real standard_error = -999.;
             KT::Real prob_itm = -999.; // Probability of finishing ITM
@@ -130,7 +130,7 @@ namespace KOps::Engine {
         }
 
         // 4. Getter so other parts of the program can use the raw numbers
-        [[nodiscard]] const MCResults &get_option_price_data() const {
+        [[nodiscard]] const MCUtils &get_option_price_data() const {
             if (!metrics.is_computed) {
                 throw std::runtime_error("Metrics have not been computed yet.");
             }
@@ -143,7 +143,7 @@ namespace KOps::Engine {
         KT::Real total_payoff_sum = 0.;
         KT::Real total_squared_payoff_sum = 0.;
         double computation_time = 0.;
-        MCResults metrics;
+        MCUtils metrics;
 
 
         void analyze_option_price_distribution(KT::Real discount_factor, KT::Real N_paths) {

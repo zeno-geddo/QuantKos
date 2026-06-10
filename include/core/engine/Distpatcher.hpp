@@ -126,11 +126,11 @@ namespace KOps::Engine {
             if constexpr (OptType == KI::OptType::American) {
                 // If it is American, the compiler ONLY consider this branch.
                 // Notice the new architectural name: ForwardBackwardMCRunner
-                return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).run_mc_simulation();
+                return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).get_option_prices();
                 // return ForwardBackwardMCRunner<ModelPolicy, SchemePolicy, OptRight>(config).run_mc_simulation();
             } else {
                 // For all other options, the compiler ONLY consider this branch.
-                return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).run_mc_simulation();
+                return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).get_option_prices();
             }
         }
     };

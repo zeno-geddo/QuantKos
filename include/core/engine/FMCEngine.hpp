@@ -7,7 +7,7 @@
 #include "../config/Config.hpp"
 #include "../../IO/OutManager.hpp"
 #include "../Typedefs.hpp"
-#include "./MCResults.hpp"
+#include "./MCUtils.hpp"
 #include "./memory/PathsMCBatchMem.hpp"
 #include "../schemes/RandNGenerator.hpp"
 #include "../options/OptionPricer.hpp"
@@ -19,100 +19,6 @@ namespace KOps::Engine {
     namespace KIO = KOps::IO;
 
 
-    class MCProgressTracker {
-    public:
-        explicit MCProgressTracker(const Config::UInputs &conf, const PathsMCBatchMem &mem)
-            : config(conf), batch_mem(mem) {}
-
-        void start_tracking() {
-            start_time = std::chrono::steady_clock::now();
-
-            std::cout << "  ========================================================\n";
-            std::cout << "                          MC PROGRESS               \n";
-            std::cout << "  ========================================================\n\n" << std::flush;
-
-            print_progress_bar(0);
-        }
-
-        void update_progress(const int n_current_batch) {
-            print_progress_bar(n_current_batch);
-        }
-
-        void finalize_tracking() {
-            print_progress_bar(batch_mem.total_batch_loops());
-            std::cout << "\n\n  ========================================================\n" << std::endl;
-        }
-
-        void print_pre_execution_diagnostic() const {
-            constexpr std::string_view indent = "  ";
-
-            std::cout << "\n" << indent << "========================================================\n";
-            std::cout << indent << "                    MC EXECUTION SPACE                       \n";
-            std::cout << indent << "========================================================\n";
-            std::cout << indent << " [Hardware Backend Framework]\n";
-            std::cout << indent << "   Active Execution Space   :  " << batch_mem.execution_space_name() << "\n";
-            std::cout << indent << "   Compute Precision Type   :  " << (sizeof(KT::Real) == 8 ? "64-bit Double" : "32-bit Float") << "\n";
-            std::cout << indent << "--------------------------------------------------------\n";
-            std::cout << indent << " [Simulation Matrix Framework]\n";
-            std::cout << indent << "   Total MC Simulations        :  " << config.mc.N_Paths << "\n";
-            std::cout << indent << "   Number Time Steps Per Path  :  " << config.time.N_time_steps << "\n";
-            std::cout << indent << "   Time Step                   :  " << config.time.dt << "\n";
-            std::cout << indent << "--------------------------------------------------------\n";
-            std::cout << indent << " [Memory & Streaming Control]\n"; // (should the class handling the memory should return a structure and a string)
-            std::cout << indent << "   Total N Batches to Launch      :  " << batch_mem.total_batch_loops() << "\n";
-            std::cout << indent << "   Full Batches to Launch         :  " << batch_mem.n_full_batches() << "\n";
-            std::cout << indent << "   N Sims Per Full Batch          :  " << batch_mem.n_sims_per_batch << "\n";
-            std::cout << indent << "   Partial Batches to Launch      :  " << batch_mem.total_batch_loops() - batch_mem.n_full_batches() << "\n";
-            std::cout << indent << "   N Sims Per Partial Batch       :  " << batch_mem.n_sims_left_over_after_full_batches() << "\n";
-            std::cout << indent << "   Batch Paths MEM Footprint      :  " << batch_mem.bytes_to_mb(batch_mem.device_paths_memory_bytes()) << " MB\n";
-            std::cout << indent << "   Batch Payoffs MEM Footprint    :  " << batch_mem.bytes_to_mb(batch_mem.device_payoffs_memory_bytes()) << " MB\n";
-            std::cout << indent << "   Batch TOT MEM Footprint        :  " << batch_mem.bytes_to_mb(batch_mem.tot_device_memory_bytes()) << " MB\n";
-            std::cout << indent << "   Full MC Paths MEM Footprint    :  " << batch_mem.total_paths_footprint_mb() << " MB\n";
-            std::cout << indent << "   Full MC Payoffs MEM Footprint  :  " << batch_mem.total_payoffs_footprint_mb() << " MB\n";
-            std::cout << indent << "========================================================\n" << std::endl;
-        }
-
-    private:
-        const Config::UInputs &config;
-        const PathsMCBatchMem &batch_mem;
-        std::chrono::steady_clock::time_point start_time;
-
-        void print_progress_bar(const int n_current_batch) {
-            constexpr int bar_width = 20;
-            const int n_total_batches = batch_mem.total_batch_loops();
-
-            const float progress = static_cast<float>(n_current_batch) / static_cast<float>(n_total_batches);
-            const int bar_front = static_cast<int>(static_cast<float>(bar_width) * progress);
-            const int percentage_done = static_cast<int>(progress * 100.0f);
-
-            std::cout << "     [";
-            for (int i = 0; i < bar_width; ++i) {
-                if (i < bar_front) std::cout << "#";
-                else if (i == bar_front) std::cout << ">";
-                else std::cout << ".";
-            }
-
-            std::cout << "] " << percentage_done << "% "
-                      << "(" << n_current_batch << "/" << n_total_batches << " Batches)";
-
-            if (n_current_batch > 0) {
-                const auto current_time = std::chrono::steady_clock::now();
-                const std::chrono::duration<double> elapsed = current_time - start_time;
-                const double elapsed_seconds = elapsed.count();
-
-                const double total_estimated_time = elapsed_seconds / progress;
-                const double eta_seconds = total_estimated_time - elapsed_seconds;
-
-                std::cout << std::fixed << std::setprecision(1)
-                          << "(T: " << elapsed_seconds << "s | "
-                          << "ETA: " << (n_current_batch == n_total_batches ? 0.0 : eta_seconds) << "s)\r";
-            }
-            std::cout << "\r" << std::flush;
-        }
-    };
-
-
-
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
     class ForwardMCRunner {
     public:
@@ -122,7 +28,7 @@ namespace KOps::Engine {
         // ====================================================================
         // The Actual Simulation Engine (Fully Resolved at Compile Time)
         // ====================================================================
-        MCResults run_mc_simulation() const {
+        MCResults get_option_prices() const {
             // NOTE : the total number of simulations are performed in batches to handle cases when not enough memory is available
             // NOTE : The global random number pool is created once. States advance dynamically. So using the same pool for different batches is the correct approach
 
@@ -152,16 +58,33 @@ namespace KOps::Engine {
     private:
         const KC::UInputs config;
 
-
         void run_all_mc_batches(PathsMCBatchMem &BatchMem,
                                 const RNGManager &RNGen,
                                 const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
                                 OptionPricer &OPricer,
                                 KIO::OutputManager &OWriter,
                                 MCProgressTracker &MCTracker
-                                ) const {
+        ) const {
+            // Pass a labda function that copy the payoffs computed to the host to then sort them for percentiles
+            auto accumulate_payoffs_func = [&](const int batch_idx, const int current_batch_size) {
+                OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size);
+            };
 
+            run_forward_all_mc_batches(BatchMem,
+                                       RNGen,
+                                       Solver,
+                                       OWriter,
+                                       MCTracker,
+                                       accumulate_payoffs_func);
+        }
 
+        void run_all_mc_batches_old(PathsMCBatchMem &BatchMem,
+                                    const RNGManager &RNGen,
+                                    const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
+                                    OptionPricer &OPricer,
+                                    KIO::OutputManager &OWriter,
+                                    MCProgressTracker &MCTracker
+        ) const {
             //       [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
             //
             //  MCRunner Loop Fires
@@ -189,7 +112,6 @@ namespace KOps::Engine {
             //                                                          Coalesced VRAM Write
 
 
-
             const int full_batch_size = BatchMem.n_sims_per_batch;
             const int n_full_batches = BatchMem.n_full_batches();
             const int n_sims_left_over = BatchMem.n_sims_left_over_after_full_batches();
@@ -198,10 +120,11 @@ namespace KOps::Engine {
             MCTracker.start_tracking();
             for (int b = 0; b < n_total_batch_loops; ++b) {
                 const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
-                Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel
-                BatchMem.deep_copy_to_host(); // Synch the host and dev
-                OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size); // Store payoffs to then sort them for percentiles
-                OWriter.save_paths_batch_if_needed(current_batch_size, BatchMem);  //Save batch to disk
+                Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel on device
+                BatchMem.deep_copy_to_host(); // Synch the host with dev
+                OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size);
+                // Store payoffs to then sort them for percentiles
+                OWriter.save_paths_batch_if_needed(current_batch_size, BatchMem); //Save batch to disk
 
                 MCTracker.update_progress(b + 1);
             }
@@ -209,4 +132,3 @@ namespace KOps::Engine {
         }
     };
 }
-
