@@ -7,7 +7,7 @@
 #include "../config/Config.hpp"
 #include "../../IO/OutManager.hpp"
 #include "../Typedefs.hpp"
-#include "./MCUtils.hpp"
+#include "./MCEngine.hpp"
 #include "./memory/PathsMCBatchMem.hpp"
 #include "../schemes/RandNGenerator.hpp"
 #include "../options/OptionPricer.hpp"
@@ -44,26 +44,25 @@ namespace KOps::Engine {
             MCTracker.print_pre_execution_diagnostic();
             OWriter.print_paths_info_planned_outputs();
 
-            // 3. Run all batches (all mc simulations giving the prices)
-            run_all_mc_batches(BatchMem, RNGen, Solver, OPricer, OWriter, MCTracker);
+            // 3. Run all batches forwards (all mc simulations giving the prices)
+            run_mc_forward(BatchMem, RNGen, Solver, OPricer, OWriter, MCTracker);
 
             // 4. Compute Option Price
             OPricer.evaluate_option_price();
             OPricer.print_info_option_price();
-            const auto OptionRes = OPricer.get_option_price_data();
-            MCResults Res{config, OptionRes};
+            MCResults Res{config, OPricer.get_option_price_data()};
             return Res;
         }
 
     private:
         const KC::UInputs config;
 
-        void run_all_mc_batches(PathsMCBatchMem &BatchMem,
-                                const RNGManager &RNGen,
-                                const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
-                                OptionPricer &OPricer,
-                                KIO::OutputManager &OWriter,
-                                MCProgressTracker &MCTracker
+        void run_mc_forward(PathsMCBatchMem &BatchMem,
+                            const RNGManager &RNGen,
+                            const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
+                            OptionPricer &OPricer,
+                            KIO::OutputManager &OWriter,
+                            MCProgressTracker &MCTracker
         ) const {
             // Pass a labda function that copy the payoffs computed to the host to then sort them for percentiles
             auto accumulate_payoffs_func = [&](const int batch_idx, const int current_batch_size) {

@@ -9,14 +9,16 @@
 
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
+#include "../config/ConfigEnums.hpp"
 
 namespace KOps::Engine {
     namespace KT = KOps::Types;
+    namespace KI = KOps::Implemented;
     namespace KC = KOps::Config;
 
     class OptionPricer {
     public:
-        struct MCUtils {
+        struct MCEngine {
             KT::Real option_price = -999.;
             KT::Real standard_error = -999.;
             KT::Real prob_itm = -999.; // Probability of finishing ITM
@@ -60,9 +62,11 @@ namespace KOps::Engine {
 
             const auto start_time = std::chrono::steady_clock::now();
 
-            // Compute discount factor
-            const KT::Real discount_factor = std::exp(-config.model.heston.r * config.time.t_end);
-
+            // Compute discount factor (do not apply to backwards options since already applied)
+            KT::Real discount_factor = KT::real_one;
+            if (config.options.opt_type != KI::OptType::American) {
+                discount_factor = std::exp(-config.model.heston.r * config.time.t_end);
+            }
 
             // Compute stats
             const KT::Real sample_mean = total_payoff_sum / N;
@@ -130,7 +134,7 @@ namespace KOps::Engine {
         }
 
         // 4. Getter so other parts of the program can use the raw numbers
-        [[nodiscard]] const MCUtils &get_option_price_data() const {
+        [[nodiscard]] const MCEngine &get_option_price_data() const {
             if (!metrics.is_computed) {
                 throw std::runtime_error("Metrics have not been computed yet.");
             }
@@ -143,7 +147,7 @@ namespace KOps::Engine {
         KT::Real total_payoff_sum = 0.;
         KT::Real total_squared_payoff_sum = 0.;
         double computation_time = 0.;
-        MCUtils metrics;
+        MCEngine metrics;
 
 
         void analyze_option_price_distribution(KT::Real discount_factor, KT::Real N_paths) {

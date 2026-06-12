@@ -11,7 +11,7 @@ namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
 
-    class LSMMemory {
+    class BackwardLSMMemory {
     public:
         // 1. The standard forward batch memory manager
         PathsMCBatchMem BatchMem;
@@ -23,13 +23,15 @@ namespace KOps::Engine {
         HostMasterPathsView h_master_paths;
 
         // 3. Tiny GPU Buffers for the Backward Pass
-        Kokkos::View<KT::Real*, Kokkos::LayoutLeft> d_time_slice;
-        Kokkos::View<KT::Real*, Kokkos::LayoutLeft> d_cash_flows;
+        Kokkos::View<KT::Real*, Kokkos::LayoutLeft> d_prices_current_time;
+        Kokkos::View<KT::Real*, Kokkos::LayoutLeft> d_best_future_outcomes; // Best known future outcome (Current present value of the optimal future strategy)
+        // Note : At any given time step t during the loop, d_best_future_outcome(i) contains the amount of money you will make on path i if you hold the option from time t until the best possible future moment, discounted back to time t
+
 
         // Host mirror to retrieve the final cash flows
-        Kokkos::View<KT::Real*, Kokkos::LayoutLeft>::host_mirror_type h_cash_flows;
+        Kokkos::View<KT::Real*, Kokkos::LayoutLeft>::host_mirror_type h_best_future_outcome;
 
-        explicit LSMMemory(const KC::UInputs &conf) : BatchMem(conf) {
+        explicit BackwardLSMMemory(const KC::UInputs &conf) : BatchMem(conf) {
             const int N = conf.mc.N_Paths;
             const int T = conf.time.N_time_steps;
 
@@ -37,9 +39,39 @@ namespace KOps::Engine {
             h_master_paths = HostMasterPathsView("HostMasterMatrix", N, T);
 
             std::cout << "  [LSMMemory] Allocating PCIe Streaming GPU Buffers..." << std::endl;
-            d_time_slice = Kokkos::View<KT::Real*, Kokkos::LayoutLeft>("Device_Time_Slice", N);
-            d_cash_flows = Kokkos::View<KT::Real*, Kokkos::LayoutLeft>("Device_Cash_Flows", N);
-            h_cash_flows = Kokkos::create_mirror_view(d_cash_flows);
+            d_prices_current_time = Kokkos::View<KT::Real*, Kokkos::LayoutLeft>("Device_Time_Slice", N);
+            d_best_future_outcomes = Kokkos::View<KT::Real*, Kokkos::LayoutLeft>("Device_Cash_Flows", N);
+            h_best_future_outcome = Kokkos::create_mirror_view(d_best_future_outcomes);
+        }
+
+        void copy_current_mc_batch_to_master_mc_matrix(const int batch_idx, const int current_batch_size) {
+            // Aim : Extract the exact sub-block of the master matrix we want to fill and fill it
+            // Note: master matrix is always layout right, while batchview depends on how the device is being used
+            // Note: subview only gives a window, it does allocate any new memory
+
+            const int path_start_idx = batch_idx * BatchMem.n_sims_per_batch;
+            const int paths_end_idx = path_start_idx + current_batch_size;
+            const auto target_paths_range = std::make_pair(path_start_idx, paths_end_idx);
+            auto h_sub_master = Kokkos::subview(h_master_paths, // target memory to slice
+                                                target_paths_range, // target first dimension range (the rows/paths)
+                                                Kokkos::ALL() // target all second dimension (all cols/times)
+                                                );
+
+            // Perform the CPU-to-CPU copy, implicitly making a transpose if necessary
+            Kokkos::deep_copy(h_sub_master, BatchMem.h_batch_view);
+        }
+
+        void bring_host_prices_time_slice_to_device(const int time_step) const {
+            // 1. Slice out the target column from the column-major master matrix.
+            // Note: Kokkos::ALL() ensures we grab every simulated path for this time step.
+            auto h_column_view = Kokkos::subview(h_master_paths, Kokkos::ALL(), time_step);
+
+            // 2. Stream the contiguous memory slice across the PCIe bus to the GPU.
+            Kokkos::deep_copy(d_prices_current_time, h_column_view);
+        }
+
+        void bring_device_cash_flows_to_host() {
+            Kokkos::deep_copy(h_best_future_outcome, d_best_future_outcomes);
         }
     };
 }
