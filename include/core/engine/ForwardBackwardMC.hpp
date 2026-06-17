@@ -6,7 +6,7 @@
 
 #include "../config/Config.hpp"
 
-#include "./memory/LSMMemory.hpp"
+#include "./../memory/LSMMemory.hpp"
 
 #include "../Typedefs.hpp"
 #include "./MCEngine.hpp"
@@ -17,7 +17,7 @@
 
 #include "../options/OptionPricer.hpp"
 #include "../options/Payoff.hpp"
-#include "../options/LSMEngine.hpp"
+#include "../options/LSMAmerican.hpp"
 
 
 namespace KOps::Engine {
@@ -109,7 +109,7 @@ namespace KOps::Engine {
                 Mem.bring_host_prices_time_slice_to_device(t);
 
                 // B. Math Orchestration: Regression
-                LSM::LSCoeffs ls_coeffs = EngineLSM::compute_cross_paths_regression(Mem.d_prices_current_time,
+                LSM::LSCoeffs ls_coeffs = EngineLSM::perform_cross_paths_regression(Mem.d_prices_current_time,
                     Mem.d_best_future_outcomes,
                     discount_factor,
                     strike_price);

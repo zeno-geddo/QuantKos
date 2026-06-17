@@ -4,7 +4,7 @@
 #include "../../config/ConfigEnums.hpp"
 #include "MSchemes.hpp"
 #include "../../Typedefs.hpp"
-#include "../../engine/memory/PathsMCBatchMem.hpp"
+#include "../../memory/PathsMCBatchMem.hpp"
 #include "../RandNGenerator.hpp"
 #include "../../options/Payoff.hpp"
 

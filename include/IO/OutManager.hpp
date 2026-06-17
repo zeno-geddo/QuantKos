@@ -6,7 +6,7 @@
 #include "./../core/config/Config.hpp"
 #include "./../core/config/ConfigEnums.hpp"
 #include "./IOBinary.hpp"
-#include "../core/engine/memory/PathsMCBatchMem.hpp"
+#include "../core/memory/PathsMCBatchMem.hpp"
 #include "./../core/Typedefs.hpp"
 
 namespace KOps::IO {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../core/engine/memory/PathsMCBatchMem.hpp"
+#include "../core/memory/PathsMCBatchMem.hpp"
 #include "./../core/Typedefs.hpp"
 
 namespace KOps::IO {

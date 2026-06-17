@@ -3,8 +3,8 @@
 #pragma once
 
 #include <Kokkos_Core.hpp>
-#include "../../Typedefs.hpp"
-#include "../../config/Config.hpp"
+#include "../Typedefs.hpp"
+#include "../config/Config.hpp"
 #include "PathsMCBatchMem.hpp"
 
 namespace KOps::Engine {

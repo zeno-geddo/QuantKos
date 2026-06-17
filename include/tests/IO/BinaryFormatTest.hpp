@@ -8,7 +8,7 @@
 
 #include "../../core/config/Config.hpp"
 #include "../../IO/IOBinary.hpp"
-#include "../../core/engine/memory/PathsMCBatchMem.hpp"
+#include "../../core/memory/PathsMCBatchMem.hpp"
 
 namespace KOps::Tests::IOBIN {
     namespace KC = KOps::Config;

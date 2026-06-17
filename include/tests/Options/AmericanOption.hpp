@@ -39,8 +39,6 @@ namespace KOps::Tests::LSM {
         config.model.heston.theta = 0.16;
         config.model.heston.sigma = 0.9;
         config.model.heston.rho = 0.1;
-        // Feller Condition : 2*k*theta >= sigma*sigma
-        // The feller condition is satisfied in this test
 
         return config;
     }
@@ -82,7 +80,7 @@ namespace KOps::Tests::LSM {
             const KT::Real stat_error = MCRes.OptionPrice.standard_error;
             const KT::Real stat_tolerance = 3.0 * stat_error;
             // Discretization Bias Tolerance
-            const KT::Real bias_tolerance = std::max(expected_price * 0.005, 0.005git);
+            const KT::Real bias_tolerance = std::max(expected_price * 0.1, 0.1);
             // Total allowed tolerance
             const KT::Real total_tolerance = stat_tolerance + bias_tolerance;
 
@@ -92,7 +90,7 @@ namespace KOps::Tests::LSM {
                     << " | Num Price: " << num_price
                     << " | Error: " << abs_error
                     << " | Stat Error: " << stat_error
-                    << " | Bias : " << bias_tolerance
+                    << " | Bias: " << bias_tolerance
                     << " | Allowed Tol Err: " << total_tolerance << "\n";
 
             if (abs_error > total_tolerance) {

@@ -4,8 +4,8 @@
 #include <type_traits>
 
 
-#include "../../Typedefs.hpp"
-#include "../../config/Config.hpp"
+#include "../Typedefs.hpp"
+#include "../config/Config.hpp"
 #include "./MemoryTypes.hpp"
 
 

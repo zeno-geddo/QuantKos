@@ -2,7 +2,7 @@
 
 #include <Kokkos_Core.hpp>
 
-#include "../../Typedefs.hpp"
+#include "../Typedefs.hpp"
 
 
 namespace KOps::Engine {

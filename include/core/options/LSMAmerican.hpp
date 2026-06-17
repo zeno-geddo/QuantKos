@@ -16,22 +16,30 @@ namespace KOps::Engine::LSM {
     };
 
     struct RegressionSums {
+        //  C = M^{-1} B, where M = (X^T X), B = (X^T Y), C regression coeffs to be found later
+
+        // Components Matrix $M = (X^T X)$
         KT::Real count{0.0}; // N (number of ITM paths)
-        KT::Real x1{0.0}; // Sum(S)
-        KT::Real x2{0.0}; // Sum(S^2)
-        KT::Real x3{0.0}; // Sum(S^3)
-        KT::Real x4{0.0}; // Sum(S^4)
+        KT::Real x1{0.0}; // Sum(X)
+        KT::Real x2{0.0}; // Sum(X^2)
+        KT::Real x3{0.0}; // Sum(X^3)
+        KT::Real x4{0.0}; // Sum(X^4)
+
+        //  Components Vector $B = (X^T Y)$
         KT::Real y{0.0}; // Sum(Y)
-        KT::Real xy{0.0}; // Sum(S * Y)
-        KT::Real x2y{0.0}; // Sum(S^2 * Y)
+        KT::Real xy{0.0}; // Sum(X * Y)
+        KT::Real x2y{0.0}; // Sum(X^2 * Y)
 
         KOKKOS_INLINE_FUNCTION
-        RegressionSums& operator+=(const RegressionSums& src) {
+        RegressionSums &operator+=(const RegressionSums &src) {
+            // Matrix $M = (X^T X)$
             count += src.count;
             x1 += src.x1;
             x2 += src.x2;
             x3 += src.x3;
             x4 += src.x4;
+
+            //  Vector $B = (X^T Y)$
             y += src.y;
             xy += src.xy;
             x2y += src.x2y;
@@ -65,19 +73,21 @@ namespace KOps::Engine::LSM {
         // =================================================================
         // STEP 2 : The Cross-Paths Regression
         // =================================================================
-        static LSCoeffs compute_cross_paths_regression(const DevView1D &d_slice_prices_at_target_time,
+        static LSCoeffs perform_cross_paths_regression(const DevView1D &d_slice_prices_at_target_time,
                                                        const DevView1D &d_best_future_outcomes,
                                                        const KT::Real discount_factor,
                                                        const KT::Real strike_price) {
-            // 1. Run the parallel reduction on the GPU to get terms needed in the matrix multiplication
-            const RegressionSums sums = compute_sums_on_device(
+            // 1. Compute terms M and B of linear system MC = B
+            // NOTE : Run the parallel reduction on the GPU to get terms needed in the matrix multiplication
+            const RegressionSums sums = compute_regression_sums_on_device(
                 d_slice_prices_at_target_time,
                 d_best_future_outcomes,
                 discount_factor,
                 strike_price
             );
 
-            // 2. Solve the 3x3 matrix on the CPU Host, returns the coeffs needed to compute the best future outcomes
+            // 2. Get C = M^-1 B
+            // Solve the 3x3 matrix on the CPU Host, returns the coeffs needed to compute the best future outcomes
             return solve_linear_system_on_host(sums);
         }
 
@@ -102,7 +112,9 @@ namespace KOps::Engine::LSM {
                     const KT::Real X = S / strike_price; // normalize for numerical stability
                     const KT::Real expected_val_of_holding = ls_coeffs.b0 + (ls_coeffs.b1 * X) + (ls_coeffs.b2 * X * X);
                     // Continuation value
-                    d_best_future_outcomes(i) = (intrinsic_val > expected_val_of_holding) ? intrinsic_val : discounted_future_cf;
+                    d_best_future_outcomes(i) = (intrinsic_val > expected_val_of_holding)
+                                                    ? intrinsic_val
+                                                    : discounted_future_cf;
                     // if : intrinsic_val > expected_val_of_holding the option is exercised (holding will be statistically worst). The future cash flow is overwritten with the intrinsic_val of today
                     // else : we hold the option, based on statistical average of all paths, holding will likely yield a bigg payout in the future
                 } else {
@@ -129,10 +141,11 @@ namespace KOps::Engine::LSM {
             Kokkos::fence();
         }
 
-        static RegressionSums compute_sums_on_device(const DevView1D &d_slice_prices,
-                                                                  const DevView1D &d_best_future_outcomes,
-                                                                  const KT::Real discount_factor,
-                                                                  const KT::Real strike_price) {
+        static RegressionSums compute_regression_sums_on_device(const DevView1D &d_slice_prices,
+                                                                const DevView1D &d_best_future_outcomes,
+                                                                const KT::Real discount_factor,
+                                                                const KT::Real strike_price) {
+            // Compute terms M and B of linear system MC = B
             // NOTE : Method kept public since if private cuda does not have access to it
             const int N = d_slice_prices.extent(0);
             RegressionSums total_sums;
@@ -176,9 +189,10 @@ namespace KOps::Engine::LSM {
 
 
         static LSCoeffs solve_linear_system_on_host(const RegressionSums &sums) {
+            // Solving the sistem C = M-1 * B using cramer rule
+            // NOTE : in a system of linear equations MC=B, you can find any individual coefficient C_i
+            // simply by calculating the ratio of two determinants det(M_i)/ det(M), where M_i swap colum i with B
             // NOTE : Method kept public since if private cuda does not have access to it
-
-            // Solving the sistem V = M * B
 
             // If there are fewer than 3 ITM paths, we cannot fit a quadratic curve.
             if (sums.count < 3.0) {
@@ -201,23 +215,27 @@ namespace KOps::Engine::LSM {
             const KT::Real Y1 = sums.xy;
             const KT::Real Y2 = sums.x2y;
 
-            // Calculate Determinant of A
-            const KT::Real detA = a11 * (a22 * a33 - a23 * a32) - a12 * (a21 * a33 - a23 * a31) + a13 * (a21 * a32 - a22 * a31);
+            // Calculate Determinant of M
+            const KT::Real detA = a11 * (a22 * a33 - a23 * a32) - a12 * (a21 * a33 - a23 * a31) + a13 * (
+                                      a21 * a32 - a22 * a31);
 
             // Safety check for singular or nearly-singular matrix (e.g., all ITM paths have the exact same price)
             if (std::abs(detA) < 1e-12) {
                 return LSCoeffs{0.0, 0.0, 0.0};
             }
 
-            // Cramer's Rule determinants for Beta 0, Beta 1, Beta 2
-            const KT::Real det0 = Y0 * (a22 * a33 - a23 * a32) - a12 * (Y1 * a33 - a23 * Y2) + a13 * (Y1 * a32 - a22 * Y2);
-            const KT::Real det1 = a11 * (Y1 * a33 - a23 * Y2) - Y0 * (a21 * a33 - a23 * a31) + a13 * (a21 * Y2 - Y1 * a31);
-            const KT::Real det2 = a11 * (a22 * Y2 - Y1 * a32) - a12 * (a21 * Y2 - Y1 * a31) + Y0 * (a21 * a32 - a22 * a31);
+            // Cramer's Rule determinants for C0, C1, C2
+            const KT::Real det0 = Y0 * (a22 * a33 - a23 * a32) - a12 * (Y1 * a33 - a23 * Y2) + a13 * (
+                                      Y1 * a32 - a22 * Y2);
+            const KT::Real det1 = a11 * (Y1 * a33 - a23 * Y2) - Y0 * (a21 * a33 - a23 * a31) + a13 * (
+                                      a21 * Y2 - Y1 * a31);
+            const KT::Real det2 = a11 * (a22 * Y2 - Y1 * a32) - a12 * (a21 * Y2 - Y1 * a31) + Y0 * (
+                                      a21 * a32 - a22 * a31);
 
             return LSCoeffs{
-                det0 / detA, // b0
-                det1 / detA, // b1
-                det2 / detA // b2
+                det0 / detA, // c0
+                det1 / detA, // c1
+                det2 / detA // c2
             };
         }
     };

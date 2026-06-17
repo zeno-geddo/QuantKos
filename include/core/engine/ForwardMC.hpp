@@ -8,7 +8,7 @@
 #include "../../IO/OutManager.hpp"
 #include "../Typedefs.hpp"
 #include "./MCEngine.hpp"
-#include "./memory/PathsMCBatchMem.hpp"
+#include "./../memory/PathsMCBatchMem.hpp"
 #include "../schemes/RandNGenerator.hpp"
 #include "../options/OptionPricer.hpp"
 
