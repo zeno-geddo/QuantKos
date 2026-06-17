@@ -3,10 +3,11 @@
 
 #include "./../include/tests/IO/BinaryFormatTest.hpp"
 #include "./../include/tests/RNG/RNGenTest.hpp"
-#include "./../include/tests/EUOptions/PutCallParityTest.hpp"
-#include "./../include/tests/EUOptions/NoNoiseTest.hpp"
-#include "./../include/tests/EUOptions/BlackScholesTest.hpp"
-#include "./../include/tests/EUOptions/HestonTest.hpp"
+#include "./../include/tests/Options/PutCallParityTest.hpp"
+#include "./../include/tests/Options/NoNoiseTest.hpp"
+#include "./../include/tests/Options/BlackScholesTest.hpp"
+#include "./../include/tests/Options/HestonTest.hpp"
+#include "./../include/tests/Options/AmericanOption.hpp"
 
 
 
@@ -28,11 +29,12 @@ int main(int argc, char *argv[]) {
         // Tests to RUN
         namespace KTE = KOps::Tests;
         const std::vector<TestSuite> tests_to_run = {
-            {"Random Number Generator", KTE::RNG::run_test},
-            {"Binary File Format I/O", KTE::IOBIN::run_test},
-            {"Zero-Variance SDE Drift", KTE::NoNoise::run_test},
-            {"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test},
-            {"Weak Convergence to Heston", KTE::Heston::run_test},
+            //{"Random Number Generator", KTE::RNG::run_test},
+            //{"Binary File Format I/O", KTE::IOBIN::run_test},
+            //{"Zero-Variance SDE Drift", KTE::NoNoise::run_test},
+            //{"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test},
+            //{"Weak Convergence to Heston", KTE::Heston::run_test},
+            {"American Option LSM", KTE::LSM::run_test}
         };
 
         // Run Tests

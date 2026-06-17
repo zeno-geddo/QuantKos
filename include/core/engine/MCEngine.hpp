@@ -16,16 +16,16 @@ namespace KOps::Engine {
     };
 
 
-    class MCProgressTracker {
+    class ForwardMCProgressTracker {
     public:
-        explicit MCProgressTracker(const Config::UInputs &conf, const PathsMCBatchMem &mem)
+        explicit ForwardMCProgressTracker(const Config::UInputs &conf, const PathsMCBatchMem &mem)
             : config(conf), batch_mem(mem) {}
 
         void start_tracking() {
             start_time = std::chrono::steady_clock::now();
 
             std::cout << "  ========================================================\n";
-            std::cout << "                          MC PROGRESS               \n";
+            std::cout << "                 MC PROGRESS  (Forward Phase)             \n";
             std::cout << "  ========================================================\n\n" << std::flush;
 
             print_progress_bar(0);
@@ -109,14 +109,14 @@ namespace KOps::Engine {
     };
 
 
-    template<typename SolverType, typename HostCallback>
+    template<typename SolverType, typename HostDeepCopy>
     inline void run_forward_all_mc_batches(
             PathsMCBatchMem &BatchMem,
             const RNGManager &RNGen,
             const SolverType &Solver,
             KIO::OutputManager &OWriter,
-            MCProgressTracker &MCTracker,
-            HostCallback&& host_callback // Lambda function to copy desired data to host
+            ForwardMCProgressTracker &MCTracker,
+            HostDeepCopy&& host_deep_copy // Lambda function to copy desired data to host
             )
     {
 
@@ -157,10 +157,10 @@ namespace KOps::Engine {
         for (int b = 0; b < n_total_batch_loops; ++b) {
             const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
             Solver.execute_batch(current_batch_size, BatchMem, RNGen);
-            BatchMem.deep_copy_to_host();
+            // BatchMem.deep_copy_to_host();
 
             // EXECUTE CUSTOM HOST LOGIC TO MOVE DATA TO MEMORY (Injected via Lambda)
-            host_callback(b, current_batch_size);
+            host_deep_copy(b, current_batch_size);
 
             OWriter.save_paths_batch_if_needed(current_batch_size, BatchMem);   //Save batch to disk
             MCTracker.update_progress(b + 1);

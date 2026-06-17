@@ -42,7 +42,7 @@ namespace KOps::Tests::BlackScholes {
     }
 
 
-    bool run_test() {
+    inline bool run_test() {
         std::string id_test {"TEST 4 : Weak Convergence to Black-Scholes SDE exact option price"};
         auto config = getDefaultConfig();
         const KT::Real exact_price = KBS::get_exact_eu_call_option_price(config);

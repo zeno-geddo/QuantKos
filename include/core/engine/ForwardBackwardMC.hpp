@@ -39,7 +39,7 @@ namespace KOps::Engine {
             MSolver<ModelPolicy, SchemePolicy, KI::OptType::European, OptRight> Solver(config);
             OptionPricer OPricer(config);
             KIO::OutputManager OWriter(config);
-            MCProgressTracker MCTracker(config, Mem.BatchMem);
+            ForwardMCProgressTracker MCTracker(config, Mem.BatchMem);
 
             // PHASE 1: Forward Batch Generation
             MCTracker.print_pre_execution_diagnostic();
@@ -68,7 +68,7 @@ namespace KOps::Engine {
                                const RNGManager &RNGen,
                                const MSolver<ModelPolicy, SchemePolicy, KI::OptType::European, OptRight> &Solver,
                                KIO::OutputManager &OWriter,
-                               MCProgressTracker &MCTracker) const {
+                               ForwardMCProgressTracker &MCTracker) const {
             std::cout << "  >>> Starting Phase 1: Forward Path Generation...\n";
 
             // Pass a lambda function that copies the simulated GPU batch directly

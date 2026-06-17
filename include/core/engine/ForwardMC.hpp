@@ -38,7 +38,7 @@ namespace KOps::Engine {
             MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> Solver(config); // Handles the Temporal integration
             OptionPricer OPricer(config); // Handles the Option Pricing
             KIO::OutputManager OWriter(config); // Handles the outputs
-            MCProgressTracker MCTracker(config, BatchMem);
+            ForwardMCProgressTracker MCTracker(config, BatchMem);
 
             // Print Pre-Execution Diagnostics
             MCTracker.print_pre_execution_diagnostic();
@@ -62,10 +62,11 @@ namespace KOps::Engine {
                             const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
                             OptionPricer &OPricer,
                             KIO::OutputManager &OWriter,
-                            MCProgressTracker &MCTracker
+                            ForwardMCProgressTracker &MCTracker
         ) const {
-            // Pass a labda function that copy the payoffs computed to the host to then sort them for percentiles
-            auto accumulate_payoffs_func = [&](const int batch_idx, const int current_batch_size) {
+            // Pass a labda function that copy the prices and payoffs computed to the host
+            auto copy_prices_and_payoffs = [&](const int batch_idx, const int current_batch_size) {
+                BatchMem.deep_copy_to_host();
                 OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size);
             };
 
@@ -74,7 +75,7 @@ namespace KOps::Engine {
                                        Solver,
                                        OWriter,
                                        MCTracker,
-                                       accumulate_payoffs_func);
+                                       copy_prices_and_payoffs);
         }
 
         void run_all_mc_batches_old(PathsMCBatchMem &BatchMem,
@@ -82,7 +83,7 @@ namespace KOps::Engine {
                                     const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
                                     OptionPricer &OPricer,
                                     KIO::OutputManager &OWriter,
-                                    MCProgressTracker &MCTracker
+                                    ForwardMCProgressTracker &MCTracker
         ) const {
             //       [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
             //
