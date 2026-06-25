@@ -62,6 +62,7 @@ namespace KOps::Tests::LSM {
             const double expected_price = pair.second;
 
             config.init.S0 = S0;
+            std::cout << "\n\n" << indent << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
             std::cout << indent << "[   INFO   ] S0  : " << S0 << " ; expected price : " << expected_price << " \n";
 
             // Run Simulation

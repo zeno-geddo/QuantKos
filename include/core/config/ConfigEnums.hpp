@@ -58,4 +58,9 @@ namespace KOps::Implemented {
         BIN, // Specific binary protocol
         TXT, // For simple 1D debugging
     };
+
+    enum class LSRegressionBasis {
+        MonomialO2,
+        LaguerreO3
+    };
 }
