@@ -109,10 +109,10 @@ namespace KOps::Engine {
                 Mem.bring_host_prices_time_slice_to_device(t);
 
                 // B. Math Orchestration: Regression
-                LSM::LSCoeffs ls_coeffs = EngineLSM::perform_cross_paths_regression(Mem.d_prices_current_time,
-                    Mem.d_best_future_outcomes,
-                    discount_factor,
-                    strike_price);
+                const auto ls_coeffs = EngineLSM::perform_cross_paths_regression(Mem.d_prices_current_time,
+                                                                           Mem.d_best_future_outcomes,
+                                                                           discount_factor,
+                                                                           strike_price);
 
                 // C. Math Orchestration: Early Exercise Evaluation
                 EngineLSM::update_cashflows(Mem.d_prices_current_time,

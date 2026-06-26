@@ -60,7 +60,8 @@ namespace KOps::Implemented {
     };
 
     enum class LSRegressionBasis {
-        MonomialO2,
-        LaguerreO3
+        LaguerreP02,
+        LaguerreP03,
+        LaguerreP04,
     };
 }
