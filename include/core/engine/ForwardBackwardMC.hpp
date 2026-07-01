@@ -16,7 +16,6 @@
 #include "../schemes/markovian/MSolver.hpp"
 
 #include "../options/OptionPricer.hpp"
-#include "../options/Payoff.hpp"
 #include "../options/LSMAmerican.hpp"
 
 
@@ -110,9 +109,9 @@ namespace KOps::Engine {
 
                 // B. Math Orchestration: Regression
                 const auto ls_coeffs = EngineLSM::perform_cross_paths_regression(Mem.d_prices_current_time,
-                                                                           Mem.d_best_future_outcomes,
-                                                                           discount_factor,
-                                                                           strike_price);
+                    Mem.d_best_future_outcomes,
+                    discount_factor,
+                    strike_price);
 
                 // C. Math Orchestration: Early Exercise Evaluation
                 EngineLSM::update_cashflows(Mem.d_prices_current_time,

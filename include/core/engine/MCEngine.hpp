@@ -21,6 +21,14 @@ namespace KOps::Engine {
         explicit ForwardMCProgressTracker(const Config::UInputs &conf, const PathsMCBatchMem &mem)
             : config(conf), batch_mem(mem) {}
 
+        // Disable copies to prevent reference issues
+        ForwardMCProgressTracker(const ForwardMCProgressTracker&) = delete;
+        ForwardMCProgressTracker& operator=(const ForwardMCProgressTracker&) = delete;
+
+        // Allow moves if needed
+        ForwardMCProgressTracker(ForwardMCProgressTracker&&) = default;
+        ForwardMCProgressTracker& operator=(ForwardMCProgressTracker&&) = default;
+
         void start_tracking() {
             start_time = std::chrono::steady_clock::now();
 

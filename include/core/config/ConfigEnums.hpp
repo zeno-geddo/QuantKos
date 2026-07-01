@@ -48,7 +48,6 @@ namespace KOps::Implemented {
     };
 
     enum class NumScheme {
-        // Should add exact?
         Euler,
         Milstein,
         AndersonQE,
