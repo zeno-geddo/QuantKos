@@ -12,11 +12,22 @@ namespace KOps::Engine {
     namespace KI = KOps::Implemented;
     namespace KC = KOps::Config;
 
-
+    // Transfer service class
     class MCDispatcher {
     public:
         explicit MCDispatcher(const KC::UInputs &conf) : config(conf) {
         }
+
+        // Force unique lifecycle: Delete copy operations
+        MCDispatcher(const MCDispatcher&) = delete;
+        MCDispatcher& operator=(const MCDispatcher&) = delete;
+
+        // Delete move operations as well, this is just an execution tool
+        MCDispatcher(MCDispatcher&&) = delete;
+        MCDispatcher& operator=(MCDispatcher&&) = delete;
+
+        // Default destructor
+        ~MCDispatcher() = default;
 
         MCResults launch_montecarlo() {
             std::cout << "\n>>> Starting Monte Carlo Simulation...\n" << std::endl;
@@ -126,8 +137,6 @@ namespace KOps::Engine {
         MCResults execute_selected_runner() {
             if constexpr (OptType == KI::OptType::American) {
                 // If it is American, the compiler ONLY consider this branch.
-                // Notice the new architectural name: ForwardBackwardMCRunner
-                // return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).get_option_prices();
                 return ForwardBackwardMCRunner<ModelPolicy, SchemePolicy, OptRight>(config).get_option_price();
             } else {
                 // For all other options, the compiler ONLY consider this branch.

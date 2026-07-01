@@ -15,10 +15,12 @@ namespace KOps::Tests::LSM {
         auto config = KC::UInputs();
 
         config.model.id_model = KI::MathModel::Heston,
-                config.scheme.id_scheme = KI::NumScheme::Milstein,
+        config.scheme.id_scheme = KI::NumScheme::Milstein,
 
-                config.output.format = KI::IOFormat::BIN;
+        config.output.format = KI::IOFormat::BIN;
         config.output.filename_paths_out = "";
+        config.mc.Max_CPU_RAM_MB = 10000 ;
+        config.mc.Max_VRAM_MB = 400 ;
 
         config.mc.N_Paths = 1'000'000;
         config.mc.batch_size = 0;
@@ -84,7 +86,6 @@ namespace KOps::Tests::LSM {
             const KT::Real bias_tolerance = std::max(expected_price * 0.1, 0.1);
             // Total allowed tolerance
             const KT::Real total_tolerance = stat_tolerance + bias_tolerance;
-
 
 
             std::cout << indent << " Expe price: " << expected_price

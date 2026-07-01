@@ -6,16 +6,18 @@
 
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
+#include "../config/ConfigEnums.hpp"
 #include "./MemoryTypes.hpp"
 
 
 namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
+    namespace KI = KOps::Implemented;
 
 
     // ------------------------------------------------------------------------
-    // Class managing the memory for markovian models, when the entire times grid is kept
+    // Class managing the memory, when the entire times grid is kept
     // but only a subsets of the total paths are kept to not saturate memory
     // ------------------------------------------------------------------------
     class PathsMCBatchMem {
@@ -31,14 +33,23 @@ namespace KOps::Engine {
         HostPayoffView h_payoffs;
 
 
-
         // Explicit to initialize it explicitly
         explicit PathsMCBatchMem(const KC::UInputs &conf) : config(conf) {
             // Memory is allocated during the construction of the class
             allocate_batch_memory();
-            std::cout << "  [MCBatchMem] Memory allocated correctly." << std::endl;
-
+            std::cout << "  [Batch Memory] Memory allocated correctly." << std::endl;
         }
+
+        // Prohibiting copy to avoid memory issues
+        PathsMCBatchMem(const PathsMCBatchMem &) = delete;
+        PathsMCBatchMem &operator=(const PathsMCBatchMem &) = delete;
+
+        // Allow move construction (Transfers ownership safely) and explicitly delete move assignment
+        PathsMCBatchMem(PathsMCBatchMem &&) = default;
+        PathsMCBatchMem &operator=(PathsMCBatchMem &&) = delete;
+
+        // Default destructor
+        ~PathsMCBatchMem() = default;
 
         //-------------------------------------------
         // SYNCH
@@ -49,6 +60,7 @@ namespace KOps::Engine {
             Kokkos::deep_copy(h_batch_view, d_batch_view);
             Kokkos::deep_copy(h_payoffs, d_payoffs);
         }
+
         void deep_copy_to_device() const {
             Kokkos::deep_copy(d_batch_view, h_batch_view);
             Kokkos::deep_copy(d_payoffs, h_payoffs);
@@ -106,7 +118,8 @@ namespace KOps::Engine {
         }
 
         [[nodiscard]] double total_paths_footprint_mb() const {
-            size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.N_time_steps) * sizeof(KT::Real);
+            size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.N_time_steps)
+                                 * sizeof(KT::Real);
             return static_cast<double>(total_bytes) / (1024.0 * 1024.0);
         }
 
@@ -148,7 +161,7 @@ namespace KOps::Engine {
 
         [[nodiscard]] int total_batch_loops() const {
             const int n_batches = n_full_batches();
-            const int left_over   = n_sims_left_over_after_full_batches();
+            const int left_over = n_sims_left_over_after_full_batches();
             return n_batches + (left_over > 0 ? 1 : 0);
         }
 
@@ -198,14 +211,15 @@ namespace KOps::Engine {
 
 
             // Allocate the PATHS views using our newly stored class attributes
-            std::cout << "  [Memory Allocation] Allocating reusable buffers ("
-                    << n_sims_per_batch << " x " << config.time.N_time_steps << ") for the paths of the MC batches..." << std::endl;
+            std::cout << "  [Batch Memory] Allocating reusable buffers ("
+                    << n_sims_per_batch << " x " << config.time.N_time_steps << ") for the paths of the MC batches..."
+                    << std::endl;
             d_batch_view = DevPathsView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
             h_batch_view = Kokkos::create_mirror_view(d_batch_view);
 
             // Allocate the PAYOFFS views
-            std::cout << "  [Memory Allocation] Allocating reusable buffers ("
-                   << n_sims_per_batch << ") for the payoffs of the MC batches..." << std::endl;
+            std::cout << "  [Batch Memory] Allocating reusable buffers ("
+                    << n_sims_per_batch << ") for the payoffs of the MC batches..." << std::endl;
             d_payoffs = DevPayoffView("gpu_payoffs_batch_buffer", n_sims_per_batch);
             h_payoffs = Kokkos::create_mirror_view(d_payoffs);
         }
@@ -226,7 +240,29 @@ namespace KOps::Engine {
             return (calculated_paths / 32) * 32;
 
 #else
-            const double cpu_budget_bytes = static_cast<double>(config.mc.Max_CPU_RAM_MB) * 1024.0 * 1024.0;
+            double cpu_budget_bytes = static_cast<double>(config.mc.Max_CPU_RAM_MB) * 1024.0 * 1024.0;
+
+            // If you need to allocate a master matrix for backward paths on cpu, allocate this first
+            if (config.options.opt_type == KI::OptType::American) {
+                const double master_matrix_bytes = static_cast<double>(config.mc.N_Paths) * bytes_per_sde_path;
+                cpu_budget_bytes -= master_matrix_bytes;
+
+                // If the Master Matrix alone eats the entire budget, return 0.
+                // The Low-Bound Safety check in allocate_batch_memory() will catch this and throw cleanly.
+                if (cpu_budget_bytes <= 0.0) {
+                    throw std::runtime_error(
+                        "[Memory Capacity Error] The Longstaff-Schwartz algorithm requires CPU RAM "
+                        "that, summed to the batches memory used for the forward computation, exceeds your assigned Max_CPU_RAM_MB budget.\n"
+                        "  -> Master Matrix RAM   : " + std::to_string(master_matrix_bytes) + " MB\n"
+                        "  -> Host Batch Buffers  : " + std::to_string(cpu_budget_bytes) + " MB\n"
+                        "  -> Config Budget       : " + std::to_string(config.mc.Max_CPU_RAM_MB) + " MB\n"
+                        "Possible Actions: \n"
+                        "\t 1) Increase 'Max_CPU_RAM_MB' in your config,\n"
+                        "\t 2) Reduce the the batch size (explicitly assign a moderate number of sims per batch),\n"
+                        "\t 3) Reduce the number of paths/time steps.\n"
+                    );
+                }
+            }
 
             return static_cast<int>(cpu_budget_bytes / bytes_per_sde_path); //Integer division
 

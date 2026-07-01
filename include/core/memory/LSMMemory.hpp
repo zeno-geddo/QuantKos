@@ -30,20 +30,60 @@ namespace KOps::Engine {
 
 
         // Host mirror to retrieve the final cash flows
-        Kokkos::View<KT::Real *, Kokkos::LayoutLeft>::host_mirror_type h_best_future_outcome;
+        Kokkos::View<KT::Real *, Kokkos::LayoutLeft>::host_mirror_type h_best_future_outcomes;
 
         explicit BackwardLSMMemory(const KC::UInputs &conf) : BatchMem(conf) {
             const int N = conf.mc.N_Paths;
             const int T = conf.time.N_time_steps;
 
-            std::cout << "  [LSMMemory] Allocating " << N << "x" << T << " Master Matrix in Host RAM..." << std::endl;
+            // 1. Calculate the RAM needed for the Master Matrix
+            const double required_master_mb = static_cast<double>(N) * T * sizeof(KT::Real) / (1024.0 * 1024.0);
+
+            // 2. Add the RAM already claimed by the Host-side batch mirrors
+            const double tot_host_batch_mb = BatchMem.bytes_to_mb(BatchMem.tot_host_memory_bytes());
+            const double host_paths_batch_mb = BatchMem.bytes_to_mb(BatchMem.host_paths_memory_bytes());
+            const double host_payoffs_batch_mb = BatchMem.bytes_to_mb(BatchMem.host_payoffs_memory_bytes());
+
+            // 3. Check if there is enough memory
+            const double total_required_cpu_mb = required_master_mb + tot_host_batch_mb;
+            const double budget_ram_mb = static_cast<double>(conf.mc.Max_CPU_RAM_MB);
+
+            if (total_required_cpu_mb > budget_ram_mb) {
+                throw std::runtime_error(
+                    "[Memory Capacity Error] The Longstaff-Schwartz algorithm requires CPU RAM "
+                    "that, summed to the batches memory used for the forward computation, exceeds your assigned Max_CPU_RAM_MB budget.\n"
+                    "  -> Master Matrix RAM         : " + std::to_string(required_master_mb) + " MB\n"
+                    "  -> Host Paths Batch Buffers  : " + std::to_string(host_paths_batch_mb) + " MB\n"
+                    "  -> Host Payoff BatchBuffers  : " + std::to_string(host_payoffs_batch_mb) + " MB\n"
+                    "  -> Total Required            : " + std::to_string(total_required_cpu_mb) + " MB\n"
+                    "  -> Config Budget             : " + std::to_string(budget_ram_mb) + " MB\n"
+                    "Possible Actions: \n"
+                    "\t 1) Increase 'Max_CPU_RAM_MB' in your config,\n"
+                    "\t 2) Reduce the the batch size (explicitly assign a moderate number of sims per batch),\n"
+                    "\t 3) Reduce the number of paths/time steps.\n"
+                );
+            }
+
+            // 4. Allocate memory if there is enough
+            std::cout << "  [LSM Memory] Allocating " << N << "x" << T << " Master Matrix in Host RAM..." << std::endl;
             h_master_paths = HostMasterPathsView("HostMasterMatrix", N, T);
 
-            std::cout << "  [LSMMemory] Allocating PCIe Streaming GPU Buffers..." << std::endl;
+            std::cout << "  [LSM Memory] Allocating Temporary Streaming Buffers for Regressions..." << std::endl;
             d_prices_current_time = Kokkos::View<KT::Real *, Kokkos::LayoutLeft>("Device_Time_Slice", N);
             d_best_future_outcomes = Kokkos::View<KT::Real *, Kokkos::LayoutLeft>("Device_Cash_Flows", N);
-            h_best_future_outcome = Kokkos::create_mirror_view(d_best_future_outcomes);
+            h_best_future_outcomes = Kokkos::create_mirror_view(d_best_future_outcomes);
         }
+
+        // Delete copies to prevent shared memory issues
+        BackwardLSMMemory(const BackwardLSMMemory&) = delete;
+        BackwardLSMMemory& operator=(const BackwardLSMMemory&) = delete;
+
+        // Default move constructor to allow safe ownership transfer
+        BackwardLSMMemory(BackwardLSMMemory&&) = default;
+        BackwardLSMMemory& operator=(BackwardLSMMemory&&) = delete;
+
+        // Default destructor
+        ~BackwardLSMMemory() = default;
 
         void copy_current_mc_batch_to_master_mc_matrix(const int batch_idx, const int current_batch_size) {
             // Aim : Extract the exact sub-block of the master matrix we want to fill and fill it
@@ -83,7 +123,7 @@ namespace KOps::Engine {
         }
 
         void bring_device_cash_flows_to_host() {
-            Kokkos::deep_copy(h_best_future_outcome, d_best_future_outcomes);
+            Kokkos::deep_copy(h_best_future_outcomes, d_best_future_outcomes);
         }
     };
 }

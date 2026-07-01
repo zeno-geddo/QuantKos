@@ -26,6 +26,17 @@ namespace KOps::Engine {
             std::cout << "  [RNGenerator] Global Random Number Pool initialized correctly." << std::endl;
         }
 
+        // Delete copies to enforce a Single Source of Truth
+        RNGManager(const RNGManager&) = delete;
+        RNGManager& operator=(const RNGManager&) = delete;
+
+        // Default moves so it can be returned from factories or stored in vectors
+        RNGManager(RNGManager&&) = default;
+        RNGManager& operator=(RNGManager&&) = default;
+
+        // Default destructor
+        ~RNGManager() = default;
+
         [[nodiscard]] GlobalRNGPool get_global_rng_pool() const {
             // Kokkos only creates a shallow copy of the pool wrapper.
             // It does not reallocate or re-seed the massive array of random states in the GPU VRAM.
@@ -48,21 +59,26 @@ namespace KOps::Engine {
     // ========================================================================
     class ScopedRNG {
     public:
+        // Constructor, acquire state on creation
         // KOKKOS_INLINE_FUNCTION allows instantiation directly on the GPU
         KOKKOS_INLINE_FUNCTION
         explicit ScopedRNG(const RNGManager::GlobalRNGPool &pool) : global_rng_pool(pool),
                                                                     unique_rng_state(global_rng_pool.get_state()) {
-        } // Acquire state on creation
-
-        KOKKOS_INLINE_FUNCTION
-        ~ScopedRNG() {
-            global_rng_pool.free_state(unique_rng_state); // Release state automatically on destruction
         }
 
         // Prevent copying to ensure a state isn't double-freed by accident
         ScopedRNG(const ScopedRNG &) = delete; // delete the copy constructor
-
         ScopedRNG &operator=(const ScopedRNG &) = delete; // delete copy assignment operator.
+
+        // Prevent moving as well
+        ScopedRNG(ScopedRNG &&) = delete;
+        ScopedRNG &operator=(ScopedRNG &&) = delete;
+
+        // Destructor
+        KOKKOS_INLINE_FUNCTION
+        ~ScopedRNG() {
+            global_rng_pool.free_state(unique_rng_state); // Release state automatically on destruction
+        }
 
         // Accessor to pass to your mathematical schemes
         KOKKOS_INLINE_FUNCTION

@@ -51,6 +51,15 @@ namespace KOps::IO::Binary {
             }
         }
 
+        // Delete copies (Cannot duplicate a file write handle)
+        BinWriter(const BinWriter&) = delete;
+        BinWriter& operator=(const BinWriter&) = delete;
+
+        // Default move constructor (Transfers the file handle safely), and delete move assignment explicitly
+        BinWriter(BinWriter&&) = default;
+        BinWriter& operator=(BinWriter&&) = delete;
+
+        // Destructor
         ~BinWriter() override {
             if (out_paths_stream.is_open()) out_paths_stream.close();
         }
@@ -127,7 +136,7 @@ namespace KOps::IO::Binary {
 
     private
     :
-        const KC::UInputs config;
+        const KC::UInputs & config;
         std::ofstream out_paths_stream;
         std::filesystem::path full_paths_out_path;
 
@@ -154,6 +163,19 @@ namespace KOps::IO::Binary {
             if (!config.output.filename_paths_out.empty()) {
                 load_header_paths_file();
             }
+        }
+
+        // Delete copies (Cannot duplicate a file read handle)
+        BinReader(const BinReader&) = delete;
+        BinReader& operator=(const BinReader&) = delete;
+
+        // Default move constructor (Transfers the file handle safely), and delete move assignment explicitly
+        BinReader(BinReader&&) = default;
+        BinReader& operator=(BinReader&&) = delete;
+
+        // Explicitly define the destructor
+        ~BinReader() override {
+            if (inp_stream.is_open()) inp_stream.close();
         }
 
         std::vector<KT::Real> read_prices_at_target_time(double current_time) override {
@@ -201,12 +223,8 @@ namespace KOps::IO::Binary {
 
         }
 
-        ~BinReader() override {
-            if (inp_stream.is_open()) inp_stream.close();
-        }
-
     private:
-        KC::UInputs config;
+        const KC::UInputs &config;
         BinHeader bin_header;
         std::ifstream inp_stream;
 

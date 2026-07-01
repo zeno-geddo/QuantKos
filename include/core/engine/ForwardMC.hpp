@@ -25,6 +25,18 @@ namespace KOps::Engine {
         explicit ForwardMCRunner(const KC::UInputs &conf) : config(conf) {
         }
 
+        // Delete copy operations (prevents accidental duplication)
+        ForwardMCRunner(const ForwardMCRunner&) = delete;
+        ForwardMCRunner& operator=(const ForwardMCRunner&) = delete;
+
+        // Default the move constructor and delete move assignment
+        ForwardMCRunner(ForwardMCRunner&&) = default;
+        ForwardMCRunner& operator=(ForwardMCRunner&&) = delete;
+
+        // Default destructor
+        ~ForwardMCRunner() = default;
+
+
         // ====================================================================
         // The Actual Simulation Engine (Fully Resolved at Compile Time)
         // ====================================================================
@@ -55,7 +67,7 @@ namespace KOps::Engine {
         }
 
     private:
-        const KC::UInputs config;
+        const KC::UInputs &config;
 
         void run_mc_forward(PathsMCBatchMem &BatchMem,
                             const RNGManager &RNGen,

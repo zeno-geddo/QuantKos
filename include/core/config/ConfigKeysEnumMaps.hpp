@@ -21,8 +21,26 @@ namespace KOps::Implemented {
     template<>
     inline const std::map<std::string, OptType> &StrEnumMap<OptType>::get() {
         static const std::map<std::string, OptType> m = {
-            {"European", OptType::European},
-            {"Asian", OptType::Asian},
+            // Standard Options
+            {"European",               OptType::European},
+            {"Asian",                  OptType::Asian},
+
+            // Barrier Options
+            {"BarrierUpAndOut",        OptType::BarrierUpAndOut},
+            {"BarrierDownAndOut",      OptType::BarrierDownAndOut},
+            {"BarrierUpAndIn",         OptType::BarrierUpAndIn},
+            {"BarrierDownAndIn",       OptType::BarrierDownAndIn},
+
+            // Lookback Options
+            {"LookbackFloatingStrike", OptType::LookbackFloatingStrike},
+            {"LookbackFixedStrike",    OptType::LookbackFixedStrike},
+
+            // Binary Options
+            {"BinaryCashOrNothing",    OptType::BinaryCashOrNothing},
+            {"BinaryAssetOrNothing",   OptType::BinaryAssetOrNothing},
+
+            // Backward Path Dependent
+            {"American",               OptType::American}
         };
         return m;
     }

@@ -39,6 +39,17 @@ namespace KOps::IO {
             }
         }
 
+        // Delete copies (Cannot duplicate a unique pointer / file writer)
+        OutputManager(const OutputManager&) = delete;
+        OutputManager& operator=(const OutputManager&) = delete;
+
+        // Default moves (Safely transfers ownership of the unique_ptr)
+        OutputManager(OutputManager&&) = default;
+        OutputManager& operator=(OutputManager&&) = default;
+
+        // Default destructor
+        ~OutputManager() = default;
+
         void print_paths_info_planned_outputs() const {
             if (active_writer) {
                 active_writer->print_planned_outputs_summary();

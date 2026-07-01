@@ -30,6 +30,17 @@ namespace KOps::Engine {
         explicit ForwardBackwardMCRunner(const KC::UInputs &conf) : config(conf) {
         }
 
+        // Delete copy operations (prevents accidental duplication)
+        ForwardBackwardMCRunner(const ForwardBackwardMCRunner&) = delete;
+        ForwardBackwardMCRunner& operator=(const ForwardBackwardMCRunner&) = delete;
+
+        // Default the move constructor and delete move assignment
+        ForwardBackwardMCRunner(ForwardBackwardMCRunner&&) = default;
+        ForwardBackwardMCRunner& operator=(ForwardBackwardMCRunner&&) = delete;
+
+        // Default destructor
+        ~ForwardBackwardMCRunner() = default;
+
         MCResults get_option_price() const {
             // Initialize Helper Classes
             // IMPORTANT: We force the forward solver to act like a European option (simply evaluate the forward paths).
@@ -50,7 +61,7 @@ namespace KOps::Engine {
 
             // 4. PHASE 3: Compute Final Option Price
             // Feed the optimized backward cashflows into the standard pricer
-            OPricer.accumulate_batch_payoffs(Mem.h_best_future_outcome, config.mc.N_Paths);
+            OPricer.accumulate_batch_payoffs(Mem.h_best_future_outcomes, config.mc.N_Paths);
             OPricer.evaluate_option_price();
             OPricer.print_info_option_price();
 
@@ -58,7 +69,7 @@ namespace KOps::Engine {
         }
 
     private:
-        const KC::UInputs config;
+        const KC::UInputs& config;
 
         // ====================================================================
         // PHASE 1: GENERATE PATHS (Write to CPU RAM temp daata)

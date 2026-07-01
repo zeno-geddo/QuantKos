@@ -11,7 +11,7 @@ namespace KOps::Engine {
     namespace KIO = KOps::IO;
 
     struct MCResults {
-        const Config::UInputs &MCConfig; // Just give the address, it will be valid since it lives in the main
+        const Config::UInputs MCConfig; // Copy so that it will be safe evywhere
         const OptionPricer::MCEngine OptionPrice; // Copy the structure so that it is ok when simulation scope end
     };
 
@@ -28,6 +28,9 @@ namespace KOps::Engine {
         // Allow moves if needed
         ForwardMCProgressTracker(ForwardMCProgressTracker&&) = default;
         ForwardMCProgressTracker& operator=(ForwardMCProgressTracker&&) = default;
+
+        // Default destructor
+        ~ForwardMCProgressTracker() = default;
 
         void start_tracking() {
             start_time = std::chrono::steady_clock::now();
@@ -116,7 +119,7 @@ namespace KOps::Engine {
         }
     };
 
-
+    // HELPER FUNCTION FOR FORWARD RUNNER
     template<typename SolverType, typename HostDeepCopy>
     inline void run_forward_all_mc_batches(
             PathsMCBatchMem &BatchMem,

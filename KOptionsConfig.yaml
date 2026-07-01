@@ -21,7 +21,7 @@ Init:
   Variance: 0.04  # Initial variance (v0)
 
 Numerics:
-  Scheme: Euler   # Available schemes: Euler, Milstein, AndersonQE
+  Scheme: Euler   # Available schemes: Euler, Milstein, AndersonQE ...
 
 Time:
   T_End: 1.0      # Time to maturity (in years)
@@ -32,7 +32,7 @@ MC:
   Batch_Size: 0 # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
   RNG_Seed: 88471920573105
   Max_VRAM_MB: 256 # Max Available VRAM (Default 256 MB)
-  Max_CPU_RAM_MB: 4000 # Max Available RAM
+  Max_CPU_RAM_MB: 8000 # Max Available RAM
 
 Output:
   out_dir: "./install/outputs"

@@ -64,7 +64,7 @@ namespace KOps::Engine {
             // Initialize Loop Variables
             KT::Real S = S0;
             KT::Real v = v0;
-            PayoffTracker<OptType, OptRight> PTracker(S);
+            PayoffTracker<OptType, OptRight> PTracker(S); // Trivially copiable object not involving pointers
 
             // Evolve in time the current path
             for (int n_t = 0; n_t < n_t_steps; ++n_t) {
@@ -110,6 +110,8 @@ namespace KOps::Engine {
         MSolver(MSolver&&) = default;
         MSolver& operator=(MSolver&&) = default;
 
+        ~MSolver() = default;
+
         void execute_batch(const int n_active_sims_in_batch, PathsMCBatchMem &BatchMem, const RNGManager &RNGen) const {
             auto launch_kernel = [&](auto store_paths_tag) {
                 // 0. Decide weather to store the paths or not
@@ -149,7 +151,7 @@ namespace KOps::Engine {
         }
 
     private:
-        const KC::UInputs config;
+        const KC::UInputs &config; // Reference is completely safe on the Host side!
         SDEScheme<ModelPolicy, SchemePolicy> Scheme; // Trivially copiable Instance of the scheme chosen
 
         inline bool must_store_paths() const {

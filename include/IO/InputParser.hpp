@@ -7,6 +7,10 @@ namespace KOps::Config {
 
     class Parser {
     public:
+
+        // Prevent anyone from ever creating a 'Parser' object
+        Parser() = delete;
+
         /**
          * @brief Parses a YAML configuration file.
          * @param filename Path to the .yaml file.

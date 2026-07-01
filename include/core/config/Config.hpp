@@ -294,7 +294,7 @@ namespace KOps::Config {
         }
     };
 
-    // Master Configuration
+    // Master Configuration (information container)
     struct UInputs {
         OptionsConfig options;
         MathModelConfig model;

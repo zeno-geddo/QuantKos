@@ -44,13 +44,24 @@ namespace KOps::Engine {
             all_payoffs.reserve(conf.mc.N_Paths);
         }
 
+        // Prevent accidental deep-copying of the payoffs
+        OptionPricer(const OptionPricer&) = delete;
+        OptionPricer& operator=(const OptionPricer&) = delete;
+
+        // Allow payoffs to be moved safely if handled by orchestrators
+        OptionPricer(OptionPricer&&) = default;
+        OptionPricer& operator=(OptionPricer&&) = delete;
+
+        // Default destructor
+        ~OptionPricer() = default;
+
         // To be called inside the batch loop
         void accumulate_batch_payoffs(const HostPayoffView &h_payoffs, const int curr_batch_size) {
             for (int i = 0; i < curr_batch_size; ++i) {
-                const KT::Real p = h_payoffs(i);
-                total_payoff_sum += p;
-                total_squared_payoff_sum += (p * p);
-                all_payoffs.push_back(p);
+                const KT::Real curr_payoff = h_payoffs(i); // Get payoff value from device
+                total_payoff_sum += curr_payoff;
+                total_squared_payoff_sum += (curr_payoff * curr_payoff);
+                all_payoffs.push_back(curr_payoff); // Store payoff to host std::vector
             }
         }
 
@@ -142,7 +153,7 @@ namespace KOps::Engine {
         }
 
     private:
-        const KC::UInputs config;
+        const KC::UInputs &config;
         std::vector<KT::Real> all_payoffs;
         KT::Real total_payoff_sum = 0.;
         KT::Real total_squared_payoff_sum = 0.;
