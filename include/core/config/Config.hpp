@@ -107,11 +107,12 @@ namespace KOps::Config {
                                  ind + "\t\t\t where : E[dW1,t·dW2,t] = ρ·dt\n";
             } else if (id_model == KI::MathModel::Bates) {
                 // dNt = Merton jump process
-                str_math_model = ind + "\t\t dSt = (r - q - λ·κJ)·St·dt + √(vt)·St·dW1,t + St⁻·(J - 1)·dNt\n" +
+                str_math_model = ind + "\t\t dSt = (r - q - λ·κ_J)·St·dt + √(vt)·St·dW1,t + St⁻·(J - 1)·dNt\n" +
                                  ind + "\t\t dvt = κ·(θ - vt)·dt + σ·√(vt)·dW2,t\n" +
                                  ind + "\t\t where :\n" + // λ·κJ = Martingale compensator
-                                 ind + "\t\t   ln(J) ~ N(μJ, σJ²),\n" + // log normal jump size
-                                 ind + "\t\t   κJ = exp(μJ + 0.5·σJ²) - 1,\n" +
+                                 ind + "\t\t   ln(J) ~ N(μ_J, σ_J²),\n" +
+                                 // log normal jump size (J = Realized Random jump size)
+                                 ind + "\t\t   κ_J = exp(μ_J + 0.5·σ_J²) - 1,\n" +
                                  // expected percentage change in the asset price caused by a single jump
                                  ind + "\t\t   E[dW1,t·dW2,t] = ρ·dt\n";
             }
@@ -129,21 +130,21 @@ namespace KOps::Config {
                         << indent << "    --------------------------------------------------------\n"
                         << indent << "    Core Parameters :\n"
                         << indent << "      Risk-free interest rate (" << KK::MathModelParams::r <<
-                        ")                  :   " << base_params.r << "\n"
+                        ")           :   " << base_params.r << "\n"
                         << indent << "      Continuous dividend yield (" << KK::MathModelParams::q <<
-                        ")                :   " << base_params.q << "\n"
+                        ")           :   " << base_params.q << "\n"
                         << indent << "      Mean reversion speed of the variance (" << KK::MathModelParams::k <<
-                        ")     :   " << base_params.k << "\n"
+                        ")           :   " << base_params.k << "\n"
                         << indent << "      Mean reversion level of the variance (" << KK::MathModelParams::theta <<
                         ") :   " << base_params.theta << "\n"
                         << indent << "      Volatility of the variance (" << KK::MathModelParams::sigma <<
                         ")           :   " << base_params.sigma << "\n"
-                        << indent << "      Price-Variance correlation (" <<
-                        KK::MathModelParams::rho << ")   :   " << base_params.rho << "\n";
+                        << indent << "      Price-Variance correlation (" << KK::MathModelParams::rho <<
+                        ")           :   " << base_params.rho << "\n";
 
                 if (2.0 * base_params.k * base_params.theta <= base_params.sigma * base_params.sigma) {
                     std::cout << indent <<
-                            "  [Warning] Feller condition (2κθ > σ²) is violated. Variance paths may touch zero.\n";
+                            "      Feller condition (2κθ > σ²) is violated. Variance paths may touch zero.\n";
                 }
 
                 if (id_model == KI::MathModel::Bates) {
@@ -161,12 +162,12 @@ namespace KOps::Config {
 
     private:
         void validate_heston_params(const Heston &h) const {
-            if (h.k <= 0.0)
-                throw std::runtime_error("[Model Config] κ must be strictly positive.");
-            if (h.theta <= 0.0)
-                throw std::runtime_error("[Model Config] θ must be strictly positive.");
-            if (h.sigma <= 0.0)
-                throw std::runtime_error("[Model Config] σ must be strictly positive.");
+            if (h.k < 0.0)
+                throw std::runtime_error("[Model Config] κ must be positive.");
+            if (h.theta < 0.0)
+                throw std::runtime_error("[Model Config] θ must be positive.");
+            if (h.sigma < 0.0)
+                throw std::runtime_error("[Model Config] σ must be positive.");
             if (h.rho < -1.0 || h.rho > 1.0)
                 throw std::runtime_error("[Model Config] ρ must fall within [-1.0, 1.0].");
         }
@@ -180,8 +181,8 @@ namespace KOps::Config {
             if (b.lambda_J < 0.0) {
                 throw std::runtime_error("[Model Config] Bates: Jump intensity (λ) cannot be negative.");
             }
-            if (b.sigma_J <= 0.0) {
-                throw std::runtime_error("[Model Config] Bates: Jump volatility (σJ) must be strictly positive.");
+            if (b.sigma_J < 0.0) {
+                throw std::runtime_error("[Model Config] Bates: Jump volatility (σJ) must be positive.");
             }
         }
     };

@@ -38,12 +38,22 @@ namespace KOps::Tests::BlackScholes {
         config.model.heston.sigma = 0.;
         config.model.heston.rho = 0.;
 
+        config.model.bates.r = 0.04;
+        config.model.bates.q = 0.;
+        config.model.bates.k = 0.;
+        config.model.bates.theta = 0.;
+        config.model.bates.sigma = 0.;
+        config.model.bates.rho = 0.;
+        config.model.bates.lambda_J = 0.;
+        config.model.bates.mu_J = 0.;
+        config.model.bates.sigma_J = 0.;
+
         return config;
     }
 
 
     inline bool run_test() {
-        std::string id_test {"TEST 4 : Weak Convergence to Black-Scholes SDE exact option price"};
+        std::string id_test {"TEST 4 : Heston Weak Convergence to Black-Scholes SDE exact option price"};
         auto config = getDefaultConfig();
         const KT::Real exact_price = KBS::get_exact_eu_call_option_price(config);
         return KTU::run_weak_convergence_test(id_test,

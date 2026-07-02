@@ -109,6 +109,12 @@ namespace KOps::Engine {
     };
 
 
+    // ========================================================================
+    // SPECIALIZATION: Heston + Milstein Implicit
+    // BOOK : The Heston model and its extensions in matlab and C#
+    // Eq 7.8 -> To update price
+    // Eq 7.26 -> To update variance
+    // ========================================================================
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::Milstein> {
         // Weak Convergence 1., Strong convergence 1.
@@ -178,6 +184,12 @@ namespace KOps::Engine {
         }
     };
 
+    // ========================================================================
+    // SPECIALIZATION: Heston + AndersonQE
+    // BOOK : The Heston model and its extensions in matlab and C#
+    // Eq 7.48, 7.49, 7.50, 7.51 -> To update price
+    // Eq 7.37 -> To update variance
+    // ========================================================================
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::AndersonQE> {
         // Precomputed constant scalar invariants
@@ -219,7 +231,8 @@ namespace KOps::Engine {
             exp_minus_k_dt = std::exp(-k * dt);
 
             // Handle case k =0
-            if (k < static_cast<KT::Real>(1e-8)) { // Catch case whene there is not drift
+            if (k < static_cast<KT::Real>(1e-8)) {
+                // Catch case whene there is not drift
                 // Compute them with theorem de l'hopital
                 theta_m_factor = KT::real_zero;
                 s2_factor_1 = sigma * sigma * dt;
@@ -252,6 +265,9 @@ namespace KOps::Engine {
         }
 
         template<typename RNGeneratorType>
+
+
+
         KOKKOS_INLINE_FUNCTION
         SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
             // Generate noise
@@ -320,6 +336,90 @@ namespace KOps::Engine {
             const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Eq. 7.48, F. Rouah
 
             return {S_np1, v_np1};
+        }
+    };
+
+
+    // ========================================================================
+    // SPECIALIZATION: Bates Model (Universal Wrapper via Composition)
+    // Works automatically for any heston scheme
+    // ========================================================================
+    template<KI::NumScheme SchemePolicy>
+    struct SDEScheme<KI::MathModel::Bates, SchemePolicy> {
+        // 1. Composition: The underlying Heston Engine
+        SDEScheme<KI::MathModel::Heston, SchemePolicy> heston_core;
+
+        // 2. Bates-Specific Invariants
+        KT::Real lambda_dt;
+        KT::Real exp_minus_lambda_dt;
+        KT::Real mu_J;
+        KT::Real sigma_J;
+
+        explicit SDEScheme(const KC::UInputs &config)
+            : heston_core(create_spoofed_config_from_original(config)) {
+            // Precompute jump parameters for the GPU
+            lambda_dt = config.model.bates.lambda_J * config.time.dt;
+            exp_minus_lambda_dt = std::exp(-lambda_dt);
+            mu_J = config.model.bates.mu_J;
+            sigma_J = config.model.bates.sigma_J;
+        }
+
+        template<typename RNGeneratorType>
+
+
+
+        KOKKOS_INLINE_FUNCTION
+        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+            // 1. Evolve the continuous part using the spoofed Heston core
+            auto [S_temp, v_next] = heston_core.evolve_step(S_n, v_n, local_rn_generator);
+
+            // 2. Poisson Draw (Draw a random integer N from a Poisson distribution with mean λΔt)
+            // Note : This represents how many times the stock jumps during this specific time step.
+            // Note : The KRUNT algorithm is used (https://math.stackexchange.com/questions/3628801/proving-knuth-s-algorithm-for-generating-a-poisson-distribution)
+            int N = -1; // Start at -1 since Krunt's loop overshoots by 1
+            KT::Real p = KT::real_one;
+            do {
+                // Multiply random fractions util accumulated value drops below the target threshold
+                // The number of multiplications done maps to the exact number of jumps occurred inside the discrete interval
+                N++;
+                p *= static_cast<KT::Real>(local_rn_generator.drand());
+            } while (p > exp_minus_lambda_dt);
+
+            // 3. Draw the jump size and update price
+            KT::Real S_next = S_temp;
+            if (N > 0) {
+                // Compute current jump size
+                // Note : The total log-jump size is \sum_{i=1}^{N}(mu_J + sigma_J*Z_{J,I}) = N*mu_J + sqrt(N)*sigma_J*Z_{J}
+                const KT::Real real_N = static_cast<KT::Real>(N);
+                const KT::Real Z = static_cast<KT::Real>(local_rn_generator.normal());
+                const KT::Real aggregate_mu = real_N * mu_J;
+                const KT::Real aggregate_sigma = Kokkos::sqrt(real_N) * sigma_J;
+                const KT::Real jump_magnitude = Kokkos::exp(aggregate_mu + aggregate_sigma * Z);
+
+                // Update Price : multiply the continuous stock price by the exponentiated jump sum.
+                S_next *= jump_magnitude;
+            }
+            return {S_next, v_next};
+        }
+
+    private:
+        // Helper function that runs exclusively on the Host during construction
+        static KC::UInputs create_spoofed_config_from_original(const KC::UInputs &orig_config) {
+            KC::UInputs spoofed_config = orig_config; // copy the input config
+
+            // 1. C++ Object Slicing: Copies ALL base Heston fields (r, q, k, theta, sigma, rho) in one go
+            spoofed_config.model.heston = static_cast<Config::MathModelConfig::Heston>(orig_config.model.bates);
+
+            // 2. Calculate the Bates Martingale Compensator
+            const KT::Real mu = orig_config.model.bates.mu_J;
+            const KT::Real sig2 = orig_config.model.bates.sigma_J * orig_config.model.bates.sigma_J;
+            const KT::Real kappa_J = std::exp(mu + KT::real_05 * sig2) - KT::real_one;
+            // Theoretical expected jump average
+
+            // 3. Spoof the continuous dividend yield: q_new = q_old + (lambda * kappa_J)
+            spoofed_config.model.heston.q += (orig_config.model.bates.lambda_J * kappa_J);
+
+            return spoofed_config;
         }
     };
 }
