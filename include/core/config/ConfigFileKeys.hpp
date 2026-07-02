@@ -39,16 +39,19 @@ namespace KOps::Keys {
         static constexpr std::string_view IDHestonBlock = "Heston";
         static constexpr std::string_view IDBatesBlock = "Bates";
 
-        // Heston Sub-block
-        static constexpr std::string_view r = "r"; //
-        static constexpr std::string_view q = "q"; //
+        // Heston Sub-block (present also in Bates Sub-block)
+        static constexpr std::string_view r = "r"; // Risk-free interest rate
+        static constexpr std::string_view q = "q"; // Continuous dividend yield
         static constexpr std::string_view k = "k"; // Mean reversion speed of the variance
         static constexpr std::string_view theta = "theta"; // Mean reversion level of the variance
         static constexpr std::string_view sigma = "sigma"; // Volatility of the variance
         static constexpr std::string_view rho = "rho"; // Correlation between price and varaince brownian motions
 
         // Bates Sub-block
-        // ...to be done ...
+        static constexpr std::string_view lambda_J = "lambda_J"; // Jump Intensity (λ)
+        static constexpr std::string_view mu_J = "mu_J"; // Mean Jump Size (μJ)
+        static constexpr std::string_view sigma_J = "sigma_J"; // Jump Volatility (σJ)
+
 
     }
 

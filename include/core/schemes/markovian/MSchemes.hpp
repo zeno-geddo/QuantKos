@@ -2,7 +2,7 @@
 
 #include <Kokkos_Core.hpp>
 #include "../../config/Config.hpp"
-#include "../../config/ConfigEnums.hpp"
+#include "../../config/ConfigFileEnums.hpp"
 #include "../RandNGenerator.hpp"
 
 namespace KOps::Engine {

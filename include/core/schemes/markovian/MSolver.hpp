@@ -1,7 +1,7 @@
 #pragma once
 #include <Kokkos_Core.hpp>
 
-#include "../../config/ConfigEnums.hpp"
+#include "../../config/ConfigFileEnums.hpp"
 #include "MSchemes.hpp"
 #include "../../Typedefs.hpp"
 #include "../../memory/PathsMCBatchMem.hpp"

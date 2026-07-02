@@ -4,8 +4,8 @@
 #include <yaml-cpp/yaml.h>
 
 #include "../../include/IO/InputParser.hpp"
-#include "../../include/core/config/ConfigKeys.hpp"
-#include "../../include/core/config/ConfigKeysEnumMaps.hpp"
+#include "../../include/core/config/ConfigFileKeys.hpp"
+#include "../../include/core/config/ConfigFileKeysEnumMaps.hpp"
 
 
 namespace KOps::Config {
@@ -18,14 +18,14 @@ namespace KOps::Config {
         return std::string(sv);
     }
 
-    UInputs Parser::parse(const std::string &filename) {
+    UInputs Parser::parse(const std::string &file) {
         std::cout << "\n>>> Start Parsing User Inputs...\n" << std::endl;
 
         // ---------------------------------------------------------
         // 1. Sanity Check
         // ---------------------------------------------------------
-        if (!std::filesystem::exists(filename)) {
-            throw std::runtime_error("Config Error: File not found -> " + filename);
+        if (!std::filesystem::exists(file)) {
+            throw std::runtime_error("Config Error: File not found -> " + file);
         }
 
         // ---------------------------------------------------------
@@ -33,7 +33,7 @@ namespace KOps::Config {
         // ---------------------------------------------------------
         YAML::Node root;
         try {
-            root = YAML::LoadFile(filename);
+            root = YAML::LoadFile(file);
         } catch (const YAML::ParserException &e) {
             throw std::runtime_error("Config Error: Invalid YAML syntax -> " + std::string(e.what()));
         }
@@ -96,6 +96,22 @@ namespace KOps::Config {
             // Check for Bates Sub-block (Placeholder for future)
             if (node[str(KK::MathModelParams::IDBatesBlock)]) {
                 // Implementation for Bates parameters would go here
+                const auto &b = node[str(KK::MathModelParams::IDBatesBlock)];
+
+                if (b[str(KK::MathModelParams::r)])
+                    conf.model.heston.r = b[str(KK::MathModelParams::r)].as<Real>();
+                if (b[str(KK::MathModelParams::q)])
+                    conf.model.heston.q = b[str(KK::MathModelParams::q)].as<Real>();
+                if (b[str(KK::MathModelParams::k)])
+                    conf.model.heston.k = b[str(KK::MathModelParams::k)].as<Real>();
+                if (b[str(KK::MathModelParams::theta)])
+                    conf.model.heston.theta = b[str(KK::MathModelParams::theta)].as<Real>();
+                if (b[str(KK::MathModelParams::sigma)])
+                    conf.model.heston.sigma = b[str(KK::MathModelParams::sigma)].as<Real>();
+                if (b[str(KK::MathModelParams::rho)])
+                    conf.model.heston.rho = b[str(KK::MathModelParams::rho)].as<Real>();
+
+
             }
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Model) + "' missing.");

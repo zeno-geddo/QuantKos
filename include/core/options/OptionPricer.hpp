@@ -9,7 +9,7 @@
 
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
-#include "../config/ConfigEnums.hpp"
+#include "../config/ConfigFileEnums.hpp"
 
 namespace KOps::Engine {
     namespace KT = KOps::Types;

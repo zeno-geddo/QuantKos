@@ -13,11 +13,11 @@ namespace KOps::Config {
 
         /**
          * @brief Parses a YAML configuration file.
-         * @param filename Path to the .yaml file.
+         * @param file Path to the .yaml file.
          * @return A fully populated Config object.
          * @throws std::runtime_error if file is missing or invalid.
          */
-        static UInputs parse(const std::string& filename);
+        static UInputs parse(const std::string& file);
     };
 
 } // namespace Labes

@@ -6,7 +6,7 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
-#include "ConfigEnums.hpp"
+#include "ConfigFileEnums.hpp"
 
 namespace KOps::Implemented {
     // --------------------------------------------------------

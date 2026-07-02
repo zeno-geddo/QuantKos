@@ -8,7 +8,7 @@
 #include <Kokkos_Core.hpp>
 
 #include "./../core/config/Config.hpp"
-#include "./../core/config/ConfigEnums.hpp"
+#include "./../core/config/ConfigFileEnums.hpp"
 #include "./IOBlueprints.hpp"
 #include "../core/memory/PathsMCBatchMem.hpp"
 #include "./../core/Typedefs.hpp"

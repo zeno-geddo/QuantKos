@@ -6,7 +6,7 @@
 
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
-#include "../config/ConfigEnums.hpp"
+#include "../config/ConfigFileEnums.hpp"
 #include "./MemoryTypes.hpp"
 
 

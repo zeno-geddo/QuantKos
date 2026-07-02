@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 #include "./../core/config/Config.hpp"
-#include "./../core/config/ConfigEnums.hpp"
+#include "./../core/config/ConfigFileEnums.hpp"
 #include "./IOBinary.hpp"
 #include "../core/memory/PathsMCBatchMem.hpp"
 #include "./../core/Typedefs.hpp"
