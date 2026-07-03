@@ -7,6 +7,7 @@
 #include "./../include/tests/Options/NoNoiseTest.hpp"
 #include "./../include/tests/Options/BlackScholesTest.hpp"
 #include "./../include/tests/Options/HestonTest.hpp"
+#include "./../include/tests/Options/BatesTest.hpp"
 #include "./../include/tests/Options/AmericanOption.hpp"
 
 
@@ -34,6 +35,7 @@ int main(int argc, char *argv[]) {
             //{"Zero-Variance SDE Drift", KTE::NoNoise::run_test},
             {"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test},
             {"Weak Convergence to Heston", KTE::Heston::run_test},
+            {"Weak Convergence to Bates", KTE::Bates::run_test},
             //{"American Option LSM", KTE::LSM::run_test}
         };
 

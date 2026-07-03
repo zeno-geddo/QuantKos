@@ -16,20 +16,17 @@ namespace KOps::Engine::Analytical::Heston {
     using Complex = std::complex<double>;
     const Complex i_unit{0., 1.};
 
-
     // ========================================================================
-    // 1. THE HESTON INTEGRAND (ALBRECHER FORMULATION)
+    // 0. COMPUTE EXPONENT HESTON CHARACTERISTIC FUCNTION (ALBRECHER FORMULATION)
+    // Calculates the exponent: C + D*v0 + i*phi*ln(S0)
+    // Note : Can be reused for the bates model
     // ========================================================================
-    inline double integrand_albrecher_formulation(double phi, const KC::UInputs &conf, int j) {
-        const auto p = conf.model.heston;
-        const double K = conf.options.StrikePrice;
-        const double T = conf.time.t_end;
-        const double S0 = conf.init.S0;
-        const double v0 = conf.init.v0;
-
+    inline Complex get_heston_characteristic_exponent(double phi,
+                                                      const KC::MathModelConfig::Heston &p,
+                                                      double T, double S0, double v0, int j) {
         // Heston specific parameters for probabilities P1 and P2 (After Eq 1.40, F. Rouah)
-        double u = (j == 1) ? 0.5 : -0.5;
-        double b = (j == 1) ? p.k - p.rho * p.sigma : p.k;
+        const double u = (j == 1) ? 0.5 : -0.5;
+        const double b = (j == 1) ? p.k - p.rho * p.sigma : p.k;
 
         // 1. Calculate 'd' (Eq 2.54, F. Rouah)
         const Complex term1_d = std::pow(p.rho * p.sigma * i_unit * phi - b, 2.0);
@@ -54,11 +51,26 @@ namespace KOps::Engine::Analytical::Heston {
         const Complex D_factor2 = (1.0 - std::exp(-d * T)) / (1.0 - c * std::exp(-d * T));
         const Complex D = D_factor1 * D_factor2;
 
-        // 5. Build the Characteristic Function f_j(phi) (Eq 1.48, F. Rouah)
+        // 5. Return eponent of the Characteristic Function f_j(phi) (Eq 1.48, F. Rouah)
         const double x_t = std::log(S0);
-        Complex f_j = std::exp(C + D * v0 + i_unit * phi * x_t);
+        return C + D * v0 + i_unit * phi * x_t;
+    }
 
-        // 6. Return the real part of the final integrand (Eq 2.13, F. Rouah)
+    // ========================================================================
+    // 1. THE HESTON INTEGRAND (ALBRECHER FORMULATION)
+    // ========================================================================
+    inline double heston_integrand_albrecher_formulation(double phi, const KC::UInputs &conf, int j) {
+        const auto heston_p = conf.model.heston;
+        const double K = conf.options.StrikePrice;
+        const double T = conf.time.t_end;
+        const double S0 = conf.init.S0;
+        const double v0 = conf.init.v0;
+
+        // 1. Build the Characteristic Function f_j(phi) (Eq 1.48, F. Rouah)
+        const Complex exponent = get_heston_characteristic_exponent(phi, heston_p, T, S0, v0, j);
+        Complex f_j = std::exp(exponent);
+
+        // 2. Return the real part of the final integrand (Eq 2.13, F. Rouah)
         const Complex numerator = std::exp(-i_unit * phi * std::log(K)) * f_j;
         const Complex denominator = i_unit * phi;
         return std::real(numerator / denominator);
@@ -71,10 +83,10 @@ namespace KOps::Engine::Analytical::Heston {
         // Create a lambda that binds the configuration and j-index, not expected in the gauss-legendre implementation
         // The compiler should create a functor behind the scenes
         auto integrand = [&](double phi) {
-            return integrand_albrecher_formulation(phi, conf, j);
+            return heston_integrand_albrecher_formulation(phi, conf, j);
         };
 
-        // Call the decoupled numerical integrator
+        // Call the numerical integrator
         double integral = integrate_gl64(integrand, 0.0, phi_max);
 
         // Compute and return the integral (Eq. , F. Rouah)
@@ -86,7 +98,7 @@ namespace KOps::Engine::Analytical::Heston {
     // 3. HESTON EU CALL OPTION PRICE
     // ========================================================================
     inline double get_exact_eu_call_option_price(const KC::UInputs &conf, const double upper_bound = 100.) {
-        // Check that an european call is considered
+        // Check that a european call is considered
         const bool condition = (conf.options.opt_right == KI::OptRight::Call) and (
                                    conf.options.opt_type == KI::OptType::European);
         if (!condition) {

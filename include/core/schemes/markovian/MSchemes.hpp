@@ -3,7 +3,6 @@
 #include <Kokkos_Core.hpp>
 #include "../../config/Config.hpp"
 #include "../../config/ConfigFileEnums.hpp"
-#include "../RandNGenerator.hpp"
 
 namespace KOps::Engine {
     namespace KI = KOps::Implemented;
@@ -376,14 +375,14 @@ namespace KOps::Engine {
             // 2. Poisson Draw (Draw a random integer N from a Poisson distribution with mean λΔt)
             // Note : This represents how many times the stock jumps during this specific time step.
             // Note : The KRUNT algorithm is used (https://math.stackexchange.com/questions/3628801/proving-knuth-s-algorithm-for-generating-a-poisson-distribution)
-            int N = -1; // Start at -1 since Krunt's loop overshoots by 1
+            int N = -1; // Start at -1 since Krunt's loop overshoots by 1. It draws the poisson jump count
             KT::Real p = KT::real_one;
             do {
                 // Multiply random fractions util accumulated value drops below the target threshold
                 // The number of multiplications done maps to the exact number of jumps occurred inside the discrete interval
                 N++;
                 p *= static_cast<KT::Real>(local_rn_generator.drand());
-            } while (p > exp_minus_lambda_dt);
+            } while (p >= exp_minus_lambda_dt);
 
             // 3. Draw the jump size and update price
             KT::Real S_next = S_temp;
@@ -404,6 +403,7 @@ namespace KOps::Engine {
 
     private:
         // Helper function that runs exclusively on the Host during construction
+        KOKKOS_INLINE_FUNCTION
         static KC::UInputs create_spoofed_config_from_original(const KC::UInputs &orig_config) {
             KC::UInputs spoofed_config = orig_config; // copy the input config
 
@@ -413,8 +413,7 @@ namespace KOps::Engine {
             // 2. Calculate the Bates Martingale Compensator
             const KT::Real mu = orig_config.model.bates.mu_J;
             const KT::Real sig2 = orig_config.model.bates.sigma_J * orig_config.model.bates.sigma_J;
-            const KT::Real kappa_J = std::exp(mu + KT::real_05 * sig2) - KT::real_one;
-            // Theoretical expected jump average
+            const KT::Real kappa_J = std::exp(mu + KT::real_05 * sig2) - KT::real_one; // Theoretical expected jump mean
 
             // 3. Spoof the continuous dividend yield: q_new = q_old + (lambda * kappa_J)
             spoofed_config.model.heston.q += (orig_config.model.bates.lambda_J * kappa_J);
