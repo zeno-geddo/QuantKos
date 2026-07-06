@@ -25,6 +25,47 @@ namespace KOps::Config {
     namespace KK = KOps::Keys;
     using Real = KOps::Types::Real;
 
+    // Substructure: Market Conditions
+    struct MarketConfig {
+        Real S0 = 100.0;
+        Real v0 = 1.0;
+        Real r = 0.05;
+        Real q = 0.0;
+
+        void validate() const {
+            if (S0 <= 0.0)
+                throw std::runtime_error(
+                    config_err_msg(KK::Market, KK::MarketParams::Price, "must be positive."));
+            if (v0 < 0.0)
+                throw std::runtime_error(
+                    config_err_msg(KK::Market, KK::MarketParams::Variance, "must be positive."));
+
+            if (q < 0.0)
+                throw std::runtime_error(
+                    config_err_msg(KK::Market, KK::MarketParams::q, "Dividend yield (q) cannot be negative."));
+
+            if (std::abs(r) > 0.5)
+                throw std::runtime_error(
+                    config_err_msg(KK::Market, KK::MarketParams::r, "Risk-free rate (r) is unphysical (keep between -50% and +50%)."));
+
+            if (q > 0.8)
+                throw std::runtime_error(
+                    config_err_msg(KK::Market, KK::MarketParams::q, "Dividend yield (q) is unphysical (keep under 80%)."));
+        }
+
+        void print(std::string_view indent = "") const {
+            std::cout << indent << "  [" << KK::Market << "]\n"
+                    << indent << "    Initial Price (S0"
+                    ")      :    " << S0 << "\n"
+                    << indent << "    Initial Variance (v0"
+                    ")      :    " << v0 << "\n"
+                    << indent << "    Risk-free interest rate (" << KK::MarketParams::r <<
+                    ")      :   " << r << "\n"
+                    << indent << "      Continuous dividend yield (" << KK::MarketParams::q <<
+                    ")      :   " << q << "\n";
+        }
+    };
+
     // Substructure: Options types and tigh
     struct OptionsConfig {
         KI::OptType opt_type = KI::OptType::European;
@@ -32,20 +73,20 @@ namespace KOps::Config {
         Real StrikePrice = 100.; //
         Real BarrierPrice = 100.; //
 
-        void validate(Real Spot_price) const {
+        void validate(const Real Spot_price) const {
             // Check if Strike price make sense (compared to the spot price)
             if (StrikePrice <= 0.0)
                 throw std::runtime_error(
                     config_err_msg(KK::Options, KK::OptionsParams::StrikePrice, "must be positive."));
 
-            Real min_meaningful_strike = Spot_price * static_cast<Real>(0.0001);
+            const Real min_meaningful_strike = Spot_price * static_cast<Real>(0.0001);
             if (StrikePrice < min_meaningful_strike) {
                 throw std::runtime_error("Config Error: Strike price (K) is too close to zero. "
                     "Must be at least 1000 times smaller than the initial asset price (S0) to prevent numerical problems.");
             }
 
 
-            Real max_meaningful_strike = Spot_price * static_cast<Real>(10000);
+            const Real max_meaningful_strike = Spot_price * static_cast<Real>(10000);
             if (StrikePrice > max_meaningful_strike) {
                 throw std::runtime_error("Config Error: Strike price (K) is absurdly high (exceeds 10000x of S0). "
                     "This will likely result in zero-variance path generation and statistical breakdown.");
@@ -74,8 +115,8 @@ namespace KOps::Config {
         KI::MathModel id_model = KI::MathModel::Heston;
 
         struct Heston {
-            Real r = 0.05;
-            Real q = 0.0;
+            // Real r = 0.05;
+            // Real q = 0.0;
             Real k = 2.0;
             Real theta = 0.04;
             Real sigma = 0.3;
@@ -96,7 +137,7 @@ namespace KOps::Config {
             }
         }
 
-        void print(std::string_view indent = "") const {
+        void print(const MarketConfig& market, std::string_view indent = "") const {
             // Assemble the equations
             std::string str_math_model = "";
             std::string ind(indent);
@@ -129,10 +170,10 @@ namespace KOps::Config {
                         << str_math_model
                         << indent << "    --------------------------------------------------------\n"
                         << indent << "    Core Parameters :\n"
-                        << indent << "      Risk-free interest rate (" << KK::MathModelParams::r <<
-                        ")           :   " << base_params.r << "\n"
-                        << indent << "      Continuous dividend yield (" << KK::MathModelParams::q <<
-                        ")           :   " << base_params.q << "\n"
+                        << indent << "      Risk-free interest rate (" << KK::MarketParams::r <<
+                        ")           :   " << market.r << "\n"
+                        << indent << "      Continuous dividend yield (" << KK::MarketParams::q <<
+                        ")           :   " << market.q << "\n"
                         << indent << "      Mean reversion speed of the variance (" << KK::MathModelParams::k <<
                         ")           :   " << base_params.k << "\n"
                         << indent << "      Mean reversion level of the variance (" << KK::MathModelParams::theta <<
@@ -184,28 +225,6 @@ namespace KOps::Config {
             if (b.sigma_J < 0.0) {
                 throw std::runtime_error("[Model Config] Bates: Jump volatility (σJ) must be positive.");
             }
-        }
-    };
-
-
-    // Substructure: Initial Conditions
-    struct InitConfig {
-        Real S0 = 100.0;
-        Real v0 = 1.0;
-
-        void validate() const {
-            if (S0 <= 0.0)
-                throw std::runtime_error(
-                    config_err_msg(KK::Init, KK::InitParams::Price, "must be positive."));
-            if (v0 < 0.0)
-                throw std::runtime_error(
-                    config_err_msg(KK::Init, KK::InitParams::Variance, "must be positive."));
-        }
-
-        void print(std::string_view indent = "") const {
-            std::cout << indent << "  [" << KK::Init << "]\n"
-                    << indent << "    Initial Price (S0)     :    " << S0 << "\n"
-                    << indent << "    Initial Variance (v0)  :    " << v0 << "\n";
         }
     };
 
@@ -358,18 +377,18 @@ namespace KOps::Config {
 
     // Master Configuration (information container)
     struct UInputs {
+        MarketConfig market;
         OptionsConfig options;
         MathModelConfig model;
-        InitConfig init;
         NumSchemeConfig scheme;
         TimeConfig time;
         MCConfig mc;
         OutputConfig output;
 
         void validate() {
-            options.validate(init.S0);
+            market.validate();
+            options.validate(market.S0);
             model.validate();
-            init.validate();
             scheme.validate();
             time.validate();
             mc.validate();
@@ -383,11 +402,11 @@ namespace KOps::Config {
             std::cout << "\n" << indent << "========================================================\n";
             std::cout << indent << "                      MC CONFIGURATION                    \n";
             std::cout << indent << "========================================================\n";
+            market.print(indent);
+            std::cout << indent << "--------------------------------------------------------\n";
             options.print(indent);
             std::cout << indent << "--------------------------------------------------------\n";
-            model.print(indent);
-            std::cout << indent << "--------------------------------------------------------\n";
-            init.print(indent);
+            model.print(market, indent);
             std::cout << indent << "--------------------------------------------------------\n";
             scheme.print(indent);
             std::cout << indent << "--------------------------------------------------------\n";

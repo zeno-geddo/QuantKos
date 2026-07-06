@@ -41,7 +41,27 @@ namespace KOps::Config {
         UInputs conf;
 
         // ---------------------------------------------------------
-        // 3. Option Section (Heston / Bates)
+        // 3. Market Section
+        // ---------------------------------------------------------
+        if (root[str(KK::Market)]) {
+            const auto &node = root[str(KK::Market)];
+
+            if (node[str(KK::MarketParams::Price)])
+                conf.market.S0 = node[str(KK::MarketParams::Price)].as<Real>();
+            if (node[str(KK::MarketParams::Variance)])
+                conf.market.v0 = node[str(KK::MarketParams::Variance)].as<Real>();
+            if (node[str(KK::MarketParams::r)])
+                conf.market.r = node[str(KK::MarketParams::r)].as<Real>();
+            if (node[str(KK::MarketParams::q)])
+                conf.market.q = node[str(KK::MarketParams::q)].as<Real>();
+
+        } else {
+            throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Market) + "' missing.");
+        }
+
+
+        // ---------------------------------------------------------
+        // 4. Option Section
         // ---------------------------------------------------------
         if (root[str(KK::Options)]) {
             const auto &node = root[str(KK::Options)];
@@ -70,7 +90,7 @@ namespace KOps::Config {
 
 
         // ---------------------------------------------------------
-        // 3. Model Section (Heston / Bates)
+        // 5. Model Section (Heston / Bates)
         // ---------------------------------------------------------
         if (root[str(KK::Model)]) {
             const auto &node = root[str(KK::Model)];
@@ -78,11 +98,6 @@ namespace KOps::Config {
             // Check for Heston Sub-block
             if (node[str(KK::MathModelParams::IDHestonBlock)]) {
                 const auto &h = node[str(KK::MathModelParams::IDHestonBlock)];
-
-                if (h[str(KK::MathModelParams::r)])
-                    conf.model.heston.r = h[str(KK::MathModelParams::r)].as<Real>();
-                if (h[str(KK::MathModelParams::q)])
-                    conf.model.heston.q = h[str(KK::MathModelParams::q)].as<Real>();
                 if (h[str(KK::MathModelParams::k)])
                     conf.model.heston.k = h[str(KK::MathModelParams::k)].as<Real>();
                 if (h[str(KK::MathModelParams::theta)])
@@ -98,10 +113,6 @@ namespace KOps::Config {
                 // Implementation for Bates parameters would go here
                 const auto &b = node[str(KK::MathModelParams::IDBatesBlock)];
 
-                if (b[str(KK::MathModelParams::r)])
-                    conf.model.heston.r = b[str(KK::MathModelParams::r)].as<Real>();
-                if (b[str(KK::MathModelParams::q)])
-                    conf.model.heston.q = b[str(KK::MathModelParams::q)].as<Real>();
                 if (b[str(KK::MathModelParams::k)])
                     conf.model.heston.k = b[str(KK::MathModelParams::k)].as<Real>();
                 if (b[str(KK::MathModelParams::theta)])
@@ -117,23 +128,9 @@ namespace KOps::Config {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Model) + "' missing.");
         }
 
-        // ---------------------------------------------------------
-        // 4. Initialization Section
-        // ---------------------------------------------------------
-        if (root[str(KK::Init)]) {
-            const auto &node = root[str(KK::Init)];
-
-            if (node[str(KK::InitParams::Price)])
-                conf.init.S0 = node[str(KK::InitParams::Price)].as<Real>();
-
-            if (node[str(KK::InitParams::Variance)])
-                conf.init.v0 = node[str(KK::InitParams::Variance)].as<Real>();
-        } else {
-            throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Init) + "' missing.");
-        }
 
         // ---------------------------------------------------------
-        // 5. Numerics Section
+        // 6. Numerics Section
         // ---------------------------------------------------------
         if (root[str(KK::Numerics)]) {
             const auto &node = root[str(KK::Numerics)];
@@ -147,7 +144,7 @@ namespace KOps::Config {
         }
 
         // ---------------------------------------------------------
-        // 6. Time Section
+        // 7. Time Section
         // ---------------------------------------------------------
         if (root[str(KK::Time)]) {
             const auto &node = root[str(KK::Time)];
@@ -162,7 +159,7 @@ namespace KOps::Config {
         }
 
         // ---------------------------------------------------------
-        // 7. Monte Carlo Section
+        // 8. Monte Carlo Section
         // ---------------------------------------------------------
         if (root[str(KK::MC)]) {
             const auto &node = root[str(KK::MC)];

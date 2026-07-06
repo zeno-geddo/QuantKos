@@ -57,8 +57,8 @@ namespace KOps::Engine {
 
         // Constructor
         explicit SDEScheme(const KC::UInputs &config) {
-            const KT::Real r = config.model.heston.r;
-            const KT::Real q = config.model.heston.q;
+            const KT::Real r = config.market.r;
+            const KT::Real q = config.market.q;
             const KT::Real k = config.model.heston.k;
             const KT::Real theta = config.model.heston.theta;
             const KT::Real sigma = config.model.heston.sigma;
@@ -131,8 +131,8 @@ namespace KOps::Engine {
         KT::Real implicit_denominator_v; // 1 / (1 + k * dt)
 
         explicit SDEScheme(const KC::UInputs &config) {
-            const KT::Real r = config.model.heston.r;
-            const KT::Real q = config.model.heston.q;
+            const KT::Real r = config.market.r;
+            const KT::Real q = config.market.q;
             const KT::Real k = config.model.heston.k;
             const KT::Real theta = config.model.heston.theta;
             const KT::Real sigma = config.model.heston.sigma;
@@ -212,8 +212,8 @@ namespace KOps::Engine {
         KT::Real K1, K2, K3, K4, A;
 
         explicit SDEScheme(const KC::UInputs &config) {
-            const KT::Real r = config.model.heston.r;
-            const KT::Real q = config.model.heston.q;
+            const KT::Real r = config.market.r;
+            const KT::Real q = config.market.q;
             const KT::Real k = config.model.heston.k;
             const KT::Real theta = config.model.heston.theta;
             const KT::Real sigma = config.model.heston.sigma;
@@ -407,7 +407,7 @@ namespace KOps::Engine {
         static KC::UInputs create_spoofed_config_from_original(const KC::UInputs &orig_config) {
             KC::UInputs spoofed_config = orig_config; // copy the input config
 
-            // 1. C++ Object Slicing: Copies ALL base Heston fields (r, q, k, theta, sigma, rho) in one go
+            // 1. C++ Object Slicing: Copies ALL base Heston fields (k, theta, sigma, rho) in one go
             spoofed_config.model.heston = static_cast<Config::MathModelConfig::Heston>(orig_config.model.bates);
 
             // 2. Calculate the Bates Martingale Compensator
@@ -416,7 +416,7 @@ namespace KOps::Engine {
             const KT::Real kappa_J = std::exp(mu + KT::real_05 * sig2) - KT::real_one; // Theoretical expected jump mean
 
             // 3. Spoof the continuous dividend yield: q_new = q_old + (lambda * kappa_J)
-            spoofed_config.model.heston.q += (orig_config.model.bates.lambda_J * kappa_J);
+            spoofed_config.market.q += (orig_config.model.bates.lambda_J * kappa_J);
 
             return spoofed_config;
         }

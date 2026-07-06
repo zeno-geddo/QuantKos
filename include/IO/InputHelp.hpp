@@ -73,11 +73,25 @@ namespace KOps::HELP {
                 << "# Copy this structure into your .yaml file, and chose one one of the implementation between '[' and ']' ...\n\n";
 
         // ---------------------------------------------------------
+        // Market Section
+        // ---------------------------------------------------------
+        std::cout << K::Market << ":\n"
+                << "  " << K::MarketParams::Price << ": 100.       # Initial asset price (S0)\n "
+                << "  " << K::MarketParams::Variance << ": 0.04    # Initial variance (v0)\n"
+                << "  " << K::MarketParams::r << ": 0.05           # Risk-free interest rate\n"
+                << "  " << K::MarketParams::q << ": 0.             # Continuous dividend yield\n";
+
+        // ---------------------------------------------------------
+
+
+        // ---------------------------------------------------------
         // Option Section
         // ---------------------------------------------------------
         std::cout << K::Options << ":\n"
-                << "  " << K::OptionsParams::OptionType << "   : European   #" << get_allowed_options<KI::OptType>() << "\n"
-                << "  " << K::OptionsParams::OptionRight << "  : Call       #" << get_allowed_options<KI::OptRight>() << "\n"
+                << "  " << K::OptionsParams::OptionType << "   : European   #" << get_allowed_options<KI::OptType>() <<
+                "\n"
+                << "  " << K::OptionsParams::OptionRight << "  : Call       #" << get_allowed_options<KI::OptRight>() <<
+                "\n"
                 << "  " << K::OptionsParams::StrikePrice << "  : 150        # Strike Price\n";
 
 
@@ -86,8 +100,6 @@ namespace KOps::HELP {
         // ---------------------------------------------------------
         std::cout << K::Model << ":\n"
                 << "  [" << K::MathModelParams::IDHestonBlock << " :\n"
-                << "    " << K::MathModelParams::r << ": 0.05     # Risk-free interest rate\n"
-                << "    " << K::MathModelParams::q << ": 0.       # Continuous dividend yield\n"
                 << "    " << K::MathModelParams::k << ": 2.       # Mean reversion speed of the variance (kappa)\n"
                 << "    " << K::MathModelParams::theta << ": 0.04 # Long-term mean of the variance\n"
                 << "    " << K::MathModelParams::sigma << ": 0.3  # Volatility of the variance (vol-of-vol)\n"
@@ -95,8 +107,6 @@ namespace KOps::HELP {
                 ": 0.7    # Correlation between price and variance Brownian motions\n"
                 << "  ],\n"
                 << "  [" << K::MathModelParams::IDHestonBlock << " :\n"
-                << "    " << K::MathModelParams::r << ": 0.05     # Risk-free interest rate\n"
-                << "    " << K::MathModelParams::q << ": 0.       # Continuous dividend yield\n"
                 << "    " << K::MathModelParams::k << ": 2.       # Mean reversion speed of the variance (kappa)\n"
                 << "    " << K::MathModelParams::theta << ": 0.04 # Long-term mean of the variance\n"
                 << "    " << K::MathModelParams::sigma << ": 0.3  # Volatility of the variance (vol-of-vol)\n"
@@ -106,14 +116,6 @@ namespace KOps::HELP {
                 << "    " << K::MathModelParams::mu_J << ": -0.1  # Merton Mean Jump Size (μJ)\n"
                 << "    " << K::MathModelParams::sigma_J << ": 0.15  # Merton Jump Volatility (σJ)\n"
                 << "  ]\n";
-
-        // ---------------------------------------------------------
-        // Initialization Section
-        // ---------------------------------------------------------
-        std::cout << K::Init << ":\n"
-                << "  " << K::InitParams::Price << ": 100.         # Initial asset price (S0)\n "
-                << "  " << K::InitParams::Variance << ": 0.04      # Initial variance (v0)\n";
-        // ---------------------------------------------------------
 
 
         // ---------------------------------------------------------

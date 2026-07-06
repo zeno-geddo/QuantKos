@@ -101,7 +101,7 @@ namespace KOps::Engine {
         void run_backward_phase(BackwardLSMMemory &Mem) const {
             const int nT = config.time.N_time_steps;
             const KT::Real strike_price = config.options.StrikePrice;
-            const KT::Real discount_factor = Kokkos::exp(-config.model.heston.r * config.time.dt);
+            const KT::Real discount_factor = Kokkos::exp(-config.market.r * config.time.dt);
 
             using EngineLSM = LSM::LSMEngine<OptRight>;
 

@@ -28,18 +28,18 @@ namespace KOps::Tests::BlackScholes {
         config.options.opt_right = KI::OptRight::Call;
         config.options.StrikePrice = 100.0;
 
-        config.init.S0 = 100.;
-        config.init.v0 = 0.04; // This implies the volatility is 0.20, similat to that of the S&P500
+        config.market.S0 = 100.;
+        config.market.v0 = 0.04; // This implies the volatility is 0.20, similat to that of the S&P500
+        config.market.r = 0.04;
+        config.market.q = 0.;
 
-        config.model.heston.r = 0.04;
-        config.model.heston.q = 0.;
+        // Heston
         config.model.heston.k = 0.;
         config.model.heston.theta = 0.;
         config.model.heston.sigma = 0.;
         config.model.heston.rho = 0.;
 
-        config.model.bates.r = 0.04;
-        config.model.bates.q = 0.;
+        // Bates
         config.model.bates.k = 0.;
         config.model.bates.theta = 0.;
         config.model.bates.sigma = 0.;

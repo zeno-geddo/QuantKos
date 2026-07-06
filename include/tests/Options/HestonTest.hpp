@@ -35,19 +35,18 @@ namespace KOps::Tests::Heston {
         config.options.opt_right = KI::OptRight::Call;
         config.options.StrikePrice = 100.0;
 
-        config.init.S0 = 100.;
-        config.init.v0 = 0.05; // Starting variance
+        config.market.S0 = 100.;
+        config.market.v0 = 0.05; // Starting variance
+        config.market.r = 0.03;
+        config.market.q = 0.02;
 
-        config.model.heston.r = 0.03;
-        config.model.heston.q = 0.02;
+        // Heston
         config.model.heston.k = 5.;
         config.model.heston.theta = 0.05;
         config.model.heston.sigma = 0.5;
         config.model.heston.rho = -0.8;
 
-
-        config.model.bates.r = 0.03;
-        config.model.bates.q = 0.02;
+        // Bates
         config.model.bates.k = 5.;
         config.model.bates.theta = 0.05;
         config.model.bates.sigma = 0.5;

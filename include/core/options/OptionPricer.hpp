@@ -76,7 +76,7 @@ namespace KOps::Engine {
             // Compute discount factor (do not apply to backwards options since already applied)
             KT::Real discount_factor = KT::real_one;
             if (config.options.opt_type != KI::OptType::American) {
-                discount_factor = std::exp(-config.model.heston.r * config.time.t_end);
+                discount_factor = std::exp(-config.market.r * config.time.t_end);
             }
 
             // Compute stats

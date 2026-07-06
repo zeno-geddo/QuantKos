@@ -13,13 +13,23 @@ namespace KOps::Keys {
     // ------------------------------------------------------------------------
     // Top-Level Blocks
     // ------------------------------------------------------------------------
+    static constexpr std::string_view Market = "Market";
     static constexpr std::string_view Options = "Options";
     static constexpr std::string_view Model = "Model";
-    static constexpr std::string_view Init = "Init";
     static constexpr std::string_view Numerics = "Numerics";
     static constexpr std::string_view Time = "Time";
     static constexpr std::string_view MC = "MC";
     static constexpr std::string_view Output = "Output";
+
+    // ------------------------------------------------------------------------
+    // Initialization Parameters (Initial Conditions)
+    // ------------------------------------------------------------------------
+    namespace MarketParams {
+        static constexpr std::string_view Price = "Price"; // Initial Price (Spot Price)
+        static constexpr std::string_view Variance = "Variance"; // Initial Variance
+        static constexpr std::string_view r = "r"; // Risk-free interest rate
+        static constexpr std::string_view q = "q"; // Continuous dividend yield
+    }
 
     // ------------------------------------------------------------------------
     // Option Parameters
@@ -40,8 +50,6 @@ namespace KOps::Keys {
         static constexpr std::string_view IDBatesBlock = "Bates";
 
         // Heston Sub-block (present also in Bates Sub-block)
-        static constexpr std::string_view r = "r"; // Risk-free interest rate
-        static constexpr std::string_view q = "q"; // Continuous dividend yield
         static constexpr std::string_view k = "k"; // Mean reversion speed of the variance
         static constexpr std::string_view theta = "theta"; // Mean reversion level of the variance
         static constexpr std::string_view sigma = "sigma"; // Volatility of the variance
@@ -54,15 +62,6 @@ namespace KOps::Keys {
 
 
     }
-
-    // ------------------------------------------------------------------------
-    // Initialization Parameters (Initial Conditions)
-    // ------------------------------------------------------------------------
-    namespace InitParams {
-        static constexpr std::string_view Price = "Price"; // Initial Price (Spot Price)
-        static constexpr std::string_view Variance = "Variance"; // Initial Variance
-    }
-
 
     // ------------------------------------------------------------------------
     // Numerical Parameters

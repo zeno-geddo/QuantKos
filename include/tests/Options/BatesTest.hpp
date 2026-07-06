@@ -32,15 +32,22 @@ namespace KOps::Tests::Bates {
         config.options.opt_right = KI::OptRight::Call;
         config.options.StrikePrice = 100.0;
 
-        config.init.S0 = 100.;
-        config.init.v0 = 0.05; // Starting variance
+        config.market.S0 = 100.;
+        config.market.v0 = 0.05; // Starting variance
+        config.market.r = 0.03;
+        config.market.q = 0.02;
 
-        config.model.bates.r = 0.03;
-        config.model.bates.q = 0.02;
+        //
+        // config.model.heston.k = 5.;
+        //config.model.heston.theta = 0.05;
+        //config.model.heston.sigma = 0.5;
+        //config.model.heston.rho = -0.8;// -0.8;
+
+
         config.model.bates.k = 5.;
         config.model.bates.theta = 0.05;
         config.model.bates.sigma = 0.5;
-        config.model.bates.rho = -0.8;
+        config.model.bates.rho = -0.8;// -0.8;
 
         config.model.bates.lambda_J = 0.11;  // Roughly 1 jump every ~9 years
         config.model.bates.mu_J = -0.15;     // When a jump happens, it averages a -15% drop (Crash)

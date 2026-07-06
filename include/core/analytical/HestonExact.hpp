@@ -22,8 +22,9 @@ namespace KOps::Engine::Analytical::Heston {
     // Note : Can be reused for the bates model
     // ========================================================================
     inline Complex get_heston_characteristic_exponent(double phi,
+                                                      const KC::MarketConfig &m,
                                                       const KC::MathModelConfig::Heston &p,
-                                                      double T, double S0, double v0, int j) {
+                                                      double T, int j) {
         // Heston specific parameters for probabilities P1 and P2 (After Eq 1.40, F. Rouah)
         const double u = (j == 1) ? 0.5 : -0.5;
         const double b = (j == 1) ? p.k - p.rho * p.sigma : p.k;
@@ -39,7 +40,7 @@ namespace KOps::Engine::Analytical::Heston {
         const Complex c = num_c / denum_c;
 
         // 3. Calculate 'C' (Eq 2.17, F. Rouah)
-        const Complex term1_C = (p.r - p.q) * i_unit * phi * T;
+        const Complex term1_C = (m.r - m.q) * i_unit * phi * T;
         const Complex term2_C_fact = (p.k * p.theta) / (p.sigma * p.sigma);
         const Complex term2_C_term1 = (b - p.rho * p.sigma * i_unit * phi - d) * T;
         const Complex term2_C_term2 = 2.0 * std::log((1.0 - c * std::exp(-d * T)) / (1.0 - c));
@@ -52,8 +53,8 @@ namespace KOps::Engine::Analytical::Heston {
         const Complex D = D_factor1 * D_factor2;
 
         // 5. Return eponent of the Characteristic Function f_j(phi) (Eq 1.48, F. Rouah)
-        const double x_t = std::log(S0);
-        return C + D * v0 + i_unit * phi * x_t;
+        const double x_t = std::log(m.S0);
+        return C + D * m.v0 + i_unit * phi * x_t;
     }
 
     // ========================================================================
@@ -61,13 +62,12 @@ namespace KOps::Engine::Analytical::Heston {
     // ========================================================================
     inline double heston_integrand_albrecher_formulation(double phi, const KC::UInputs &conf, int j) {
         const auto heston_p = conf.model.heston;
+        const auto market_p = conf.market;
         const double K = conf.options.StrikePrice;
         const double T = conf.time.t_end;
-        const double S0 = conf.init.S0;
-        const double v0 = conf.init.v0;
 
         // 1. Build the Characteristic Function f_j(phi) (Eq 1.48, F. Rouah)
-        const Complex exponent = get_heston_characteristic_exponent(phi, heston_p, T, S0, v0, j);
+        const Complex exponent = get_heston_characteristic_exponent(phi, market_p, heston_p, T, j);
         Complex f_j = std::exp(exponent);
 
         // 2. Return the real part of the final integrand (Eq 2.13, F. Rouah)
@@ -106,15 +106,14 @@ namespace KOps::Engine::Analytical::Heston {
                 "Must consider a European Call option for the Heston weak convergence test !");
         }
 
-        const auto p = conf.model.heston;
+        const auto m = conf.market;
         const double K = conf.options.StrikePrice;
         const double T = conf.time.t_end;
-        const double S0 = conf.init.S0;
 
         // Compute the probabilities (The infinite integral is truncated at phi_max = upper_bound).
         double P1 = Probability(conf, 1, upper_bound);
         double P2 = Probability(conf, 2, upper_bound);
 
-        return S0 * std::exp(-p.q * T) * P1 - K * std::exp(-p.r * T) * P2;
+        return m.S0 * std::exp(-m.q * T) * P1 - K * std::exp(-m.r * T) * P2;
     }
 }

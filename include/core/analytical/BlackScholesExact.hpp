@@ -29,15 +29,15 @@ namespace KOps::Engine::Analytical::BlackScholes {
                 "Must consider a European Call option for the Black Scholes weak convergence test !");
         }
 
-        KT::Real S = conf.init.S0;
-        KT::Real K = conf.options.StrikePrice;
-        KT::Real T = conf.time.t_end;
-        KT::Real r = conf.model.heston.r;
-        KT::Real q = conf.model.heston.q;
-        KT::Real vol = std::sqrt(conf.init.v0); // Extract Volatility from Variance
+        const KT::Real S = conf.market.S0;
+        const KT::Real r = conf.market.r;
+        const KT::Real q = conf.market.q;
+        const KT::Real K = conf.options.StrikePrice;
+        const KT::Real T = conf.time.t_end;
+        const KT::Real vol = std::sqrt(conf.market.v0); // Extract Volatility from Variance
 
-        KT::Real d1 = (std::log(S / K) + (r - q + 0.5 * vol * vol) * T) / (vol * std::sqrt(T));
-        KT::Real d2 = d1 - vol * std::sqrt(T);
+        const KT::Real d1 = (std::log(S / K) + (r - q + 0.5 * vol * vol) * T) / (vol * std::sqrt(T));
+        const KT::Real d2 = d1 - vol * std::sqrt(T);
         return S * std::exp(-q * T) * normalCDF(d1) - K * std::exp(-r * T) * normalCDF(d2);
     }
 }

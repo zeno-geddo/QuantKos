@@ -129,8 +129,8 @@ namespace KOps::Engine {
                     BatchMem.d_payoffs,
                     RNGen.get_global_rng_pool(),
                     config.time.N_time_steps,
-                    config.init.S0,
-                    config.init.v0,
+                    config.market.S0,
+                    config.market.v0,
                     config.options.StrikePrice,
                     config.options.BarrierPrice
                 };

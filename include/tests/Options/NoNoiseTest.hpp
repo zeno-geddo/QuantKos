@@ -15,8 +15,8 @@ namespace KOps::Tests::NoNoise {
 
     inline double get_exact_solution(const KOps::Config::UInputs &conf) {
         // Expected: S_T = S_0 * exp((r - q) * T)
-        const double expected_S_T = conf.init.S0 * std::exp(
-                                        (conf.model.heston.r - conf.model.heston.q) * conf.time.t_end);
+        const double expected_S_T = conf.market.S0 * std::exp(
+                                        (conf.market.r - conf.market.q) * conf.time.t_end);
         return expected_S_T;
     }
 
@@ -33,11 +33,11 @@ namespace KOps::Tests::NoNoise {
         config.time.t_end = 1.;
         config.time.inp_dt = config.time.t_end / config.time.N_time_steps;
 
-        config.init.S0 = 100.;
-        config.init.v0 = 0.;
+        config.market.S0 = 100.;
+        config.market.v0 = 0.;
+        config.market.r = 0.05;
+        config.market.q = 0.02;
 
-        config.model.heston.r = 0.05;
-        config.model.heston.q = 0.02;
         config.model.heston.k = 0.;
         config.model.heston.theta = 0.;
         config.model.heston.sigma = 0.;

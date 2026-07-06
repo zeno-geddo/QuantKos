@@ -32,11 +32,11 @@ namespace KOps::Tests::LSM {
         config.options.opt_right = KI::OptRight::Put;
         config.options.StrikePrice = 10.0;
 
-        config.init.S0 = 8.;
-        config.init.v0 = 0.0625; // Starting variance
+        config.market.S0 = 8.;
+        config.market.v0 = 0.0625; // Starting variance
+        config.market.r = 0.1;
+        config.market.q = 0.0;
 
-        config.model.heston.r = 0.1;
-        config.model.heston.q = 0.0;
         config.model.heston.k = 5.;
         config.model.heston.theta = 0.16;
         config.model.heston.sigma = 0.9;
@@ -63,7 +63,7 @@ namespace KOps::Tests::LSM {
             const double S0 = pair.first;
             const double expected_price = pair.second;
 
-            config.init.S0 = S0;
+            config.market.S0 = S0;
             std::cout << "\n\n" << indent << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
             std::cout << indent << "[   INFO   ] S0  : " << S0 << " ; expected price : " << expected_price << " \n";
 

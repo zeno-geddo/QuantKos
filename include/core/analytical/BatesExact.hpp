@@ -23,16 +23,17 @@ namespace KOps::Engine::Analytical::Bates {
     // ========================================================================
     inline double bates_integrand_albrecher_formulation(double phi, const KC::UInputs &conf, int j) {
         const auto bates = conf.model.bates;
+        const auto m = conf.market;
         const double K = conf.options.StrikePrice;
         const double T = conf.time.t_end;
 
         // 1. Get the continuous Heston exponent
         // Note: 'bates' naturally upcasts to a Heston struct.
         const Complex heston_exponent = KE::get_heston_characteristic_exponent(phi,
+                                                                               m,
                                                                                bates,
                                                                                T,
-                                                                               conf.init.S0,
-                                                                               conf.init.v0, j);
+                                                                               j);
 
         // 2. Calculate the Bates Jump Components (E_j)
         const double k_bar = std::exp(bates.mu_J + 0.5 * bates.sigma_J * bates.sigma_J) - 1.0;
@@ -58,33 +59,41 @@ namespace KOps::Engine::Analytical::Bates {
     // ========================================================================
     inline double Probability(const KC::UInputs &conf, const int j, const double phi_max = 100.0) {
         // Create a lambda that binds the configuration and j-index, not expected in the gauss-legendre implementation
-        auto integrand = [&](double phi) {
+        auto integrand = [&](const double phi) {
             return bates_integrand_albrecher_formulation(phi, conf, j);
         };
 
-        // Compute and return the integral (Eq. , F. Rouah)
-        double integral = integrate_gl64(integrand, 0.0, phi_max);
+        double integral = 0.0;
+        constexpr double chunk_size = 50.0; // Keep the subdomains dense!
+        const int num_chunks = static_cast<int>(phi_max / chunk_size);
+
+        // Integrate chunk by chunk
+        for (int i = 0; i < num_chunks; ++i) {
+            const double lower = i * chunk_size;
+            const double upper = (i + 1) * chunk_size;
+            integral += integrate_gl64(integrand, lower, upper);
+        }
+
         return 0.5 + (1.0 / M_PI) * integral;
     }
 
     // ========================================================================
     // 3. BATES EU CALL OPTION PRICE
     // ========================================================================
-    inline double get_exact_eu_call_option_price(const KC::UInputs &conf, const double upper_bound = 1000.) {
+    inline double get_exact_eu_call_option_price(const KC::UInputs &conf, const double upper_bound = 8000.) {
         const bool condition = (conf.options.opt_right == KI::OptRight::Call) &&
                                (conf.options.opt_type == KI::OptType::European);
         if (!condition) {
             throw std::runtime_error("Must consider a European Call option for the Bates analytical test!");
         }
 
-        const auto bates = conf.model.bates;
+        const auto m = conf.market;
         const double K = conf.options.StrikePrice;
         const double T = conf.time.t_end;
-        const double S0 = conf.init.S0;
 
         double P1 = Probability(conf, 1, upper_bound);
         double P2 = Probability(conf, 2, upper_bound);
 
-        return S0 * std::exp(-bates.q * T) * P1 - K * std::exp(-bates.r * T) * P2;
+        return m.S0 * std::exp(-m.q * T) * P1 - K * std::exp(-m.r * T) * P2;
     }
 }
