@@ -8,16 +8,30 @@
 #include <algorithm>
 #include "ConfigFileEnums.hpp"
 
+
+/**
+ * @brief Namespace containing utilities for bidirectional mapping between input configuration strings and internal enumerations.
+ * * Provides a type-safe interface to serialize enums for logging/output and deserialize
+ * strings provided in configuration files into C++ enum members.
+ *
+ * File (YAML) → Parser → Current Validator → Config → Solver
+ */
 namespace KOps::Implemented {
     // --------------------------------------------------------
     // 1. The "Dictionary" Holders to Map Strings to Enums
     // --------------------------------------------------------
+    /**
+     * @brief Template trait to register string-to-enum mappings.
+     * @tparam T The enum type to be mapped.
+     */
     template<typename T> // (For any type T, a function get will be provided.)
     struct StrEnumMap {
+        /** @brief Returns a reference to the static map for the requested type. */
         static const std::map<std::string, T> &get();
     };
 
     // --- Specialization: OptionType ---
+    /** @brief Specialization Mapping string identifiers to the supported financial option payoff structures. */
     template<>
     inline const std::map<std::string, OptType> &StrEnumMap<OptType>::get() {
         static const std::map<std::string, OptType> m = {
@@ -46,6 +60,7 @@ namespace KOps::Implemented {
     }
 
     // --- Specialization: OptionRight ---
+    /** @brief Specialization Mapping string identifiers to option exercise rights (Call/Put). */
     template<>
     inline const std::map<std::string, OptRight> &StrEnumMap<OptRight>::get() {
         static const std::map<std::string, OptRight> m = {
@@ -57,6 +72,7 @@ namespace KOps::Implemented {
 
 
     // --- Specialization: MathModel ---
+    /** @brief Specialization Mapping string identifiers to available SDE models. */
     template<>
     inline const std::map<std::string, MathModel> &StrEnumMap<MathModel>::get() {
         static const std::map<std::string, MathModel> m = {
@@ -67,6 +83,7 @@ namespace KOps::Implemented {
     }
 
     // --- Specialization: NumScheme ---
+    /** @brief Specialization Mapping string identifiers to available Numerical Schemes. */
     template<>
     inline const std::map<std::string, NumScheme> &StrEnumMap<NumScheme>::get() {
         static const std::map<std::string, NumScheme> m = {
@@ -79,6 +96,7 @@ namespace KOps::Implemented {
 
 
     // --- Specialization: IOFormat ---
+    /** @brief Specialization Mapping string identifiers to available Output Formats. */
     template<>
     inline const std::map<std::string, IOFormat> &StrEnumMap<IOFormat>::get() {
         static const std::map<std::string, IOFormat> m = {
@@ -91,6 +109,12 @@ namespace KOps::Implemented {
     // --------------------------------------------------------
     // 2. Enum -> String
     // --------------------------------------------------------
+    /**
+     * @brief Converts an enum value to its string representation.
+     * @tparam T The enum type.
+     * @param value The enum instance to convert.
+     * @return The string name of the enum, or "Unknown" if no mapping exists.
+     */
     template<typename T>
     std::string enum_to_string(T value) {
         const auto &m = StrEnumMap<T>::get();
@@ -112,6 +136,16 @@ namespace KOps::Implemented {
     // --------------------------------------------------------
     // 4. String -> Enum
     // --------------------------------------------------------
+    /**
+     * @brief Converts a string configuration value to its corresponding enum member.
+     * * Validates that the input string exists in the registered mapping; otherwise,
+     * throws a descriptive runtime error listing all allowed options.
+     * * @tparam T The target enum type.
+     * @param input The string value retrieved from the input file.
+     * @param field_name Name of the configuration field (used for descriptive error messages).
+     * @return The corresponding enum member.
+     * @throw std::runtime_error If the input string is invalid.
+     */
     template<typename T>
     T string_to_enum(const std::string &input, const std::string &field_name) {
         const auto &m = StrEnumMap<T>::get();

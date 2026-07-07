@@ -5,8 +5,10 @@
 #include "./../Typedefs.hpp"
 #include "./../config/Config.hpp"
 
+/**
+ * @brief Namespace aggregating all tools needed to compute the exact Europen call option price considering the Black-Scholes model.
+ */
 namespace KOps::Engine::Analytical::BlackScholes {
-
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
     namespace KI = KOps::Implemented;
@@ -20,10 +22,16 @@ namespace KOps::Engine::Analytical::BlackScholes {
         return 0.5 * (1.0 + std::erf(x / std::sqrt(2.0)));
     }
 
+    /**
+    * @brief Computes the analytical European Call price using the Black-Scholes model.
+    * @param conf, Configuration struct containing all parameters given by the user.
+    * @return Theoretical European Call price.
+    * @throw std::runtime_error If the option configuration is not a European Call.
+    */
     inline KT::Real get_exact_eu_call_option_price(const KC::UInputs &conf) {
         // Assume considering European Call
-        bool condition = (conf.options.opt_right == KI::OptRight::Call) and (
-                             conf.options.opt_type == KI::OptType::European);
+        const bool condition = (conf.options.opt_right == KI::OptRight::Call) and (
+                                   conf.options.opt_type == KI::OptType::European);
         if (!condition) {
             throw std::runtime_error(
                 "Must consider a European Call option for the Black Scholes weak convergence test !");

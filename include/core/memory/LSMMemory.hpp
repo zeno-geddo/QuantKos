@@ -11,27 +11,47 @@ namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
 
+    /**
+     * @brief Manages memory for American option pricing when using the Longstaff-Schwartz algorithm.
+     * * This class coordinates the large-scale storage of asset paths on the Host (CPU) and
+     * provides high-speed streaming buffers to the Device (GPU) for backward regression steps.
+     * * @note This manager enforces a heavy memory budget. It pre-allocates a "Master Matrix"
+     * in Host RAM to accommodate the entire path history, while providing lightweight
+     * streaming buffers for the regression process.
+     * * @note This class adheres to RAII principles. Copying is prohibited to prevent
+     * memory corruption; move semantics are supported to allow for safe ownership transfer.
+     */
     class BackwardLSMMemory {
     public:
         // 1. The standard forward batch memory manager
-        PathsMCBatchMem BatchMem;
+        PathsMCBatchMem BatchMem; ///< Forward phase batch manager.
 
         // 2. The Massive Master Matrix (EXCLUSIVELY ON CPU RAM)
-        // Using LayoutLeft ensures that columns (time-slices) are contiguous in CPU RAM,
-        // allowing fast PCIe streaming transfers.
         using HostMasterPathsView = Kokkos::View<KT::Real **, Kokkos::LayoutLeft, Kokkos::HostSpace>;
+        /** @brief The full asset path matrix (N_paths x T_steps) stored in CPU RAM.
+        * @note Using LayoutLeft ensures that columns (time-slices) are contiguous in CPU RAM,
+         allowing fast PCIe streaming transfers
+        */
         HostMasterPathsView h_master_paths;
 
         // 3. Tiny GPU Buffers for the Backward Pass
+        /** @name GPU Regression Buffers */
+        ///@{
         Kokkos::View<KT::Real *, Kokkos::LayoutLeft> d_prices_current_time;
+        /** @brief Best known future outcome (Current present value of the optimal future strategy)
+         * @note At any given time step t during the loop, d_best_future_outcome(i) contains the amount of money you will make on path i if you hold the option from time t until the best possible future moment, discounted back to time t
+         */
         Kokkos::View<KT::Real *, Kokkos::LayoutLeft> d_best_future_outcomes;
-        // Best known future outcome (Current present value of the optimal future strategy)
-        // Note : At any given time step t during the loop, d_best_future_outcome(i) contains the amount of money you will make on path i if you hold the option from time t until the best possible future moment, discounted back to time t
+        ///@}
 
-
-        // Host mirror to retrieve the final cash flows
+        // Host mirror to retrieve the final bets possible outcomes (cash flows)
         Kokkos::View<KT::Real *, Kokkos::LayoutLeft>::host_mirror_type h_best_future_outcomes;
 
+        /**
+         * @brief Initializes LSM memory and performs a budget-check against physical RAM.
+         * @param conf The global configuration providing path count, time steps, and memory limits.
+         * @throw std::runtime_error If the Master Matrix and batch buffers exceed the configured CPU RAM budget.
+         */
         explicit BackwardLSMMemory(const KC::UInputs &conf) : BatchMem(conf) {
             const int N = conf.mc.N_Paths;
             const int T = conf.time.N_time_steps;
@@ -75,25 +95,34 @@ namespace KOps::Engine {
         }
 
         // Delete copies to prevent shared memory issues
-        BackwardLSMMemory(const BackwardLSMMemory&) = delete;
-        BackwardLSMMemory& operator=(const BackwardLSMMemory&) = delete;
+        BackwardLSMMemory(const BackwardLSMMemory &) = delete;
+
+        BackwardLSMMemory &operator=(const BackwardLSMMemory &) = delete;
 
         // Default move constructor to allow safe ownership transfer
-        BackwardLSMMemory(BackwardLSMMemory&&) = default;
-        BackwardLSMMemory& operator=(BackwardLSMMemory&&) = delete;
+        BackwardLSMMemory(BackwardLSMMemory &&) = default;
+
+        BackwardLSMMemory &operator=(BackwardLSMMemory &&) = delete;
 
         // Default destructor
         ~BackwardLSMMemory() = default;
 
+        /** @name Data Management Routines */
+        ///@{
+        /** * @brief Transfers a completed path batch from the GPU to the Master Matrix on the Host.
+         * @param batch_idx The index of the current batch.
+         * @param current_batch_size The number of paths in this specific batch.
+         *  * @note Master matrix is always layout right, while batch-view depends on how the device is being used.
+        */
         void copy_current_mc_batch_to_master_mc_matrix(const int batch_idx, const int current_batch_size) {
             // Aim : Extract the exact sub-block of the master matrix we want to fill and fill it
-            // Note: master matrix is always layout right, while batchview depends on how the device is being used
-            // Note: subview only gives a window, it does allocate any new memory
+            // Note: master matrix is always layout right, while batch-view depends on how the device is being used
+            // Note: subview only gives a window, it does not allocate any new memory
 
-            // Move data to host using PCIe BUS, it is the slowest copy (cannot copy directly from gpu to cpu)
+            // 0. Move data to host using PCIe BUS, it is the slowest copy (cannot copy directly from gpu to master matrix in cpu)
             BatchMem.deep_copy_to_host();
 
-            // Create Target: CPU Master Matrix subview
+            // 1. Create Target: CPU Master Matrix subview
             const int path_start_idx = batch_idx * BatchMem.n_sims_per_batch;
             const int paths_end_idx = path_start_idx + current_batch_size;
             const auto target_paths_range = std::make_pair(path_start_idx, paths_end_idx);
@@ -102,17 +131,20 @@ namespace KOps::Engine {
                                                 Kokkos::ALL() // target all second dimension (all cols/times)
             );
 
-            // Source: CPU Host Batch subview
+            // 2. Create Source: CPU Host Batch subview
             auto h_sub_batch = Kokkos::subview(BatchMem.h_batch_view,
                                                std::make_pair(0, current_batch_size),
                                                Kokkos::ALL()); // Handle the case of the last incomplete batch
 
-            // Perform the CPU-to-CPU copy, implicitly making a transpose if necessary
-            // Note : This is much faster since it does not requires PCIe BUS but is done in CPU RAM and L3 cache, they are much faster!
+            // 3. Perform the CPU-to-CPU copy, implicitly making a transpose if necessary
+            // Note : This is much faster since it does not require PCIe BUS but is done in CPU RAM and L3 cache, they are much faster!
             // Doing the second copy should not be a disaster in terms of performance
             Kokkos::deep_copy(h_sub_master, h_sub_batch);
         }
 
+        /** * @brief Streams a single time-slice (column) from the Master Matrix to the GPU.
+        * @param time_step The specific simulation time step to stream.
+        */
         void bring_host_prices_time_slice_to_device(const int time_step) const {
             // 1. Slice out the target column from the column-major master matrix.
             // Note: Kokkos::ALL() ensures we grab every simulated path for this time step.
@@ -122,8 +154,10 @@ namespace KOps::Engine {
             Kokkos::deep_copy(d_prices_current_time, h_column_view);
         }
 
+        /** @brief Synchronizes LSM best future outcomes (cash flows) from Device to Host. */
         void bring_device_cash_flows_to_host() {
             Kokkos::deep_copy(h_best_future_outcomes, d_best_future_outcomes);
         }
+        ///@}
     };
 }

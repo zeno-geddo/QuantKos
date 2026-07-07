@@ -1,66 +1,81 @@
 // File (YAML) → Parser → Validator → Config → Solver
 #pragma once
 
-namespace KOps::Implemented {
 
+namespace KOps::Implemented {
+    /**
+    * @brief Defines the supported option exercise styles and payoff structures.
+    */
     enum class OptType {
         // ------------------------------------------------
         // Standard Options (Terminal & Averages)
         // ------------------------------------------------
-        European, // The standard vanilla option.
-        Asian, // The average rate option.
+        /** @name Standard Vanilla Options */
+        ///@{
+        European, ///< Standard vanilla option exercisable only at maturity.
+        Asian, ///< Payoff depends on the average price of the underlying.
+        ///@}
 
-        // ------------------------------------------------
-        // Barrier Option (Conditional Survival/Activation)
-        // ------------------------------------------------
-        BarrierUpAndOut, // Starts active. If the asset price rises above the barrier, the option instantly becomes worthless (dies).
-        BarrierDownAndOut, // Starts active. If the asset price drops below the barrier, the option dies.
-        BarrierUpAndIn, // Starts dead. It only becomes a valid option if the asset price rises and touches the upper barrier.
-        BarrierDownAndIn, // Starts dead. It only becomes a valid option if the asset price drops and touches the lower barrier.
+        /** @name Barrier Options (Conditional Survival/Activation)*/
+        ///@{
+        BarrierUpAndOut, ///< Option becomes worthless if the asset rises above the barrier.
+        BarrierDownAndOut, ///< Option becomes worthless if the asset falls below the barrier.
+        BarrierUpAndIn, ///< Option activates only if the asset rises to touch the barrier.
+        BarrierDownAndIn, ///< Option activates only if the asset falls to touch the barrier.
+        ///@}
 
-        // ------------------------------------------------
-        // Lookback Options (Extrema Tracking)
-        // ------------------------------------------------
-        LookbackFloatingStrike, // Strike floats to the absolute min (Call) or max (Put)
-        LookbackFixedStrike,    // Strike is fixed, but payoff uses the absolute max (Call) or min (Put)
+        /** @name Lookback Options */
+        ///@{
+        LookbackFloatingStrike, ///< Strike price is set to the historical minimum/maximum of the asset.
+        LookbackFixedStrike, ///< Strike is fixed, but payoff uses the absolute max (Call) or min (Put)
+        ///@}
 
+        /** @name Binary Options */
+        ///@{
+        BinaryCashOrNothing, ///< Pays a fixed cash amount if the option finishes in-the-money.
+        BinaryAssetOrNothing, ///< Pays the value of the terminal asset price if in-the-money.
+        ///@}
 
-        // ------------------------------------------------
-        // Binary Options ( options
-        // ------------------------------------------------
-        BinaryCashOrNothing, // Pays a fixed cash amount if In-The-Money (ITM) // ? should add such amount as input ?
-        BinaryAssetOrNothing, // Pays the terminal asset price if ITM
-
-        // ------------------------------------------------
-        // Backwards path dependent options
-        // ------------------------------------------------
+        /** @name Early Exercise Options */
+        ///@{
         American,
+        ///@}
     };
 
+    /**
+    * @brief Represents the exercise right of the option contract.
+    */
     enum class OptRight {
+        /** @brief The right to purchase the underlying asset. */
         Call,
+        /** @brief The right to sell the underlying asset. */
         Put
     };
 
+    /** @brief Supported stochastic math models for asset dynamics.
+     */
     enum class MathModel {
         Heston,
         Bates,
     };
 
+    /** @brief Numerical discretization schemes for SDE paths. */
     enum class NumScheme {
-        Euler,
-        Milstein,
-        AndersonQE,
+        Euler, ///< Euler-Maruyama discretization.
+        Milstein, ///< First-order Implicit Milstein scheme.
+        AndersonQE, ///< Quadratic Exponential (QE) scheme for Heston.
     };
 
+    /** @brief Supported output data formats. */
     enum class IOFormat {
-        BIN, // Specific binary protocol
-        TXT, // For simple 1D debugging
+        BIN, ///< High-performance custom binary protocol.
+        TXT, ///< Human-readable text format for debugging/plotting.
     };
 
+    /** @brief Supported basis for Longstaff-Schwarz Algorithm (for American Options). */
     enum class LSRegressionBasis {
-        LaguerreP02,
-        LaguerreP03,
-        LaguerreP04,
+        LaguerreP02, ///< Order 2 Laguerre polynomial.
+        LaguerreP03, ///< Order 3 Laguerre polynomial.
+        LaguerreP04, ///< Order 4 Laguerre polynomial.
     };
 }

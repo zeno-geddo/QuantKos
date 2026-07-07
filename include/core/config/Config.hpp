@@ -13,9 +13,11 @@
 #include "ConfigFileKeys.hpp"
 #include "ConfigFileKeysEnumMaps.hpp"
 
-
+/**
+ * @brief Namespace aggregating all structures containing parameters required to initialize and run a simulation.
+ */
 namespace KOps::Config {
-    // Internal helper to make error messages clean
+    /** @brief Internal helper to make configuration error messages cleaner */
     inline std::string config_err_msg(std::string_view block, std::string_view key, const std::string &msg) {
         return "[" + std::string(block) + "." + std::string(key) + "] " + msg;
     }
@@ -25,13 +27,23 @@ namespace KOps::Config {
     namespace KK = KOps::Keys;
     using Real = KOps::Types::Real;
 
-    // Substructure: Market Conditions
+    /**
+     * @brief Market environment configuration.
+     *
+     * Defines the initial state of the underlying asset and the surrounding
+     * financial parameters (interest rates and dividends).
+     */
     struct MarketConfig {
-        Real S0 = 100.0;
-        Real v0 = 1.0;
-        Real r = 0.05;
-        Real q = 0.0;
+        Real S0 = 100.0; ///< Initial asset spot price.
+        Real v0 = 1.0; ///< Initial stochastic variance.
+        Real r = 0.05; ///< Annualized risk-free interest rate.
+        Real q = 0.0; ///< Annualized continuous dividend yield.
 
+        /**
+         * @brief Validates that the market parameters lie within physically
+         *        meaningful and numerically stable ranges.
+         * @throw std::runtime_error If any parameter violates stability constraints.
+         */
         void validate() const {
             if (S0 <= 0.0)
                 throw std::runtime_error(
@@ -46,13 +58,19 @@ namespace KOps::Config {
 
             if (std::abs(r) > 0.5)
                 throw std::runtime_error(
-                    config_err_msg(KK::Market, KK::MarketParams::r, "Risk-free rate (r) is unphysical (keep between -50% and +50%)."));
+                    config_err_msg(KK::Market, KK::MarketParams::r,
+                                   "Risk-free rate (r) is unphysical (keep between -50% and +50%)."));
 
             if (q > 0.8)
                 throw std::runtime_error(
-                    config_err_msg(KK::Market, KK::MarketParams::q, "Dividend yield (q) is unphysical (keep under 80%)."));
+                    config_err_msg(KK::Market, KK::MarketParams::q,
+                                   "Dividend yield (q) is unphysical (keep under 80%)."));
         }
 
+        /**
+         * @brief Prints the market configuration to standard output.
+         * @param indent String prefix for printing alignment.
+         */
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Market << "]\n"
                     << indent << "    Initial Price (S0"
@@ -66,13 +84,22 @@ namespace KOps::Config {
         }
     };
 
-    // Substructure: Options types and tigh
+    /**
+    * @brief Options configuration.
+    *
+    * Defines the option type and right, as well as striking and barrier price.
+    */
     struct OptionsConfig {
-        KI::OptType opt_type = KI::OptType::European;
-        KI::OptRight opt_right = KI::OptRight::Call;
-        Real StrikePrice = 100.; //
-        Real BarrierPrice = 100.; //
+        KI::OptType opt_type = KI::OptType::European; ///< Option Type
+        KI::OptRight opt_right = KI::OptRight::Call; ///< Option Right
+        Real StrikePrice = 100.; ///< Strike Price
+        Real BarrierPrice = 100.; ///< Barrier Price
 
+        /**
+        * @brief Validates that the options parameters lie within physically
+        *        meaningful ranges.
+        * @throw std::runtime_error If any parameter violates stability constraints.
+        */
         void validate(const Real Spot_price) const {
             // Check if Strike price make sense (compared to the spot price)
             if (StrikePrice <= 0.0)
@@ -93,6 +120,10 @@ namespace KOps::Config {
             }
         }
 
+        /**
+         * @brief Prints the options configuration to standard output.
+         * @param indent String prefix for printing alignment.
+         */
         void print(std::string_view indent = "") const {
             const bool is_barrier_option = (opt_type == KI::OptType::BarrierDownAndIn ||
                                             opt_type == KI::OptType::BarrierDownAndOut ||
@@ -110,25 +141,42 @@ namespace KOps::Config {
     };
 
 
-    // Substructure: Physics & Model
+    /**
+     * @brief Manages SDE model and parameters.
+     *
+     * Defines the mathematical dynamics for asset pricing (e.g., Heston or Bates).
+     * Includes validation logic to enforce financial constraints (e.g., Feller condition)
+     * and provides formatted SDE equation output for audit logs.
+     */
     struct MathModelConfig {
-        KI::MathModel id_model = KI::MathModel::Heston;
+        KI::MathModel id_model = KI::MathModel::Heston; ///< ID Active SDE model.
 
+        /**
+         * @brief Core Heston stochastic volatility parameters.
+         */
         struct Heston {
-            // Real r = 0.05;
-            // Real q = 0.0;
-            Real k = 2.0;
-            Real theta = 0.04;
-            Real sigma = 0.3;
-            Real rho = -0.7;
+            Real k = 2.0; ///< Mean reversion speed.
+            Real theta = 0.04; ///< Long-term mean variance.
+            Real sigma = 0.3; ///< Volatility of variance (Vol-of-Vol).
+            Real rho = -0.7; ///< Correlation between asset and variance shocks.
         } heston;
 
+        /**
+         * @brief Bates jump-diffusion extension.
+         *
+         * Extends Heston dynamics by adding log-normal jumps (Merton process).
+         * @note Inherits from Heston to share common stochastic volatility parameters.
+         */
         struct Bates : public Heston {
-            Real lambda_J = 0.1; // Jump intensity
-            Real mu_J = -0.1; // Mean of log jump size
-            Real sigma_J = 0.15; // Volatility of log jump size
+            Real lambda_J = 0.1; ///< Average jump intensity per unit time.
+            Real mu_J = -0.1; ///< Mean of the jump size distribution (log-space).
+            Real sigma_J = 0.15; ///< Standard deviation of the jump size.
         } bates;
 
+        /**
+         * @brief Performs physical constraints validation on the selected model.
+        * @throw std::runtime_error If model-specific physical bounds are violated.
+        */
         void validate() const {
             if (id_model == KI::MathModel::Heston) {
                 validate_heston_params(heston);
@@ -137,7 +185,13 @@ namespace KOps::Config {
             }
         }
 
-        void print(const MarketConfig& market, std::string_view indent = "") const {
+        /**
+     * @brief Prints a mathematical representation of the model and its current parameters.
+     *
+     * @param market The market context (r, q) required for accurate SDE display.
+     * @param indent String indentation for log formatting.
+     */
+        void print(const MarketConfig &market, std::string_view indent = "") const {
             // Assemble the equations
             std::string str_math_model = "";
             std::string ind(indent);
@@ -202,6 +256,8 @@ namespace KOps::Config {
         }
 
     private:
+
+        /** @brief Validates Heston-specific stochastic constraints. */
         void validate_heston_params(const Heston &h) const {
             if (h.k < 0.0)
                 throw std::runtime_error("[Model Config] κ must be positive.");
@@ -213,7 +269,7 @@ namespace KOps::Config {
                 throw std::runtime_error("[Model Config] ρ must fall within [-1.0, 1.0].");
         }
 
-        // 2. Validates any Bates configuration layer
+        /** @brief Validates jump-diffusion parameters, including Heston base. */
         void validate_bates_params(const Bates &b) const {
             // Leverage inheritance! Validate the stoch-vol layer first.
             validate_heston_params(b);
@@ -229,13 +285,21 @@ namespace KOps::Config {
     };
 
 
-    // Substructure: Numerical Scheme
+    /**
+    * @brief Numerical Scheme configuration.
+    *
+    * Defines the Numerical Scheme to solve the SDE.
+    */
     struct NumSchemeConfig {
-        KI::NumScheme id_scheme = KI::NumScheme::Euler;
+        KI::NumScheme id_scheme = KI::NumScheme::Euler; ///< ID Numerical Scheme
 
         void validate() const {
         }
 
+        /**
+         * @brief Prints the Numerical Scheme configuration to standard output.
+         * @param indent String prefix for printing alignment.
+         */
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Numerics << "]\n"
                     << indent << "    Numerical Scheme    :  " << enum_to_string(id_scheme) << "\n";
@@ -243,12 +307,22 @@ namespace KOps::Config {
     };
 
     // Substructure: Time Stepping
+    /**
+    * @brief Time stepping configuration.
+    *
+    * Defines the final time as well as the time step and the number of times steps for the discretization.
+    */
     struct TimeConfig {
-        Real t_end = 1.0;
-        Real inp_dt = 0.2;
-        Real dt;
-        int N_time_steps;
+        Real t_end = 1.0; ///< Final Time
+        Real inp_dt = 0.2; ///< Adjusted time step
+        Real dt; ///< Input time step
+        int N_time_steps; ///< Number of times steps
 
+        /**
+        * @brief Validates that the time stepping parameters lie within physically
+        *        meaningful ranges. If the input time step is not valid, it adjusts it giving a warning.
+        * @throw std::runtime_error If any parameter violates stability constraints.
+        */
         void validate() {
             // Check inputs
             if (t_end <= 0.0)
@@ -277,6 +351,10 @@ namespace KOps::Config {
             }
         }
 
+        /**
+         * @brief Prints the time stepping configuration to standard output.
+         * @param indent String prefix for printing alignment.
+         */
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Time << "]\n"
                     << indent << "    End Time (" << KK::TimeParams::T_End << ")                     :   " << t_end <<
@@ -289,15 +367,25 @@ namespace KOps::Config {
         }
     };
 
-    // Substructure: MonteCarlo
+    /**
+     * @brief Configuration parameters for the Monte Carlo engine.
+     *
+     * Controls the MonteCarlo size, parallelization batching, hardware memory limits,
+     * and the stochastic seed for path generation.
+     */
     struct MCConfig {
-        int N_Paths = 1000;
-        int batch_size = 0; // 0 means autotune
-        uint64_t rng_seed = 184467440737095ULL;
-        long long Max_VRAM_MB = 256;
-        long long Max_CPU_RAM_MB = 4000;
+        int N_Paths = 1000; ///< Total number of SDE realizations.
+        int batch_size = 0;
+        ///< Number of paths per kernel launch. (Set to 0 for automatic tuning, -1 for tot numb simulations.)
+        uint64_t rng_seed = 184467440737095ULL; ///< Initial seed for the independent random number generation.
+        long long Max_VRAM_MB = 256; ///< Limit on GPU VRAM allocation.
+        long long Max_CPU_RAM_MB = 4000; ///< Limit on CPU host memory allocation.
 
 
+        /**
+       * @brief Validates hardware limits and simulation parameters.
+       * @throw std::runtime_error If inputs are negative, zero-valued, or violate memory bounds.
+       */
         void validate() const {
             if (N_Paths < 1)
                 throw std::runtime_error(
@@ -326,6 +414,7 @@ namespace KOps::Config {
                     config_err_msg(KK::MC, KK::MCParams::Max_CPU_RAM_MB, "must be a positive integer."));
         }
 
+        /** @brief Outputs MC configuration summary to standard console. */
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::MC << "]\n"
                     << indent << "    Number of Realizations         :    " << N_Paths << "\n"
@@ -337,12 +426,17 @@ namespace KOps::Config {
     };
 
 
-    // Substructure: IO & Diagnostics
+    /**
+     * @brief Configuration for file system I/O and logging.
+     *
+     * Manages output paths, naming conventions, and file formats (binary/text).
+     * Automatically ensures the target directory tree exists on disk upon validation.
+     */
     struct OutputConfig {
-        std::string out_dir = "outputs";
-        std::string filename_paths_out = "KOptions.paths";
-        std::string filename_log = "KOptions.log";
-        KI::IOFormat format = KI::IOFormat::TXT;
+        std::string out_dir = "outputs"; ///< Target directory for generated logs and paths.
+        std::string filename_paths_out = "KOptions.paths"; ///< Filename for the simulated path storage.
+        std::string filename_log = "KOptions.log"; ///< Filename for the runtime execution log.
+        KI::IOFormat format = KI::IOFormat::TXT; ///< Output Data format (e.g., BIN or TXT).
 
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Output << "]\n"
@@ -352,6 +446,10 @@ namespace KOps::Config {
                     << indent << "    Name Log File            :     " << filename_log << "\n";
         }
 
+        /**
+     * @brief Creates the output directory structure if it does not exist.
+     * @throw std::runtime_error If filesystem permissions prevent directory creation.
+     */
         void validate() const {
             // Check if a file path is empty
             if (filename_paths_out.empty()) {
@@ -375,7 +473,12 @@ namespace KOps::Config {
         }
     };
 
-    // Master Configuration (information container)
+    /**
+     * @brief Master configuration container for the simulation engine.
+     *
+     * Aggregates all market, model, Numerical, and hardware settings. This structure serves
+     * as the single source of truth for the SDE solvers and Monte Carlo kernels.
+     */
     struct UInputs {
         MarketConfig market;
         OptionsConfig options;
@@ -385,6 +488,14 @@ namespace KOps::Config {
         MCConfig mc;
         OutputConfig output;
 
+        /**
+         * @brief Performs a full validation of all sub-configurations.
+         *
+         * Should be called immediately after parsing input files (e.g., JSON/YAML)
+         * and before initializing the simulation engines.
+         *
+         * @throw std::runtime_error If any component parameter fails validation.
+         */
         void validate() {
             market.validate();
             options.validate(market.S0);
@@ -396,6 +507,7 @@ namespace KOps::Config {
             std::cout << ">>> Input configuration validated successfully.\n" << std::endl;
         }
 
+        /** @brief Prints a formatted summary of the entire simulation configuration. */
         void print_summary() const {
             constexpr std::string_view indent = "    ";
 

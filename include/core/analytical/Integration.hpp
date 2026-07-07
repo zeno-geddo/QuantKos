@@ -1,9 +1,26 @@
 #pragma once
 #include <array>
 
-namespace KOps::Engine::Analytical {
 
+/**
+ * @brief Namespace aggregating all tools to compute the exact options prices using semi-analytical formulations.
+ */
+namespace KOps::Engine::Analytical {
     // 64-points Gauss-Legendre Integrator
+    /**
+     * @brief Performs 64-point Gauss-Legendre quadrature integration over the interval [a, b].
+     *
+     * This routine maps the standard [-1, 1] interval to the target range [a, b].
+     * It utilizes a symmetric summation of 32 positive nodes and their 32 mirrored counterparts to
+     * maintain a compact memory footprint for the weight and root arrays.
+     *
+     * @tparam IntegrandFunc The callable type (lambda or functor) that satisfies
+     *                       the signature `double(double)`.
+     * @param integrand A unary callable representing the function to be integrated.
+     * @param a The lower bound of the integration interval.
+     * @param b The upper bound of the integration interval.
+     * @return The numerical approximation of the integral over [a, b].
+     */
     template<typename IntegrandFunc>
     inline double integrate_gl64(IntegrandFunc integrand, const double a, const double b) {
         // 64-point Gauss-Legendre roots (nodes) and weights for interval [-1, 1]

@@ -8,7 +8,9 @@
 #include "./../Typedefs.hpp"
 #include "./../config/Config.hpp"
 
-
+/**
+ * @brief Namespace aggregating all tools needed to compute the exact Europen call option price considering the Bates model.
+ */
 namespace KOps::Engine::Analytical::Bates {
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
@@ -21,6 +23,14 @@ namespace KOps::Engine::Analytical::Bates {
     // ========================================================================
     // 1. THE BATES INTEGRAND (COMPOSING HESTON + MERTON JUMPS)
     // ========================================================================
+    /**
+     * @brief Evaluates the real part of the Bates option pricing integrand.
+     *
+     * @param phi The integration variable (frequency).
+     * @param conf Unified inputs configuration containing market and option parameters.
+     * @param j Probability component index (1 or 2).
+     * @return The real value of the integrated component.
+     */
     inline double bates_integrand_albrecher_formulation(double phi, const KC::UInputs &conf, int j) {
         const auto bates = conf.model.bates;
         const auto m = conf.market;
@@ -57,6 +67,17 @@ namespace KOps::Engine::Analytical::Bates {
     // ========================================================================
     // 2. THE BATES PROBABILITY
     // ========================================================================
+    /**
+     * @brief Calculates the semi-analytic risk-neutral probability $P_j$ via numerical quadrature, considering the Bates model.
+     *
+     * Binds the formulation integrand into a local lambda functor and evaluates the
+     * definite integral using a 64-point Gauss-Legendre integration routine.
+     *
+     * @param conf Unified inputs configuration containing all execution parameters.
+     * @param j Probability component index (1 or 2).
+     * @param phi_max The upper truncation bound for the infinite integral numerical limit (default: 100.0).
+     * @return The resulting risk-neutral probability scaling between 0.0 and 1.0.
+     */
     inline double Probability(const KC::UInputs &conf, const int j, const double phi_max = 100.0) {
         // Create a lambda that binds the configuration and j-index, not expected in the gauss-legendre implementation
         auto integrand = [&](const double phi) {
@@ -80,6 +101,17 @@ namespace KOps::Engine::Analytical::Bates {
     // ========================================================================
     // 3. BATES EU CALL OPTION PRICE
     // ========================================================================
+    /**
+    * @brief Computes the analytical European Call price using the Bates model.
+    *
+    * Uses numerical integration (Gauss-Legendre) of the Bates characteristic function,
+    * truncating the infinite integral at the specified upper bound.
+    *
+    * @param conf Configuration struct containing all parameters given by the user.
+    * @param upper_bound The upper integration limit for the characteristic function (default: 8000.0).
+    * @return Theoretical European Call price.
+    * @throw std::runtime_error If the option configuration is not a European Call.
+    */
     inline double get_exact_eu_call_option_price(const KC::UInputs &conf, const double upper_bound = 8000.) {
         const bool condition = (conf.options.opt_right == KI::OptRight::Call) &&
                                (conf.options.opt_type == KI::OptType::European);

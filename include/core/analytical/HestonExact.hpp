@@ -7,7 +7,9 @@
 #include "./../Typedefs.hpp"
 #include "./../config/Config.hpp"
 
-
+/**
+ * @brief Namespace aggregating all tools needed to compute the exact Europen call option price considering the Heston Model.
+ */
 namespace KOps::Engine::Analytical::Heston {
     namespace KT = KOps::Types;
     namespace KC = KOps::Config;
@@ -21,6 +23,21 @@ namespace KOps::Engine::Analytical::Heston {
     // Calculates the exponent: C + D*v0 + i*phi*ln(S0)
     // Note : Can be reused for the bates model
     // ========================================================================
+
+    /**
+    * @brief Computes the complex exponent of the Heston characteristic function.
+    *
+    * Implements the Albrecher formulation (see Chapter 2, F. Rouah) to guarantee
+    * numerical stability during integration. This function isolated from the full
+    * characteristic function calculation to allow direct reuse inside the Bates jump model.
+    *
+    * @param phi The integration variable (frequency).
+    * @param m Market configuration parameters (S0, v0, r, q).
+    * @param p Heston model parameters (k, theta, sigma, rho).
+    * @param T Time to maturity.
+    * @param j Probability component index (1 or 2).
+    * @return The complex exponent value ($C + D \cdot v_0 + i \cdot \phi \cdot \ln(S_0)$).
+    */
     inline Complex get_heston_characteristic_exponent(double phi,
                                                       const KC::MarketConfig &m,
                                                       const KC::MathModelConfig::Heston &p,
@@ -60,6 +77,14 @@ namespace KOps::Engine::Analytical::Heston {
     // ========================================================================
     // 1. THE HESTON INTEGRAND (ALBRECHER FORMULATION)
     // ========================================================================
+    /**
+     * @brief Evaluates the real part of the Heston option pricing integrand.
+     *
+     * @param phi The integration variable (frequency).
+     * @param conf Unified inputs configuration containing market and option parameters.
+     * @param j Probability component index (1 or 2).
+     * @return The real value of the integrated component ($\text{Re}[\frac{e^{-i\phi \ln(K)}f_j(\phi)}{i\phi}]$).
+     */
     inline double heston_integrand_albrecher_formulation(double phi, const KC::UInputs &conf, int j) {
         const auto heston_p = conf.model.heston;
         const auto market_p = conf.market;
@@ -79,6 +104,17 @@ namespace KOps::Engine::Analytical::Heston {
     // ========================================================================
     // 2. THE HESTON PROBABILITY
     // ========================================================================
+    /**
+     * @brief Calculates the semi-analytic risk-neutral probability $P_j$ via numerical quadrature, considering the Heston model.
+     *
+     * Binds the formulation integrand into a local lambda functor and evaluates the
+     * definite integral using a 64-point Gauss-Legendre integration routine.
+     *
+     * @param conf Unified inputs configuration containing all execution parameters.
+     * @param j Probability component index (1 or 2).
+     * @param phi_max The upper truncation bound for the infinite integral numerical limit (default: 100.0).
+     * @return The resulting risk-neutral probability scaling between 0.0 and 1.0.
+     */
     inline double Probability(const KC::UInputs &conf, const int j, const double phi_max = 100.0) {
         // Create a lambda that binds the configuration and j-index, not expected in the gauss-legendre implementation
         // The compiler should create a functor behind the scenes
@@ -97,6 +133,17 @@ namespace KOps::Engine::Analytical::Heston {
     // ========================================================================
     // 3. HESTON EU CALL OPTION PRICE
     // ========================================================================
+    /**
+    * @brief Computes the analytical European Call price using the Heston model.
+    *
+    * Uses numerical integration (Gauss-Legendre) of the Heston characteristic function,
+    * truncating the infinite integral at the specified upper bound.
+    *
+    * @param conf Configuration struct containing all parameters given by the user.
+    * @param upper_bound The upper integration limit for the characteristic function (default: 100.0).
+    * @return Theoretical European Call price.
+    * @throw std::runtime_error If the option configuration is not a European Call.
+    */
     inline double get_exact_eu_call_option_price(const KC::UInputs &conf, const double upper_bound = 100.) {
         // Check that a european call is considered
         const bool condition = (conf.options.opt_right == KI::OptRight::Call) and (

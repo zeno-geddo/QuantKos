@@ -20,20 +20,37 @@ namespace KOps::Engine {
     // Class managing the memory, when the entire times grid is kept
     // but only a subsets of the total paths are kept to not saturate memory
     // ------------------------------------------------------------------------
+    /**
+     * @brief Manages hardware memory allocation for batch-processed Monte Carlo simulations.
+     * * This class implements a memory-constrained batching strategy to perform large-scale
+     * path simulations without saturating the device memory. It calculates an optimal
+     * batch size based on user-provided VRAM/RAM constraints and allocates contiguous
+     * buffers for asset paths and their resulting payoffs.
+     * * @note This class adheres to RAII principles. Copying is prohibited to prevent
+     * memory corruption; move semantics are supported to allow for safe ownership transfer.
+     * * @note This class utilizes Kokkos mirror views. The h_batch_view will point to the same memory as d_batch_view when executing on a CPU-only architecture, resulting in zero-cost synchronization
+    */
     class PathsMCBatchMem {
     public:
-        int n_sims_per_batch;
+        int n_sims_per_batch; ///< Number of paths processed in a single batch (kernel launch).
 
-        // Device Views (N_sims_per_batch, TotN_T_steps)
-        DevPathsView d_batch_view;
-        DevPayoffView d_payoffs;
+        /** @name Kokkos Device Views */
+        ///@{
+        DevPathsView d_batch_view; ///< Device-side view for asset paths (N_sims_per_batch, TotN_T_steps).
+        DevPayoffView d_payoffs; ///< Device-side view for option payoffs (N_sims_per_batch).
+        ///@}
 
-        // Host Views
-        HostPathsView h_batch_view;
-        HostPayoffView h_payoffs;
+        /** @name Kokkos Host Views */
+        ///@{
+        HostPathsView h_batch_view; ///< Host-side mirror for asset paths synchronization.
+        HostPayoffView h_payoffs; ///< Host-side mirror for payoff data synchronization.
+        ///@}
 
-
-        // Explicit to initialize it explicitly
+        /**
+        * @brief Constructs the manager and allocates hardware-aligned memory buffers.
+        * (Must be initialized explicitly)
+        * @param conf Global simulation configuration containing memory budget and path counts.
+        */
         explicit PathsMCBatchMem(const KC::UInputs &conf) : config(conf) {
             // Memory is allocated during the construction of the class
             allocate_batch_memory();
@@ -42,10 +59,12 @@ namespace KOps::Engine {
 
         // Prohibiting copy to avoid memory issues
         PathsMCBatchMem(const PathsMCBatchMem &) = delete;
+
         PathsMCBatchMem &operator=(const PathsMCBatchMem &) = delete;
 
         // Allow move construction (Transfers ownership safely) and explicitly delete move assignment
         PathsMCBatchMem(PathsMCBatchMem &&) = default;
+
         PathsMCBatchMem &operator=(PathsMCBatchMem &&) = delete;
 
         // Default destructor
@@ -54,22 +73,27 @@ namespace KOps::Engine {
         //-------------------------------------------
         // SYNCH
         //-------------------------------------------
-
-        // Full-View Synchronizers
+        /** @name Synchronization Routines */
+        ///@{
+        /** @brief Copies current batch data from the device to the host. */
         void deep_copy_to_host() const {
             Kokkos::deep_copy(h_batch_view, d_batch_view);
             Kokkos::deep_copy(h_payoffs, d_payoffs);
         }
 
+        /** @brief Copies modified batch data from the host back to the device. */
         void deep_copy_to_device() const {
             Kokkos::deep_copy(d_batch_view, h_batch_view);
             Kokkos::deep_copy(d_payoffs, h_payoffs);
         }
 
+        ///@}
+
         //-------------------------------------------
         // MEMORY INFO
         //-------------------------------------------
-
+        /** @name Memory Interrogation Utilities */
+        ///@{
         // Hardware Interrogation
         [[nodiscard]] std::string execution_space_name() const {
             return Kokkos::DefaultExecutionSpace::name();
@@ -118,8 +142,9 @@ namespace KOps::Engine {
         }
 
         [[nodiscard]] double total_paths_footprint_mb() const {
-            size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.N_time_steps)
-                                 * sizeof(KT::Real);
+            const size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.
+                                           N_time_steps)
+                                       * sizeof(KT::Real);
             return static_cast<double>(total_bytes) / (1024.0 * 1024.0);
         }
 
@@ -155,10 +180,14 @@ namespace KOps::Engine {
             return h_batch_view.span_is_contiguous();
         }
 
+        ///@}
+
+
         //-------------------------------------------
         // BATCH INFO
         //-------------------------------------------
-
+        /** @name Batch Info */
+        ///@{
         [[nodiscard]] int total_batch_loops() const {
             const int n_batches = n_full_batches();
             const int left_over = n_sims_left_over_after_full_batches();
@@ -173,7 +202,7 @@ namespace KOps::Engine {
             return config.mc.N_Paths % n_sims_per_batch;
         }
 
-        [[nodiscard]] int get_curr_batch_size(int batch_idx) const {
+        [[nodiscard]] int get_curr_batch_size(const int batch_idx) const {
             const int n_full_batches = config.mc.N_Paths / n_sims_per_batch;
             if (batch_idx < n_full_batches) {
                 return n_sims_per_batch;
@@ -181,10 +210,13 @@ namespace KOps::Engine {
             return config.mc.N_Paths % n_sims_per_batch;
         }
 
+        ///@}
+
     private:
         const KC::UInputs config;
 
-
+        /** * @brief Allocates and mirrors device/host views based on hardware budget.
+        */
         void allocate_batch_memory() {
             // 1. Determine the layout strategy chosen by the config/auto-tuner
             if (config.mc.batch_size == -1) {
@@ -224,7 +256,10 @@ namespace KOps::Engine {
             h_payoffs = Kokkos::create_mirror_view(d_payoffs);
         }
 
-
+        /** * @brief Computes optimal batch size based on available device VRAM or host RAM.
+         * * Applies architectural alignment (multiple of 32) to ensure thread-warp
+         * execution efficiency on GPU backends.
+         */
         [[nodiscard]] int determine_optimal_batch_size() const {
             const double bytes_per_sde_path = config.time.N_time_steps * sizeof(KT::Real);
 
