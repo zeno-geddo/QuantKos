@@ -7,28 +7,56 @@
 #include "ForwardBackwardMC.hpp"
 #include "../config/Config.hpp"
 
-
+/**
+ * @brief Namespace aggregating all tools to numerically compute options prices.
+ */
 namespace KOps::Engine {
     namespace KI = KOps::Implemented;
     namespace KC = KOps::Config;
 
     // Transfer service class
+    /**
+     * @brief Orchestrates the runtime-to-compile-time dispatching loop for Monte Carlo execution.
+     * * This class acts as a centralized **Template Router (Service Pattern)**. It reads the dynamic
+     * configuration provided at runtime, unrolls the parameters through a cascade of switch-case statements,
+     * and maps them onto compile-time template arguments.
+     * * ### Execution Routing Pipeline:
+     * 1. **Model Policy Evaluation** (e.g, Heston vs. Bates, etc.)
+     * 2. **Numerical Scheme Evaluation** (e.g, Euler vs. Milstein vs. AndersonQE, etc.)
+     * 3. **Option Payoff Structure Evaluation** (e.g, European, Asian, Barrier variants, etc.)
+     * 4. **Option Exercise Right Evaluation** (Call vs. Put)
+     * 5. **Compile-Time Branch Allocation** (`if constexpr` split between standard Forward vs. Forward-Backward LSM solvers)
+     * * This approach guarantees that inside the heavy simulation loops, there are zero virtual function overheads,
+     * dynamic allocations, or branch-prediction penalties.
+     * * @note This is a stateless execution utility. Copy and move operations are strictly deleted to enforce a
+     * unique lifecycle context.
+     */
     class MCDispatcher {
     public:
+        /**
+        * @brief Constructs the dispatcher with the user input.
+        * @param conf Master inputs configuration tree.
+        */
         explicit MCDispatcher(const KC::UInputs &conf) : config(conf) {
         }
 
+        /// @name Lifecycle Safeguards
+        ///@{
         // Force unique lifecycle: Delete copy operations
-        MCDispatcher(const MCDispatcher&) = delete;
-        MCDispatcher& operator=(const MCDispatcher&) = delete;
+        MCDispatcher(const MCDispatcher&) = delete; ///< Deleted copy constructor.
+        MCDispatcher& operator=(const MCDispatcher&) = delete; ///< Deleted copy assignment.
 
         // Delete move operations as well, this is just an execution tool
-        MCDispatcher(MCDispatcher&&) = delete;
-        MCDispatcher& operator=(MCDispatcher&&) = delete;
+        MCDispatcher(MCDispatcher&&) = delete; ///< Deleted move constructor.
+        MCDispatcher& operator=(MCDispatcher&&) = delete; ///< Deleted move constructor.
 
-        // Default destructor
-        ~MCDispatcher() = default;
+        ~MCDispatcher() = default; ///< Default destructor.
+        ///@}
 
+        /**
+         * @brief High-level entry point to initialize, and run the Monte Carlo engine.
+         * @return An aggregated MCResults structure containing option prices, uncertainties, and execution metrics.
+         */
         MCResults launch_montecarlo() {
             std::cout << "\n>>> Starting Monte Carlo Simulation...\n" << std::endl;
             const MCResults results = dispatch_model();
@@ -37,11 +65,16 @@ namespace KOps::Engine {
         }
 
     private:
-        const KC::UInputs config;
+        const KC::UInputs config; ///< Local copy of the input configuration.
 
         // ====================================================================
         // LEVEL 1: Dispatch the SDE Model (The Entry Point)
         // ====================================================================
+        /**
+         * @brief LEVEL 1: Resolves the MathModel identifier.
+         * @return MonteCarlo results structure after cascading evaluations.
+         * @throw std::runtime_error If an unhandled or unregistered stochastic model is provided.
+         */
         MCResults dispatch_model() {
             switch (config.model.id_model) {
                 case KI::MathModel::Heston:
@@ -56,6 +89,12 @@ namespace KOps::Engine {
         // ====================================================================
         // LEVEL 2: Dispatch the Discretization Scheme
         // ====================================================================
+        /**
+         * @brief LEVEL 2: Resolves the discretization scheme template policy.
+         * @tparam ModelPolicy Resolved compile-time stochastic model policy.
+         * @return MonteCarlo results structure.
+         * @throw std::runtime_error If an invalid discretization scheme index is processed.
+         */
         template<KI::MathModel ModelPolicy>
         MCResults dispatch_scheme() {
             switch (config.scheme.id_scheme) {
@@ -73,6 +112,13 @@ namespace KOps::Engine {
         // ====================================================================
         // LEVEL 3: Dispatch the Option Style (European, Asian, etc.)
         // ====================================================================
+        /**
+         * @brief LEVEL 3: Resolves the option template policy.
+         * @tparam ModelPolicy Resolved compile-time stochastic model policy.
+         * @tparam SchemePolicy Resolved compile-time SDE discretization technique.
+         * @return MonteCarlo results structure.
+         * @throw std::runtime_error If the option style payoff pattern is unknown.
+         */
         template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
         MCResults dispatch_opt_style() {
             switch (config.options.opt_type) {
@@ -117,6 +163,14 @@ namespace KOps::Engine {
         // ====================================================================
         // LEVEL 4: Dispatch the Option Right
         // ====================================================================
+        /**
+         * @brief LEVEL 4: Resolves the exercise right (Call/Put) policy.
+         * @tparam ModelPolicy Resolved compile-time stochastic model policy.
+         * @tparam SchemePolicy Resolved compile-time SDE discretization technique.
+         * @tparam OptType Resolved compile-time option policy.
+         * @return MonteCarlo results structure.
+         * @throw std::runtime_error If the exercise right string identifier is invalid.
+         */
         template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType>
         MCResults dispatch_opt_right() {
             switch (config.options.opt_right) {
@@ -133,6 +187,18 @@ namespace KOps::Engine {
         // LEVEL 5: Compile-Time Router
         // All templates are now resolved. Instantiate the actual MCRunner here.
         // ====================================================================
+        /**
+         * @brief LEVEL 5: Terminal Compile-Time Router.
+         * * At this point, all structural parameter configurations are fully mapped onto
+         * template compile-time parameters. This method utilizes static polymorphism via `if constexpr`
+         * to instantiate the appropriate runner engine, preventing code bloat by isolating the backward
+         * Longstaff-Schwartz components to American execution traces only.
+         * * @tparam ModelPolicy Completed stochastic process model context.
+         * @tparam SchemePolicy Completed step integration method context.
+         * @tparam OptType Completed payoff valuation contract layout.
+         * @tparam OptRight Completed contract exercise execution right.
+         * @return MonteCarlo results structure.
+         */
         template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
         MCResults execute_selected_runner() {
             if constexpr (OptType == KI::OptType::American) {

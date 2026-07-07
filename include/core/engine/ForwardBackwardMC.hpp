@@ -24,23 +24,64 @@ namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KIO = KOps::IO;
 
+
+    /**
+     * @brief Orchestrator for compile-time specialized Forward-Backward Monte Carlo simulations (LSM).
+     * * This class implements the Longstaff-Schwartz Method (LSM) for pricing American options
+     * on execution spaces managed by Kokkos (e.g., CUDA, HIP, OpenMP). It avoids virtual function
+     * overhead by resolving model policies, numerical schemes, and option execution rights at compile-time.
+     * * Pricing is structured as a two-phase process:
+     * * ### Phase 1: Forward Path Generation
+     * Asset price paths are generated on the Device (GPU) in chunked batches to respect hard VRAM or RAM budgets.
+     * As each batch is completed, its paths are synchronized and copied into a CPU-bound Master Matrix
+     * (`HostMasterPathsView`) using transfers across the PCIe bus.
+     * * ### Phase 2: Backward Induction & Least-Squares Regression
+     * Starting at $t = T-1$ and moving backward to $t = 1$:
+     * 1. A column-major time slice of asset prices is streamed from the Host Master Matrix to the Device.
+     * 2. Paths that are In-The-Money (ITM) are regressed against future cash flows using weighted basis functions
+     * (Monomial or Laguerre polynomials) via parallel reductions.
+     * 3. The regression coefficients ($\beta$) are solved on the Host (CPU) using Cholesky decomposition.
+     * 4. Expected continuation values are computed on the Device to determine optimal early exercise boundaries
+     * and update the vector of cash flows.
+     * * @tparam ModelPolicy Compile-time stochastic process selection (e.g., Heston, Bates; etc.).
+     * @tparam SchemePolicy Compile-time SDE integration algorithm (e.g., Euler, Milstein, AndersonQE, etc.).
+     * @tparam OptRight Compile-time option exercise right (Call or Put).
+     */
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptRight OptRight>
     class ForwardBackwardMCRunner {
     public:
+        /**
+         * @brief Constructs a forward-backward runner instance bound to the master user configuration.
+         * @param conf Configuration inputs reference containing runtime parameters.
+         */
         explicit ForwardBackwardMCRunner(const KC::UInputs &conf) : config(conf) {
         }
 
+        /// @name Lifecycle Protocols
+        ///@{
         // Delete copy operations (prevents accidental duplication)
-        ForwardBackwardMCRunner(const ForwardBackwardMCRunner&) = delete;
-        ForwardBackwardMCRunner& operator=(const ForwardBackwardMCRunner&) = delete;
+        ForwardBackwardMCRunner(const ForwardBackwardMCRunner &) = delete; ///< Prohibits copy construction.
+        ForwardBackwardMCRunner &operator=(const ForwardBackwardMCRunner &) = delete; ///< Prohibits copy assignment.
 
         // Default the move constructor and delete move assignment
-        ForwardBackwardMCRunner(ForwardBackwardMCRunner&&) = default;
-        ForwardBackwardMCRunner& operator=(ForwardBackwardMCRunner&&) = delete;
+        ForwardBackwardMCRunner(ForwardBackwardMCRunner &&) = default;
+
+        ///< Default move constructor for seamless transfer.
+        ForwardBackwardMCRunner &operator=(ForwardBackwardMCRunner &&) = delete; ///< Prohibits move assignment.
 
         // Default destructor
-        ~ForwardBackwardMCRunner() = default;
+        ~ForwardBackwardMCRunner() = default; ///< Default destructor.
+        ///@}
 
+
+        /**
+         * @brief Entry point to run the American pricing engine.
+         * * Manages lifecycle resources, executes the forward path generation phase, coordinates
+         * backward induction, and computes final expected values and statistical bands.
+         * * @note The solver is forced to act like a European option during Phase 1 because paths are
+         * simply generated forward without path-dependent early exercise logic during this stage.
+         * * @return Immutable snapshot container of Monte Carlo outputs (`MCResults`).
+         */
         MCResults get_option_price() const {
             // Initialize Helper Classes
             // IMPORTANT: We force the forward solver to act like a European option (simply evaluate the forward paths).
@@ -69,11 +110,21 @@ namespace KOps::Engine {
         }
 
     private:
-        const KC::UInputs& config;
+        const KC::UInputs &config; ///< Reference to global user parameters.
 
         // ====================================================================
         // PHASE 1: GENERATE PATHS (Write to CPU RAM temp daata)
         // ====================================================================
+        /**
+         * @brief Generates paths batch-by-batch and transfers them to the CPU Master Matrix.
+         * * @param Mem Backward memory orchestrator holding Host/Device buffers.
+         * @param RNGen Monotonic random sequence generator pool.
+         * @param Solver SDE integration solver specializing path dynamics.
+         * @param OWriter Output file persistence manager.
+         * @param MCTracker Console execution diagnostics and progress tracking monitor.
+         * @notes Bundles the Host-Device deep-copy logic in a localized callback lambda to decouple
+         * SDE solver step-evolutions from the memory mapping strategy.
+         */
         void run_forward_phase(BackwardLSMMemory &Mem,
                                const RNGManager &RNGen,
                                const MSolver<ModelPolicy, SchemePolicy, KI::OptType::European, OptRight> &Solver,
@@ -98,6 +149,13 @@ namespace KOps::Engine {
         // ====================================================================
         // PHASE 2: BACKWARD INDUCTION (Read from CPU RAM)
         // ====================================================================
+        /**
+         * @brief Coordinates the backward induction time-marching regression loop (Uses Longstaff-Schwarz Algorithm).
+         * * Iteratively steps backward from maturity. In each step, a time slice is
+         * streamed to VRAM, path regressions are constructed, and optimal exercise cash
+         * flows are updated in parallel on the GPU.
+         * * @param Mem Backward memory orchestrator containing streaming views and regression buffers.
+         */
         void run_backward_phase(BackwardLSMMemory &Mem) const {
             const int nT = config.time.N_time_steps;
             const KT::Real strike_price = config.options.StrikePrice;

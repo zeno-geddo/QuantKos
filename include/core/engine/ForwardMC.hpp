@@ -18,28 +18,53 @@ namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KIO = KOps::IO;
 
-
+    /**
+     * @brief Orchestrator for Forward Monte Carlo simulations.
+     * @note This class serves as the top-level execution container for pricing options that rely
+     * exclusively on a forward simulation pass (e.g., European, Asian, Barrier, Lookback, and Binary options).
+     * It eliminates runtime polymorphism overhead by embedding structural pricing parameters directly into the type signature.
+     * * @tparam ModelPolicy Compile-time stochastic process selection (e.g., Heston, Bates).
+     * @tparam SchemePolicy Compile-time SDE integration algorithm (e.g., Euler, Milstein, AndersonQE).
+     * @tparam OptType Compile-time option payoff structure classification.
+     * @tparam OptRight Compile-time option execution right (Call or Put).
+     * * @note To handle cases where the required path matrix exceeds physical memory limitations (such as GPU VRAM),
+     * the simulation is chunked into manageable sub-allocations using a batching loop strategy.
+    */
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
     class ForwardMCRunner {
     public:
+
+        /**
+         * @brief Constructs a forward runner instance given the user parameters.
+         * @param conf The configuration inputs reference containing runtime parameters.
+         */
         explicit ForwardMCRunner(const KC::UInputs &conf) : config(conf) {
         }
 
+        /// @name Lifecycle Protocols
+        ///@{
         // Delete copy operations (prevents accidental duplication)
-        ForwardMCRunner(const ForwardMCRunner&) = delete;
-        ForwardMCRunner& operator=(const ForwardMCRunner&) = delete;
+        ForwardMCRunner(const ForwardMCRunner&) = delete; ///< Deleted copy constructor.
+        ForwardMCRunner& operator=(const ForwardMCRunner&) = delete; ///< Deleted copy assignment operator.
 
         // Default the move constructor and delete move assignment
-        ForwardMCRunner(ForwardMCRunner&&) = default;
-        ForwardMCRunner& operator=(ForwardMCRunner&&) = delete;
+        ForwardMCRunner(ForwardMCRunner&&) = default; ///< Default move constructor for ownership transfer.
+        ForwardMCRunner& operator=(ForwardMCRunner&&) = delete; ///< Move assignment is prohibited.
 
         // Default destructor
-        ~ForwardMCRunner() = default;
-
+        ~ForwardMCRunner() = default; ///< Default destructor.
+        ///@}
 
         // ====================================================================
         // The Actual Simulation Engine (Fully Resolved at Compile Time)
         // ====================================================================
+        /**
+         * @brief High-level orchestration method that runs the forward Monte Carlo engine.
+         * * This method manges the local infrastructure stack needed to run the simulation,
+         * including batch memory buffers, SDE solvers, option payoff accumulation tracking,
+         * and output writers.
+         * * @return An aggregated MCResults object containing the results of the MonteCarlo.
+         */
         MCResults get_option_prices() const {
             // NOTE : the total number of simulations are performed in batches to handle cases when not enough memory is available
             // NOTE : The global random number pool is created once. States advance dynamically. So using the same pool for different batches is the correct approach
@@ -67,8 +92,47 @@ namespace KOps::Engine {
         }
 
     private:
-        const KC::UInputs &config;
+        const KC::UInputs &config; ///< Read-only alias pointing back to the application configuration environment.
 
+        /**
+         * @brief Configures internal lambda handlers (to synch and/or write results generated within a batch) and triggers the batches run mechanism.
+         * * @param BatchMem Reusable memory batch buffer manager.
+         * @param RNGen Random number sequence pool manager.
+         * @param Solver Compile-time specialized temporal SDE stepper solver.
+         * @param OPricer Target option contract accumulation pricer.
+         * @param OWriter Target disk file system I/O manager.
+         * @param MCTracker Console analytics reporting performance.
+         * @note Wraps host-to-device view synchronization policies and cumulative payload processing tasks
+         * before delegating execution tasks down the execution hierarchy.
+         * * ### Host-Device Execution Lifecycle Flow:
+         * ```text
+                   [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
+
+              MCRunner Loop Fires
+                       │
+                       ▼
+              SDESolver::execute_batch()
+                       │
+                       ▼
+              Instantiate IntegrationKernel
+              (Flattens data onto CPU Stack)
+                       │
+                       ▼
+              Kokkos::parallel_for()  =======[ PCIe Bus Pass ]=======>  GPU Spawns N Threads
+                                                                                 │
+                                                                                 ▼
+                                                                      kernel.operator()(n_p)
+                                                                                 │
+                                                                                 ▼
+                                                                      Time Loop (0 to N_Steps)
+                                                                                 │
+                                                                                 ▼
+                                                                      scheme.evolve_step()
+                                                                                 │
+                                                                                 ▼
+                                                                      Coalesced VRAM Write
+         * ```
+         */
         void run_mc_forward(PathsMCBatchMem &BatchMem,
                             const RNGManager &RNGen,
                             const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
@@ -76,27 +140,7 @@ namespace KOps::Engine {
                             KIO::OutputManager &OWriter,
                             ForwardMCProgressTracker &MCTracker
         ) const {
-            // Pass a labda function that copy the prices and payoffs computed to the host
-            auto copy_prices_and_payoffs = [&](const int batch_idx, const int current_batch_size) {
-                BatchMem.deep_copy_to_host();
-                OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size);
-            };
 
-            run_forward_all_mc_batches(BatchMem,
-                                       RNGen,
-                                       Solver,
-                                       OWriter,
-                                       MCTracker,
-                                       copy_prices_and_payoffs);
-        }
-
-        void run_all_mc_batches_old(PathsMCBatchMem &BatchMem,
-                                    const RNGManager &RNGen,
-                                    const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
-                                    OptionPricer &OPricer,
-                                    KIO::OutputManager &OWriter,
-                                    ForwardMCProgressTracker &MCTracker
-        ) const {
             //       [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
             //
             //  MCRunner Loop Fires
@@ -123,24 +167,44 @@ namespace KOps::Engine {
             //                                                                     ▼
             //                                                          Coalesced VRAM Write
 
-
-            const int full_batch_size = BatchMem.n_sims_per_batch;
-            const int n_full_batches = BatchMem.n_full_batches();
-            const int n_sims_left_over = BatchMem.n_sims_left_over_after_full_batches();
-            const int n_total_batch_loops = BatchMem.total_batch_loops();
-
-            MCTracker.start_tracking();
-            for (int b = 0; b < n_total_batch_loops; ++b) {
-                const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
-                Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel on device
-                BatchMem.deep_copy_to_host(); // Synch the host with dev
+            // Pass a labda function that copy the prices and payoffs computed to the host
+            auto copy_prices_and_payoffs = [&](const int batch_idx, const int current_batch_size) {
+                BatchMem.deep_copy_to_host();
                 OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size);
-                // Store payoffs to then sort them for percentiles
-                OWriter.save_paths_batch_if_needed(current_batch_size, BatchMem); //Save batch to disk
+            };
 
-                MCTracker.update_progress(b + 1);
-            }
-            MCTracker.finalize_tracking();
+            run_forward_all_mc_batches(BatchMem,
+                                       RNGen,
+                                       Solver,
+                                       OWriter,
+                                       MCTracker,
+                                       copy_prices_and_payoffs);
         }
+
+        // void run_all_mc_batches_old(PathsMCBatchMem &BatchMem,
+        //                             const RNGManager &RNGen,
+        //                             const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,
+        //                             OptionPricer &OPricer,
+        //                             KIO::OutputManager &OWriter,
+        //                             ForwardMCProgressTracker &MCTracker
+        // ) const {
+        //     const int full_batch_size = BatchMem.n_sims_per_batch;
+        //     const int n_full_batches = BatchMem.n_full_batches();
+        //     const int n_sims_left_over = BatchMem.n_sims_left_over_after_full_batches();
+        //     const int n_total_batch_loops = BatchMem.total_batch_loops();
+        //
+        //     MCTracker.start_tracking();
+        //     for (int b = 0; b < n_total_batch_loops; ++b) {
+        //         const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
+        //         Solver.execute_batch(current_batch_size, BatchMem, RNGen); // Fire off computation kernel on device
+        //         BatchMem.deep_copy_to_host(); // Synch the host with dev
+        //         OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size);
+        //         // Store payoffs to then sort them for percentiles
+        //         OWriter.save_paths_batch_if_needed(current_batch_size, BatchMem); //Save batch to disk
+        //
+        //         MCTracker.update_progress(b + 1);
+        //     }
+        //     MCTracker.finalize_tracking();
+        // }
     };
 }
