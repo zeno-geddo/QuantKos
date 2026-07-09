@@ -16,46 +16,69 @@ namespace KOps::Engine {
     namespace KI = KOps::Implemented;
     namespace KC = KOps::Config;
 
+    /**
+     * @brief Evaluates and reports final statistical metrics from Monte Carlo simulation payoffs.
+     * * This class accumulates raw path payouts from device memory buffers, calculates unbiased
+     * statistical metrics (mean option price and standard error), applies financial discounting,
+     * and performs a percentile-based distribution analysis on the host CPU.
+     */
     class OptionPricer {
     public:
-        struct MCEngine {
-            KT::Real option_price = -999.;
-            KT::Real standard_error = -999.;
-            KT::Real prob_itm = -999.; // Probability of finishing ITM
-            KT::Real p0 = -999.;
-            KT::Real p1 = -999.;
-            KT::Real p5 = -999.;
-            KT::Real p10 = -999.;
-            KT::Real p20 = -999.;
-            KT::Real p30 = -999.;
-            KT::Real p40 = -999.;
-            KT::Real median = -999.;
-            KT::Real p60 = -999.;
-            KT::Real p70 = -999.;
-            KT::Real p80 = -999.;
-            KT::Real p90 = -999.;
-            KT::Real p95 = -999.;
-            KT::Real p99 = -999.;
-            KT::Real p100 = -999.;
-            bool is_computed = false; // Safety flag
+
+        /**
+         * @brief Storage container for final simulation metrics and distribution percentiles.
+         */
+        struct MCOpPrices {
+            KT::Real option_price = -999.; ///< Discounted expected value of the option.
+            KT::Real standard_error = -999.; ///< Statistical standard error of the estimate.
+            KT::Real prob_itm = -999.; ///< Empirical probability of finishing In-The-Money (payoff > 0).
+            KT::Real p0 = -999.; ///< Minimum discounted payout observed.
+            KT::Real p1 = -999.; ///< 1st percentile.
+            KT::Real p5 = -999.; ///< 5th percentile.
+            KT::Real p10 = -999.; ///< 10th percentile.
+            KT::Real p20 = -999.; ///< 20th percentile.
+            KT::Real p30 = -999.; ///< 30th percentile.
+            KT::Real p40 = -999.; ///< 40th percentile.
+            KT::Real median = -999.; ///< 50th percentile (Median payout).
+            KT::Real p60 = -999.; ///< 60th percentile.
+            KT::Real p70 = -999.; ///< 70th percentile.
+            KT::Real p80 = -999.; ///< 80th percentile.
+            KT::Real p90 = -999.; ///< 90th percentile.
+            KT::Real p95 = -999.; ///< 95th percentile.
+            KT::Real p99 = -999.; ///< 99th percentile.
+            KT::Real p100 = -999.; ///< Maximum discounted payout observed.
+            bool is_computed = false; ///< Safety flag protecting against premature reads.
         };
 
+        /**
+         * @brief Constructs the pricer and reserves heap memory for path payloads on Host CPU.
+         * @param conf Reference to simulation user parameters.
+         */
         explicit OptionPricer(const KC::UInputs &conf) : config(conf) {
             all_payoffs.reserve(conf.mc.N_Paths);
         }
 
+        /// @name Lifecycle Safeguards
+        ///@{
         // Prevent accidental deep-copying of the payoffs
-        OptionPricer(const OptionPricer&) = delete;
-        OptionPricer& operator=(const OptionPricer&) = delete;
+        OptionPricer(const OptionPricer&) = delete; ///< Copying is prohibited
+        OptionPricer& operator=(const OptionPricer&) = delete; ///< Copy assignment is prohibited.
 
         // Allow payoffs to be moved safely if handled by orchestrators
-        OptionPricer(OptionPricer&&) = default;
-        OptionPricer& operator=(OptionPricer&&) = delete;
+        OptionPricer(OptionPricer&&) = default; ///< Move constructor is supported
+        OptionPricer& operator=(OptionPricer&&) = delete; ///< Move assignment is prohibited.
 
         // Default destructor
-        ~OptionPricer() = default;
+        ~OptionPricer() = default; ///< Default destructor.
+        ///@}
 
         // To be called inside the batch loop
+        /**
+         * @brief Collects batch-specific path results from the host memory mirror views into a single heap vector for the payoffs of the entire MonteCarlo.
+         * * @param h_payoffs Host mirror view holding the current batch payoffs.
+         * @param curr_batch_size The active number of paths processed in this batch loop.
+         * @note To be executed inside your main Monte Carlo batch iterations loop.
+         */
         void accumulate_batch_payoffs(const HostPayoffView &h_payoffs, const int curr_batch_size) {
             for (int i = 0; i < curr_batch_size; ++i) {
                 const KT::Real curr_payoff = h_payoffs(i); // Get payoff value from device
@@ -65,6 +88,15 @@ namespace KOps::Engine {
             }
         }
 
+        /**
+         * @brief Computes final option statistics and performs empirical quantiles.
+         * * Calculates unbiased sample statistics, determines the probability of ending
+         * in-the-money, and applies the continuous risk-free discount factor:
+         * * $$D = e^{-r \cdot T}$$
+         * * @note For American options processed via backward induction (LSM), discounting is bypassed
+         * here because the temporal discounting operation is handled step-by-step during the backward induction loop.
+         * * @throw std::runtime_error If called before any path payoffs have been accumulated.
+         */
         void evaluate_option_price() {
             const KT::Real N = config.mc.N_Paths;
             if (all_payoffs.empty() || N <= 0) {
@@ -109,6 +141,10 @@ namespace KOps::Engine {
         }
 
         // 3. Pure Reporting Phase (Uses the stored metrics)
+        /**
+         * @brief Outputs a comprehensive simulation summary report (containing option prices etc.) to the standard console.
+         * @throw std::runtime_error If executed before evaluate_option_price() completes successfully.
+         */
         void print_info_option_price() const {
             if (!metrics.is_computed) {
                 throw std::runtime_error(
@@ -145,7 +181,12 @@ namespace KOps::Engine {
         }
 
         // 4. Getter so other parts of the program can use the raw numbers
-        [[nodiscard]] const MCEngine &get_option_price_data() const {
+        /**
+         * @brief Exposes read-only access to the final computed metrics data structure.
+         * @return An immutable reference to the completed option data structure.
+         * @throw std::runtime_error If metrics have not been computed yet.
+         */
+        [[nodiscard]] const MCOpPrices &get_option_price_data() const {
             if (!metrics.is_computed) {
                 throw std::runtime_error("Metrics have not been computed yet.");
             }
@@ -153,15 +194,19 @@ namespace KOps::Engine {
         }
 
     private:
-        const KC::UInputs &config;
-        std::vector<KT::Real> all_payoffs;
-        KT::Real total_payoff_sum = 0.;
-        KT::Real total_squared_payoff_sum = 0.;
-        double computation_time = 0.;
-        MCEngine metrics;
+        const KC::UInputs &config; ///< Reference to the user input configuration.
+        std::vector<KT::Real> all_payoffs; ///< Aggregated flat array containing all individual path payoff results.
+        KT::Real total_payoff_sum = 0.; ///< Cumulative summary of all processed payoffs values.
+        KT::Real total_squared_payoff_sum = 0.; ///< Cumulative summary of squared payoffs values (for analytical tracking).
+        double computation_time = 0.; ///< Internal profiling metric tracking processing overhead.
+        MCOpPrices metrics; ///< Local state storage wrapper instance.
 
-
-        void analyze_option_price_distribution(KT::Real discount_factor, KT::Real N_paths) {
+        /**
+         * @brief Sorts vector results in-place to compute distribution empirical quantiles.
+         * @param discount_factor Constant asset continuous discount modifier asset multiplier.
+         * @param N_paths Total active configurations paths dimension scalar value.
+         */
+        void analyze_option_price_distribution(const KT::Real discount_factor, const KT::Real N_paths) {
             // Compute the percentiles
 
             std::sort(all_payoffs.begin(), all_payoffs.end());

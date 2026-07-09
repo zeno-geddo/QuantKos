@@ -18,7 +18,7 @@ namespace KOps::Engine {
      */
     struct MCResults {
         const Config::UInputs MCConfig; ///< Deep copy of the user parameters used to run the simulation.
-        const OptionPricer::MCEngine OptionPrice;
+        const OptionPricer::MCOpPrices OptionPrice;
         ///< Deep copy of the pricing statistics, standard errors, and confidence intervals.
     };
 
