@@ -120,7 +120,7 @@ namespace KOps::Engine {
          * * @param Mem Backward memory orchestrator holding Host/Device buffers.
          * @param RNGen Monotonic random sequence generator pool.
          * @param Solver SDE integration solver specializing path dynamics.
-         * @param OWriter Output file persistence manager.
+         * @param OWriter Output files manager.
          * @param MCTracker Console execution diagnostics and progress tracking monitor.
          * @notes Bundles the Host-Device deep-copy logic in a localized callback lambda to decouple
          * SDE solver step-evolutions from the memory mapping strategy.

@@ -36,25 +36,50 @@ namespace KOps::Engine {
     // THE HARDWARE FUNCTOR (Thread-Level Execution)
     // It represents the execution pathway of one single thread lane (n_p).
     // ========================================================================
+    /**
+         * @brief Parallel execution code (functor) run on device (CPU/GPU) where each thread simulates a single asset path using a markovian model.
+         * * This struct packages all simulation parameters into a self-contained snapshot. Because it has
+         * no pointers to CPU memory (it is *trivially copyable*), it can be copied cleanly to discrete GPU devices
+         * without causing memory access violations.
+         * * @tparam ModelPolicy Stochastic asset model to consider (e.g., Heston, Bates, etc.).
+         * @tparam SchemePolicy Time-stepping scheme to use (e.g., Euler, Milstein, AndersonQE, etc.).
+         * @tparam OptType Option contract payoff logic (e.g., European, Asian, Barrier, etc.).
+         * @tparam OptRight Option contract right (Call or Put).
+         * @tparam StorePaths Set to @c true to save the full simulated asset price path to memory, or @c false to save memory.
+         * @note- **Smart Pruning (@c StorePaths)**: If full price history is not needed (e.g., for European options), the compiler
+         * completely removes the code that writes the full price path to VRAM. This can save memory bandwidth
+         * and speeds up execution.
+    */
     template<KI::MathModel ModelPolicy,
         KI::NumScheme SchemePolicy,
         KI::OptType OptType,
         KI::OptRight OptRight,
         bool StorePaths>
-    struct IntegrationKernel {
+    struct MarkovianIntegrationKernel {
         // 1. Trivially Copiable Attributes (The Execution Context, The data the GPU needs)
-        SDEScheme<ModelPolicy, SchemePolicy> Scheme; // A copy for each kernel launch
-        DevPathsView local_paths_batch_view; // Accessed by the threads, stored in GPU's VRAM
-        DevPayoffView local_payoff_batch_view; // Accessed by the threads, stored in GPU's VRAM
-        RNGManager::GlobalRNGPool rng_pool; // A copy for each kernel launch
-        int n_t_steps; // Local variables stored in GPU's registers
-        KT::Real S0; // Local variables stored in GPU's registers
-        KT::Real v0; // Local variables stored in GPU's registers
-        KT::Real Strike; // Local variables stored in GPU's registers
-        KT::Real BarrierPrice; // Local variables stored in GPU's registers
+        SDEScheme<ModelPolicy, SchemePolicy> Scheme; ///< Local copy of the SDE integration scheme.
+        DevPathsView local_paths_batch_view;
+        ///< Target device VRAM/GPu 2D array mapping full path trajectories of a batch (Accessed by threads).
+        DevPayoffView local_payoff_batch_view;
+        ///< Target device VRAM 1D array mapping path-level terminal payloads of a batch (Accessed by threads).
+        RNGManager::GlobalRNGPool rng_pool;
+        ///< Dedicated global hardware random number state pool (A copy for each kernel launch is generated).
+        int n_t_steps; ///< Total discrete simulation time segments (Local variable stored in GPU's registers).
+        KT::Real S0; ///< Initial spot price, (Local variable stored in GPU's registers).
+        KT::Real v0; ///< Initial variance of the asset, (Local variable stored in GPU's registers).
+        KT::Real Strike; ///<Strike Price ($K$), (Local variable stored in GPU's registers).
+        KT::Real BarrierPrice;
+        ///< Option activation or knock-out trigger constraint ($H$), (Local variable stored in GPU's registers).
 
 
         // 2. The Execution Operator (Better than KOKKOS_LAMBDA)
+        /**
+         * @brief Parallel execution kernel processing a single isolated Monte Carlo path (realization) using a markovian model.
+         * Each GPU thread grabs a random generator, simulates one stock price path step-by-step,
+         * and tracks its value along the way (like, for instance, checking if it hits a barrier).
+         * Finally, it calculates the option's payoff for that specific path and writes the result to the device memory.
+         * * @param n_p Number of target simulation in the batch loop (a batch consists of a numbered subset of the full MonteCarlo simulation).
+         */
         KOKKOS_INLINE_FUNCTION
         void operator()(const int n_p) const {
             // Get the random generator for given threat
@@ -94,26 +119,66 @@ namespace KOps::Engine {
     // ========================================================================
     // THE EXECUTOR BRIDGE (Class-Level Parallel Launch Coordinator)
     // ========================================================================
+    /**
+    * @brief Host-side parallel launch coordinator and execution bridge.
+    * * Manages execution pipelines by grouping parameters, evaluating paths storage rules,
+    * and scheduling high-throughput integration kernels to the hardware backend.
+    * @note This class is instantiated once at the beginning of the MonteCarlo simulation, and the execute batch is called once for each batch.
+    * @note The integration kernel is created at the beginning of each batch, and it will be used by all threads during the simulations of the batch.
+    * * ### Host-Device Orchestration Lifecycle:
+    * ```text
+    *      [ HOST (CPU) SIDE ]                             [ DEVICE (GPU) SIDE ]
+    * * +----------------------------+
+    * |         SDESolver            |
+    * |  (Orchestrates launch data)  |
+    * +--------------+---------------+
+    *               |
+    *               | Instantiates & Populates
+    *               v
+    * +-----------------------------+               +-----------------------------+
+    * |     IntegrationKernel       | ------------> | Thread Lane 0: operator()(0) |
+    * |  (A trivially copyable      |   Parallel    | Thread Lane 1: operator()(1) |
+    * |   snapshot of state data)   |   Launch      | Thread Lane 2: operator()(2) |
+    * +-----------------------------+               +-----------------------------+
+    *
+    * ```
+    * * @tparam ModelPolicy Stochastic asset model to consider (e.g., Heston, Bates, etc.).
+    * @tparam SchemePolicy Time-stepping scheme to use (e.g., Euler, Milstein, AndersonQE, etc.).
+    * @tparam OptType Option contract payoff logic (e.g., European, Asian, Barrier, etc.).
+    * @tparam OptRight Option contract right (Call or Put).
+    */
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
     class MSolver {
     public:
+        /**
+         * @brief Constructs the MSolver orchestrator.
+         * @param config Reference to the user configuration inputs.
+         */
         explicit MSolver(const KC::UInputs &config)
             : config(config), Scheme(config) {
-            // Note: Scheme obj struct created here during initialization, all threat will then use it
+            // Note: Scheme obj struct created here during initialization, all threats will then use it
         }
 
-        // Delete copy constructor and copy assignment operator
-        MSolver(const MSolver&) = delete;
-        MSolver& operator=(const MSolver&) = delete;
+        /// @name Lifecycle Protocols
+        ///@{
+        MSolver(const MSolver &) = delete; ///< Deleted copy constructor.
+        MSolver &operator=(const MSolver &) = delete; ///< Deleted copy assignment operator.
+        MSolver(MSolver &&) = default; ///< Explicitly allow move constructor
+        MSolver &operator=(MSolver &&) = default; ///< Explicitly allow move assignment
+        ~MSolver() = default; ///< Default destructor.
+        ///@}
 
-        // Explicitly allow move semantics if desired (optional)
-        MSolver(MSolver&&) = default;
-        MSolver& operator=(MSolver&&) = default;
-
-        ~MSolver() = default;
-
+        /**
+        * @brief Launches the Monte Carlo path simulation for the current batch calling the integration kernel.
+        * * Packages state parameters, determines whether storing paths on RAM is required,
+        * and schedules the IntegrationKernel on the active execution space.
+        * @param n_active_sims_in_batch Number of paths to simulate in the batch currently considered.
+        * @param BatchMem Buffer memory holding target device batch views.
+        * @param RNGen Random number sequence pool manager.
+        */
         void execute_batch(const int n_active_sims_in_batch, PathsMCBatchMem &BatchMem, const RNGManager &RNGen) const {
-            auto launch_kernel = [&](auto store_paths_tag) {
+            // Lambda for setting up and launching the markovian kernel
+            auto launch_markovian_kernel = [&](auto store_paths_tag) {
                 // 0. Decide weather to store the paths or not
                 // Note: decltype() -> operator that asks the compiler: What is the type of this expression?
                 static_assert(std::is_same_v<decltype(store_paths_tag), std::bool_constant<true> > ||
@@ -123,7 +188,7 @@ namespace KOps::Engine {
 
                 // 1. Package data from the subsystems into the execution functor
                 // Note: the random-pull is the same for all batches, it does not have to be reinitialized !
-                IntegrationKernel<ModelPolicy, SchemePolicy, OptType, OptRight, StorePaths> kernel{
+                MarkovianIntegrationKernel<ModelPolicy, SchemePolicy, OptType, OptRight, StorePaths> kernel{
                     Scheme,
                     BatchMem.d_batch_view,
                     BatchMem.d_payoffs,
@@ -137,23 +202,28 @@ namespace KOps::Engine {
 
                 // 2. Safely isolate the parallel launch boundary inside the class
                 Kokkos::parallel_for("Evolve_SDEs_in_given_batch", n_active_sims_in_batch, kernel);
-            };
-
+            }; // End of lambda
 
             // Dispatch Kernel based on runtime condition
             if (must_store_paths()) {
-                launch_kernel(std::bool_constant<true>{});
+                launch_markovian_kernel(std::bool_constant<true>{});
             } else {
-                launch_kernel(std::bool_constant<false>{});
+                launch_markovian_kernel(std::bool_constant<false>{});
             }
 
             Kokkos::fence();
         }
 
     private:
-        const KC::UInputs &config; // Reference is completely safe on the Host side!
-        SDEScheme<ModelPolicy, SchemePolicy> Scheme; // Trivially copiable Instance of the scheme chosen
+        // Reference is completely safe on the Host side!
+        const KC::UInputs &config; ///< Host-side reference to user input configurations.
+        SDEScheme<ModelPolicy, SchemePolicy> Scheme;
+        ///! Trivially copiable Instance of the chosen numerical integration scheme
 
+        /**
+         * @brief Checks if simulated price trajectories must be stored in RAM.
+         * @return True if path file saving is enabled or if backward induction (American options) is used. False otherwise.
+         */
         inline bool must_store_paths() const {
             const auto OType = config.options.opt_type;
             const bool requires_full_paths_matrix = (OType == KI::OptType::American);

@@ -10,14 +10,26 @@ namespace KOps::Engine {
     namespace KT = KOps::Types;
     namespace KE = KOps::Engine;
 
-    // Struct containing the return values
+    /**
+     * @brief Output data structure returned by all SDE integration step functions.
+     * * Encapsulates the current state of the SDE (Asset Price and Variance).
+     * @note Designed to be trivially copyable, good for GPU registers.
+     */
     struct SDEState {
-        KT::Real S;
-        KT::Real v;
+        KT::Real S; ///< The underlying asset spot price ($S_t$).
+        KT::Real v; ///< The stochastic variance ($v_t$).
     };
 
 
     // Master template blueprint (fall back if no specialization is available), it is trivially copiable struct!
+    /**
+     * @brief Master template blueprint for Stochastic Differential Equation (SDE) solvers.
+     * * This unspecialized base struct serves as a compile-time fallback and safety guard.
+     * @throw std::runtime_error If a user requests a MathModel/NumScheme combination that has not been explicitly implemented
+     * (e.g., Bates + UnknownScheme).
+     * * @tparam ModelPolicy The mathematical model to consider (e.g., Heston, Bates, etc.).
+     * @tparam SchemePolicy The numerical discretization scheme to use (e.g., Euler, Milstein, etc.).
+     */
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy>
     struct SDEScheme {
         explicit SDEScheme(const KC::UInputs &config) {
@@ -42,20 +54,34 @@ namespace KOps::Engine {
     // Eq 7.8 -> v_n+1 = v_n + k(theta - v_n)dt + sigma * sqrt(v_n) * sqrt(dt) * Z_v
     // Eq 7.12 -> S_n+1 = S_n * exp( (r - q - v_n+1 * 1/2) * dt + sqrt(v_n) sqrt(dt) * Z_S)
     // ========================================================================
+    /**
+     * @brief Euler-Maruyama discretization scheme for the Heston Stochastic Volatility Model.
+     * * **Source Literature**: Fabrice D. Rouah, *The Heston Model and its Extensions in Matlab and C#*.
+     * * Implements the standard explicit Euler-Maruyama temporal integration.
+     * - **Strong Convergence Order**: 0.5
+     * - **Weak Convergence Order**: 1.0
+     * * ### Mathematical Formulation:
+     * - **Variance (Eq 7.8)**: $v_{n+1} = \max\left(0, v_n + \kappa(\theta - v_n)\Delta t + \sigma \sqrt{v_n \Delta t} Z_v\right)$
+     * - **Asset Price (Eq 7.12)**: $S_{n+1} = S_n \exp\left( (r - q - \frac{1}{2}v_n)\Delta t + \sqrt{v_n \Delta t} Z_S \right)$
+     * * @note Precomputes invariant scalar factors on the CPU Host during initialization to
+     * prevent redundant multiplications inside the GPU execution threads
+     * (This is ok since the registers pressure is not too high).
+     */
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::Euler> {
         // Weak Convergence 1., Strong convergence 0.5
         // Precomputed constant scalar invariants (Computed once on CPU Host)
-        KT::Real one_minus_k_dt;
-        KT::Real k_theta_dt;
-        KT::Real sigma_sqrt_dt;
-        KT::Real r_minus_q_dt;
-        KT::Real half_dt;
-        KT::Real sqrt_dt;
-        KT::Real rho;
-        KT::Real rho_complement;
+        KT::Real one_minus_k_dt; ///< $1 - \kappa \Delta t$
+        KT::Real k_theta_dt; ///< $\kappa \theta \Delta t$
+        KT::Real sigma_sqrt_dt; ///< $\sigma \sqrt{\Delta t}$
+        KT::Real r_minus_q_dt; ///< $(r - q) \Delta t$
+        KT::Real half_dt; ///< $0.5 \Delta t$
+        KT::Real sqrt_dt; ///< $\sqrt{\Delta t}$
+        KT::Real rho; ///< Correlation $\rho$
+        KT::Real rho_complement; ///< Cholesky factor $\sqrt{1 - \rho^2}$
 
         // Constructor
+        /** @brief Precomputes invariant time-step terms on the CPU Host. */
         explicit SDEScheme(const KC::UInputs &config) {
             const KT::Real r = config.market.r;
             const KT::Real q = config.market.q;
@@ -79,8 +105,14 @@ namespace KOps::Engine {
             half_dt = KT::real_05 * dt; // Avoid division on GPU since it is a slow operation
         }
 
+        /**
+         * @brief Evolves the Heston process forward by one discrete time step $\Delta t$.
+         * @param S_n Asset price at time $t_n$.
+         * @param v_n Variance at time $t_n$.
+         * @param local_rn_generator Kokkos Thread-local normal random number generator.
+         * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
+         */
         template<typename RNGeneratorType>
-
 
 
         KOKKOS_INLINE_FUNCTION
@@ -114,6 +146,18 @@ namespace KOps::Engine {
     // Eq 7.8 -> To update price
     // Eq 7.26 -> To update variance
     // ========================================================================
+    /**
+     * @brief Implicit Milstein discretization scheme for the Heston Model.
+     * * **Source Literature**: Fabrice D. Rouah, *The Heston Model and its Extensions in Matlab and C#*.
+     * * Enhances the Euler approach by adding a second-order Itô-Taylor expansion term (the Milstein correction)
+     * to the variance process, improving strong convergence. Uses an *implicit* algebraic formulation
+     * to naturally prevent the variance from dropping below zero as frequently.
+     * - **Strong Convergence Order**: 1.0
+     * - **Weak Convergence Order**: 1.0
+     * * ### Mathematical Formulation:
+     * - **Variance (Eq 7.26)**: $v_{n+1} = \frac{v_n + \kappa\theta\Delta t + \sigma\sqrt{v_n\Delta t}Z_v + \frac{1}{4}\sigma^2\Delta t(Z_v^2 - 1)}{1 + \kappa\Delta t}$
+     * - **Asset Price (Eq 7.8)**: Uses the exact same exponential Euler formulation as above.
+     */
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::Milstein> {
         // Weak Convergence 1., Strong convergence 1.
@@ -127,9 +171,10 @@ namespace KOps::Engine {
         // Milstein-specific invariants
         KT::Real k_theta_dt;
         KT::Real sigma_sqrt_dt;
-        KT::Real quarter_sigma_sq_dt;
-        KT::Real implicit_denominator_v; // 1 / (1 + k * dt)
+        KT::Real quarter_sigma_sq_dt; ///< Milstein correction multiplier: $\frac{1}{4}\sigma^2\Delta t$
+        KT::Real implicit_denominator_v; ///< Implicit denominator: $\frac{1}{1 + \kappa\Delta t}$
 
+        /** @brief Precomputes Milstein invariants on the Host. */
         explicit SDEScheme(const KC::UInputs &config) {
             const KT::Real r = config.market.r;
             const KT::Real q = config.market.q;
@@ -154,9 +199,14 @@ namespace KOps::Engine {
             implicit_denominator_v = KT::real_one / (KT::real_one + k * dt);
         }
 
+        /**
+         * @brief Evolves the Heston process forward by one discrete time step $\Delta t$.
+         * @param S_n Asset price at time $t_n$.
+         * @param v_n Variance at time $t_n$.
+         * @param local_rn_generator Kokkos Thread-local normal random number generator.
+         * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
+         */
         template<typename RNGeneratorType>
-
-
 
         KOKKOS_INLINE_FUNCTION
         SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
@@ -189,6 +239,19 @@ namespace KOps::Engine {
     // Eq 7.48, 7.49, 7.50, 7.51 -> To update price
     // Eq 7.37 -> To update variance
     // ========================================================================
+    /**
+     * @brief Andersen's Quadratic-Exponential (QE) scheme for the Heston Model.
+     * * **Source Literature**: Leif B. G. Andersen (2008), detailed in F. Rouah, *The Heston Model*.
+     * * A state-of-the-art, nearly bias-free integration scheme. It solves the Feller condition
+     * negativity problem by matching the moments of the exact non-central chi-squared distribution
+     * of the variance using two distinct asymptotic regimes.
+     * * ### The Two Regimes:
+     * - **Regime 1 (Quadratic / High Variance)**: If $\psi \le 1.5$, variance is drawn from an approximated
+     * non-central chi-squared distribution (Eq 7.37).
+     * - **Regime 2 (Exponential / Low Variance)**: If $\psi > 1.5$, variance is drawn from an exponential
+     * distribution with a probability mass at zero (Eq 7.37).
+     * * Integrates the asset price using a Martingale-corrected method (Eq 7.48, 7.49, 7.50, 7.51).
+     */
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::AndersonQE> {
         // Precomputed constant scalar invariants
@@ -211,6 +274,7 @@ namespace KOps::Engine {
         KT::Real s2_factor_2; // (theta * sigma^2 / (2k)) * (1 - e^{-k dt})^2
         KT::Real K1, K2, K3, K4, A;
 
+        /** @brief Precomputes analytical QE constants and Martingale corrections. */
         explicit SDEScheme(const KC::UInputs &config) {
             const KT::Real r = config.market.r;
             const KT::Real q = config.market.q;
@@ -263,9 +327,14 @@ namespace KOps::Engine {
             A = K2 + K4 * KT::real_05; // Terms for matingale correction K0
         }
 
+        /**
+         * @brief Evolves the Heston process forward by one discrete time step $\Delta t$.
+         * @param S_n Asset price at time $t_n$.
+         * @param v_n Variance at time $t_n$.
+         * @param local_rn_generator Kokkos Thread-local normal random number generator.
+         * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
+         */
         template<typename RNGeneratorType>
-
-
 
         KOKKOS_INLINE_FUNCTION
         SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
@@ -343,17 +412,36 @@ namespace KOps::Engine {
     // SPECIALIZATION: Bates Model (Universal Wrapper via Composition)
     // Works automatically for any heston scheme
     // ========================================================================
+    /**
+     * @brief Universal Jump-Diffusion wrapper for the Bates model.
+     * @note **Mathematical Design via Composition**: The Bates model is essentially the continuous Heston
+     * volatility model combined with Merton-style discrete log-normal jumps.
+     * Rather than rewriting the complex Euler/Milstein/QE integrations, this struct *wraps* a standard
+     * Heston core object.
+     * * ### The Martingale Compensator
+     * Adding random price jumps creates an artificial arbitrage opportunity unless the baseline drift
+     * is corrected. We calculate the expected percentage change caused by a single jump ($\kappa_J$)
+     * and modify the continuous dividend yield:
+     * $$ q_{\text{new}} = q_{\text{old}} + \lambda \cdot \kappa_J $$
+     * By "spoofing" the underlying Heston configuration with this new $q_{\text{new}}$, the continuous
+     * process drifts downward just enough to perfectly offset the average upward jump risk.
+     * * ### Poisson Jump Draw
+     * Uses Donald E. Knuth's algorithm to draw a random integer $N \sim \text{Poisson}(\lambda \Delta t)$
+     * representing the number of jumps occurring inside the discrete step.
+     * * @tparam SchemePolicy The underlying continuous integration technique (e.g., Eurle, AndersonQE, etc.).
+     */
     template<KI::NumScheme SchemePolicy>
     struct SDEScheme<KI::MathModel::Bates, SchemePolicy> {
         // 1. Composition: The underlying Heston Engine
-        SDEScheme<KI::MathModel::Heston, SchemePolicy> heston_core;
+        SDEScheme<KI::MathModel::Heston, SchemePolicy> heston_core; ///< Encapsulated heston driver.
 
         // 2. Bates-Specific Invariants
-        KT::Real lambda_dt;
-        KT::Real exp_minus_lambda_dt;
-        KT::Real mu_J;
-        KT::Real sigma_J;
+        KT::Real lambda_dt; ///< $\lambda \Delta t$
+        KT::Real exp_minus_lambda_dt; ///< $e^{-\lambda \Delta t}$
+        KT::Real mu_J; ///< Mean log-jump magnitude
+        KT::Real sigma_J; ///< std of the log-jump
 
+        /** @brief Precomputes jump parameters and initializes the spoofed Heston core. */
         explicit SDEScheme(const KC::UInputs &config)
             : heston_core(create_spoofed_config_from_original(config)) {
             // Precompute jump parameters for the GPU
@@ -363,10 +451,10 @@ namespace KOps::Engine {
             sigma_J = config.model.bates.sigma_J;
         }
 
+        /**
+        * @brief Evolves the Heston model and then applies discrete Poisson jumps.
+        */
         template<typename RNGeneratorType>
-
-
-
         KOKKOS_INLINE_FUNCTION
         SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
             // 1. Evolve the continuous part using the spoofed Heston core
@@ -403,6 +491,11 @@ namespace KOps::Engine {
 
     private:
         // Helper function that runs exclusively on the Host during construction
+        /**
+         * @brief Host-side helper that add the Bates jump compensator into the Heston continuous drift.
+         * @param orig_config The master user configuration.
+         * @return A modified configuration object designed for continuous Heston core where the mertingale correction has been applied.
+         */
         KOKKOS_INLINE_FUNCTION
         static KC::UInputs create_spoofed_config_from_original(const KC::UInputs &orig_config) {
             KC::UInputs spoofed_config = orig_config; // copy the input config

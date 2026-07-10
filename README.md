@@ -1,7 +1,7 @@
 
 ---
 
-# KOptions: High-Performance Heston-Bates Engine
+# KOptions: High-Performance Option Pricing Engine
 
 KOptions is a high-performance Monte Carlo simulation engine for pricing European and American options under the Heston and Bates stochastic volatility models (See Section 6). 
 Built in **C++20** and accelerated by **Kokkos**, it is designed for extreme scalability across multi-core CPUs and GPUs.
