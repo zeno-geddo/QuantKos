@@ -36,20 +36,20 @@ namespace KOps::Engine {
 
         /** @name Kokkos Device Views */
         ///@{
-        DevPathsView d_batch_view; ///< Device-side view for asset paths (N_sims_per_batch, TotN_T_steps).
-        DevPayoffView d_payoffs; ///< Device-side view for option payoffs (N_sims_per_batch).
+        DevBatchPathsView d_batch_view; ///< Device-side view for asset paths (N_sims_per_batch, TotN_T_steps).
+        DevBatchPayoffView d_payoffs; ///< Device-side view for option payoffs (N_sims_per_batch).
         ///@}
 
         /** @name Kokkos Host Views */
         ///@{
-        HostPathsView h_batch_view; ///< Host-side mirror for asset paths synchronization.
-        HostPayoffView h_payoffs; ///< Host-side mirror for payoff data synchronization.
+        HostBatchPathsView h_batch_view; ///< Host-side mirror for asset paths synchronization.
+        HostBatchPayoffView h_payoffs; ///< Host-side mirror for payoff data synchronization.
         ///@}
 
         /**
         * @brief Constructs the manager and allocates hardware-aligned memory buffers.
         * (Must be initialized explicitly)
-        * @param conf Global simulation configuration containing memory budget and path counts.
+        * @param conf reference to master configuration, containing also memory budget and path counts.
         */
         explicit PathsMCBatchMem(const KC::UInputs &conf) : config(conf) {
             // Memory is allocated during the construction of the class
@@ -57,17 +57,40 @@ namespace KOps::Engine {
             std::cout << "  [Batch Memory] Memory allocated correctly." << std::endl;
         }
 
-        // Prohibiting copy to avoid memory issues
+        /**
+         * @brief Copy constructor is explicitly deleted.
+         * * Duplicate views tracking the same active GPU memory addresses would result in
+         * multiple host-device synchronization conflicts and race conditions. To enforce a single
+         * source of truth for the active batch memory, copying is prohibited.
+         */
         PathsMCBatchMem(const PathsMCBatchMem &) = delete;
 
+        /**
+         * @brief Copy assignment operator is explicitly deleted.
+         */
         PathsMCBatchMem &operator=(const PathsMCBatchMem &) = delete;
 
-        // Allow move construction (Transfers ownership safely) and explicitly delete move assignment
+        /**
+         * @brief Default move constructor to safely transfer memory ownership across execution scopes if needed.
+         * * Transfers ownership of the underlying Kokkos allocation handles and view pointers from an expiring
+         * instance to a newly initialized object. This operation is virtually instantaneous and occurs
+         * without executing any expensive allocations or memory copies in CPU or GPU space.
+        */
         PathsMCBatchMem(PathsMCBatchMem &&) = default;
 
+        /**
+         * @brief Move assignment operator is explicitly deleted.
+         * * Re-assigning an already allocated batch memory layout dynamically after its initial setup is
+         * prohibited to protect active CUDA/HIP streams or OpenMP parallel loops from reference changes mid-run.
+         */
         PathsMCBatchMem &operator=(PathsMCBatchMem &&) = delete;
 
-        // Default destructor
+        /**
+         * @brief Default destructor.
+         * * Because this class utilizes reference-counted Kokkos Views, memory cleanup is automated.
+         * When the internal reference counters of the device and host view allocations drop to zero
+         * upon destruction, the underlying physical memory pools (VRAM / RAM) are safely reclaimed.
+         */
         ~PathsMCBatchMem() = default;
 
         //-------------------------------------------
@@ -94,27 +117,41 @@ namespace KOps::Engine {
         //-------------------------------------------
         /** @name Memory Interrogation Utilities */
         ///@{
-        // Hardware Interrogation
+
+        /**
+         * @brief Returns the name of the active default hardware execution space (e.g., Cuda, HIP, OpenMP).
+         */
         [[nodiscard]] std::string execution_space_name() const {
             return Kokkos::DefaultExecutionSpace::name();
         }
 
-        // Get allocated memory size
+        /**
+         * @brief Calculates the total physical size in bytes of the device-side asset batch path View.
+         */
         [[nodiscard]] size_t device_paths_memory_bytes() const {
             // span: distance between lowest and highest address, must be contiguous memory to work
             return d_batch_view.span() * sizeof(KT::Real);
         }
 
+        /**
+         * * @brief Calculates the total physical size in bytes of the device-side path batch payoff View.
+         */
         [[nodiscard]] size_t device_payoffs_memory_bytes() const {
             // span: distance between lowest and highest address, must be contiguous memory to work
             return d_payoffs.span() * sizeof(KT::Real);
         }
 
+        /**
+         * @brief Returns the combined device-side VRAM footprint (Paths + Payoffs) allocated for this batch.
+         */
         [[nodiscard]] size_t tot_device_memory_bytes() const {
             // span: distance between lowest and highest address, must be contiguous memory to work
             return device_paths_memory_bytes() + device_payoffs_memory_bytes();
         }
 
+        /** @brief Calculates the host-side RAM size in bytes used for path mirroring.
+         * @note Returns 0 if executing on CPU-only builds where device and host share the same pointers.
+         */
         [[nodiscard]] size_t host_paths_memory_bytes() const {
             // Only count host memory if it's a true separate physical allocation (GPU builds)
             if (h_batch_view.data() != nullptr && h_batch_view.data() != d_batch_view.data()) {
@@ -124,6 +161,9 @@ namespace KOps::Engine {
             return 0; // 0 duplicate bytes allocated if running natively on a host CPU
         }
 
+        /** * @brief Calculates the host-side RAM size in bytes used for payoffs mirroring.
+         * @note Returns 0 if executing on CPU-only builds where device and host share the same pointers.
+         */
         [[nodiscard]] size_t host_payoffs_memory_bytes() const {
             // Only count host memory if it's a true separate physical allocation (GPU builds)
             if (h_payoffs.data() != nullptr && h_payoffs.data() != h_payoffs.data()) {
@@ -133,14 +173,20 @@ namespace KOps::Engine {
             return 0; // 0 duplicate bytes allocated if running natively on a host CPU
         }
 
+        /** * @brief Returns the combined host-side RAM footprint (Paths + Payoffs) allocated for mirroring.
+         */
         [[nodiscard]] size_t tot_host_memory_bytes() const {
             return host_paths_memory_bytes() + host_payoffs_memory_bytes();
         }
 
+        /** * @brief Utility helper to convert raw byte sizes into Megabytes (MB).
+         */
         [[nodiscard]] double bytes_to_mb(size_t n_bytes) const {
             return static_cast<double>(n_bytes) / (1024.0 * 1024.0);
         }
 
+        /** * @brief Estimates the full, unrolled paths footprint in MB if all simulation steps were kept in RAM at once.
+         */
         [[nodiscard]] double total_paths_footprint_mb() const {
             const size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.
                                            N_time_steps)
@@ -148,12 +194,16 @@ namespace KOps::Engine {
             return static_cast<double>(total_bytes) / (1024.0 * 1024.0);
         }
 
+        /** * @brief Calculates the total footprint in MB needed to hold the final payoffs across all simulation paths.
+         */
         [[nodiscard]] double total_payoffs_footprint_mb() const {
             size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * sizeof(KT::Real);
             return static_cast<double>(total_bytes) / (1024.0 * 1024.0);
         }
 
         // Give host layout
+        /** * @brief Compile-time check verifying if the Host View layout is Row-Major (LayoutRight, or C-Style).
+         */
         [[nodiscard]] bool is_host_row_major() const {
             // Check if the layout is Row-Major (C-Style)
             // Evaluates completely at compile-time. The compiler will optimize this
@@ -164,6 +214,8 @@ namespace KOps::Engine {
             >;
         }
 
+        /** * @brief Compile-time check verifying if the Host View layout is Column-Major (LayoutLeft, or Fortran-Style).
+         */
         [[nodiscard]] bool is_host_col_major() const {
             // Check if the layout is Col-Major (Fortran-Style)
             // Evaluates completely at compile-time. The compiler will optimize this
@@ -174,7 +226,8 @@ namespace KOps::Engine {
             >;
         }
 
-        // Check if the memory block is physically contiguous
+        /** * @brief Dynamically audits if the host memory allocation slice is physically contiguous in memory.
+         */
         [[nodiscard]] bool is_host_contiguous() const {
             // Dynamically checks the actual memory slice, catching non-contiguous subviews or LayoutStride edge cases.
             return h_batch_view.span_is_contiguous();
@@ -188,20 +241,30 @@ namespace KOps::Engine {
         //-------------------------------------------
         /** @name Batch Info */
         ///@{
+
+        /** * @brief Returns the total count of batch iterations required to complete the entire simulation run.
+         */
         [[nodiscard]] int total_batch_loops() const {
             const int n_batches = n_full_batches();
             const int left_over = n_sims_left_over_after_full_batches();
             return n_batches + (left_over > 0 ? 1 : 0);
         }
 
+        /** * @brief Returns the total number of perfectly sized full batches to process during the entire MonteCarlo.
+         */
         [[nodiscard]] int n_full_batches() const {
             return config.mc.N_Paths / n_sims_per_batch;
         }
 
+        /** * @brief Returns the path remainder count that must be scheduled in a final, smaller partial batch.
+         */
         [[nodiscard]] int n_sims_left_over_after_full_batches() const {
             return config.mc.N_Paths % n_sims_per_batch;
         }
 
+        /** * @brief Resolves the exact path count for a target batch index, safely adjusting for smaller leftover batches.
+         * @param batch_idx The active zero-indexed batch sequence counter.
+         */
         [[nodiscard]] int get_curr_batch_size(const int batch_idx) const {
             const int n_full_batches = config.mc.N_Paths / n_sims_per_batch;
             if (batch_idx < n_full_batches) {
@@ -213,7 +276,7 @@ namespace KOps::Engine {
         ///@}
 
     private:
-        const KC::UInputs config;
+        const KC::UInputs& config; ///< Local reference mapping back to the master input settings.
 
         /** * @brief Allocates and mirrors device/host views based on hardware budget.
         */
@@ -246,13 +309,13 @@ namespace KOps::Engine {
             std::cout << "  [Batch Memory] Allocating reusable buffers ("
                     << n_sims_per_batch << " x " << config.time.N_time_steps << ") for the paths of the MC batches..."
                     << std::endl;
-            d_batch_view = DevPathsView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
+            d_batch_view = DevBatchPathsView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
             h_batch_view = Kokkos::create_mirror_view(d_batch_view);
 
             // Allocate the PAYOFFS views
             std::cout << "  [Batch Memory] Allocating reusable buffers ("
                     << n_sims_per_batch << ") for the payoffs of the MC batches..." << std::endl;
-            d_payoffs = DevPayoffView("gpu_payoffs_batch_buffer", n_sims_per_batch);
+            d_payoffs = DevBatchPayoffView("gpu_payoffs_batch_buffer", n_sims_per_batch);
             h_payoffs = Kokkos::create_mirror_view(d_payoffs);
         }
 

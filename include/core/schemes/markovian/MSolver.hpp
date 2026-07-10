@@ -58,9 +58,9 @@ namespace KOps::Engine {
     struct MarkovianIntegrationKernel {
         // 1. Trivially Copiable Attributes (The Execution Context, The data the GPU needs)
         SDEScheme<ModelPolicy, SchemePolicy> Scheme; ///< Local copy of the SDE integration scheme.
-        DevPathsView local_paths_batch_view;
+        DevBatchPathsView local_paths_batch_view;
         ///< Target device VRAM/GPu 2D array mapping full path trajectories of a batch (Accessed by threads).
-        DevPayoffView local_payoff_batch_view;
+        DevBatchPayoffView local_payoff_batch_view;
         ///< Target device VRAM 1D array mapping path-level terminal payloads of a batch (Accessed by threads).
         RNGManager::GlobalRNGPool rng_pool;
         ///< Dedicated global hardware random number state pool (A copy for each kernel launch is generated).

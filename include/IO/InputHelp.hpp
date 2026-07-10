@@ -9,18 +9,27 @@
 #include "./../core/config/ConfigFileKeys.hpp"
 #include "./../core/config/ConfigFileKeysEnumMaps.hpp"
 
+/**
+ * @brief Utility namespace for handling user-facing console help.
+ * * Contains functions responsible for outputting startup welcome banners, terminal usage syntax
+ * instructions, and structural YAML configuration templates directly to the standard output stream.
+ */
 namespace KOps::HELP {
     namespace K = KOps::Keys;
     namespace KI = KOps::Implemented;
 
+    /**
+     * @brief Prints the stylized KOptions welcome banner to the terminal.
+     * * Outputs high-level metadata about the engine version, developer contact details,
+     * build constraints, and confirmation of the active parallel Kokkos compute backend.
+     */
     inline void print_welcome_msg() {
         constexpr std::string_view indent = "    ";
-
         std::cout << "\n\n" << indent << "====================================================================\n"
                 << indent << "                              KOptions                              \n"
                 << indent << "====================================================================\n"
                 << indent << "    Framework         : Parallel SDE Option Pricing Engine          \n"
-                << indent << "    Compute Backend   : C++ and Kokkos (for Performance Portability)\n"
+                << indent << "    Compute Backend   : C++ (Performance Portability with Kokkos)   \n"
                 << indent << "--------------------------------------------------------------------\n"
                 << indent << "    Author            : Zeno GEDDO                                  \n"
                 << indent << "    Version           : v0.1.0 (Beta)                               \n"
@@ -31,6 +40,12 @@ namespace KOps::HELP {
                 << std::endl;
     }
 
+    /**
+     * @brief Prints a practical execution syntax and usage guide to the terminal console.
+     * @note Automatically extracts the raw file extension name from the path argument to demonstrate
+     * exactly how a user should pass their targeted YAML configuration file.
+     * * @param executable_path The absolute or relative launch path of the binary (`argv[0]`).
+     */
     inline void print_usage(std::string_view executable_path) {
         // Extract just the filename out of the absolute path wrapper
         std::filesystem::path prog_path(executable_path);
@@ -40,7 +55,7 @@ namespace KOps::HELP {
                 << "      Execution Command Syntax:\n"
                 << "        ./" << filename << " <path_to_config_file.yaml>\n\n"
                 << "      Example Command Usage:\n"
-                << "        ./" << filename << " ../config/heston_euler.yaml\n\n"
+                << "        ./" << filename << " KOptions/KOptionsConfig.yaml\n\n"
                 << "    --------------------------------------------------------\n"
                 << "    Note: The configuration input file must be a validated \n"
                 << "          YAML/JSON specification containing comprehensive \n"
@@ -53,6 +68,13 @@ namespace KOps::HELP {
     // ------------------------------------------------------------------------
     // Helper to generate a string of allowed options: "# [Opt1, Opt2, ...]"
     // ------------------------------------------------------------------------
+    /**
+     * @brief Dynamically loops through an internal enum to string map to generate a clean string list of valid choices.
+     * * Helper template used to generate side-car inline comment strings in the console dump.
+     * * Outputs format structure: `# [Choice1, Choice2, ...]`
+     * * @tparam T The specific enum configuration type to extract and map out.
+     * @return A formatted std::string representing the available options collection.
+     */
     template<typename T>
     std::string get_allowed_options() {
         std::stringstream ss;
@@ -68,6 +90,16 @@ namespace KOps::HELP {
         return ss.str();
     }
 
+    /**
+    * @brief Dumps a comprehensive (almost copy-pasteable),  blueprint template of a simulation configuration YAML file to console.
+    * * Uses internal configuration string keys (`ConfigFileKeys.hpp`) to accurately output every mandatory block,
+    * including:
+    * - **Market Parameters**,
+    * - **Contract Specification**,
+    * - **Stochastic Processes Block**,
+    * - **Numerical Control Framework**,
+    * - **ETC...**.
+    */
     inline void print_example_config() {
         std::cout << "\n--- Template Configuration File ---\n"
                 << "# Copy this structure into your .yaml file, and chose one one of the implementation between '[' and ']' ...\n\n";
