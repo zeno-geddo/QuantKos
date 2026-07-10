@@ -10,6 +10,7 @@
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
 #include "../config/ConfigFileEnums.hpp"
+#include "../memory/MemoryTypes.hpp"
 
 namespace KOps::Engine {
     namespace KT = KOps::Types;
@@ -79,7 +80,7 @@ namespace KOps::Engine {
          * @param curr_batch_size The active number of paths processed in this batch loop.
          * @note To be executed inside your main Monte Carlo batch iterations loop.
          */
-        void accumulate_batch_payoffs(const HostPayoffView &h_payoffs, const int curr_batch_size) {
+        void accumulate_batch_payoffs(const HostBatchPayoffView &h_payoffs, const int curr_batch_size) {
             for (int i = 0; i < curr_batch_size; ++i) {
                 const KT::Real curr_payoff = h_payoffs(i); // Get payoff value from device
                 total_payoff_sum += curr_payoff;
