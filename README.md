@@ -115,7 +115,7 @@ If CMake cannot find Kokkos or YAML-CPP installed on your system, it will displa
 * * Scroll to `KOPS_ENABLE_FETCHCONTENT` and press **`Enter`** to toggle it to `OFF`.
 * Scroll to `Kokkos_ROOT` and/or `yaml-cpp_ROOT` and press **`Enter`** to edit.
 * Type the absolute path to your local installations and press **`Enter`** to save.
-* *(Note: For Kokkos, you must provide the directory containing the `KokkosConfig.cmake` file, which is usually located in `/lib/cmake/Kokkos` inside your installation directory).*
+* **(Note: For Kokkos, you must provide the directory containing the `KokkosConfig.cmake` file, which is usually located in `/lib/cmake/Kokkos` inside your Kokkos installation directory.) Given the directory, add the flag -DKokkos_ROOT=/path/to/Kokkos/target/dir.**
 * Press **`c`** to re-configure and clear the error.
 
 

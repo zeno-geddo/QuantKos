@@ -1,6 +1,17 @@
+## @file src/CMakeLists.txt
+## @brief Core library compilation setup, target dependencies, and compiler optimization flag matrices.
+## @details This file defines the core 'KOptions_core' library target, configures precision compiler definitions,
+##          binds package dependencies, and manages compiler and linker flags for multiple build configurations (Release, Debug, etc.).
+## @author Zeno GEDDO
+## @date 2026
+
 # -----------------------------------------------------------------------------
 # 1. CREATE TARGETS
 # -----------------------------------------------------------------------------
+# @section target_sec 1. Core Target Definition
+## @brief Registers the primary library target.
+## @details Compiles the main core configuration parser and future engine files to build
+##          the library object 'KOptions_core'.
 add_library(KOptions_core
         IO/ConfigParser.cpp
 )
@@ -9,6 +20,12 @@ add_library(KOptions_core
 # -----------------------------------------------------------------------------
 # 2. APPLY OPTIONS
 # -----------------------------------------------------------------------------
+## @section def_sec 2. Preprocessor & Precision Setup
+## @brief Controls internal float/double type matching based on user toggles.
+## @details Inspects the user build option `KOPS_ENABLE_SINGLE_PRECISION`. If enabled, it sets
+##          the compiler flag `KOPS_USE_SINGLE_PRECISION` publicly, ensuring correct 32-bit float matching
+##          across all dependent application files.
+
 if (KOPS_ENABLE_SINGLE_PRECISION)
     target_compile_definitions(KOptions_core PUBLIC KOPS_USE_SINGLE_PRECISION)
     message(STATUS "Precision: SINGLE (float)")
@@ -20,6 +37,14 @@ endif ()
 # -----------------------------------------------------------------------------
 # 3. LINKING & INCLUDES
 # -----------------------------------------------------------------------------
+## @section link_sec 3. Upstream Dependency & Include Routing
+## @brief Links target library dependencies and registers include search paths.
+## @details
+## - **target_link_libraries**: Links 'KOptions_core' publicly to Kokkos and yaml-cpp, allowing any executable
+##   downstream to automatically find and link these frameworks.
+## - **target_include_directories**: Employs CMake generator expressions to isolate development-time headers
+##   (`$<BUILD_INTERFACE>`) from installed distribution headers (`$<INSTALL_INTERFACE>`).
+
 target_link_libraries(KOptions_core PUBLIC
         Kokkos::kokkos
         yaml-cpp
@@ -34,6 +59,14 @@ target_include_directories(KOptions_core PUBLIC
 # -----------------------------------------------------------------------------
 # 4. DEFAULT COMPILER FLAGS (Base Warnings, always ON for GCC/Clang despite the optimizations)
 # -----------------------------------------------------------------------------
+## @section warning_sec 4. Default Static Analysis Warnings
+## @brief Enforces clean, robust code quality rules across GCC, Clang, and AppleClang.
+## @details Applies static checking flags to prevent common C++ bugs:
+## - `-Wall` & `-Wextra`: Turns on standard and advanced compiler diagnostic warnings.
+## - `-Wpedantic`: Rejects non-standard compiler-specific C++ extensions.
+## - `-Wshadow`: Triggers warnings when local variables shadow outer scope declarations.
+## - `-Wnon-virtual-dtor`: Flags classes with virtual methods that are missing virtual destructors.
+
 target_compile_options(KOptions_core PRIVATE
         # Configuration for GNU GCC
         #$<$<CXX_COMPILER_ID:GNU>:
@@ -48,46 +81,85 @@ target_compile_options(KOptions_core PRIVATE
 )
 
 # -----------------------------------------------------------------------------
-# 5. DEBUG COMPILER FLAGS (Only active in Debug build : -DCMAKE_BUILD_TYPE=Debug)
+# 5. GLOBAL PUBLIC MATH OPTIMIZATIONS (optimizations that needs to propagate downstream!)
 # -----------------------------------------------------------------------------
+## @section public_opt_sec 3.5. Public Optimization Flags
+## @brief Propagates critical performance assumptions to downstream consumers (app & tests).
+## @details Applies math optimization flags publicly to ensure identical compilation assumptions
+##          between our library objects and consuming binaries.
+## - **-fno-math-errno**: Disables POSIX math 'errno' tracking, unleashing hardware vectorization (SIMD)
+##   and allowing seamless inlining across files during LTO.
+target_compile_options(KOptions_core PUBLIC
+        $<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>>:
+        -fno-math-errno # Disables updating 'errno' after math calls; allows faster SIMD math instructions
+        >
+)
+
+# -----------------------------------------------------------------------------
+# 6. DEBUG COMPILER FLAGS (Only active in Debug build : -DCMAKE_BUILD_TYPE=Debug)
+# -----------------------------------------------------------------------------
+## @section debug_sec 6. Debug Mode Configurations
+## @brief Optimization and runtime sanitization configurations for Debug targets.
+## @details Sets optimization to `-O0` to preserve execution structure during step-by-step debugging.
 target_compile_options(KOptions_core PRIVATE
         $<$<CONFIG:Debug>:
         -O0                         # Disable optimizations for accurate step-through debugging
         -g                          # Include debug symbols for GDB/LLDB/CLion
         -fno-omit-frame-pointer     # Keep frame pointer for cleaner stack traces
-        -fsanitize=address          # ASan: Detects out-of-bounds access, use-after-free, and memory leaks instantly.
-        -fsanitize=undefined        # UBSan: Catches undefined behavior like integer overflow, null pointer dereferencing, or division by zero.
         >
 )
 
-# Linker flags: Required to link the ASan/UBSan runtime libraries
-target_link_options(KOptions_core PRIVATE
-        $<$<CONFIG:Debug>:
-        -fsanitize=address          # Link AddressSanitizer runtime
-        -fsanitize=undefined        # Link UndefinedBehaviorSanitizer runtime
-        >
-)
+## @subsection debug_san_subsec Adaptive Debug Sanitizers (PUBLIC Propagation)
+## @brief Conditionally configures compiler and linker instrumentation for sanitizers.
+## @details Host-side sanitizers (ASan/UBSan) are highly beneficial on CPU backends.
+##          However, on GPU-accelerated backends (CUDA/HIP/SYCL), ASan's massive virtual shadow memory allocation
+##          conflicts with the GPU driver's virtual memory mapping tables, triggering a critical initialization
+##          out-of-memory error.
+##          To prevent this, the build system queries the active Kokkos hardware configurations and
+##          automatically bypasses host sanitization if a GPU-bound accelerator target is active.
+
+# 1. Query active hardware targets exported by the Kokkos package
+set(KOPS_SAFE_TO_USE_SANITIZERS ON)
+if (Kokkos_ENABLE_CUDA OR Kokkos_ENABLE_HIP OR Kokkos_ENABLE_SYCL)
+    set(KOPS_SAFE_TO_USE_SANITIZERS OFF)
+    message(STATUS "GPU backend active in Kokkos (CUDA/HIP/SYCL). Host-side AddressSanitizer disabled to prevent memory initialization conflicts.")
+endif()
+
+# 2. Apply sanitizer flags only if we are compiling for a CPU-only architecture
+if (KOPS_SAFE_TO_USE_SANITIZERS)
+    message(STATUS "CPU-only build target. Enabling AddressSanitizer and UndefinedBehaviorSanitizer for Debug builds.")
+
+    target_compile_options(KOptions_core PUBLIC
+            $<$<CONFIG:Debug>:
+            -fsanitize=address          # ASan: Detects out-of-bounds access, use-after-free, and memory leaks instantly.
+            -fsanitize=undefined        # UBSan: Catches undefined behavior like integer overflow, null pointer dereferencing, or division by zero.
+            >
+    )
+
+    # Linker flags: Required to link the ASan/UBSan runtime libraries into the final executable.
+    target_link_options(KOptions_core PUBLIC
+            $<$<CONFIG:Debug>:
+            -fsanitize=address          # Link AddressSanitizer runtime
+            -fsanitize=undefined        # Link UndefinedBehaviorSanitizer runtime
+            >
+    )
+endif()
 
 # -----------------------------------------------------------------------------
-# 5.5. MINSIZEREL COMPILER FLAGS (-DCMAKE_BUILD_TYPE=MinSizeRel)
+# 7. RELEASE COMPILER FLAGS (Only active in Release build : -DCMAKE_BUILD_TYPE=Release)
 # -----------------------------------------------------------------------------
-# Optimizes strictly to reduce the final binary file size. (Rarely used in Quant Finance).
-target_compile_options(KOptions_core PRIVATE
-        $<$<CONFIG:MinSizeRel>:
-        -Os                         # Optimize for size (disables loop unrolling)
-        >
-)
-# No special linker flags needed for MinSizeRel
-
-# -----------------------------------------------------------------------------
-# 6. RELEASE COMPILER FLAGS (Only active in Release build : -DCMAKE_BUILD_TYPE=Release)
-# -----------------------------------------------------------------------------
+## @section release_sec 6. Production Release Optimization Configuration
+## @brief High-throughput production compilation rules active under `-DCMAKE_BUILD_TYPE=Release`.
+## @details Maximizes runtime execution performance:
+## - `-O3`: Activates loop vectorization, automatic inlining, and registers.
+## - `-march=native`: Inspects and exploits instruction sets (like AVX-512) native to the compilation host.
+## - `-flto`: Link Time Optimization; performs cross-file optimizations across files.
+## - `-fno-math-errno`: Bypasses updating POSIX error variables after math commands, enabling SIMD execution.
 target_compile_options(KOptions_core PRIVATE
         $<$<CONFIG:Release>:
         -O3                         # High-level optimization: vectorization, loop unrolling, and inlining
         -march=native               # Tune code for the specific CPU features (AVX, AVX-512) of the host machine
         -flto                       # Link Time Optimization: allows optimizations across different translation units
-        -fno-math-errno             # Disables updating 'errno' after math calls; allows faster SIMD math instructions
         # -ffast-math               # Enable aggressive math optimizations, breaks IEEE-754 floating point standards to go faster (may break NaN checks and precision)
         >
 )
@@ -101,16 +173,19 @@ target_link_options(KOptions_core PRIVATE
 )
 
 # -----------------------------------------------------------------------------
-# 6.5. RELWITHDEBINFO COMPILER FLAGS (-DCMAKE_BUILD_TYPE=RelWithDebInfo)
+# 8. RELWITHDEBINFO COMPILER FLAGS (-DCMAKE_BUILD_TYPE=RelWithDebInfo)
 # Production-level speed, but with a map attached.
-# -----------------------------------------------------------------------------
 # For HPC, we want the exact same aggressive speed as Release, but WITH debug symbols for profiling.
+# -----------------------------------------------------------------------------
+## @section reldeb_sec 6.5 Profiling Optimization Configuration
+## @brief Production performance with debugging symbols active under `-DCMAKE_BUILD_TYPE=RelWithDebInfo`.
+## @details Maintains the exact performance optimizations of `-O3` and LTO, but compiles in debug
+##          mapping coordinates (`-g`) and frame pointers to support profiling tools (e.g., perf, VTune, Valgrind).
 target_compile_options(KOptions_core PRIVATE
         $<$<CONFIG:RelWithDebInfo>:
         -O3                         # Keep maximum speed
         -march=native               # Keep vectorization
         -flto                       # Keep LTO
-        -fno-math-errno             # Keep math speed
         -g                          # ADD debug symbols for profiling (perf, VTune, Valgrind)
         -fno-omit-frame-pointer     # Keep the call stack clean so the profiler can read it
         >
@@ -124,10 +199,14 @@ target_link_options(KOptions_core PRIVATE
 )
 
 
+# -----------------------------------------------------------------------------
+# 9. Install the library (the .a or .so file)
+# -----------------------------------------------------------------------------
+## @section install_lib_sec 7. Target Library Export Rules
+## @brief Installs the compiled core library target to the workspace prefix.
+## @details Registers the compiled binary outputs into standard installation subfolders
+##          under `lib/` and `bin/`, packing dependencies inside the `KOptionsTargets` export list.
 
-# -----------------------------------------------------------------------------
-# 7. Install the library (the .a or .so file)
-# -----------------------------------------------------------------------------
 install(TARGETS KOptions_core
         EXPORT KOptionsTargets          # Creates a "package" name for others to find
         LIBRARY DESTINATION lib      # Where .so files go
@@ -136,8 +215,12 @@ install(TARGETS KOptions_core
 
 
 # -----------------------------------------------------------------------------
-# 8. Install the headers
+# 10. Install the headers
 # -----------------------------------------------------------------------------
+## @section install_headers_sec 8. Interface Headers Installation
+## @brief Packages the public C++ API header folder for distribution.
+## @details Copies only the interface files matching `.hpp` and `.h` patterns from the
+##          local directory to the installation prefix's `include/` directory.
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../include/
         DESTINATION include
         FILES_MATCHING
