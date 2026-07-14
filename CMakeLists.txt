@@ -84,6 +84,11 @@ option(KOPS_ENABLE_TESTS "Build unit tests ?" ON)
 ## @brief Allows the build system to automatically download and compile missing dependencies from GitHub.
 option(KOPS_ENABLE_FETCHCONTENT "Enable FetchContent ?" OFF)
 
+## @option KOPS_BUILD_DOCS
+## @brief Generates HTML documentation using Doxygen during the build process.
+option(KOPS_BUILD_DOCS "Generate Doxygen documentation ?" ON)
+
+
 # -----------------------------------------------------------------------------
 # 4. Find Dependencies (Find-or-Fetch)
 # -----------------------------------------------------------------------------
@@ -172,11 +177,11 @@ if (Kokkos_ENABLE_CUDA OR Kokkos_ENABLE_HIP OR Kokkos_ENABLE_SYCL)
     # GPU active: Force LTO OFF to prevent device-code 'fatbinData' linker collisions
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
     message(STATUS "GPU backend active in Kokkos. Host Link-Time Optimization (LTO) disabled to prevent compilation conflicts.")
-else()
+else ()
     # CPU only: Turn LTO ON to maximize host-side optimization and cross-file inlining
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
     message(STATUS "CPU-only target. Host Link-Time Optimization (LTO/IPO) is ENABLED.")
-endif()
+endif ()
 
 
 # -----------------------------------------------------------------------------
@@ -202,9 +207,53 @@ if (KOPS_ENABLE_TESTS)
     message(STATUS "Activated build in unit tests")
 endif ()
 
+# -----------------------------------------------------------------------------
+# 6.5. Doxygen Documentation Generation
+# -----------------------------------------------------------------------------
+## @section doc_sec 6.5 CODE Documentation Setup
+## @brief Automatically generates and installs Doxygen HTML documentation.
+if (KOPS_BUILD_DOCS)
+    find_package(Doxygen QUIET) # silently sets a variable (DOXYGEN_FOUND) to FALSE if not found
+    if (DOXYGEN_FOUND)
+        message(STATUS "Doxygen found: Documentation target 'documentation' enabled.")
+
+        # Define documentation directory in the BUILD tree, not the SOURCE tree to avoid pollution
+        set(DOC_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/documentation")
+
+        # Tell CMake to watch your original Doxyfile for any manual edits
+        # (If that file is changed, CMake will automatically re-run the configuration step the next time you trigger a build.)
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "Doxyfile")
+
+        # Read the original Doxyfile, append the output override, and save to the build tree
+        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile" DOXYFILE_CONTENTS) # Read file and store it in DOXYFILE_CONTENTS
+        file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.build"
+                "${DOXYFILE_CONTENTS}\n# --- CMAKE OVERRIDES ---\nOUTPUT_DIRECTORY = \"${DOC_OUTPUT_DIR}\"\n")
+
+
+        # Create a custom target that runs Doxygen (ALL makes it build automatically with 'make')
+        add_custom_target(docs # This creates a new target named docs that can be built by running make docs
+                ALL # include docs target in the default "all" build, documentation is generated automatically every time
+                COMMAND ${CMAKE_COMMAND} -E rm -f "${CMAKE_CURRENT_BINARY_DIR}/doxygen.log" # remove log file if any so that the next one will be clean
+                COMMAND ${CMAKE_COMMAND} -E remove_directory "${DOC_OUTPUT_DIR}" # remove dir so that docs will be clean next time
+                COMMAND ${CMAKE_COMMAND} -E make_directory ${DOC_OUTPUT_DIR} # (The -E flag in CMake stands for "Execute" mode.)
+                COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.build" > "${CMAKE_CURRENT_BINARY_DIR}/doxygen.log" 2>&1 # the actual terminal command to run
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} # This tells the command where to execute
+                COMMENT "Generating code documentation in ${DOC_OUTPUT_DIR}..."
+                VERBATIM # It ensures that any special characters in the command line arguments are escaped correctly for the specific build tool
+        )
+
+        # Install the generated HTML documentation to the install prefix
+        install(DIRECTORY ${DOC_OUTPUT_DIR}/ # Dir to copy
+                DESTINATION share/documentation # where the files should land in the install tree
+                OPTIONAL # It tells CMake not to produce an error if the directory doesn't exist yet
+        )
+    else ()
+        message(WARNING "KOPS_BUILD_DOCS is ON, but Doxygen was not found! Please install Doxygen.")
+    endif ()
+endif ()
 
 # -----------------------------------------------------------------------------
-# 7. Install useful info
+# 8. Install useful info
 # -----------------------------------------------------------------------------
 ## @section install_sec
 ## @brief Project Installation Execution. Collects system resources and copies user templates directly to the localized path hierarchy.

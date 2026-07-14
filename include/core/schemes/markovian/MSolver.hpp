@@ -146,6 +146,7 @@ namespace KOps::Engine {
     * @tparam SchemePolicy Time-stepping scheme to use (e.g., Euler, Milstein, AndersonQE, etc.).
     * @tparam OptType Option contract payoff logic (e.g., European, Asian, Barrier, etc.).
     * @tparam OptRight Option contract right (Call or Put).
+    * @todo Should implement non-markovian models. This could be modified to work also with a non marlovian integration kernel.
     */
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptType OptType, KI::OptRight OptRight>
     class MSolver {
