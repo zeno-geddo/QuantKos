@@ -329,7 +329,7 @@ OPTIMIZE_OUTPUT_SLICE  = NO
 # Note see also the list of default file extension mappings.
 # TRICK: Map CMakeLists.txt to the 'tcl' parser instead of 'cmake'
 
-EXTENSION_MAPPING      = CMakeLists.txt=tcl \
+EXTENSION_MAPPING      = .txt=tcl \
                          .cmake=tcl
 
 # If the MARKDOWN_SUPPORT tag is enabled then doxygen pre-processes all comments
@@ -872,7 +872,8 @@ INPUT                  = . \
                          app \
                          tests \
                          README.md \
-                         ./CMakeLists.txt
+                         *.txt \
+                         *CMakeLists.txt
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

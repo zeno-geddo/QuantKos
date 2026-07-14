@@ -10,12 +10,26 @@
 #include "../../IO/IOBinary.hpp"
 #include "../../core/memory/PathsMCBatchMem.hpp"
 
+/**
+ * @namespace KOps::Tests::IOBIN
+ * @brief Integration tests for validating binary data storage and retrieval.
+ */
 namespace KOps::Tests::IOBIN {
     namespace KC = KOps::Config;
     namespace KE = KOps::Engine;
     namespace KT = KOps::Types;
     namespace KB = KOps::IO::Binary;
 
+    /**
+     * @brief Verifies the integrity of the binary serialization system.
+     * * @details This test performs a full "round-trip" verification of our binary subsystem.
+     * It ensures that data written to disk is exactly identical when read back.
+     * * The validation is divided into three distinct phases:
+     * - **Phase 1**: Creates a predictable matrix grid (using unique paths and time coordinates) and writes it to a file.
+     * - **Phase 2**: Reads back a specific column (representing a target time step) and verifies the values match the expected math.
+     * - **Phase 3**: Cleans up and deletes the temporary binary test file.
+     * * @return true if the test succeeds and the data remains uncorrupted; false otherwise.
+     */
     inline bool run_test() {
         std::string_view indent{"   "};
         std::cout << "\n\n" << indent << "====================================================================\n"

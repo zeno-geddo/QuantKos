@@ -1,4 +1,4 @@
-## @file app/CMakeLists.txt
+## @file
 ## @brief Build configuration script for compiling and installing the primary KOptions application binary.
 ## @details This file handles the target definition for the user-facing executable, links it
 ##          to the shared/static core engine library, and sets up local binary deployment structures.

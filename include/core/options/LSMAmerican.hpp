@@ -9,6 +9,7 @@
  * @brief Namespace containing the core components for the Longstaff-Schwartz American pricing engine.
  * * Provides structural containers for regression matrices, custom polynomial basis sets,
  * and parallel reduction kernels to evaluate optimal early exercise boundaries.
+ * @todo Should implement the control variate technique to improve the precision, see Pag. 208, eq. 7, the the book : Fabrice D. Rouah's *The Heston Model and its Extensions in Matlab and C#*.
  */
 namespace KOps::Engine::LSM {
     namespace KI = KOps::Implemented;
@@ -181,6 +182,7 @@ namespace KOps::Engine::LSM {
      * compares values against immediate exercise payoffs, and updates the path cash flow vectors.
      * * @tparam OptRight Exercise right contract configuration policy (Call vs Put).
      * @tparam Basis Target polynomial basis configuration selection.
+     * @todo Should implement the control variate technique to improve the precision, see Pag. 208, eq. 7, the the book : Fabrice D. Rouah's *The Heston Model and its Extensions in Matlab and C#*.
      */
     template<KI::OptRight OptRight, KI::LSRegressionBasis Basis = KI::LSRegressionBasis::LaguerreP03> //MonomialO2
     class LSMEngine {

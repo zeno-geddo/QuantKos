@@ -2,7 +2,7 @@
 #include <Kokkos_Core.hpp>
 
 #include "./../include/tests/IO/BinaryFormatTest.hpp"
-#include "./../include/tests/RNG/RNGenTest.hpp"
+#include "./../include/tests/RNG/GaussianRNGenTest.hpp"
 #include "./../include/tests/Options/PutCallParityTest.hpp"
 #include "./../include/tests/Options/NoNoiseTest.hpp"
 #include "./../include/tests/Options/BlackScholesTest.hpp"
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         // Tests to RUN
         namespace KTE = KOps::Tests;
         const std::vector<TestSuite> tests_to_run = {
-            //{"Random Number Generator", KTE::RNG::run_test},
+            {"Gaussian Random Number Generator", KTE::RNG::run_test_gaussian},
             //{"Binary File Format I/O", KTE::IOBIN::run_test},
             //{"Zero-Variance SDE Drift", KTE::NoNoise::run_test},
             {"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test},

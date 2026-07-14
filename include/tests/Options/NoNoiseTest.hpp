@@ -6,6 +6,10 @@
 #include "../../core/engine/Distpatcher.hpp"
 #include "../../IO/IOBinary.hpp"
 
+/**
+ * @namespace KOps::Tests::NoNoise
+ * @brief Verification tests running under zero-noise (deterministic) conditions.
+ */
 namespace KOps::Tests::NoNoise {
     namespace KC = KOps::Config;
     namespace KE = KOps::Engine;
@@ -13,6 +17,15 @@ namespace KOps::Tests::NoNoise {
     namespace KI = KOps::Implemented;
     namespace KB = KOps::IO::Binary;
 
+    /**
+     * @brief Calculates the analytical exact solution for deterministic asset growth.
+     * @details Under zero volatility, the stochastic asset price equation collapses to a
+     * standard ordinary differential equation (ODE) modeling risk-free appreciation
+     * and continuous dividend depreciation:
+     * $$ S_T = S_0 \cdot e^{(r - q) T} $$
+     * @param conf The simulation parameters containing interest rate (r), dividend yield (q), maturity (T), and initial spot (S0).
+     * @return The theoretical exact spot price at maturity.
+     */
     inline double get_exact_solution(const KOps::Config::UInputs &conf) {
         // Expected: S_T = S_0 * exp((r - q) * T)
         const double expected_S_T = conf.market.S0 * std::exp(
@@ -20,6 +33,13 @@ namespace KOps::Tests::NoNoise {
         return expected_S_T;
     }
 
+    /**
+     * @brief Generates a default configuration designed for deterministic testing.
+     * @details Configures a mock Heston model with all volatility components set to zero
+     * (v0 = 0, kappa = 0, theta = 0, sigma = 0). This forces the asset to evolve purely
+     * via continuous risk-free drift.
+     * @return A populated configuration structure with zero-variance parameters.
+     */
     inline KC::UInputs getDefaultConfig() {
         // General Config
         auto config = KC::UInputs();
@@ -46,6 +66,20 @@ namespace KOps::Tests::NoNoise {
         return config;
     }
 
+    /**
+     * @brief Runs the Zero Variance Forward Growth integration test.
+     * @details Simulates asset price trajectories with zero stochastic variance.
+     * Since there is no random noise, all simulated paths must grow identically
+     * following the continuous risk-free drift:
+     * $$ S_t = S_0 \cdot e^{(r - q)t} $$
+     * * ### Verification Pipeline
+     * 1. Initializes a 100-path deterministic Heston-Euler simulation.
+     * 2. Launches the parallel execution loop via the simulation dispatcher.
+     * 3. Reads the binary data payload back from disk at maturity ($T = 1.0$).
+     * 4. Asserts that the final prices on all paths match the exact analytical ODE solution.
+     * * @return true if all simulated paths match the exact solution within numerical limits; false otherwise.
+     * @note This test also tests that the saving and reading simulated data on disk work correctly.
+     */
     inline bool run_test() {
         // NOTE : When no randomness, the stock should grow purely by the deterministic drift: S_T = S_0 e^{(r-q)T}.
 

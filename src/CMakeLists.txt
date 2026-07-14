@@ -1,4 +1,4 @@
-## @file src/CMakeLists.txt
+## @file
 ## @brief Core library compilation setup, target dependencies, and compiler optimization flag matrices.
 ## @details This file defines the core 'KOptions_core' library target, configures precision compiler definitions,
 ##          binds package dependencies, and manages compiler and linker flags for multiple build configurations (Release, Debug, etc.).

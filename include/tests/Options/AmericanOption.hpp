@@ -3,6 +3,10 @@
 #include "../../core/config/Config.hpp"
 #include "TestsUtils.hpp"
 
+/**
+ * @namespace KOps::Tests::LSM
+ * @brief Integration tests for validating American option pricing using the Longstaff-Schwartz Method (LSM).
+ */
 namespace KOps::Tests::LSM {
     namespace KC = KOps::Config;
     namespace KT = KOps::Types;
@@ -10,6 +14,22 @@ namespace KOps::Tests::LSM {
     namespace KTU = KOps::Tests::Utils;
     namespace KE = KOps::Engine;
 
+    /**
+     * @brief Generates an American Put option configuration under Heston stochastic volatility parameters.
+     * @details This setup reproduces the benchmark test case analyzed on page 212 of Fabrice D. Rouah's
+     * *The Heston Model and its Extensions in Matlab and C#*.
+     * * ### Stochastic Process & Pricing Dynamics
+     * - **Underlying Asset**: American Put option with strike price $K = 10.0$ and maturity $T = 0.25$ (3 months).
+     * - **Feller Condition Check**:
+     * $$ 2\kappa\theta \ge \sigma^2 $$
+     * Plugging in the parameters ($\kappa = 5.0, \theta = 0.16, \sigma = 0.9$):
+     * $$ 2 \cdot 5.0 \cdot 0.16 = 1.60 \ge 0.90^2 = 0.81 $$
+     * Since the inequality holds ($1.60 > 0.81$), the Feller condition is strictly satisfied, preventing the
+     * variance process $v_t$ from reaching the zero boundary.
+     * - **Discretization**: Milstein discretization is selected to evolve the paths across a high-resolution grid of
+     * $1000$ steps ($\Delta t = 0.00025$ years).
+     * @return A populated configuration with parameters optimized for American option pricing benchmarks.
+     */
     inline KC::UInputs getDefaultConfigGoodIntegrand() {
         // See pag 212, F.Rouah, The Heston Model and its Extensions in Matlab and C#
         auto config = KC::UInputs();
@@ -46,11 +66,34 @@ namespace KOps::Tests::LSM {
     }
 
 
+    /**
+     * @brief Performs the LSM American Put pricing convergence test across a range of initial asset spots.
+     * @details This test runs a parameter sweep for the initial spot price $S_0 \in \{8, 9, 10, 11, 12\}$
+     * and compares the resulting numerical price against the exact finite difference reference values
+     * published in Rouah (page 213, Table 11.2).
+     * * ### The LSM Early Exercise Logic
+     * At each discrete time step moving backward from maturity, the algorithm determines the optimal stopping boundary:
+     * 1. Evaluates paths that are strictly In-The-Money (ITM) ($S_t < K$).
+     * 2. Regresses discounted future cash flows $Y$ against normalized current spots $X = S_t / K$ to estimate the continuation value:
+     * $$ \widehat{CV}_t(X) = \beta_0 + \beta_1 X + \beta_2 X^2 $$
+     * 3. Triggers early exercise on any path where the immediate intrinsic payoff exceeds the estimated continuation value:
+     * $$ (K - S_t) > \widehat{CV}_t(X) $$
+     * * ### Error-Budget & Composite Tolerance Formulation
+     * To evaluate whether a test passes, we construct a compound tolerance threshold combining statistical
+     * uncertainty and numerical discretization bias:
+     * $$ \text{Total Tolerance} = 3 \cdot \epsilon_{\text{stat}} + \max(V_{\text{ref}} \cdot 10\%, 0.1) $$
+     * Where:
+     * - $3 \cdot \epsilon_{\text{stat}}$ is the strict $3$-$\sigma$ (99.7% confidence interval) statistical error boundary.
+     * - $\max(V_{\text{ref}} \cdot 10\%, 0.1)$ represents the maximum allowed discretization bias arising from
+     * approximating continuous exercise boundaries with discrete time-steps.
+     * * @return true if all swept spot prices fall within their composite statistical and bias thresholds for the maximum resolution adopted; false otherwise.
+     */
     inline bool run_test() {
         const std::string_view indent = "   ";
         bool all_tests_passed = true;
         auto config = getDefaultConfigGoodIntegrand();
 
+        // Reference values from Rouah, pag 213
         const std::map<double, double> S0_putPrice_map{
             {8., 1.99958},
             {9., 1.103571},

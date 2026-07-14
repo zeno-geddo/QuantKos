@@ -1,4 +1,4 @@
-## @file CMakeLists.txt
+## @file
 ## @brief Root build configuration script for the KOptions option pricing engine.
 ## @details This file defines global build parameters, compiler standards, user options,
 ##          installation layouts, and executes the "Find-or-Fetch" dependency resolver for yaml-cpp and Kokkos.
@@ -216,7 +216,7 @@ install(FILES README.md KOptionsConfig.yaml DESTINATION share)
 # -----------------------------------------------------------------------------
 #                                USAGE EXAMPLE
 # -----------------------------------------------------------------------------
-## @section usage_sec
+## @section usage_example
 ## @brief Guide to building, installing, and executing the KOptions simulation suite.
 ## @details Below are the shell commands required to configure, build, and run the engine locally:
 ## @code{.sh}

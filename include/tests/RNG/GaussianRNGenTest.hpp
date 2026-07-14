@@ -6,28 +6,51 @@
 #include "../../core/config/Config.hpp"
 #include "../../core/Typedefs.hpp"
 
+/**
+ * @namespace KOps::Tests::RNG
+ * @brief Integration tests for validating parallel random number generation (RNG) distributions.
+ */
 namespace KOps::Tests::RNG {
     namespace KT = KOps::Types;
     namespace KE = KOps::Engine;
     namespace KC = KOps::Config;
 
-    struct DummySDEScheme {
+    /**
+     * @brief A simplified stochastic differential equation (SDE) scheme used for RNG validation.
+     * @details This helper scheme isolates the random number generator from actual model dynamics,
+     * directly returning standard normal (Gaussian) draws to verify statistical properties.
+     */
+    struct DummyGaussianSDEScheme {
         template<typename RNGeneratorType>
-
-
-
+        /**
+         * @brief Draws a standard normal random variable from the generator state.
+         * @tparam RNGeneratorType The type of individual thread-level generator.
+         * @param local_rn_generator The thread-local state instance of the random number generator.
+         * @return A single standard normal realization cast to the engine's active real precision.
+         */
         KOKKOS_INLINE_FUNCTION
         KT::Real evolve_step(RNGeneratorType &local_rn_generator) const {
             return static_cast<KT::Real>(local_rn_generator.normal());
         }
     };
 
-    struct RNGTestKernel {
-        KC::UInputs conf;
-        Kokkos::View<KT::Real **> dummy_path_view;
-        KE::RNGManager::GlobalRNGPool rng_pool;
-        DummySDEScheme Scheme;
+    /**
+     * @brief Parallel execution functor testing standard normal random number generation.
+     * @details Schedules independent GPU/CPU threads to draw sequences of random numbers
+     * and store them in a shared view for statistical analysis.
+     */
+    struct GaussianRNGTestKernel {
+        KC::UInputs conf; ///< Simplified configuration mapping step counts.
+        Kokkos::View<KT::Real **> dummy_path_view; ///< Buffer to store generated normal values.
+        KE::RNGManager::GlobalRNGPool rng_pool; ///< Global hardware random number state pool.
+        DummyGaussianSDEScheme Scheme; ///< Simplified SDE step provider
 
+        /**
+         * @brief Parallel thread execution operator generating random paths.
+         * @details Checks out a thread-unique random state, loops through the designated
+         * time steps, draws Gaussian values, and securely returns the state to the pool via RAII.
+         * @param n_p The globally indexed unique parallel lane (path) ID.
+         */
         KOKKOS_INLINE_FUNCTION
         void operator()(const int n_p) const {
             KOps::Engine::ScopedRNG scoped_rng(rng_pool);
@@ -38,7 +61,16 @@ namespace KOps::Tests::RNG {
         }
     };
 
-    bool run_test() {
+    /**
+     * @brief Validates that the parallel RNG pool produces a correct standard normal distribution.
+     * @details Generates a massive sample size (1,000,000 paths over 365 steps) of normal draws on the
+     * active execution space, copies them back to host memory, and verifies that the measured
+     * mean and variance fall within highly strict statistical thresholds:
+     * - **Expected Mean**: 0.0 (Tolerance: +/- 0.005)
+     * - **Expected Variance**: 1.0 (Tolerance: +/- 0.01)
+     * @return true if both statistics satisfy their tolerance boundaries; false otherwise.
+     */
+    inline bool run_test_gaussian() {
         std::string_view indent{"   "};
         std::cout << "\n\n" << indent << "====================================================================\n"
                 << indent << "          TEST 1 : Standard Normal Distribution Check             \n"
@@ -67,11 +99,11 @@ namespace KOps::Tests::RNG {
         auto h_z_values = Kokkos::create_mirror_view(d_z_values);
 
         // Initialize Kernel test
-        RNGTestKernel test_kernel{
+        GaussianRNGTestKernel test_kernel{
             dummy_config,
             d_z_values,
             global_pool,
-            DummySDEScheme{}
+            DummyGaussianSDEScheme{}
         };
 
         // Launch Dummy Kernel to see if we are really generating guassina values
@@ -117,7 +149,5 @@ namespace KOps::Tests::RNG {
         std::cout << indent << "====================================================================\n" << std::endl;
 
         return test_passed;
-
     }
 }
-

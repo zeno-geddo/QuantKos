@@ -6,6 +6,10 @@
 #include "../../core/engine/Distpatcher.hpp"
 
 
+/**
+ * @namespace KOps::Tests::Utils
+ * @brief Common test execution helper functions and statistical analysis tools.
+ */
 namespace KOps::Tests::Utils {
     namespace KC = KOps::Config;
     namespace KT = KOps::Types;
@@ -13,6 +17,13 @@ namespace KOps::Tests::Utils {
     namespace KE = KOps::Engine;
 
 
+    /**
+     * @brief Returns a static registry of standard model and numerical scheme pairs.
+     * @details Establishes a comprehensive default matrix of options to evaluate during
+     * integration testing, coupling the Heston and Bates models with Euler, Milstein, and
+     * Andersen's Quadratic-Exponential (QE) discretization schemes.
+     * @return A vector of paired model and numerical scheme enumerations.
+     */
     inline std::vector<std::pair<KI::MathModel, KI::NumScheme> > get_models_to_test() {
         static const std::vector<std::pair<KI::MathModel, KI::NumScheme> > models_to_test = {
             {KI::MathModel::Heston, KI::NumScheme::Euler},
@@ -25,7 +36,16 @@ namespace KOps::Tests::Utils {
         return models_to_test;
     }
 
-
+    /**
+     * @brief Generates a logarithmic sequence of step resolutions.
+     * @details Computes a range of time-step resolutions calculated via bit-shifted powers of two:
+     * $$N_{\text{steps}} = 2^i$$
+     * For example, a sweep from exponent 3 to 9 yields steps ranging from $8$ to $512$.
+     * @param lower_exponent Starting power-of-two exponent (default is 3, yielding 8 steps).
+     * @param upper_exponent Ending power-of-two exponent (default is 9, yielding 512 steps).
+     * @return A vector containing the generated integer step counts.
+     * @throw std::runtime_error If the lower exponent exceeds the upper exponent bounds.
+     */
     inline std::vector<int> get_time_grid_resolutions(const int lower_exponent = 3, const int upper_exponent = 9) {
         // Return a vector containing different resolution (Calculated as 2^i) for the grid
         if (lower_exponent > upper_exponent)
@@ -41,6 +61,11 @@ namespace KOps::Tests::Utils {
         return steps;
     }
 
+    /**
+     * @brief Stateless entry point that validates configuration states and launches a simulation run.
+     * @param config The active user input parameters.
+     * @return Resulting Monte Carlo pricing outputs and error metrics.
+     */
     [[nodiscard]] inline KE::MCResults run_simulation(KC::UInputs &config) {
         // Validate and print configuration
         config.validate();
@@ -50,15 +75,24 @@ namespace KOps::Tests::Utils {
         return MCDisp.launch_montecarlo();
     }
 
+    /**
+     * @brief Data snapshot tracking simulation errors and steps for a specific grid resolution.
+     */
     struct OptionPriceErr {
-        int N_dt;
-        double dt;
-        double error;
-        double stat_error;
+        int N_dt; ///< Total number of discrete steps along the path.
+        double dt; ///< Size of the individual temporal step ($\Delta t$).
+        double error; ///< Absolute difference between numerical and expected analytical prices.
+        double stat_error; ///< Standard error boundary computed from the Monte Carlo variance.
     };
 
-    [[nodiscard]] inline OptionPriceErr compare_numerical_and_expected_option_price(
-        KOps::Config::UInputs &config,
+    /**
+     * @brief Launches a single simulation block and evaluates absolute error against an exact benchmark.
+     * @param config Master simulation parameters.
+     * @param expected_price The analytical reference price.
+     * @param indent Console layout spacing alignment.
+     * @return A populated OptionPriceErr tracking structural step errors.
+     */
+    [[nodiscard]] inline OptionPriceErr compare_numerical_and_expected_option_price(KOps::Config::UInputs &config,
         const KT::Real expected_price,
         const std::string_view indent = "   ") {
         std::cout << indent << ">>> Calling the solver ...\n";
@@ -80,6 +114,18 @@ namespace KOps::Tests::Utils {
     }
 
     // Analyzes convergence data, prints diagnostics, and returns true if all Z-scores are within 3-sigma bounds.
+    /**
+     * @brief Audits weak convergence trends and performs statistical hypothesis testing.
+     * @details Loops through a resolution history to compute the empirical convergence
+     * rate ($\alpha$) between successive refinement steps:
+     * $$\alpha = \frac{\ln(\text{Error}_2) - \ln(\text{Error}_1)}{\ln(\Delta t_2) - \ln(\Delta t_1)}$$
+     * * Additionally, verifies that the remaining numerical bias at your highest resolution is safely
+     * dominated by statistical Monte Carlo noise within a standard 2-sigma (95% confidence) boundary:
+     * $$Z = \frac{\text{Absolute Error}}{\text{Standard Error}} \le 2.0$$
+     * @param convergence_results Logged price error tracking array.
+     * @param indent Console layout spacing alignment.
+     * @return true if the highest-resolution result resides within statistical noise bounds; false otherwise.
+     */
     [[nodiscard]] inline bool evaluate_quality_numerical_results(const std::vector<OptionPriceErr> &convergence_results,
                                                                  const std::string_view indent = "   ") {
         if (convergence_results.empty()) return false;
@@ -122,6 +168,19 @@ namespace KOps::Tests::Utils {
     }
 
 
+    /**
+     * @brief Automates a multi-model weak convergence analysis.
+     * @details Executes a grid testing across specified step resolutions for each target
+     * model-scheme combination. It compares the numerical results against analytical benchmarks
+     * and evaluates whether their error profiles satisfy empirical convergence limits.
+     * @param test_name Displayed header title describing the active testing block.
+     * @param config Base model configuration structure.
+     * @param expected_option_price Analytical target price used as validation ground-truth.
+     * @param models_to_test Collection of model-scheme configuration pairs.
+     * @param time_grid_resolutions Sequence of step resolution sizes to evaluate.
+     * @param indent Console layout spacing alignment.
+     * @return true if all tested configurations satisfy mathematical convergence parameters for the highest resolution used; false otherwise.
+     */
     [[nodiscard]] inline bool run_weak_convergence_test(
         const std::string_view test_name,
         KC::UInputs config,
