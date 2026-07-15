@@ -2,11 +2,11 @@
 # TESTS
 # ==========================================
 run_tests:
-  # - AmericanOption
+   - AmericanOption
   # - Bates
   # - BlackScholes
   # - Heston
-  - IOBin
-  - NoNoise
-  - RNG
+  #- IOBin
+  #- NoNoise
+  #- RNG
 

@@ -91,7 +91,7 @@ namespace KOps::Tests::Bates {
     inline std::vector<std::pair<KI::MathModel, KI::NumScheme> > get_bates_models_to_test() {
         static const std::vector<std::pair<KI::MathModel, KI::NumScheme> > models_to_test = {
             {KI::MathModel::Bates, KI::NumScheme::Euler},
-            {KI::MathModel::Bates, KI::NumScheme::Milstein},
+            {KI::MathModel::Bates, KI::NumScheme::ImplicitMilstein},
             {KI::MathModel::Bates, KI::NumScheme::AndersonQE},
         };
         return models_to_test;

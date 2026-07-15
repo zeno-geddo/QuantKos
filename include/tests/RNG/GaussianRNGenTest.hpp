@@ -24,7 +24,7 @@
 /**
  * @namespace KOps::Tests::RNG
  * @brief Integration tests for validating parallel random number generation (RNG) distributions.
- */
+*/
 namespace KOps::Tests::RNG {
     namespace KT = KOps::Types;
     namespace KE = KOps::Engine;

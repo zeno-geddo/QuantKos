@@ -180,12 +180,15 @@ namespace KOps::Engine {
             using EngineLSM = LSM::LSMEngine<OptRight>;
 
             std::cout << "  >>> Starting Phase 2: Backward Induction (PCIe Streaming)...\n";
+            BackwardLSMProgressTracker BTracker(config);
+            BTracker.start_tracking();
 
             // Initialization (t = T-1)
             Mem.bring_host_prices_time_slice_to_device(nT - 1);
             EngineLSM::initialize_cashflows(Mem.d_prices_current_time,
                                             Mem.d_best_future_outcomes,
                                             strike_price);
+            BTracker.update_progress();
 
             // THE BACKWARD TIME MARCH
             for (int t = nT - 2; t > 0; --t) {
@@ -204,6 +207,7 @@ namespace KOps::Engine {
                                             ls_coeffs,
                                             discount_factor,
                                             strike_price);
+                BTracker.update_progress();
             }
 
             // 3. FINALIZATION (t = 0)
@@ -211,6 +215,9 @@ namespace KOps::Engine {
 
             // Pull final results back to CPU
             Mem.bring_device_cash_flows_to_host();
+
+            // Stop tracking the backward phase (safe since no prints in between)
+            BTracker.finalize_tracking();
         }
     };
 }

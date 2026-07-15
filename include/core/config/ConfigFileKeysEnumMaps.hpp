@@ -103,7 +103,7 @@ namespace KOps::Implemented {
     inline const std::map<std::string, NumScheme> &StrEnumMap<NumScheme>::get() {
         static const std::map<std::string, NumScheme> m = {
             {"Euler", NumScheme::Euler},
-            {"Milstein", NumScheme::Milstein},
+            {"ImplicitMilstein", NumScheme::ImplicitMilstein},
             {"AndersonQE", NumScheme::AndersonQE}
         };
         return m;

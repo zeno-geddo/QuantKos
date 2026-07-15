@@ -174,7 +174,7 @@ namespace KOps::Engine {
      * - **Asset Price (Eq 7.8)**: Uses the exact same exponential Euler formulation as above.
      */
     template<>
-    struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::Milstein> {
+    struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein> {
         // Weak Convergence 1., Strong convergence 1.
         // Precomputed constant scalar invariants
         KT::Real r_minus_q_dt;

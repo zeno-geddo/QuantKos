@@ -77,7 +77,7 @@ namespace KOps::Implemented {
     /** @brief Numerical discretization schemes for SDE paths. */
     enum class NumScheme {
         Euler, ///< Euler-Maruyama discretization.
-        Milstein, ///< First-order Implicit Milstein scheme.
+        ImplicitMilstein, ///< First-order Implicit Milstein scheme.
         AndersonQE, ///< Quadratic Exponential (QE) scheme for Heston.
     };
 

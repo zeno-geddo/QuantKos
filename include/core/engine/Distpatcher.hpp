@@ -115,8 +115,8 @@ namespace KOps::Engine {
             switch (config.scheme.id_scheme) {
                 case KI::NumScheme::Euler:
                     return dispatch_opt_style<ModelPolicy, KI::NumScheme::Euler>();
-                case KI::NumScheme::Milstein:
-                    return dispatch_opt_style<ModelPolicy, KI::NumScheme::Milstein>();
+                case KI::NumScheme::ImplicitMilstein:
+                    return dispatch_opt_style<ModelPolicy, KI::NumScheme::ImplicitMilstein>();
                 case KI::NumScheme::AndersonQE:
                     return dispatch_opt_style<ModelPolicy, KI::NumScheme::AndersonQE>();
                 default:

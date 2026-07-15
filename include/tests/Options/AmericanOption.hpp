@@ -50,14 +50,14 @@ namespace KOps::Tests::LSM {
         auto config = KC::UInputs();
 
         config.model.id_model = KI::MathModel::Heston,
-        config.scheme.id_scheme = KI::NumScheme::Milstein,
+        config.scheme.id_scheme = KI::NumScheme::ImplicitMilstein,
 
         config.output.format = KI::IOFormat::BIN;
         config.output.filename_paths_out = "";
         config.mc.Max_CPU_RAM_MB = 10000 ;
         config.mc.Max_VRAM_MB = 400 ;
 
-        config.mc.N_Paths = 1'000'000;
+        config.mc.N_Paths = 500'000;
         config.mc.batch_size = 0;
 
         config.time.t_end = 0.25; // 3 months
@@ -76,6 +76,9 @@ namespace KOps::Tests::LSM {
         config.model.heston.theta = 0.16;
         config.model.heston.sigma = 0.9;
         config.model.heston.rho = 0.1;
+
+        config.mc.Max_CPU_RAM_MB = 8000.;
+        config.mc.Max_VRAM_MB = 400.;
 
         return config;
     }

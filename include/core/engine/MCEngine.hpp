@@ -40,7 +40,7 @@ namespace KOps::Engine {
 
 
     /**
-     * @brief Console-based progress reporter, timer, and hardware diagnostic engine.
+     * @brief Console-based progress reporter, timer, and hardware diagnostic engine for the forward MC phase.
      * * Manages terminal-level visualization for the forward phase of Monte Carlo runs.
      * * Prior to simulation execution, this class queries the batch memory layout to output
      * detailed hardware, execution precision, and VRAM/RAM allocation footprints. During
@@ -212,6 +212,108 @@ namespace KOps::Engine {
             std::cout << "\r" << std::flush;
         }
     };
+
+    // ========================================================================
+    // BACKWARD MC PHASE PROGRESS TRACKER
+    // ========================================================================
+    /**
+     * @brief Console-based progress reporter and timer for the Backward induction Phase (LSM) phase.
+     * * Tracks the reverse time-marching loop, utilizing an internal incrementing counter
+     * to seamlessly evaluate ETAs without requiring complex reversed step indices.
+     */
+    class BackwardLSMProgressTracker {
+    public:
+        /**
+         * @brief Constructs the LSM induction progress tracker.
+         * @param conf Reference to master configuration inputs reference containing the total time steps.
+         */
+        explicit BackwardLSMProgressTracker(const Config::UInputs &conf)
+            : config(conf), steps_completed(0) {
+        }
+
+        /// @name Lifecycle Protocols
+        ///@{
+        BackwardLSMProgressTracker(const BackwardLSMProgressTracker &) = delete;
+        BackwardLSMProgressTracker &operator=(const BackwardLSMProgressTracker &) = delete;
+        BackwardLSMProgressTracker(BackwardLSMProgressTracker &&) = default;
+        BackwardLSMProgressTracker &operator=(BackwardLSMProgressTracker &&) = delete;
+        ~BackwardLSMProgressTracker() = default;
+        ///@}
+
+        /**
+         * @brief Initializes the tracking state and sets up the console visual layout.
+         */
+        void start_tracking() {
+            start_time = std::chrono::steady_clock::now();
+            steps_completed = 0;
+
+            std::cout << "  ========================================================\n";
+            std::cout << "               BACKWARD PHASE (LSM Induction)          \n";
+            std::cout << "  ========================================================\n\n" << std::flush;
+
+            print_progress_bar(0);
+        }
+
+        /**
+         * @brief Increments the internal completion counter and updates the console bar and ETA.
+         * * Call this exactly once per backward step loop iteration.
+         */
+        void update_progress() {
+            steps_completed++;
+            print_progress_bar(steps_completed);
+        }
+
+        /**
+         * @brief Completes the progress bar and seals the terminal section.
+         */
+        void finalize_tracking() {
+            const int total_lsm_steps = config.time.N_time_steps - 1;
+            print_progress_bar(total_lsm_steps);
+            std::cout << "\n\n  ========================================================\n" << std::endl;
+        }
+
+    private:
+        const Config::UInputs &config; ///< Reference to the master configuration tree
+        int steps_completed; ///< Internal counter bridging the reverse induction loop mapping
+        std::chrono::steady_clock::time_point start_time; ///< Starting time of the backward phase
+
+        void print_progress_bar(const int current_step) const {
+            constexpr int bar_width = 20;
+            const int total_lsm_steps = config.time.N_time_steps - 1; // T-1 regressions
+
+            // Prevent division by zero if there are almost no time steps
+            if (total_lsm_steps <= 0) return;
+
+            const float progress = static_cast<float>(current_step) / static_cast<float>(total_lsm_steps);
+            const int bar_front = static_cast<int>(static_cast<float>(bar_width) * progress);
+            const int percentage_done = static_cast<int>(progress * 100.0f);
+
+            std::cout << "     [";
+            for (int i = 0; i < bar_width; ++i) {
+                if (i < bar_front) std::cout << "#";
+                else if (i == bar_front) std::cout << "<"; // Use a backward arrow for aesthetics
+                else std::cout << ".";
+            }
+
+            std::cout << "] " << percentage_done << "% "
+                      << "(" << current_step << "/" << total_lsm_steps << " Time Slices)";
+
+            if (current_step > 0) {
+                const auto current_time = std::chrono::steady_clock::now();
+                const std::chrono::duration<double> elapsed = current_time - start_time;
+                const double elapsed_seconds = elapsed.count();
+
+                const double total_estimated_time = elapsed_seconds / progress;
+                const double eta_seconds = total_estimated_time - elapsed_seconds;
+
+                std::cout << std::fixed << std::setprecision(1)
+                          << "(T: " << elapsed_seconds << "s | "
+                          << "ETA: " << (current_step == total_lsm_steps ? 0.0 : eta_seconds) << "s)\r";
+            }
+            std::cout << "\r" << std::flush;
+        }
+    };
+
 
     // HELPER FUNCTION FOR FORWARD RUNNER
     /**

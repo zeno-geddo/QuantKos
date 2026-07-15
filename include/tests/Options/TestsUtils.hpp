@@ -42,10 +42,10 @@ namespace KOps::Tests::Utils {
     inline std::vector<std::pair<KI::MathModel, KI::NumScheme> > get_models_to_test() {
         static const std::vector<std::pair<KI::MathModel, KI::NumScheme> > models_to_test = {
             {KI::MathModel::Heston, KI::NumScheme::Euler},
-            {KI::MathModel::Heston, KI::NumScheme::Milstein},
+            {KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein},
             {KI::MathModel::Heston, KI::NumScheme::AndersonQE},
             {KI::MathModel::Bates, KI::NumScheme::Euler},
-            {KI::MathModel::Bates, KI::NumScheme::Milstein},
+            {KI::MathModel::Bates, KI::NumScheme::ImplicitMilstein},
             {KI::MathModel::Bates, KI::NumScheme::AndersonQE},
         };
         return models_to_test;
