@@ -31,6 +31,28 @@ namespace KOps::Tests::RNG {
     namespace KC = KOps::Config;
 
     /**
+    * @brief Generate a dummy configuration needed to initialize the random number generator.
+    */
+    inline KC::UInputs get_dummy_config() {
+        auto dummy_config = KC::UInputs();
+        dummy_config.mc.rng_seed = 123456789;
+        dummy_config.mc.batch_size = 1'000'000;
+        dummy_config.time.N_time_steps = 365;
+        dummy_config.output.out_dir = "";
+        dummy_config.output.filename_paths_out = "";
+        dummy_config.output.filename_log = "";
+        return dummy_config;
+    }
+
+    /**
+    * @brief Initialize the random number generator and return it.
+    */
+    inline auto initialize_rng_manager() {
+        const KC::UInputs dummy_config = get_dummy_config();
+        return KE::RNGManager(dummy_config);
+    }
+
+    /**
      * @brief A simplified stochastic differential equation (SDE) scheme used for RNG validation.
      * @details This helper scheme isolates the random number generator from actual model dynamics,
      * directly returning standard normal (Gaussian) draws to verify statistical properties.
@@ -43,6 +65,7 @@ namespace KOps::Tests::RNG {
          * @param local_rn_generator The thread-local state instance of the random number generator.
          * @return A single standard normal realization cast to the engine's active real precision.
          */
+
         KOKKOS_INLINE_FUNCTION
         KT::Real evolve_step(RNGeneratorType &local_rn_generator) const {
             return static_cast<KT::Real>(local_rn_generator.normal());
@@ -55,7 +78,7 @@ namespace KOps::Tests::RNG {
      * and store them in a shared view for statistical analysis.
      */
     struct GaussianRNGTestKernel {
-        KC::UInputs conf; ///< Simplified configuration mapping step counts.
+        int n_t_steps; ///< Number of times steps to use.
         Kokkos::View<KT::Real **> dummy_path_view; ///< Buffer to store generated normal values.
         KE::RNGManager::GlobalRNGPool rng_pool; ///< Global hardware random number state pool.
         DummyGaussianSDEScheme Scheme; ///< Simplified SDE step provider
@@ -70,11 +93,36 @@ namespace KOps::Tests::RNG {
         void operator()(const int n_p) const {
             KOps::Engine::ScopedRNG scoped_rng(rng_pool);
             auto &rn_generator = scoped_rng.return_unique_rng_state();
-            for (int i = 0; i < conf.time.N_time_steps; ++i) {
+            for (int i = 0; i < n_t_steps; ++i) {
                 dummy_path_view(n_p, i) = Scheme.evolve_step(rn_generator);
             }
         }
     };
+
+    /**
+   * @brief Executes the Gaussian RNG test kernel independently.
+   * @details This function is separated to ensure it only captures POD (Plain Old Data)
+   * types, preventing the GPU compiler from trying to inspect or capture Host-only
+   * configuration objects containing std::string.
+   */
+    inline void execute_rng_kernel(
+        const int batch_size,
+        const int N_time_steps,
+        Kokkos::View<KT::Real **> d_z_values,
+        KE::RNGManager::GlobalRNGPool rng_pool) {
+        // The kernel is instantiated here. Because we are not passing the UInputs
+        // object (which contains std::string), there is no Host-only dependency
+        // for the compiler to complain about.
+        GaussianRNGTestKernel test_kernel{
+            N_time_steps,
+            d_z_values,
+            rng_pool,
+            DummyGaussianSDEScheme{}
+        };
+
+        Kokkos::parallel_for("Test_RNG_Pipeline", batch_size, test_kernel);
+        Kokkos::fence();
+    }
 
     /**
      * @brief Validates that the parallel RNG pool produces a correct standard normal distribution.
@@ -84,7 +132,8 @@ namespace KOps::Tests::RNG {
      * - **Expected Mean**: 0.0 (Tolerance: +/- 0.005)
      * - **Expected Variance**: 1.0 (Tolerance: +/- 0.01)
      * @return true if both statistics satisfy their tolerance boundaries; false otherwise.
-     */
+     @todo Fix the warning generated when using GPUs.
+    */
     inline bool run_test_gaussian() {
         std::string_view indent{"   "};
         std::cout << "\n\n" << indent << "====================================================================\n"
@@ -96,49 +145,40 @@ namespace KOps::Tests::RNG {
 
         bool test_passed = true;
 
-
-        // Set Data
-        KC::UInputs dummy_config;
-        dummy_config.mc.rng_seed = 123456789;
-        dummy_config.mc.batch_size = 1'000'000;
-        dummy_config.time.N_time_steps = 365;
+        // Define size test
+        int batch_size = 1'000'000;
+        int N_time_steps = 365;
 
         // Initialize Random number generation manager
-        auto rng_man = KE::RNGManager(dummy_config);
-        auto global_pool = rng_man.get_global_rng_pool();
+        const auto rng_man = initialize_rng_manager();
 
         // Allocate Memory for the generated random number
         auto d_z_values = Kokkos::View<KT::Real **>("device_Z_values",
-                                                    dummy_config.mc.batch_size,
-                                                    dummy_config.time.N_time_steps);
+                                                    batch_size,
+                                                    N_time_steps);
         auto h_z_values = Kokkos::create_mirror_view(d_z_values);
 
-        // Initialize Kernel test
-        GaussianRNGTestKernel test_kernel{
-            dummy_config,
-            d_z_values,
-            global_pool,
-            DummyGaussianSDEScheme{}
-        };
-
         // Launch Dummy Kernel to see if we are really generating guassina values
-        Kokkos::parallel_for("Test_RNG_Pipeline", dummy_config.mc.batch_size, test_kernel);
-        Kokkos::fence();
+        execute_rng_kernel(batch_size,
+                           N_time_steps,
+                           d_z_values,
+                           rng_man.get_global_rng_pool());
+        // Copy results on host if not already there
         Kokkos::deep_copy(h_z_values, d_z_values);
 
         // Calculate Statistics
         double sum = 0.0;
         double sq_sum = 0.0;
 
-        for (int i = 0; i < dummy_config.mc.batch_size; ++i) {
-            for (int j = 0; j < dummy_config.time.N_time_steps; ++j) {
+        for (int i = 0; i < batch_size; ++i) {
+            for (int j = 0; j < N_time_steps; ++j) {
                 double z = static_cast<double>(h_z_values(i, j));
                 sum += z;
                 sq_sum += (z * z);
             }
         }
 
-        double N_draws = static_cast<double>(dummy_config.mc.batch_size * dummy_config.time.N_time_steps);
+        double N_draws = static_cast<double>(batch_size * N_time_steps);
         double mean = sum / N_draws;
         double variance = (sq_sum / N_draws) - (mean * mean);
 

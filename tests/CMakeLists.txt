@@ -17,14 +17,16 @@
 # =============================================================================
 # KOptions: Test Suite
 # =============================================================================
-add_executable(tester Tester.cpp) # 1. Define the executables for the standalone tests
-target_include_directories(tester PRIVATE ${CMAKE_SOURCE_DIR}/include) # 2. Tell the test where to find your engine's header files
+add_executable(Tester Tester.cpp) # 1. Define the executables for the standalone tests
+target_include_directories(Tester PRIVATE ${CMAKE_SOURCE_DIR}/include) # 2. Tell the test where to find your engine's header files
 #target_link_libraries(tester PRIVATE Kokkos::kokkos) # 3. Link the required libraries
-target_link_libraries(tester PRIVATE KOptions_core)
+target_link_libraries(Tester PRIVATE KOptions_core)
 add_test( # 4. Register the test with CMake's testing framework (CTest)
         NAME KOptionsTester
-        COMMAND tester
+        COMMAND Tester
 )
+
+install(TARGETS Tester RUNTIME DESTINATION bin) # Puts the 'Tester' binary in the bin/ folder
 
 
 

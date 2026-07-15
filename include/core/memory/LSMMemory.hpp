@@ -21,6 +21,7 @@
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
 #include "PathsMCBatchMem.hpp"
+#include "RAMMemOS.hpp"
 
 namespace KOps::Engine {
     namespace KT = KOps::Types;
@@ -66,7 +67,8 @@ namespace KOps::Engine {
          * @brief Initializes LSM memory and performs a budget-check against physical RAM.
          * @param conf The global configuration providing path count, time steps, and memory limits.
          * @throw std::runtime_error If the Master Matrix and batch buffers exceed the configured CPU RAM budget.
-         */
+         * @todo Better quantify the memory used by all the views
+        */
         explicit BackwardLSMMemory(const KC::UInputs &conf) : BatchMem(conf) {
             const int N = conf.mc.N_Paths;
             const int T = conf.time.N_time_steps;
@@ -82,24 +84,27 @@ namespace KOps::Engine {
             // 3. Check if there is enough memory
             const double total_required_cpu_mb = required_master_mb + tot_host_batch_mb;
             const double budget_ram_mb = static_cast<double>(conf.mc.Max_CPU_RAM_MB);
-
-            if (total_required_cpu_mb > budget_ram_mb) {
+            const size_t ram_available_from_os_mb = get_available_memory_from_os_mb();
+            const double effective_memory_limit_mb = std::min(budget_ram_mb, static_cast<double>(ram_available_from_os_mb));
+            if (total_required_cpu_mb > effective_memory_limit_mb){
                 throw std::runtime_error(
                     "[Memory Capacity Error] The Longstaff-Schwartz algorithm requires CPU RAM "
-                    "that, summed to the batches memory used for the forward computation, exceeds your assigned Max_CPU_RAM_MB budget.\n"
+                    "that, summed to the batches memory used for the forward computation, exceeds your assigned Max_CPU_RAM_MB budget or the available current RAM budget.\n"
                     "  -> Master Matrix RAM         : " + std::to_string(required_master_mb) + " MB\n"
                     "  -> Host Paths Batch Buffers  : " + std::to_string(host_paths_batch_mb) + " MB\n"
                     "  -> Host Payoff BatchBuffers  : " + std::to_string(host_payoffs_batch_mb) + " MB\n"
                     "  -> Total Required            : " + std::to_string(total_required_cpu_mb) + " MB\n"
                     "  -> Config Budget             : " + std::to_string(budget_ram_mb) + " MB\n"
+                    "  -> Available RAM (OS query)  : " + std::to_string(ram_available_from_os_mb) + " MB\n"
                     "Possible Actions: \n"
-                    "\t 1) Increase 'Max_CPU_RAM_MB' in your config,\n"
+                    "\t 1) Increase 'Max_CPU_RAM_MB' in your config (if more RAM is available),\n"
                     "\t 2) Reduce the the batch size (explicitly assign a moderate number of sims per batch),\n"
                     "\t 3) Reduce the number of paths/time steps.\n"
                 );
             }
 
             // 4. Allocate memory if there is enough
+            std::cout << "  [RAM Memory]  Available memory on RAM " << ram_available_from_os_mb << "MB" << std::endl;
             std::cout << "  [LSM Memory] Allocating " << N << "x" << T << " Master Matrix in Host RAM..." << std::endl;
             h_master_paths = HostMasterPathsView("HostMasterMatrix", N, T);
 

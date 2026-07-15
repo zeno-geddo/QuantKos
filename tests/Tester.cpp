@@ -16,6 +16,7 @@
 #include <iostream>
 #include <Kokkos_Core.hpp>
 
+#include  "./../include/tests/TestEngine.hpp"
 #include "./../include/tests/IO/BinaryFormatTest.hpp"
 #include "./../include/tests/RNG/GaussianRNGenTest.hpp"
 #include "./../include/tests/Options/PutCallParityTest.hpp"
@@ -26,11 +27,10 @@
 #include "./../include/tests/Options/AmericanOption.hpp"
 
 
-
-struct TestSuite {
-    std::string name;
-    std::function<bool()> execute; // Can hold any function matching: bool fn()
-};
+// struct TestSuite {
+//     std::string name;
+//     std::function<bool()> execute; // Can hold any function matching: bool fn()
+// };
 
 int main(int argc, char *argv[]) {
     Kokkos::initialize(argc, argv);
@@ -44,26 +44,53 @@ int main(int argc, char *argv[]) {
 
         // Tests to RUN
         namespace KTE = KOps::Tests;
-        const std::vector<TestSuite> tests_to_run = {
-            {"Gaussian Random Number Generator", KTE::RNG::run_test_gaussian},
-            //{"Binary File Format I/O", KTE::IOBIN::run_test},
-            //{"Zero-Variance SDE Drift", KTE::NoNoise::run_test},
-            {"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test},
-            {"Weak Convergence to Heston", KTE::Heston::run_test},
-            {"Weak Convergence to Bates", KTE::Bates::run_test},
-            //{"American Option LSM", KTE::LSM::run_test}
-        };
+        // const std::vector<TestSuite> tests_to_run = {
+        //     {"Gaussian Random Number Generator", KTE::RNG::run_test_gaussian},
+        //     //{"Binary File Format I/O", KTE::IOBIN::run_test},
+        //     //{"Zero-Variance SDE Drift", KTE::NoNoise::run_test},
+        //     {"Weak Convergence to Black Scholes", KTE::BlackScholes::run_test},
+        //     {"Weak Convergence to Heston", KTE::Heston::run_test},
+        //     {"Weak Convergence to Bates", KTE::Bates::run_test},
+        //     //{"American Option LSM", KTE::LSM::run_test}
+        // };
+
+        // Register tests centrally
+        namespace KTE = KOps::Tests;
+        auto tester = KTE::TestEngine();
+        tester.register_test("RNG",
+                             "Gaussian RNG",
+                             KTE::RNG::run_test_gaussian);
+        tester.register_test("IOBin",
+                             "Binary File Format I/O",
+                             KTE::IOBIN::run_test);
+        tester.register_test("NoNoise",
+                             "Zero-Variance SDE Drift",
+                             KTE::NoNoise::run_test);
+        tester.register_test("BlackScholes",
+                             "Weak Convergence to Black Scholes",
+                             KTE::BlackScholes::run_test);
+        tester.register_test("Heston",
+                             "Weak Convergence to Heston",
+                             KTE::Heston::run_test);
+        tester.register_test("Bates",
+                             "Weak Convergence to Bates",
+                             KTE::Bates::run_test);
+        tester.register_test("AmericanOption",
+                             "American Option LSM",
+                             KTE::LSM::run_test);
 
         // Run Tests
-        for (const auto &test: tests_to_run) {
-            bool success = test.execute();
-            if (!success) {
-                failed_tests++;
-                std::cerr << indent << "[ FAILURE ] " << test.name << " Suite detected an error!\n\n";
-            } else {
-                std::cout << indent << "[ SUCCESS ] " << test.name << " Suite passed successfully.\n\n";
-            }
-        }
+        // for (const auto &test: tests_to_run) {
+        //     bool success = test.execute();
+        //     if (!success) {
+        //         failed_tests++;
+        //         std::cerr << indent << "[ FAILURE ] " << test.name << " Suite detected an error!\n\n";
+        //     } else {
+        //         std::cout << indent << "[ SUCCESS ] " << test.name << " Suite passed successfully.\n\n";
+        //     }
+        // }
+
+        failed_tests = tester.run_tests(argc, argv);
 
         std::cout << indent << "**************************************************\n";
         std::cout << indent << "             EXECUTION RUN COMPLETE               \n";

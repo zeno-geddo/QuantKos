@@ -18,6 +18,7 @@
 #include "../config/Config.hpp"
 #include "../options/OptionPricer.hpp"
 #include "./../memory/PathsMCBatchMem.hpp"
+#include "./../memory/RAMMemOS.hpp"
 #include "../../IO/OutManager.hpp"
 #include "../schemes/RandNGenerator.hpp"
 
@@ -125,6 +126,7 @@ namespace KOps::Engine {
          * - Detailed memory allocation maps (reusable batch footprint vs. unrolled full matrix bounds)
          */
         void print_pre_execution_diagnostic() const {
+
             constexpr std::string_view indent = "  ";
 
             std::cout << "\n" << indent << "========================================================\n";
@@ -159,6 +161,8 @@ namespace KOps::Engine {
             std::cout << indent << "   Full MC Paths MEM Footprint    :  " << batch_mem.total_paths_footprint_mb() <<
                     " MB\n";
             std::cout << indent << "   Full MC Payoffs MEM Footprint  :  " << batch_mem.total_payoffs_footprint_mb() <<
+                    " MB\n";
+            std::cout << indent << "   Available RAM (OS Query)       :  " << get_available_memory_from_os_mb() <<
                     " MB\n";
             std::cout << indent << "========================================================\n" << std::endl;
         }
