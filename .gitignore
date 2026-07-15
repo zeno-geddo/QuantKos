@@ -2,6 +2,7 @@
 # 1. Build & Installation Directories
 # ==========================================
 build/
+build*/
 bin/
 dist/
 install/
