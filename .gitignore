@@ -47,6 +47,8 @@ kokkos/
 *.cudafe1.*
 *.fatbin
 *.reg.c
+*.nsys-rep
+nsys-rep/
 
 # ==========================================
 # 5. Simulation Output & Data

@@ -79,6 +79,7 @@ namespace KOps::Engine {
          * including batch memory buffers, SDE solvers, option payoff accumulation tracking,
          * and output writers.
          * * @return An aggregated MCResults object containing the results of the MonteCarlo.
+         * @todo If calling this in a loop, should add the possibility to reuse the helper classes to avoid repeating initialization overheads.
          */
         MCResults get_option_prices() const {
             // NOTE : the total number of simulations are performed in batches to handle cases when not enough memory is available
@@ -119,7 +120,7 @@ namespace KOps::Engine {
          * @param MCTracker Console analytics reporting performance.
          * @note Wraps host-to-device view synchronization policies and cumulative payload processing tasks
          * before delegating execution tasks down the execution hierarchy.
-         * * ### Host-Device Execution Lifecycle Flow:
+        * * ### Host-Device Execution Lifecycle Flow:
          * ```text
                    [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
 
@@ -147,7 +148,8 @@ namespace KOps::Engine {
                                                                                  ▼
                                                                       Coalesced VRAM Write
          * ```
-         */
+         * @todo IMPORTANT, THE COPY TO HOST MUST BE DONE ONLY WHEN NEEDED SINCE IT TAKE APPROX 35% OF TIME. SO KEEP ONLY IN WHEN NEED TO SAVE THE RESULTS AND IN THE CASES WHERE BACKWARD PHASE IS NEEDED (E.G. AMERICAN OPTIONS).
+        */
         void run_mc_forward(PathsMCBatchMem &BatchMem,
                             const RNGManager &RNGen,
                             const MSolver<ModelPolicy, SchemePolicy, OptType, OptRight> &Solver,

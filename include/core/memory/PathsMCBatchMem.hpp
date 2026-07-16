@@ -113,7 +113,9 @@ namespace KOps::Engine {
         //-------------------------------------------
         /** @name Synchronization Routines */
         ///@{
-        /** @brief Copies current batch data from the device to the host. */
+        /** @brief Copies current batch data from the device to the host.
+         * @todo The batch view should be copied only if outputs must be save or if they are required for the backward phase.
+         */
         void deep_copy_to_host() const {
             Kokkos::deep_copy(h_batch_view, d_batch_view);
             Kokkos::deep_copy(h_payoffs, d_payoffs);

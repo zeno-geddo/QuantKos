@@ -133,6 +133,7 @@ namespace KOps::Engine {
          * @param batch_idx The index of the current batch.
          * @param current_batch_size The number of paths in this specific batch.
          *  * @note Master matrix is always layout right, while batch-view depends on how the device is being used.
+         * @todo COPY FROM HOST BATCH AND MASTER HOST MATRIX, THAN WHEN RUNNING ON GPU HAVE DIFFERENT LAYOUT, TAKE AS MUCH TIME AS COPYING THE BATCH FROM DEVICE TO HOST. MUST BE FOUND A BETTER WAY TO DO THAT.
         */
         void copy_current_mc_batch_to_master_mc_matrix(const int batch_idx, const int current_batch_size) {
             // Aim : Extract the exact sub-block of the master matrix we want to fill and fill it

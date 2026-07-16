@@ -24,6 +24,7 @@
 
 /**
  * @brief Namespace aggregating all tools to numerically compute options prices.
+ * @todo Optimize Console String Formatting and Printing, adding level of verbosity and redirection to log file.
  */
 namespace KOps::Engine {
     namespace KI = KOps::Implemented;
@@ -45,6 +46,7 @@ namespace KOps::Engine {
      * dynamic allocations, or branch-prediction penalties.
      * * @note This is a stateless execution utility. Copy and move operations are strictly deleted to enforce a
      * unique lifecycle context.
+     * @todo Should improve the dispatching procedure to reduce the compilation time, especially if many other models will be added.
      */
     class MCDispatcher {
     public:

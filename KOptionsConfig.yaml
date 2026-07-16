@@ -1,40 +1,41 @@
 # ==========================================
-# KOptions: Heston Model Configuration
+# KOptions: Heston Model Configuration for American Option
+# Params from pag 212, F.Rouah, The Heston Model and its Extensions in Matlab and C#
 # ==========================================
 Market:
-  Price: 100.0    # Initial asset price (S0) (spot price)
-  Variance: 0.04  # Initial variance (v0)
-  r: 0.05       # Risk-free interest rate
+  Price: 8.0    # Initial asset price (S0) (spot price)
+  Variance: 0.0625  # Initial variance (v0)
+  r: 0.1       # Risk-free interest rate
   q: 0.0        # Continuous dividend yield
 
 Options:
-  OptionType: European
-  OptionRight: Call
-  StrikePrice: 150
+  OptionType: Asian #American
+  OptionRight: Put
+  StrikePrice: 10.
 
 Model:
   Heston:
-    k: 2.0        # Mean reversion speed of the variance (kappa)
-    theta: 0.04   # Long-term mean of the variance
-    sigma: 0.3    # Volatility of the variance (vol-of-vol)
-    rho: -0.7     # Correlation between price and variance Brownian motions
+    k: 5.0        # Mean reversion speed of the variance (kappa)
+    theta: 0.16   # Long-term mean of the variance
+    sigma: 0.9    # Volatility of the variance (vol-of-vol)
+    rho: 0.1     # Correlation between price and variance Brownian motions
 
 Numerics:
-  Scheme: Euler   # Available schemes: Euler, Milstein, AndersonQE ...
+  Scheme: ImplicitMilstein   # Available schemes: Euler, ImplicitMilstein, AndersonQE ...
 
 Time:
-  T_End: 1.0      # Time to maturity (in years)
-  Inp_DT: 0.0027397260273972603   # Time step size in years (dt)
+  T_End: 0.25      # Time to maturity (in years)
+  Inp_DT: 0.00025   # Time step size in years (dt)
 
 MC:
-  N_Paths: 100000 # Number of Monte Carlo realizations/paths
+  N_Paths: 500000 # Number of Monte Carlo realizations/paths
   Batch_Size: 0 # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
   RNG_Seed: 88471920573105
-  Max_VRAM_MB: 256 # Max Available VRAM (Default 256 MB)
+  Max_VRAM_MB: 256 #512 #2048 # Max Available VRAM (Default 256 MB)
   Max_CPU_RAM_MB: 8000 # Max Available RAM
 
 Output:
-  out_dir: "./install/outputs"
-  Name_Paths_Out_File: "temp.paths" # KOptionsPaths.paths
-  Name_Log_File: "KOptions.log"
+  out_dir: "" #"./install/outputs"
+  Name_Paths_Out_File: "" # "temp.paths" # KOptionsPaths.paths
+  Name_Log_File: "" #"KOptions.log"
   Format: BIN     # Available formats: TXT, BIN

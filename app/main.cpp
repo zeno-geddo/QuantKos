@@ -13,6 +13,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
+/**
+ * @file main.cpp
+ * @brief Main entry point for the KOptions parallel Monte Carlo option pricing engine.
+ * @details This file coordinates the application sequence, whose task consist in computing an option price (and related statistics) given the user parameters.
+ * It handles command-line arguments, offers inline console help templates, initializes the parallel Kokkos
+ * runtime execution space, and dispatches the stochastic simulation workflow.
+ * @author Zeno GEDDO
+ * @date 2026
+ */
+
 #include <iostream>
 #include <string>
 
@@ -22,22 +33,36 @@
 #include "../include/IO/InputParser.hpp"
 #include "../include/core/engine/Distpatcher.hpp"
 
-
+/**
+ * @brief Main execution function.
+ * * @details This function implements the application lifecycle:
+ * 1. Prints a welcome message and system metadata.
+ * 2. Checks CLI arguments to see if a `--help` flag or valid configuration path is supplied.
+ * 3. Boots up Kokkos to initialize hardware backends (CPU threads or GPU VRAM).
+ * 4. Parses the YAML simulation parameters.
+ * 5. Launches high-throughput simulation runs on the active compute device.
+ * 6. Shuts down the parallel environment safely, avoiding memory leaks.
+ * * @param argc Number of command-line arguments.
+ * @param argv Array of command-line argument strings. `argv[1]` must be the path to a valid YAML configuration.
+ * @return int Exit status code: @c 0 for successful completion, @c 1 on fatal parsing or execution errors.
+*@todo Check if it is worth adding std::ios_base::sync_with_stdio(false); and std::cin.tie(NULL); to reduce terminal I/O latency.
+*/
 int main(int argc, char *argv[]) {
 
     namespace KH = KOps::HELP;
 
-    // 1. Print input message
+    // 1. Output the stylized welcome banner and engine version metadata
     KH::print_welcome_msg();
 
-    // 1. Handle "Help" specifically (Before Kokkos starts)
+    // 2. Handle the "Help" flag explicitly BEFORE starting the parallel runtime
+    //    to minimize unnecessary hardware initialization.
     if (argc >= 2 && (std::string(argv[1]) == "--help" || std::string(argv[1]) == "-h")) {
         KH::print_usage(argv[0]);
         KH::print_example_config();
         return 0; // Success
     }
 
-    // 2. Handle "Wrong Input" (No arguments provided)
+    // 3. Reject execution if no configuration file path was provided
     if (argc < 2) {
         std::cerr << "Error: No configuration file provided.\n";
         KH::print_usage(argv[0]);
@@ -46,7 +71,7 @@ int main(int argc, char *argv[]) {
         return 1; // Failure
     }
 
-    // 3. Normal Execution starts here
+    // 4. Initialize Kokkos parallel environment (binds GPU contexts/CPU thread pools)
     Kokkos::initialize(argc, argv);
     int exit_code = 0;
     {
@@ -68,7 +93,11 @@ int main(int argc, char *argv[]) {
 
             exit_code = 1;
         }
-    } // GPU memory is safely deallocated here
+    } // CRITICAL: This local scope guarantees all Kokkos Views, managers, and allocated
+    // GPU memory are safely deallocated BEFORE Kokkos::finalize() is invoked,
+    // eliminating system-level leaks.
+
+    // 5. Tear down the parallel environment and free up backend system resources
     Kokkos::finalize();
     return exit_code;
 }

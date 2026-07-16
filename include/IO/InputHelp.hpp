@@ -49,7 +49,7 @@ namespace KOps::HELP {
                 << indent << "    Author            : Zeno GEDDO                                  \n"
                 << indent << "    Version           : v0.1.0 (Beta)                               \n"
                 << indent << "    Build Year        : 2026                                        \n"
-                << indent << "    License           : ...........                                 \n"
+                << indent << "    License           : GNU GENERAL PUBLIC LICENSE (V.3, 29/06/2007)\n"
                 << indent << "    Contact           : zeno.geddo@gmail.com                        \n"
                 << indent << "====================================================================\n"
                 << std::endl;
