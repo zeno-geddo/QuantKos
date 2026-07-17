@@ -1,7 +1,18 @@
 # KOptions: Compilation Guide
 
 Welcome to the KOptions Compilation Guide.
-This document provides a comprehensive blueprint explaining how to compile, install, launch, and optimize the KOptions option pricing engine on modern multi-core CPU and GPU systems.
+This document provides a comprehensive blueprint explaining how to compile, install and launch the KOptions option pricing engine on modern multi-core CPU and GPU systems.
+
+> ⚠️ **Important Note:** KOptions is designed to be portable across all platforms supported by **Kokkos**. In principle, it should compile and run on **Linux**, **macOS**, and **Windows**, using any CPU architecture, compiler, and GPU backend supported by Kokkos.
+>
+> Kokkos currently supports:
+>
+> * **Operating systems:** Linux, macOS, and Windows.
+> * **CPU architectures:** x86-64 (Intel/AMD), ARM/AArch64 (including Apple Silicon and ARM-based HPC systems), IBM POWER, and other architectures supported by the selected compiler.
+> * **Compilers:** GCC, Clang/LLVM, Intel oneAPI (icpx), NVIDIA HPC SDK (nvc++), Microsoft Visual Studio (MSVC), and other compilers officially supported by Kokkos.
+> * **GPU backends:** NVIDIA GPUs (CUDA), AMD GPUs (HIP/ROCm), Intel GPUs (SYCL/oneAPI), and any additional accelerator backends supported by the installed Kokkos version (e.g., OpenMP Target where available).
+>
+> At present, however, KOptions has been developed and extensively tested only on a **Linux** system using **GCC** on an **Intel Core i7** CPU (using both OpemMP or procedural mode) and an **NVIDIA RTX** GPU (CUDA backend). We therefore expect this configuration to work reliably. Other supported platforms should also work in principle, but they have not yet been thoroughly tested and may still expose unknown bugs or portability issues.
 
 ---
 ## 1. Prerequisites
@@ -13,26 +24,29 @@ These components are strictly required to build and execute the KOptions engine 
 
 #### A. Core Build Tools
 * **CMake** (v3.20 or higher): The build orchestrator.
-* **C++20 Compiler** ([GCC 10+](https://gcc.gnu.org/) or [Clang 12+](https://clang.llvm.org/)): Required for modern standard library concepts and parallel code-generation rules.
+* **C++20 or C++23 Compiler** ([GCC 10+](https://gcc.gnu.org/) or [Clang 12+](https://clang.llvm.org/)).
 
 #### B. Hardware Toolchains (Target-Dependent)
 * **OpenMP**: Required if compiling for multi-core CPU thread-level parallelism.
 * **NVIDIA CUDA Toolkit**: Provides the `nvcc` compiler, required if compiling for GPU-accelerated execution on NVIDIA hardware.
 
-#### C. Dependencies (Automatic Fallbacks)
+#### C. Dependencies
 * **Kokkos**: The performance-portability framework.
 * **yaml-cpp**: For parsing configuration files.
 
-*(Note: The CMake build system can automatically configure, download, and statically build Kokkos and yaml-cpp via `FetchContent` if they are not detected locally on your host).*
+> ⚠️ **Note:** The CMake build system can automatically configure, download, and statically build Kokkos and yaml-cpp via `FetchContent` if they are not detected locally on your host. More will be said about that when addressing KOptions compilation and installation.
 
 
 ### Part II: Recommended Development & Profiling Tools
 While not required to execute standard pricing runs, these tools are highly recommended for active development, codebase maintenance, and performance optimization.
 
-#### A. Documentation Engine
+#### A. Building Tool
+* **ccmake**: terminal GUI for easier and more advanced build configuration.
+
+#### B. Documentation Engine
 * **Doxygen & Graphviz**: Automated tools to parse C++ source annotations and CMake configurations to generate hyperlinked HTML (and Latex) documentation with architecture graphs.
 
-#### B. GPU Profiling Suite (NVIDIA Nsight)
+#### C. GPU Profiling Suite (NVIDIA Nsight)
 Used to identify hardware-level bottlenecks in the code:
 
 * **NVIDIA Nsight Systems (`nsys`)**: A system-wide profiler. Provides an interactive timeline of CPU thread activity, OS events, CUDA API calls, and PCIe bus memory transfers. Important for diagnosing Host-Device synchronization stalls (`Kokkos::fence`).
@@ -43,6 +57,7 @@ Used to identify hardware-level bottlenecks in the code:
 ## 🐧 2.  Installing the System level Prerequisites on Linux
 
 This step-by-step guide walks you through setting up your environment on a fresh Linux instance (Ubuntu / Debian).
+Although KOptions could work with different GPUs brands, we will here focus on setting up machines with NVIDIA GPUs only.
 
 ### Step 1 (Required): Install Core Utilities & Documentation Tools
 
@@ -153,9 +168,9 @@ git clone [https://github.com/kokkos/kokkos.git](https://github.com/kokkos/kokko
 
 To ensure maximum flexibility, it is best to compile Kokkos in several separated ways. 
 For example, building a CUDA version, an OpenMP version, and a procedural single-core version into distinct installation directories.
-This is optimal to deploy KOptions and compare its performances on different hardwares. Of course, if you are interested in running KOptions only on an hardware, stick with it and avoid to compile for others.  
+This is optimal to deploy KOptions and compare its performances under different hardware conditions. Of course, if you are interested in running KOptions only on a specific hardware, stick with it and avoid compiling for others.  
 
-Anyway, create a unique build directory for the target you want, execute the corresponding `cmake` command from the examples below, and then compile and install:
+Anyway, despite your hardware choice, have to create a unique build directory for the target you want, execute the corresponding `cmake` command from the examples below, and then compile and install:
 
 ```bash
 # Example for a specific build target
@@ -165,14 +180,14 @@ cd ~/software/build/kokkos-single
 # [Run the appropriate CMake command from below]
 
 # Build and Install
-make -j$(nproc)
+make -j$(nproc) # you can specify the number of cores used to build
 make install
 
 ```
 
 #### Option A: Procedural Single Core (Release)
 
-From your target build directory, use this for maximum procedural CPU compilation without multi-threading.
+From your target build directory, use this for procedural CPU compilation without multi-threading.
 
 ```bash
 cmake $HOME/software/src/kokkos-5 \
@@ -207,6 +222,8 @@ cmake $HOME/software/src/kokkos-5 \
   -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=OFF
 
 ```
+> ⚠️ **Note on CPU threads:** You can specify exactly how many CPU threads to use at runtime. Fon instance, running OMP_NUM_THREADS=8 before launching KOptions, will make it run in parallel with 8 threads. More about that will be said later.
+
 
 #### Option C: GPU Accelerated (CUDA / Release)
 
@@ -228,8 +245,7 @@ cmake $HOME/software/src/kokkos-5 \
   -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=OFF
 
 ```
-
-*(Note: Change `AMPERE86` to match your specific GPU architecture, e.g., `ADA89` for RTX 40-series, `TURING75` for RTX 20-series).*
+> ⚠️ **Note on GPU Architectures:** Change `AMPERE86` to match your specific GPU architecture, e.g., `ADA89` for RTX 40-series, `TURING75` for RTX 20-series.
 
 
 
@@ -298,25 +314,363 @@ TO BE DONE
 
 ***
 
-## 3. Install KOptions
+# 3. Install KOptions
 
-### Step 1 : Download KOptions
+This section explains how to build and install the KOptions engine itself. Two workflows are supported:
 
-### Step 2 : Build KOptions 
+* **Option A (Recommended for developers):** Use pre-installed local versions of **Kokkos** and **yaml-cpp**. This provides full control over the hardware backends and avoids recompiling dependencies every time.
+* **Option B (Recommended for first-time users):** Let CMake automatically download and build the required dependencies using `FetchContent`.
 
-### Option A : Build without using Fetchcontent
+In both cases, KOptions is built using the standard CMake workflow.
 
-### Option B : Build using Fetchcontent
+---
 
-### Step 3 : Install KOptions
+## Step 1: Download KOptions
 
-### Recommended : Generate KOptions Documentation
+Clone the repository into your preferred source directory:
+
+```bash
+mkdir -p ~/software/src
+cd ~/software/src
+
+git clone https://github.com/zeno.geddo/KOptions.git
+cd KOptions
+```
+
+
+
+As for Kokkos, it is recommended (though not required) to keep the **source**, **build**, and **installation** directories separated. Besides keeping the project organized, this approach allows you to generate multiple independent KOptions builds from the same source tree—for example, a procedural (Serial) version, an OpenMP version, a CUDA-enabled version, or separate Debug and Release builds—without the different configurations interfering with one another.
+
+```text
+~/software/
+├── src/
+│   └── KOptions/
+├── build/
+│   ├── KOptions-serial/
+│   ├── KOptions-openmp/
+│   ├── KOptions-cuda/
+│   └── KOptions-debug/
+└── installations/
+    ├── KOptions-serial/
+    ├── KOptions-openmp/
+    ├── KOptions-cuda/
+    └── KOptions-debug/
+```
+
+For example, if you want to build the CUDA version, simply create a dedicated build directory:
+
+```bash
+mkdir -p ~/software/build/KOptions-cuda
+cd ~/software/build/KOptions-cuda
+```
+
+Later, you could similarly create `KOptions-openmp` or `KOptions-serial` build directories if you wish to compare performance across different hardware backends.
+
+Of course, if you are just targeting a specific hardware and you do not need to run comparisons or benchmarks etc., just compile for that target.
+
+
+## Step 2: Build KOptions
+
+KOptions can either link against an existing installation of **Kokkos** and **yaml-cpp**, or automatically download and build these dependencies using `FetchContent`.
+
+---
+
+### Option A: Build without using FetchContent
+
+This approach assumes that **Kokkos** and **yaml-cpp** have already been built and installed as described in Section 2.
+
+First, enter the build directory corresponding to the version you want to generate. For example, to build the CUDA version:
+
+```bash
+cd ~/software/build/KOptions-cuda
+```
+
+Then configure the project by pointing CMake to the **KOptions source directory** and to the installation directories of the required dependencies:
+
+
+```bash
+cmake \
+  $HOME/software/src/KOptions \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/KOptions-cuda \
+  -DKOPS_ENABLE_FETCHCONTENT=OFF \
+  -DKOPS_BUILD_DOC=ON \
+  -DKOPS_ENABLE_SINGLE_PRECISION=OFF \
+  -DKOPS_ENABLE_TESTS=ON \
+  -DKokkos_ROOT=$HOME/software/installations/kokkos-5/cuda/lib/cmake/Kokkos \
+  -Dyaml-cpp_ROOT=$HOME/software/installations/yaml-cpp/lib/cmake/yaml-cpp
+```
+
+> **Additional important KOptions configuration options**
+>
+> Besides the standard CMake and dependency settings, KOptions provides several project-specific options:
+>
+> * **`KOPS_BUILD_TYPE=Release`** *(recommended for production)*: Compiles the project with compiler optimizations enabled and disables most debugging features. This produces the fastest executable and is the recommended configuration for production simulations and performance benchmarking. 
+> Alternatively, you can use the flag `Debug`, which builds the project with full debugging information no optimization. This configuration is intended for development, debugging with tools such as gdb, and investigating runtime errors. 
+> Otherwise, the flag `RelWithDebInfo` provides a compromise between performance and debuggability by enabling compiler optimizations while retaining debugging symbols. This is often the preferred choice when profiling or diagnosing problems that only appear in optimized builds.
+>
+> * **`KOPS_BUILD_DOC=ON`** *(recommended)*: Automatically generates the KOptions API documentation with **Doxygen** during the build process (provided Doxygen is installed on the system).
+>
+> * **`KOPS_ENABLE_SINGLE_PRECISION=ON`**: Compiles the engine using 32-bit `float` arithmetic instead of the default 64-bit `double`. This generally improves memory efficiency and can significantly increase performance—especially on GPUs—but at the cost of reduced numerical precision.
+>
+> * **`KOPS_ENABLE_TESTS=ON`**: Builds the KOptions test executables together with the main application. This option is recommended for development or when verifying a new installation, as it allows the built-in test suite to be executed after compilation.
+
+
+The dependency paths deserve particular attention:
+
+* **`Kokkos_ROOT`** must point to the directory containing the `KokkosConfig.cmake` file. This directory is typically located at
+
+  ```text
+  <kokkos-install-prefix>/lib/cmake/Kokkos
+  ```
+
+  For example:
+
+  ```text
+  ~/software/installations/kokkos-5/cuda/lib/cmake/Kokkos
+  ```
+
+* **`yaml-cpp_ROOT`** must similarly point to the directory containing `yaml-cpp-config.cmake` (or `yaml-cppConfig.cmake`), which is usually
+
+  ```text
+  <yaml-cpp-install-prefix>/lib/cmake/yaml-cpp
+  ```
+
+If CMake cannot locate either package, verify that these directories actually contain the corresponding `*.cmake` configuration files.
+
+> **Note:** Because the selected Kokkos installation has already been compiled with its desired hardware backend (Serial, OpenMP, CUDA, HIP, etc.) and architecture, no additional Kokkos configuration flags are required when building KOptions. KOptions will simply link against the existing Kokkos installation.
+
+Once the configuration completes successfully, compile the project from the same build directory:
+
+```bash
+cmake --build . -j$(nproc)
+```
+
+You may replace `$(nproc)` with any desired number of compilation threads. For example,
+
+```bash
+cmake --build . -j4
+```
+uses four CPU cores to build the project.
+
+
+
+
+### Option B: Build using FetchContent
+
+This approach is probably recommended if **Kokkos** and **yaml-cpp** are not already installed on your system and you just want to use KOptions with developing and performing benchmarks. Note that, in this case, during the configuration step, CMake automatically downloads, configures, builds, and links both libraries.
+
+As for the previous option, first move to the build directory corresponding to the version you want to generate. For example, for a CUDA build:
+
+```bash
+cd ~/software/build/KOptions-cuda
+```
+
+Then configure the project by pointing CMake to the KOptions source directory and enabling `FetchContent`:
+
+```bash
+cmake \
+  $HOME/software/src/KOptions \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/KOptions-cuda \
+  -DKOPS_ENABLE_FETCHCONTENT=ON \
+  -DKOPS_BUILD_DOC=ON \
+  -DKOPS_ENABLE_SINGLE_PRECISION=OFF \
+  -DKOPS_ENABLE_TESTS=ON 
+```
+
+Unlike the previous approach, Kokkos is now built as part of the KOptions compilation. Consequently, all Kokkos configuration options become available and can be specified directly on the CMake command line.
+
+The most important options affecting performance are:
+
+* **Build profile**
+
+    * `-DCMAKE_BUILD_TYPE=Release` (**recommended**) enables compiler optimizations and should be used for production runs and benchmarks.
+    * `Debug` disables most optimizations and enables additional runtime checks, making it suitable only for development.
+    * `RelWithDebInfo` provides nearly the same optimizations as `Release` while preserving debugging symbols.
+
+* **Execution backend**
+
+    * `-DKokkos_ENABLE_SERIAL=ON` enables procedural execution.
+    * `-DKokkos_ENABLE_OPENMP=ON` enables multi-core CPU execution.
+    * `-DKokkos_ENABLE_CUDA=ON` enables execution on NVIDIA GPUs.
+
+* **Target architecture**
+
+    * Select the architecture matching your hardware (see Section 2), for example
+      `-DKokkos_ARCH_AMPERE86=ON` for an RTX 30-series GPU or
+      `-DKokkos_ARCH_ADA89=ON` for an RTX 40-series GPU.
+    * On CPU-only systems, enabling `-DKokkos_ARCH_NATIVE=ON` is generally recommended, as it allows the compiler to optimize for the local processor.
+
+For example, an optimized OpenMP build can be configured with
+
+```bash
+cmake \
+  $HOME/software/src/KOptions \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/KOptions-openmp \
+  -DKOPS_ENABLE_FETCHCONTENT=ON \
+  -DKokkos_ENABLE_SERIAL=ON \
+  -DKokkos_ENABLE_OPENMP=ON \
+  -DKokkos_ENABLE_CUDA=OFF \
+  -DKokkos_ARCH_NATIVE=ON \
+  -DKOPS_BUILD_DOC=ON \
+  -DKOPS_ENABLE_SINGLE_PRECISION=OFF \
+  -DKOPS_ENABLE_TESTS=ON 
+```
+
+while an optimized CUDA build for an RTX 30-series GPU becomes
+
+```bash
+cmake \
+  $HOME/software/src/KOptions \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/KOptions-cuda \
+  -DKOPS_ENABLE_FETCHCONTENT=ON \
+  -DKokkos_ENABLE_SERIAL=ON \
+  -DKokkos_ENABLE_OPENMP=OFF \
+  -DKokkos_ENABLE_CUDA=ON \
+  -DKokkos_ENABLE_CUDA_LAMBDA=ON \
+  -DKokkos_ARCH_AMPERE86=ON \
+  -DKOPS_BUILD_DOC=ON \
+  -DKOPS_ENABLE_SINGLE_PRECISION=OFF \
+  -DKOPS_ENABLE_TESTS=ON 
+  
+```
+
+The complete list of available Kokkos backends and architecture flags is described in **Section 2**.
+
+Once the configuration completes successfully, compile the project from the same build directory:
+
+```bash
+cmake --build . -j$(nproc)
+```
+
+or specify any desired number of compilation threads, for example
+
+```bash
+cmake --build . -j4
+```
+
+
+---
+
+## Step 3: Install KOptions
+
+After compilation completes successfully, install the executable and the accompanying configuration files:
+
+```bash
+cmake --install .
+```
+
+If `CMAKE_INSTALL_PREFIX` was set to
+
+```text
+$HOME/software/installations/KOptions
+```
+
+the resulting installation will have the following layout:
+
+```text
+KOptions/
+├── bin/
+│   ├── KOptions
+│   └── Tester
+├── share/
+│    ├── documentation
+│    │        ├── html
+│    │        └── latex
+│    ├── ...
+│    └── KOptionsConfig.yalm
+└── ...
+```
+
+You can then copy the example configuration file into your working directory and launch the engine:
+
+```bash
+cd $HOME/software/installations/KOptions
+
+./bin/KOptions share/KOptionsConfig.yaml
+```
+
+
+## About the Documentation Generated
+
+If Doxygen and Graphviz are installed (Section 1), the project can generate a complete set of API and architecture documentation.
+
+By enabling the documentation during configuration:
+
+```bash
+cmake \
+  $HOME/software/src/KOptions \
+  -DKOPS_BUILD_DOCUMENTATION=ON
+```
+
+Doxygen automatically extracts the documentation embedded in the source code and generates both **HTML** and **LaTeX** documentation. The documentation describes the software architecture, class hierarchies, namespaces, source file organization, and the public API of the library. When Graphviz is available, additional inheritance, collaboration, and call graphs are included.
+
+The HTML documentation can be viewed by opening the `index.html` file located in the generated `html/` directory with any web browser, for example:
+
+```bash
+xdg-open html/index.html
+```
+
+(on Linux) or by opening the file directly from your preferred browser.
+
+The LaTeX documentation is written to the generated `latex/` directory. It can be compiled into a PDF by running:
+
+```bash
+cd latex
+make
+```
+
+which invokes `pdflatex` (and related tools) to produce the final PDF document, typically named `refman.pdf`.
 
 ***
 
 ## 5. Run KOptions
 
+### Run a MonteCarlo Simulation to Price an Option
+
+
+### Running the build-in tests 
+
+
+### Specifying Cores/GPUs (Run Time)
+
+Once compiled, KOptions includes the native Kokkos command-line parser. You do not need to recompile to change the number of active cores or switch GPUs!
+
+**Running on Multiple Cores (If OpenMP was enabled):**
+
+You can specify exactly how many CPU threads to use at runtime:
+
+```bash
+# Use exactly 8 cores
+./bin/KOptions inputs.yaml --kokkos-threads=8
+
+# Alternatively, use standard OpenMP environment variables:
+OMP_NUM_THREADS=8 ./bin/KOptions inputs.yaml
+
+```
+
+*(Note: If you compiled with pure `Serial` mode, these flags are safely ignored, and the program will run procedurally on one core).*
+
+**Running on a GPU (If CUDA was enabled):**
+
+Kokkos will automatically find and use your GPU. If you have a multi-GPU system (e.g., a server with multiple RTX cards), you can specify which device to use:
+
+```bash
+# Run on the first GPU (Device 0)
+./bin/KOptions inputs.yaml --kokkos-device-id=0
+
+# Run on the second GPU (Device 1)
+./bin/KOptions inputs.yaml --kokkos-device-id=1
+
+```
 ***
+
+
+***
+
 
 
 
