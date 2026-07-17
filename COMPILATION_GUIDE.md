@@ -74,65 +74,76 @@ sudo apt install -y build-essential cmake cmake-curses-gui libomp-dev doxygen gr
 
 ### Step 2 (Required): Install GPU Toolchain (CUDA Compiler & SDK)
 
-To execute your Kokkos solver on an NVIDIA GPU, you need the CUDA Toolkit.
+To compile and execute KOptions on NVIDIA GPUs, you must install the **NVIDIA CUDA Toolkit**.
 
 **Why `nvcc` is Essential.**
-The `nvcc` (NVIDIA CUDA Compiler) is the specific tool inside that toolkit that compiles C++ code into machine code that your GPU can understand.
-Your Kokkos code is "Single Source," meaning it contains both CPU logic (Host) and GPU logic (Device) in the same file:
 
-* The CPU compiler (e.g., `g++`) handles standard host-side C++ logic (I/O, orchestrators).
-* The GPU compiler (`nvcc`) extracts the parallel kernels, compiles them for the targeted NVIDIA architecture, and links them back to the host binary.
-* Kokkos uses a wrapper script (`nvcc_wrapper`) to coordinate this dual-compilation pipeline, which requires `nvcc` to be registered in your system's `PATH`.
+The CUDA Toolkit provides **`nvcc`**, NVIDIA's CUDA compiler, which translates the GPU portions of your C++ source code into machine instructions that can execute on NVIDIA GPUs.
 
-**Recommended Installation Process.**
-*Note: To prevent library mismatch errors and maintain system stability, it is always best to follow the official instructions on the NVIDIA Developer site. Avoid using `apt install nvidia-cuda-toolkit` directly from default Ubuntu repositories, as they are often outdated and may conflict with modern C++ standard requirements.*
+Kokkos follows a **single-source programming model**, meaning that both CPU (Host) and GPU (Device) code coexist in the same C++ source files.
 
-If you are setting up on Ubuntu 22.04, the following sequence could be helpfull for you:
+* The host compiler (e.g., `g++`) compiles the standard C++ portions of the program, such as I/O, orchestration logic, and host-side data management.
+* The CUDA compiler (`nvcc`) extracts the GPU kernels, compiles them for the selected NVIDIA architecture, and links the resulting device code back into the host executable.
+* Kokkos provides the `nvcc_wrapper` compiler wrapper, which transparently coordinates this dual-compilation process. Consequently, `nvcc` must be correctly installed and available in your system `PATH`.
+
+> ⚠️ **Note: Verify the NVIDIA Driver First.**
+>
+> Before installing the CUDA Toolkit, make sure that a recent NVIDIA graphics driver is already installed and functioning correctly. You can verify this by running:
+>
+> ```bash
+> nvidia-smi
+> ```
+>
+> If the command reports your GPU and driver version, your system is ready for the CUDA Toolkit installation. If instead it reports that no driver is available (or the command is not found), install or update the NVIDIA driver before proceeding.
+
+> ⚠️ **IMPORTANT Note: Recommended Installation Process.**
+>
+> To minimize library incompatibilities and ensure compatibility with modern C++ toolchains, it is recommended to install CUDA following the official instructions provided by NVIDIA. Avoid installing the package `nvidia-cuda-toolkit` from the default Ubuntu repositories, as it is often outdated and may not support recent compiler or language standards.
+
+The following example targets **Ubuntu 22.04**. For other Ubuntu releases or Linux distributions, follow the corresponding instructions on the NVIDIA Developer website.
 
 ```bash
-# 1. Download the repository pin file to prioritize NVIDIA's packages
+# 1. Download the repository pin file to prioritize NVIDIA packages
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
 sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
 
-# 2. Download the local repository installer debian package
+# 2. Download the local CUDA repository package
 wget https://developer.download.nvidia.com/compute/cuda/13.1.1/local_installers/cuda-repo-ubuntu2204-13-1-local_13.1.1-590.48.01-1_amd64.deb
 
-# 3. Register the local repository with package management
+# 3. Register the repository
 sudo dpkg -i cuda-repo-ubuntu2204-13-1-local_13.1.1-590.48.01-1_amd64.deb
 
-# 4. Copy the repository keyring to system keyrings
+# 4. Install the repository signing key
 sudo cp /var/cuda-repo-ubuntu2204-13-1-local/cuda-*-keyring.gpg /usr/share/keyrings/
 
-# 5. Synchronize package indexes and install the SDK/Compiler Toolkit
-sudo apt-get update
-sudo apt-get -y install cuda-toolkit-13-1
-
+# 5. Update package lists and install the CUDA Toolkit
+sudo apt update
+sudo apt install -y cuda-toolkit-13-1
 ```
 
-**Crucial Environment Variables Configuration.**
-Installing the toolkit places binary files in `/usr/local/cuda`. However, you must manually update your shell configuration to make it visible to Kokkos and CMake.
-Append these environment mappings to the bottom of your shell configuration file (e.g., `~/.bashrc` or `~/.zshrc`):
+#### Configure the Environment
+
+The CUDA Toolkit is typically installed under `/usr/local/cuda`. To make the compiler and runtime libraries visible to CMake, Kokkos, and your shell, append the following lines to your shell startup file (e.g. `~/.bashrc` or `~/.zshrc`):
 
 ```bash
-# NVIDIA CUDA Toolkit Path Configuration
+# NVIDIA CUDA Toolkit
 export PATH=/usr/local/cuda/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-
 ```
 
-Apply the changes immediately to your active terminal:
+Apply the changes to the current shell:
 
 ```bash
 source ~/.bashrc
-
 ```
 
-Verify that the compiler is active and query its configuration:
+Finally, verify that the CUDA compiler is correctly installed:
 
 ```bash
 nvcc --version
-
 ```
+
+You should see the installed CUDA Toolkit version together with the build information for `nvcc`. If the command cannot be found, verify that the environment variables above have been configured correctly.
 
 ### Step 3 (Optional): Install Standalone GPU Profiling Tools
 
@@ -146,6 +157,8 @@ sudo apt install -y nsight-systems nsight-compute
 ```
 
 ### Step 4 (Recommended) : Dowload, Build and Install Kokkos 5
+Although KOptions can automatically download and build **Kokkos** through `FetchContent`, installing it separately is recommended if you plan to develop KOptions, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project for a different target hardware.
+
 In a clean development environment, you should never build software directly inside the source folder. The best approach is to create a dedicated software directory layout to keep your raw materials separate from your finished, installed libraries.
 
 #### 1. Recommended Directory Structure
@@ -290,27 +303,105 @@ Find the major/minor compute version returned in Step 1 and append its correspon
 > ⚠️ **Note on Legacy Architectures:** If you have an older card (such as Pascal 6.0/6.1 like the GTX 1080), be aware that CUDA 13.x has deprecated support for these chips. To compile for Pascal generation targets, you must downgrade your environment to the CUDA 12.x toolkit family.
 
 
-### Step 4 (Recommended): Download, Build and Install YALM
-k
 
-k
+### Step 4 (Recommended): Download, Build and Install yaml-cpp
 
-k
+Although KOptions can automatically download and build **yaml-cpp** through `FetchContent`, installing it separately is recommended if you plan to develop KOptions, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project.
 
-k
+As for Kokkos, it is good practice to keep the **source**, **build**, and **installation** directories separated.
 
-k
+#### 1. Recommended Directory Structure
 
-k
+A typical directory layout is
 
-k
-k
+* **Source:** `~/software/src/yaml-cpp`
+* **Build:** `~/software/build/yaml-cpp`
+* **Install:** `~/software/installations/yaml-cpp`
 
-k
+Clone the repository into your source directory:
 
-kk
+```bash
+mkdir -p ~/software/src
+cd ~/software/src
 
-TO BE DONE
+git clone https://github.com/jbeder/yaml-cpp.git
+```
+
+Create an independent build directory:
+
+```bash
+mkdir -p ~/software/build/yaml-cpp
+cd ~/software/build/yaml-cpp
+```
+
+#### 2. Configure the Build
+
+Configure the project with CMake:
+
+```bash
+cmake \
+  $HOME/software/src/yaml-cpp \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/yaml-cpp \
+  -DYAML_BUILD_SHARED_LIBS=OFF \
+  -DYAML_CPP_BUILD_TESTS=OFF \
+  -DYAML_CPP_BUILD_TOOLS=OFF \
+  -DYAML_CPP_BUILD_CONTRIB=OFF
+```
+
+The options above produce a lightweight static installation suitable for linking with KOptions.
+
+* **`CMAKE_BUILD_TYPE=Release`** enables compiler optimizations and is recommended for production builds.
+* **`YAML_BUILD_SHARED_LIBS=OFF`** builds a static library, simplifying deployment and avoiding runtime dependency issues.
+* **`YAML_CPP_BUILD_TESTS=OFF`** skips building the yaml-cpp test suite.
+* **`YAML_CPP_BUILD_TOOLS=OFF`** disables optional utility programs that are not required by KOptions.
+* **`YAML_CPP_BUILD_CONTRIB=OFF`** disables the compilation of optional contributed examples and utilities.
+
+#### 3. Build and Install
+
+Compile the library using all available CPU cores:
+
+```bash
+cmake --build . -j$(nproc)
+```
+
+or specify any desired number of compilation threads, for example
+
+```bash
+cmake --build . -j4
+```
+
+Finally, install the library:
+
+```bash
+cmake --install .
+```
+
+The resulting installation will typically have the following structure:
+
+```text
+yaml-cpp/
+├── include/
+│   └── yaml-cpp/
+├── lib/
+│   ├── libyaml-cpp.a
+│   └── cmake/
+│       └── yaml-cpp/
+│           ├── yaml-cpp-config.cmake
+│           ├── yaml-cpp-config-version.cmake
+│           └── ...
+```
+
+The directory
+
+```text
+~/software/installations/yaml-cpp/lib/cmake/yaml-cpp
+```
+
+contains the CMake configuration files that KOptions uses to locate the library when `KOPS_ENABLE_FETCHCONTENT=OFF`.
+
+> ⚠️ **Note:** If you prefer not to install yaml-cpp manually, simply enable `KOPS_ENABLE_FETCHCONTENT=ON` when configuring KOptions. CMake will automatically download, configure, build, and link yaml-cpp as part of the KOptions build process. This approach is probably easier for first-time users and for quick evaluations of the software.
+
 
 ***
 
@@ -322,8 +413,6 @@ This section explains how to build and install the KOptions engine itself. Two w
 * **Option B (Recommended for first-time users):** Let CMake automatically download and build the required dependencies using `FetchContent`.
 
 In both cases, KOptions is built using the standard CMake workflow.
-
----
 
 ## Step 1: Download KOptions
 
@@ -373,8 +462,6 @@ Of course, if you are just targeting a specific hardware and you do not need to 
 
 KOptions can either link against an existing installation of **Kokkos** and **yaml-cpp**, or automatically download and build these dependencies using `FetchContent`.
 
----
-
 ### Option A: Build without using FetchContent
 
 This approach assumes that **Kokkos** and **yaml-cpp** have already been built and installed as described in Section 2.
@@ -401,7 +488,7 @@ cmake \
   -Dyaml-cpp_ROOT=$HOME/software/installations/yaml-cpp/lib/cmake/yaml-cpp
 ```
 
-> **Additional important KOptions configuration options**
+> **⚠️ Note: Additional KOptions configuration options**
 >
 > Besides the standard CMake and dependency settings, KOptions provides several project-specific options:
 >
@@ -415,6 +502,7 @@ cmake \
 >
 > * **`KOPS_ENABLE_TESTS=ON`**: Builds the KOptions test executables together with the main application. This option is recommended for development or when verifying a new installation, as it allows the built-in test suite to be executed after compilation.
 
+> **⚠️ Note: ccmake GUI. It could be helpful to use **
 
 The dependency paths deserve particular attention:
 
@@ -438,7 +526,7 @@ The dependency paths deserve particular attention:
 
 If CMake cannot locate either package, verify that these directories actually contain the corresponding `*.cmake` configuration files.
 
-> **Note:** Because the selected Kokkos installation has already been compiled with its desired hardware backend (Serial, OpenMP, CUDA, HIP, etc.) and architecture, no additional Kokkos configuration flags are required when building KOptions. KOptions will simply link against the existing Kokkos installation.
+> ⚠️  **Note:** Because the selected Kokkos installation has already been compiled with its desired hardware backend (Serial, OpenMP, CUDA, HIP, etc.) and architecture, no additional Kokkos configuration flags are required when building KOptions. KOptions will simply link against the existing Kokkos installation.
 
 Once the configuration completes successfully, compile the project from the same build directory:
 
@@ -552,9 +640,6 @@ or specify any desired number of compilation threads, for example
 cmake --build . -j4
 ```
 
-
----
-
 ## Step 3: Install KOptions
 
 After compilation completes successfully, install the executable and the accompanying configuration files:
@@ -580,21 +665,22 @@ KOptions/
 │    ├── documentation
 │    │        ├── html
 │    │        └── latex
-│    ├── ...
+│    ├── TesterConfig.yalm
 │    └── KOptionsConfig.yalm
-└── ...
+├── include/
+└── lib/
 ```
 
-You can then copy the example configuration file into your working directory and launch the engine:
+> ⚠️ **Note: Default installation directory.** If an installation path is not provided with `CMAKE_INSTALL_PREFIX`, the default is set to "${CMAKE_SOURCE_DIR}/install".
 
-```bash
-cd $HOME/software/installations/KOptions
+The executables generated are found in `bin/` :
 
-./bin/KOptions share/KOptionsConfig.yaml
-```
+* **`KOptions`**: the main option pricing engine.
+* **`Tester`** : the test and validation executable used to verify the correctness of the implementation and benchmark individual components. This is *optional*, i.e. it is generated only if `DKOPS_ENABLE_TESTS=ON`.
 
+Both programs are launched by simply passing their corresponding default YAML configuration files, i.e. `KOptionsConfig.yalm` and `TesterConfig.yalm`.
 
-## About the Documentation Generated
+###  About the Documentation Generated
 
 If Doxygen and Graphviz are installed (Section 1), the project can generate a complete set of API and architecture documentation.
 
@@ -629,46 +715,94 @@ which invokes `pdflatex` (and related tools) to produce the final PDF document, 
 
 ## 5. Run KOptions
 
-### Run a MonteCarlo Simulation to Price an Option
+More about the KOptions runtime functionalities can be foun in the `README.md` and `USERINPUT_GUIDE.md`. We here quickly remind some basic points. 
 
+### Displaying the Command-Line Help
 
-### Running the build-in tests 
+Both executables include a built-in help message describing the available command-line options.
 
-
-### Specifying Cores/GPUs (Run Time)
-
-Once compiled, KOptions includes the native Kokkos command-line parser. You do not need to recompile to change the number of active cores or switch GPUs!
-
-**Running on Multiple Cores (If OpenMP was enabled):**
-
-You can specify exactly how many CPU threads to use at runtime:
+To display it, simply run
 
 ```bash
-# Use exactly 8 cores
-./bin/KOptions inputs.yaml --kokkos-threads=8
-
-# Alternatively, use standard OpenMP environment variables:
-OMP_NUM_THREADS=8 ./bin/KOptions inputs.yaml
-
+./bin/KOptions --help
 ```
 
-*(Note: If you compiled with pure `Serial` mode, these flags are safely ignored, and the program will run procedurally on one core).*
-
-**Running on a GPU (If CUDA was enabled):**
-
-Kokkos will automatically find and use your GPU. If you have a multi-GPU system (e.g., a server with multiple RTX cards), you can specify which device to use:
+or
 
 ```bash
-# Run on the first GPU (Device 0)
-./bin/KOptions inputs.yaml --kokkos-device-id=0
-
-# Run on the second GPU (Device 1)
-./bin/KOptions inputs.yaml --kokkos-device-id=1
-
+./bin/Tester --help
 ```
+
+The help output summarizes the accepted command-line arguments, and the contents of the expected `.yalm` configuration file.
+
+
+
+### Specifying CPU Threads or GPUs (Optional)
+
+KOptions relies on the native Kokkos command-line parser. Consequently, the execution backend can be configured at runtime without recompiling the application.
+
+#### Running on Multiple CPU Cores (OpenMP builds)
+
+If Kokkos was compiled with the OpenMP backend enabled, you can choose the number of threads used during execution:
+
+```bash
+# Use exactly 8 OpenMP threads
+./bin/KOptions share/KOptionsConfig.yaml --kokkos-threads=8
+```
+
+Alternatively, the standard OpenMP environment variable may be used:
+
+```bash
+OMP_NUM_THREADS=8 ./bin/KOptions share/KOptionsConfig.yaml
+```
+
+If the executable was built using the Serial backend only, these options are simply ignored and the program runs procedurally on a single CPU core.
+
+
+
+#### Running on NVIDIA GPUs (CUDA builds)
+
+When compiled with CUDA support, Kokkos automatically selects an available GPU.
+
+On systems containing multiple NVIDIA GPUs, the desired device can be selected explicitly:
+
+```bash
+# Execute on GPU 0
+./bin/KOptions share/KOptionsConfig.yaml --kokkos-device-id=0
+
+# Execute on GPU 1
+./bin/KOptions share/KOptionsConfig.yaml --kokkos-device-id=1
+```
+
+
+
+### Running the Option Pricing Engine
+
+The option pricing engine is started by passing its default configuration file:
+
+```bash
+cd $HOME/software/installations/KOptions
+
+./bin/KOptions share/KOptionsConfig.yaml
+```
+
+The configuration file specifies all simulation parameters, including the stochastic model, option contract, numerical scheme, Monte Carlo settings, and output options.
+
+
+
+### Running the Built-in Test Suite
+
+The validation executable is launched in exactly the same way:
+
+```bash
+cd $HOME/software/installations/KOptions
+
+./bin/Tester share/TesterConfig.yaml
+```
+
+The tester executes the default validation problems defined in `TesterConfig.yaml`, making it useful for verifying a fresh installation, checking numerical correctness after code modifications, or comparing results across different hardware backends (Serial, OpenMP, CUDA, etc.).
+
 ***
-
-
 ***
 
 
