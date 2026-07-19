@@ -715,7 +715,7 @@ which invokes `pdflatex` (and related tools) to produce the final PDF document, 
 
 ## 5. Run KOptions
 
-More about the KOptions runtime functionalities can be foun in the `README.md` and `USERINPUT_GUIDE.md`. We here quickly remind some basic points. 
+More about the KOptions runtime functionalities can be foun in the `README.md` and `USER_INPUT_GUIDE.md`. We here quickly remind some basic points. 
 
 ### Displaying the Command-Line Help
 

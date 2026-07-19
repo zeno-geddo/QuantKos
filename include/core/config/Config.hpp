@@ -185,7 +185,7 @@ namespace KOps::Config {
         struct Bates : public Heston {
             Real lambda_J = 0.1; ///< Average jump intensity per unit time.
             Real mu_J = -0.1; ///< Mean of the jump size distribution (log-space).
-            Real sigma_J = 0.15; ///< Standard deviation of the jump size.
+            Real sigma_J = 0.15; ///< Standard deviation of the jump size (log-space).
         } bates;
 
         /**

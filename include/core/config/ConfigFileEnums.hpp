@@ -41,8 +41,8 @@ namespace KOps::Implemented {
 
         /** @name Lookback Options */
         ///@{
-        LookbackFloatingStrike, ///< Strike price is set to the historical minimum/maximum of the asset.
-        LookbackFixedStrike, ///< Strike is fixed, but payoff uses the absolute max (Call) or min (Put)
+        LookbackFloatingStrike, ///< Strike price is set to the historical minimum (Call) or maximum (Put).
+        LookbackFixedStrike,    ///< Strike is fixed, payoff uses the historical maximum (Call) or minimum (Put).
         ///@}
 
         /** @name Binary Options */

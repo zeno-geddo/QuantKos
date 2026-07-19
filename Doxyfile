@@ -873,6 +873,8 @@ INPUT                  = . \
                          tests \
                          README.md \
                          COMPILATION_GUIDE.md \
+                         MATH_GUIDE.md \
+                         USER_INPUT_GUIDE.md \
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1636,7 +1638,8 @@ FORMULA_MACROFILE      =
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-USE_MATHJAX            = NO
+USE_MATHJAX            = YES
+MATHJAX_VERSION        = MathJax_3
 
 # When MathJax is enabled you can set the default output format to be used for
 # the MathJax output. See the MathJax site (see:
