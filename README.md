@@ -284,3 +284,6 @@ If you encounter a portability issue on a hardware platform that is not yet offi
 KOptions was designed and developed by **[Zeno Geddo](https://github.com/zeno-geddo)** as an independent research and software engineering project in quantitative finance.
 
 The project has been developed out of personal interest in stochastic differential equations, numerical methods, high-performance computing, and performance-portable scientific software.
+
+***
+***

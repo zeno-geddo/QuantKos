@@ -114,20 +114,21 @@ namespace KOps::Engine {
         /** @name Synchronization Routines */
         ///@{
         /** @brief Copies current batch data from the device to the host.
-         * @todo The batch view should be copied only if outputs must be save or if they are required for the backward phase.
+         * @note The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase.
          */
         void deep_copy_to_host() const {
-            Kokkos::deep_copy(h_batch_view, d_batch_view);
+            if (config.requires_paths_on_host()) {
+                Kokkos::deep_copy(h_batch_view, d_batch_view);
+            }
             Kokkos::deep_copy(h_payoffs, d_payoffs);
         }
+
 
         /** @brief Copies modified batch data from the host back to the device. */
         void deep_copy_to_device() const {
             Kokkos::deep_copy(d_batch_view, h_batch_view);
             Kokkos::deep_copy(d_payoffs, h_payoffs);
         }
-
-        ///@}
 
         //-------------------------------------------
         // MEMORY INFO
@@ -293,7 +294,7 @@ namespace KOps::Engine {
         ///@}
 
     private:
-        const KC::UInputs& config; ///< Local reference mapping back to the master input settings.
+        const KC::UInputs &config; ///< Local reference mapping back to the master input settings.
 
         /** * @brief Allocates and mirrors device/host views based on hardware budget.
         */

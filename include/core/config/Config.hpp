@@ -544,5 +544,17 @@ namespace KOps::Config {
             output.print(indent);
             std::cout << indent << "========================================================\n" << std::endl;
         }
+
+        /** @brief Tells if you should synch the paths at the end of each batch from device to host using kokkos
+         */
+        [[nodiscard]] bool requires_paths_on_host() const {
+            // Check if the user requested path outputs (assuming std::string)
+            const bool wants_file_output = !output.filename_paths_out.empty();
+
+            // Check if the Longstaff-Schwartz backward induction needs the paths
+            const bool is_american = (options.opt_type == KI::OptType::American);
+
+            return wants_file_output || is_american;
+        }
     };
 }
