@@ -12,7 +12,7 @@ This document provides a comprehensive blueprint explaining how to compile, inst
 > * **Compilers:** GCC, Clang/LLVM, Intel oneAPI (icpx), NVIDIA HPC SDK (nvc++), Microsoft Visual Studio (MSVC), and other compilers officially supported by Kokkos.
 > * **GPU backends:** NVIDIA GPUs (CUDA), AMD GPUs (HIP/ROCm), Intel GPUs (SYCL/oneAPI), and any additional accelerator backends supported by the installed Kokkos version (e.g., OpenMP Target where available).
 >
-> At present, however, KOptions has been developed and extensively tested only on a **Linux** system using **GCC** on an **Intel Core i7** CPU (using both OpemMP or procedural mode) and an **NVIDIA RTX** GPU (CUDA backend). We therefore expect this configuration to work reliably. Other supported platforms should also work in principle, but they have not yet been thoroughly tested and may still expose unknown bugs or portability issues.
+> At present, however, KOptions has been developed and tested only on a **Linux** system using **GCC** on an **Intel** CPU (using both OpemMP or procedural mode) and an **NVIDIA RTX** GPU (CUDA backend). We therefore expect this configuration to work reliably. Other supported platforms should also work in principle, but they have not yet been thoroughly tested and may still expose unknown bugs or portability issues.
 
 ---
 ## 1. Prerequisites
@@ -49,7 +49,7 @@ While not required to execute standard pricing runs, these tools are highly reco
 #### C. GPU Profiling Suite (NVIDIA Nsight)
 Used to identify hardware-level bottlenecks in the code:
 
-* **NVIDIA Nsight Systems (`nsys`)**: A system-wide profiler. Provides an interactive timeline of CPU thread activity, OS events, CUDA API calls, and PCIe bus memory transfers. Important for diagnosing Host-Device synchronization stalls (`Kokkos::fence`).
+* **NVIDIA Nsight Systems (`nsys`)**: A system-wide profiler. Provides an interactive timeline of CPU thread activity, OS events, CUDA API calls, and PCIe bus memory transfers. Important for diagnosing Host-Device synchronization.
 * **NVIDIA Nsight Compute (`ncu`)**: A deep-dive CUDA kernel profiler. Provides hardware metrics such as warp occupancy, register pressure, memory access patterns, and cache hit rates. Important for fine-tuning SDE integration loops.
 
 ***
@@ -98,7 +98,7 @@ Kokkos follows a **single-source programming model**, meaning that both CPU (Hos
 
 > ⚠️ **IMPORTANT Note: Recommended Installation Process.**
 >
-> To minimize library incompatibilities and ensure compatibility with modern C++ toolchains, it is recommended to install CUDA following the official instructions provided by NVIDIA. Avoid installing the package `nvidia-cuda-toolkit` from the default Ubuntu repositories, as it is often outdated and may not support recent compiler or language standards.
+> To minimize library incompatibilities and ensure compatibility with modern C++ toolchains, it is recommended to install CUDA following the official instructions provided by NVIDIA. Avoid installing the package `nvidia-cuda-toolkit` from the default Ubuntu repositories, as it could be outdated and may not support recent compiler or language standards.
 
 The following example targets **Ubuntu 22.04**. For other Ubuntu releases or Linux distributions, follow the corresponding instructions on the NVIDIA Developer website.
 
@@ -159,7 +159,7 @@ sudo apt install -y nsight-systems nsight-compute
 ### Step 4 (Recommended) : Dowload, Build and Install Kokkos 5
 Although KOptions can automatically download and build **Kokkos** through `FetchContent`, installing it separately is recommended if you plan to develop KOptions, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project for a different target hardware.
 
-In a clean development environment, you should never build software directly inside the source folder. The best approach is to create a dedicated software directory layout to keep your raw materials separate from your finished, installed libraries.
+In a clean development environment, you should avoid building a software directly inside the source folder. The best approach is to create a dedicated software directory layout to keep your raw materials separate from your finished, installed libraries.
 
 #### 1. Recommended Directory Structure
 
@@ -183,7 +183,7 @@ To ensure maximum flexibility, it is best to compile Kokkos in several separated
 For example, building a CUDA version, an OpenMP version, and a procedural single-core version into distinct installation directories.
 This is optimal to deploy KOptions and compare its performances under different hardware conditions. Of course, if you are interested in running KOptions only on a specific hardware, stick with it and avoid compiling for others.  
 
-Anyway, despite your hardware choice, have to create a unique build directory for the target you want, execute the corresponding `cmake` command from the examples below, and then compile and install:
+Anyway, despite your hardware choice, you have to create a unique build directory for the target you want, execute the corresponding `cmake` command from the examples below, and then compile and install:
 
 ```bash
 # Example for a specific build target
@@ -493,7 +493,7 @@ cmake \
 > Besides the standard CMake and dependency settings, KOptions provides several project-specific options:
 >
 > * **`KOPS_BUILD_TYPE=Release`** *(recommended for production)*: Compiles the project with compiler optimizations enabled and disables most debugging features. This produces the fastest executable and is the recommended configuration for production simulations and performance benchmarking. 
-> Alternatively, you can use the flag `Debug`, which builds the project with full debugging information no optimization. This configuration is intended for development, debugging with tools such as gdb, and investigating runtime errors. 
+> Alternatively, you can use the flag `Debug`, which builds the project with full debugging information and no optimization. This configuration is intended for development, debugging with tools such as gdb, and investigating runtime errors. 
 > Otherwise, the flag `RelWithDebInfo` provides a compromise between performance and debuggability by enabling compiler optimizations while retaining debugging symbols. This is often the preferred choice when profiling or diagnosing problems that only appear in optimized builds.
 >
 > * **`KOPS_BUILD_DOC=ON`** *(recommended)*: Automatically generates the KOptions API documentation with **Doxygen** during the build process (provided Doxygen is installed on the system).
@@ -502,7 +502,7 @@ cmake \
 >
 > * **`KOPS_ENABLE_TESTS=ON`**: Builds the KOptions test executables together with the main application. This option is recommended for development or when verifying a new installation, as it allows the built-in test suite to be executed after compilation.
 
-> **⚠️ Note: ccmake GUI. It could be helpful to use **
+> **⚠️ Note: ccmake GUI. It could be helpful to use the ccmake gui to see more clearly the configuration options.**
 
 The dependency paths deserve particular attention:
 

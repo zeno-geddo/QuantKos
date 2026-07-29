@@ -1,397 +1,286 @@
+# KOptions: Performance-Portable Monte Carlo Option Pricing Engine
+
+**KOptions** is a high-performance Monte Carlo option pricing engine written in modern **C++20** and built on top of the **Kokkos** performance portability framework. It provides a single-source implementation capable of targeting serial execution, multi-core CPUs, and modern GPUs while maintaining the same code base.
+
+KOptions has been designed as both a research and development framework for stochastic option pricing and a production-oriented pricing engine. 
+It cleanly separates stochastic models, numerical integration schemes, payoff evaluation and Monte Carlo orchestration, so that is it possible to easily extend it with new financial models or derivative contracts.
+
+Although KOptions is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on **Linux**, using **GCC**, **OpenMP**, and **NVIDIA CUDA**.
 
 ---
 
-# KOptions: High-Performance Option Pricing Engine
+## ✨ Features
 
-KOptions is a high-performance Monte Carlo simulation engine for pricing European and American options under the Heston and Bates stochastic volatility models (See Section 6). 
-Built in **C++20** and accelerated by **Kokkos**, it is designed for extreme scalability across multi-core CPUs and GPUs.
+### Performance Portability
+
+- Single C++ implementation for multiple hardware architectures
+- Procedural (Serial) execution
+- Multi-core CPU execution (OpenMP)
+- NVIDIA GPU acceleration (CUDA)
+- Support for additional Kokkos backends (HIP, SYCL, etc.) in principle
+
+### Stochastic Models
+
+Currently implemented:
+
+- Heston stochastic volatility model
+- Bates stochastic volatility jump-diffusion model
+
+The modular architecture makes it reasonably easy to add additional stochastic differential equation (SDE) models.
+
+### Supported Option Contracts
+
+KOptions currently supports pricing of
+
+- European options
+- American options (Longstaff-Schwartz Least-Squares Monte Carlo)
+- Asian options
+- Barrier options
+- Lookback options
+- Binary options
+
+Additional options types can be readily implemented.
+
+### Numerical Methods
+
+Several discretization schemes are available, including
+
+- Euler
+- Implicit Milstein
+- Andersen Quadratic-Exponential (QE)
+
+The implementation follows the numerical methods described in
+
+> Fabrice D. Rouah,
+> *The Heston Model and its Extensions in Matlab and C#*
+
+### Monte Carlo Engine
+
+The simulation engine includes
+
+- Parallel Monte Carlo path generation
+- Automatic or customizable batching for very large simulations
+- Memory-aware execution on both CPUs and GPUs
+- Reproducible simulations through configurable random seeds
+- Configurable single- or double-precision builds
 
 ---
 
-## 🚀 1. Prerequisites
+## 📚 Documentation
 
-To build and run KOptions, your system must meet the following requirements.
+Detailed documentation is split into dedicated guides.
 
-**Core Build Tools:**
+| Document | Description                                                                                                  |
+|----------|--------------------------------------------------------------------------------------------------------------|
+| **COMPILATION_GUIDE.md** | Installation, dependencies, hardware backends, CUDA/OpenMP builds, and CMake configuration.                  |
+| **USER_INPUT_GUIDE.md** | Complete description of the YAML configuration files used for simulations and validation tests.              |
+| **MATH_GUIDE.md** | Quick mathematical background of the implemented stochastic models, numerical schemes, and option contracts. |
 
-* **[CMake](https://cmake.org/)** (v3.20 or higher)
-* *(Optional but highly recommended: The `ccmake` terminal GUI for advanced configuration).*
-
-* **C++20 Compiler** ([GCC 10+](https://gcc.gnu.org/) or [Clang 12+](https://clang.llvm.org/))
-
-**Hardware Toolchains (Depending on your target):**
-
-* **[OpenMP](https://www.openmp.org/)**: Required if compiling for multi-core CPU parallelism.
-* **[NVIDIA CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)**: Provides the `nvcc` compiler, required if compiling for NVIDIA GPUs.
-
-**C++ Libraries:**
-
-* **[Kokkos](https://github.com/kokkos/kokkos)**: The performance portability framework.
-* **[yaml-cpp](https://github.com/jbeder/yaml-cpp)**: For parsing configuration files.
-  *(Note: The CMake build system is configured to download and build Kokkos and yaml-cpp automatically via `FetchContent` if they are not already installed on your system).*
+When Doxygen and Graphviz are installed, KOptions can also generate complete HTML and PDF API documentation during compilation.
 
 ---
 
-### 🐧 Quick Install (Ubuntu / Debian Linux)
+## 🚀 Quick Start
 
-If you are starting from a fresh Linux environment, you can install the core build tools, C++ compilers, OpenMP, and the `ccmake` interface in a single command:
+The simplest way to build KOptions is to let CMake automatically download **Kokkos** and **yaml-cpp** using **FetchContent**.
+
+### Clone the repository
 
 ```bash
-# Update package lists
-sudo apt update
-
-# Install GCC, CMake, the ccmake interface, and OpenMP
-sudo apt install -y build-essential cmake cmake-curses-gui libomp-dev
-
+git clone https://github.com/zeno.geddo/KOptions.git
+cd KOptions
 ```
 
-*(Note: To install the CUDA Toolkit for GPU support, it is highly recommended to follow the official instructions on the [NVIDIA Developer site](https://developer.nvidia.com/cuda-downloads) to ensure compatibility with your specific graphics drivers).*
-
----
-
-## ⚡ 2. Quick Start (Terminal)
-
-If you want to build the engine for maximum performance immediately, use the following commands from the root directory:
+### Create a build directory
 
 ```bash
-# 1. Configure the build (Downloads missing dependencies automatically)
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/KOps_dist -DKOPS_ENABLE_FETCHCONTENT=ON
-
-# 2. Compile using 4 CPU cores
-cmake --build build -j 4
-
-# 3. Install the executable and config files to kops_dist
-cmake --install build
-
-# 4. Run the solver
-cd $HOME/KOps_dist
-cp share/KOptions/inputs.yaml .
-./bin/KOptions inputs.yaml
-
+mkdir build
+cd build
 ```
 
----
+### Configure a Release build
 
-Here is the newly structured **Section 3**. I have broken out the steps exactly as you requested to make the logical flow much clearer.
+#### Serial
 
-I also updated the "Missing Libraries" section to clearly present the two distinct choices developers face (Auto-download vs. Local Path), complete with the crucial reminder that they must press **`c`** again after changing dependency settings to clear the errors.
-
-You can replace your current Section 3 with this block:
-
-
-## 🎛️ 3. Advanced Configuration (Using `ccmake`)
-
-For developers, remembering long terminal flags (`-DKOPS_ENABLE_SINGLE_PRECISION=ON`) is tedious. **`ccmake`** is a visual, terminal-based GUI that lets you toggle project settings interactively.
-
-### How to use `ccmake` with KOptions:
-
-**Step 1: Launch the interface**
-
-Instead of the standard `cmake` command, run:
 ```bash
-ccmake -B build
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DKOPS_ENABLE_FETCHCONTENT=ON \
+    -DKokkos_ENABLE_SERIAL=ON \
+    -DKokkos_ENABLE_OPENMP=OFF \
+    -DKokkos_ENABLE_CUDA=OFF \
+    -DKokkos_ARCH_NATIVE=ON
 ```
-*(If the `build` folder already exists, just type `ccmake build`. 
-It is recommended to add the flag -DCMAKE_EXPORT_COMPILE_COMMANDS=ON so that a JSON file will be generate in the build folder, containing all flags used.)*.
 
-
-**Step 2: Initial Configuration**
-
-When the screen opens, it might be empty.
-
-* Press **`c`** to run the initial configuration. CMake will scan your system and populate the screen with all available options.
-
-
-**Step 3: Handling Dependencies (Kokkos & YAML-CPP)**
-
-If CMake cannot find Kokkos or YAML-CPP installed on your system, it will display an error at the bottom of the screen. You have two ways to resolve this:
-
-* **Option A: Auto-Download**
-* Scroll to `KOPS_ENABLE_FETCHCONTENT` and press **`Enter`** to toggle it to `ON`.
-* Press **`c`** to re-configure. CMake will automatically download and link the missing libraries, clearing the error.
-
-
-* **Option B: Provide Local Paths**
-* * Scroll to `KOPS_ENABLE_FETCHCONTENT` and press **`Enter`** to toggle it to `OFF`.
-* Scroll to `Kokkos_ROOT` and/or `yaml-cpp_ROOT` and press **`Enter`** to edit.
-* Type the absolute path to your local installations and press **`Enter`** to save.
-* **(Note: For Kokkos, you must provide the directory containing the `KokkosConfig.cmake` file, which is usually located in `/lib/cmake/Kokkos` inside your Kokkos installation directory.) Given the directory, add the flag -DKokkos_ROOT=/path/to/Kokkos/target/dir.**
-* Press **`c`** to re-configure and clear the error.
-
-
-**Step 4: Toggle Hardware Settings (If using FetchContent)**
-
-> **Crucial Note:** The hardware variables listed below will **only appear** if you set `KOPS_ENABLE_FETCHCONTENT=ON` in Step 3.
-> If you linked to a pre-installed, local version of Kokkos, you can safely skip this step! Local installations are already pre-compiled with their hardware backends (OpenMP/CUDA) and CPU architectures permanently baked in.
-> More details about hardware settings are given in Section 4.
-
-If you are downloading and building Kokkos from source, use your **Up/Down arrow keys** to configure it for your machine:
-
-* **Hardware Backends:** Toggle `Kokkos_ENABLE_OPENMP`, `Kokkos_ENABLE_SERIAL`, or `Kokkos_ENABLE_CUDA` to `ON`/`OFF` depending on your target system (see Section 4).
-* **Hardware Architecture:** Look for variables starting with `Kokkos_ARCH_` to optimize the build for your specific CPU or GPU (e.g., `Kokkos_ARCH_ZEN2` or `Kokkos_ARCH_AMPERE86`) and toggle the correct one to `ON`. Ensure all other architectures are set to `OFF`.
-
-**Step 5: Choose the Floating-Point Precision**
-
-* Scroll to `KOPS_ENABLE_SINGLE_PRECISION` and press **`Enter`** to toggle it.
-* Leave it **`OFF`** for standard 64-bit `double` precision (Default).
-* Toggle it **`ON`** for 32-bit `float` precision (Highly recommended for massive GPU throughput where absolute precision is secondary).
-
-**Step 6: Select the Build Profile**
-
-* Scroll to `CMAKE_BUILD_TYPE`.
-* Press **`Enter`** repeatedly to cycle through the available optimization profiles: `Release`, `Debug`, `RelWithDebInfo`, or `MinSizeRel`. *(See Section 5 for detailed profile specifications).*
-
-**Step 7: Generate and Exit**
-
-* Press **`c`** one final time to confirm your new settings.
-* Once everything is resolved, the option to generate will appear. Press **`g`** to generate the build files and exit the interface.
-
-**Step 8: Compile and Install**
-
-Now that your custom configuration is generated, you can compile and install the engine using standard CMake commands from your terminal:
+#### OpenMP
 
 ```bash
-# Compile using 4 CPU cores
-cmake --build build -j 4
-
-# Install the executable and share files to your specified prefix
-cmake --install build
-
+cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DKOPS_ENABLE_FETCHCONTENT=ON \
+    -DKokkos_ENABLE_SERIAL=ON \
+    -DKokkos_ENABLE_OPENMP=ON \
+    -DKokkos_ENABLE_CUDA=OFF \
+    -DKokkos_ARCH_NATIVE=ON
 ```
-*(Note: it is recommended to add the verbose flag -v to the command above, to have more details about the compilation and installation process.)*.
 
+> **IMPORTANT NOTE:** For CUDA builds, custom Kokkos installations, or advanced CMake configuration, see **COMPILATION_GUIDE.md**.
 
-
-
-
-
-
-
----
-
-## 🖥️ 4. Targeting Hardware (CPU vs. GPU)
-
-Kokkos acts as a bridge between your C++ code and your physical hardware. You must enable the correct **backends** and **architectures** during the CMake configuration phase, and then you can control the exact resources used during the **Run phase**.
-
-### Phase 1: Enabling Hardware Backends (Compile Time)
-
-You can configure exactly *how* the engine compiles by adjusting Kokkos flags in `ccmake` (or via terminal arguments):
-
-* **Pure Procedural (Single Core):** For maximum single-core efficiency without parallel overhead.
-* Set `Kokkos_ENABLE_SERIAL=ON`
-* Set `Kokkos_ENABLE_OPENMP=OFF`
-
-
-* **Multi-Core (OpenMP):** For running across multiple CPU cores.
-* Set `Kokkos_ENABLE_OPENMP=ON`
-
-
-* **NVIDIA GPU (CUDA):** For massive parallel throughput.
-* Set `Kokkos_ENABLE_CUDA=ON`
-* *(Note: Compiling for CUDA requires the `nvcc` compiler).*
-
-
-
----
-
-### Phase 2: Tuning for Specific Architectures (Compile Time)
-
-**Why is this necessary?**
-
-Simply turning on "OpenMP" or "CUDA" tells the compiler to use generic parallel code. However, explicitly telling Kokkos *which* chip you are using unlocks advanced hardware instructions (like AVX2/AVX-512 for CPUs).
-
-Instead of processing one equation at a time, these architectures use SIMD (Single Instruction, Multiple Data) to process several **floating-point numbers** in a single clock cycle. This can speed up the Monte Carlo simulations.
-
-**How to set native architectures in `ccmake`:**
-
-Because Kokkos supports dozens of architectures, these flags are hidden by default.
-
-1. Run `ccmake build` in your terminal.
-2. Press **`t`** to toggle **Advanced Mode** `ON`.
-3. Scroll down (or press **`/`** to search) to find the `Kokkos_ARCH_...` variables.
-4. Highlight your specific architecture and press **`Enter`** to toggle it to `ON`. *(Make sure all other architecture flags are `OFF`)*.
-
-**Common CPU Examples (Intel Core i5 / i7):**
-
-* **`Kokkos_ARCH_HSW=ON`**: (Haswell) Use this for most general Intel i5/i7 processors. It enables **AVX2** vectorization, allowing the CPU to process **4 double-precision** (or 8 single-precision) floating-point numbers at the exact same time.
-* **`Kokkos_ARCH_SKX=ON`**: (Skylake) Use this for newer/higher-end Intel chips. It enables **AVX-512**, allowing the CPU to process **8 double-precision** (or 16 single-precision) floating-point numbers simultaneously.
-
-**Common GPU Examples (NVIDIA GeForce RTX):**
-
-* **`Kokkos_ARCH_TURING75=ON`**: For **RTX 20xx** series cards (e.g., RTX 2060, 2080).
-* **`Kokkos_ARCH_AMPERE86=ON`**: For **RTX 30xx** series consumer cards (e.g., RTX 3070, 3080). *(Note: Datacenter cards like the A100 use `AMPERE80` instead).*
-* **`Kokkos_ARCH_ADA89=ON`**: For **RTX 40xx** series cards (e.g., RTX 4080, 4090).
-
-*Terminal Example (Targeting an RTX 3080 directly without ccmake):*
+### Build
 
 ```bash
-cmake -B build -DKokkos_ENABLE_CUDA=ON -DKokkos_ARCH_AMPERE86=ON
-cmake --build build -j 4
+cmake --build . -j$(nproc)
+```
 
+### Install
+
+```bash
+cmake --install .
 ```
 
 ---
 
-### Phase 3: Specifying Cores/GPUs (Run Time)
+## ▶️ Running KOptions
 
-Once compiled, KOptions includes the native Kokkos command-line parser. You do not need to recompile to change the number of active cores or switch GPUs!
-
-**Running on Multiple Cores (If OpenMP was enabled):**
-
-You can specify exactly how many CPU threads to use at runtime:
+Execute the pricing engine by passing a simulation configuration file.
 
 ```bash
-# Use exactly 8 cores
-./bin/KOptions inputs.yaml --kokkos-threads=8
-
-# Alternatively, use standard OpenMP environment variables:
-OMP_NUM_THREADS=8 ./bin/KOptions inputs.yaml
-
+./bin/KOptions share/KOptionsConfig.yaml
 ```
 
-*(Note: If you compiled with pure `Serial` mode, these flags are safely ignored, and the program will run procedurally on one core).*
-
-**Running on a GPU (If CUDA was enabled):**
-
-Kokkos will automatically find and use your GPU. If you have a multi-GPU system (e.g., a server with multiple RTX cards), you can specify which device to use:
+For OpenMP builds, the number of threads can be selected at runtime.
 
 ```bash
-# Run on the first GPU (Device 0)
-./bin/KOptions inputs.yaml --kokkos-device-id=0
-
-# Run on the second GPU (Device 1)
-./bin/KOptions inputs.yaml --kokkos-device-id=1
-
+./bin/KOptions share/KOptionsConfig.yaml --kokkos-threads=8
 ```
-***
 
-## 🔬 5. More About  Build Modes
+or equivalently
 
+```bash
+OMP_NUM_THREADS=8 ./bin/KOptions share/KOptionsConfig.yaml
+```
 
-KOptions leverages modern CMake generator expressions to strictly control compiler optimizations, sanitizers, and hardware tuning.
+For CUDA builds on systems with multiple GPUs, a specific device can be selected.
 
-> **Note on Code Quality:** Regardless of the chosen build profile, the engine always compiles with strict C++ warnings enabled (`-Wall`, `-Wextra`, `-Wpedantic`, `-Wshadow`, `-Wnon-virtual-dtor`) for both GCC and Clang to ensure baseline safety.
+```bash
+./bin/KOptions share/KOptionsConfig.yaml --kokkos-device-id=0
+```
 
-You can set the build type during configuration using `-DCMAKE_BUILD_TYPE=<Profile>`.
+The complete description of all configuration parameters is available in **USER_INPUT_GUIDE.md**.
 
-#### 1. Release Mode (`Release`)
-
-**Goal:** Maximum computational throughput.
-**When to use:** For actual production runs and massive Monte Carlo simulations.
-
-* **`-O3` & `-march=native`:** Enables aggressive vectorization, loop unrolling, and generates instructions tailored to your specific physical CPU (e.g., AVX2/AVX-512).
-* **Link Time Optimization (`-flto`):** Flattens the call stack across translation units, allowing the compiler to inline functions across different `.cpp` files.
-* **Fast Math (`-fno-math-errno`):** Skips updating `errno` after math calls, unlocking faster SIMD operations.
-* *Warning:* Binaries compiled in Release mode are tied to the host machine's architecture and may crash if copied to an older CPU.
-
-#### 2. Debug Mode (`Debug`)
-
-**Goal:** 100% Transparency and Memory Safety.
-**When to use:** During active development, fixing crashes, or writing new pricing models.
-
-* **`-O0` & `-g`:** Completely disables optimizations and embeds debug symbols so you can step through the code line-by-line in GDB/LLDB.
-* **AddressSanitizer (ASan):** Injects hidden checks to instantly catch memory leaks, use-after-free, and out-of-bounds array access.
-* **UndefinedBehaviorSanitizer (UBSan):** Instantly traps mathematical anomalies like integer overflows or division-by-zero during stochastic calculations.
-* *Warning:* Performance will be massively degraded due to the heavy memory monitoring.
-
-#### 3. Release with Debug Info (`RelWithDebInfo`)
-
-**Goal:** Production-level speed, but with a map attached.
-**When to use:** **Profiling.** Use this when your simulation is running slowly and you need to find the exact line of C++ code causing the bottleneck using tools like `perf`, Intel VTune, or Valgrind.
-
-* Retains all the aggressive speed optimizations of Release mode (`-O3`, `-flto`, `-march=native`).
-* Adds debug symbols (`-g`) and keeps the frame pointer (`-fno-omit-frame-pointer`) so the profiler can read the call stack and tell you exactly which function is eating up CPU cycles.
-
-#### 4. Minimum Size Release (`MinSizeRel`)
-
-**Goal:** Shrink the final binary size.
-**When to use:** Almost never in Quantitative Finance or HPC.
-
-* **`-Os`:** Tells the compiler to optimize for a smaller file size rather than speed (e.g., it will refuse to unroll loops, saving disk space but costing CPU cycles). Included for completeness for embedded deployment.
 ---
 
-## 6. Mathematical Framework
+## ⚙️ Simulation Configuration
 
-### The Heston SDEs
-This engine simulates the asset path using the log-price formulation of the Heston model under the risk-neutral measure $\mathbb{Q}$. Let $x_t = \ln(S_t)$ be the log-price and $v_t$ be the variance:
+KOptions uses YAML configuration files.
 
-$$dx_t = \left(r - q - \frac{1}{2}v_t\right)dt + \sqrt{v_t} d\widetilde{W}_{1,t}$$
-$$dv_t = \kappa(\theta - v_t)dt + \sigma \sqrt{v_t} d\widetilde{W}_{2,t}$$
+A simulation file specifies
 
-Where the Brownian motions are correlated by $\mathbb{E}[d\widetilde{W}_{1,t} d\widetilde{W}_{2,t}] = \rho dt$.
+- market parameters
+- stochastic model
+- option contract
+- numerical integration scheme
+- Monte Carlo settings
+- output options
 
-**Model Parameters:**
-
-| Parameter | Description | Constraint | Unit of Measure |
-| :---: | :--- | :---: | :--- |
-| **$r$** | Risk-free interest rate | - | $1 / \text{Years}$ (Annualized) |
-| **$q$** | Continuous dividend yield | - | $1 / \text{Years}$ (Annualized) |
-| **$\kappa$** | Mean reversion speed of the variance | $\kappa > 0$ | $1 / \text{Years}$ |
-| **$\theta$** | Long-term mean (reversion level) of the variance | $\theta > 0$ | $1 / \text{Years}$ (Annualized) |
-| **$\sigma$** | Volatility of the variance (vol-of-vol) | $\sigma > 0$ | $1 / \text{Years}$ |
-| **$\rho$** | Correlation (captures the leverage or skew effect) | $[-1, 1]$ | Dimensionless |
-| **$v_0$** | Initial (time zero) level of the variance | $v_0 > 0$ | $1 / \text{Years}$ (Annualized) |
-
-> **Crucial Note on Units:** Because the simulation utilizes the dimensionless log-price $x_t$, the sole driving dimension of the system is time ($T$). All rate and variance parameters must be strictly entered as **annualized** values to ensure dimensional consistency with the time step $dt$ (which is measured in fractions of a year).
-### Numerical Discretization Schemes
-Because the Feller condition ($2\kappa\theta > \sigma^2$) is often violated in high-volatility environments, standard discretization schemes fail as $v_t$ becomes negative. 
-KOptions implements several schemes with increasing accuracy to handle this:
-
-* **Full Truncation Euler:** A fast, standard Euler-Maruyama scheme where the variance is truncated at zero ($v^+ = \max(v, 0)$) to prevent imaginary numbers during simulation.
-* **Milstein Scheme:** A higher-order scheme that improves the strong convergence rate of the diffusion components.
-* **Andersen Quadratic Exponential (QE):** The industry-standard scheme that uses a probabilistic switch between a non-central chi-square approximation and an exponential distribution to guarantee strictly non-negative variance without leaking mass.
-
-> **Reference:** The mathematical implementation and parameter definitions heavily reference *Rouah, F. D. (2013). The Heston Model and its Extensions in Matlab and C#*.
-
-
-***
-
-## ⚙️ 7. Configuration (`inputs.yaml`)
-
-KOptions uses a YAML file to define the financial and numerical parameters of the simulation. A default template is provided in `share/KOptions/inputs.yaml`.
-
-Here is a complete example of a valid configuration file:
+Example:
 
 ```yaml
-# ==========================================
-# KOptions: Heston Model Configuration
-# ==========================================
+Market:
+  Price: 8.0
+  Variance: 0.0625
+  r: 0.10
+  q: 0.00
 
 Options:
-  OptionType: European
-  OptionRight: Call
-  StrikePrice: 150
+  OptionType: American
+  OptionRight: Put
+  StrikePrice: 10.0
 
 Model:
   Heston:
-    r: 0.05       # Risk-free interest rate
-    q: 0.0        # Continuous dividend yield
-    k: 2.0        # Mean reversion speed of the variance (kappa)
-    theta: 0.04   # Long-term mean of the variance
-    sigma: 0.3    # Volatility of the variance (vol-of-vol)
-    rho: -0.7     # Correlation between price and variance Brownian motions
-
-Init:
-  Price: 100.0    # Initial asset price (S0)
-  Variance: 0.04  # Initial variance (v0)
+    k: 5.0
+    theta: 0.16
+    sigma: 0.9
+    rho: 0.1
 
 Numerics:
-  Scheme: Euler   # Available schemes: Euler, Milstein, AndersonQE
+  Scheme: ImplicitMilstein
 
 Time:
-  T_End: 1.0      # Time to maturity (in years)
-  Inp_DT: 0.005       # Time step size (dt)
+  T_End: 0.25
+  Inp_DT: 0.00025
 
 MC:
-  N_Paths: 100000 # Number of Monte Carlo realizations/paths
-  Batch_Size: 0  # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
-  RNG_Seed: 88471920573105
-  Max_VRAM_MB: 256 
-  Max_CPU_RAM_MB: 4000
-
+  N_Paths: 500000
+  Batch_Size: 0
 
 Output:
-  out_dir: "outputs"
-  Name_Paths_Out_File: "KOptionsPaths.paths"
-  Name_Log_File: "KOptions.log"
-  Format: TXT     # Available formats: TXT, BIN
+  out_dir: outputs
+```
+
+The full specification of every parameter is documented in **USER_INPUT_GUIDE.md**.
+
+---
+
+## 🧪 Validation Suite
+
+KOptions includes a standalone testing executable that validates the numerical implementation.
+
+Compile with
+
+```text
+-DKOPS_ENABLE_TESTS=ON
+```
+
+and execute
+
+```bash
+./bin/Tester share/TesterConfig.yaml
+```
+
+The automated validation suite currently includes tests for
+
+- Random number generation
+- Binary I/O
+- Deterministic limits
+- Black-Scholes convergence
+- Heston convergence
+- Bates convergence
+- Longstaff-Schwartz American option pricing
+
+These tests are useful for validating new installations, verifying code modifications, and comparing different hardware backends.
+
+---
+
+## 🎯 Project Goals
+
+KOptions aims to provide
+
+- a clean and extensible C++ architecture for quantitative finance
+- performance portability across heterogeneous hardware
+- reproducible scientific simulations
+
+---
+
+## 📄 License
+
+KOptions is distributed under the **GNU General Public License v3.0**.
+
+See the `LICENSE` file for details.
+
+---
+
+## 🤝 Contributing
+
+Bug reports, feature requests, and pull requests are always welcome.
+
+If you encounter a portability issue on a hardware platform that is not yet officially tested, please consider opening an issue with your build configuration and compiler information.
+
+---
+
+## 👤 Author
+
+KOptions was designed and developed by **[Zeno Geddo](https://github.com/zeno-geddo)** as an independent research and software engineering project in quantitative finance.
+
+The project has been developed out of personal interest in stochastic differential equations, numerical methods, high-performance computing, and performance-portable scientific software.

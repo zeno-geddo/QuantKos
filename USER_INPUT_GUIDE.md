@@ -112,14 +112,61 @@ The Brownian motions are correlated in the following way:
 
 $$ E[dW_t(1)dW_t(2)]=\rho dt.$$
 
-| Parameter          | Description | Units |
-|--------------------|---|---|
-| $k$ (k)            | Mean reversion speed \kappa. Controls how quickly variance returns toward its long-term value. | year−1 |
-| $\theta$   (theta) | Long-run variance \theta. The corresponding long-run volatility is \sqrt\theta. | year−1 |
-| $\sigma$ (sigma)   | Volatility of variance ("vol-of-vol"). | year−1/2 |
-| $\rho$ (rho)       | Correlation between asset and variance Brownian motions. | dimensionless |
+| Parameter          | Description                                                                                    | Units         |
+|--------------------|------------------------------------------------------------------------------------------------|---------------|
+| $k$ (k)            | Mean reversion speed \kappa. Controls how quickly variance returns toward its long-term value. | $year^{−1}$   |
+| $\theta$   (theta) | Long-run variance $\theta$. The corresponding long-run volatility is $\sqrt\theta$.            | $year^{−1}$   |
+| $\sigma$ (sigma)   | Volatility of variance ("vol-of-vol").                                                         | $year^{−1/2}$ |
+| $\rho$ (rho)       | Correlation between asset and variance Brownian motions.                                       | dimensionless |
+
 
 #### Bates Parameters
+
+The Bates model extends the Heston stochastic volatility model by adding a Merton jump component to the asset price process.
+
+The variance dynamics remain identical to the Heston model,
+
+$$
+dv_t=\kappa(\theta-v_t)\,dt+\sigma\sqrt{v_t}\,dW_{2,t},
+$$
+
+while the asset price evolves according to
+
+$$
+dS_t=(r-q-\lambda\kappa_J)S_t\,dt+\sqrt{v_t}S_t\,dW_{1,t}
++(J-1)S_t\,dN_t,
+$$
+
+where \(N_t\) is a Poisson process with intensity \(\lambda\), and the jump size \(J\) is lognormally distributed,
+
+$$
+\ln(J)\sim\mathcal{N}(\mu_J,\sigma_J^2).
+$$
+
+The Brownian motions satisfy
+
+$$
+E[dW_t(1)dW_t(2)]=\rho\,dt.
+$$
+
+The jump drift compensation term is
+
+$$
+\kappa_J = E[J-1]
+= e^{\mu_J+\frac{1}{2}\sigma_J^2}-1,
+$$
+
+which ensures that the discounted asset price remains a martingale under the risk-neutral measure.
+
+| Parameter     | Description                                                                                         | Units         |
+|---------------|-----------------------------------------------------------------------------------------------------|---------------|
+| $k$ (k)       | Mean reversion speed $\kappa$. Controls how quickly variance returns toward its long-term value.    | $year^{-1}$   |
+| $\theta$ (theta) | Long-run variance $\theta$. The corresponding long-run volatility is $\sqrt{\theta}$.               | $year^{-1}$   |
+| $\sigma$ (sigma) | Volatility of variance ("vol-of-vol").                                                              | $year^{-1/2}$ |
+| $\rho$ (rho)  | Correlation between asset and variance Brownian motions.                                            | dimensionless |
+| $\lambda$     | Average jump intensity. Expected number of price jumps per unit time.                               | $year^{-1}$   |
+| $\mu_J$       | Mean of the logarithmic jump size. Determines the average jump magnitude in log-space.              | dimensionless |
+| $\sigma_J$    | Standard deviation of the logarithmic jump size. Controls the variability (std) of jump magnitudes. | dimensionless |
 
 ### Numerical Scheme
 
@@ -138,6 +185,8 @@ Different schemes provide different trade-offs between:
 - numerical accuracy;
 - stability;
 - computational cost.
+
+> **Note** The schemes implemented are detailed in the book : *The Heston Model and its Extensions in Matlab and C#*, by Fabrice D. ROUAH.
 
 
 ### Time
@@ -165,23 +214,25 @@ $$
 
 The MC block controls the Monte Carlo simulation.
 
-| Parameter | Description |
-|---|---|
-| N_Paths | Total number of simulated Monte Carlo paths. |
-| Batch_Size | Number of paths processed simultaneously. |
-| RNG_Seed | Seed used by the random number generator. |
-| Max_VRAM_MB | Maximum GPU memory allowed. |
-| Max_CPU_RAM_MB | Maximum host memory allowed. |
+| Parameter | Description                                                                               |
+|---|-------------------------------------------------------------------------------------------|
+| N_Paths | Total number of simulated Monte Carlo paths.                                              |
+| Batch_Size | Number of paths processed simultaneously in a batch (it allow for very large simulation). |
+| RNG_Seed | Seed used by the random number generator.                                                 |
+| Max_VRAM_MB | Maximum GPU memory allowed.                                                               |
+| Max_CPU_RAM_MB | Maximum host memory allowed.                                                              |
 
-### Batch Size
+#### About the Batch Size
 
 Batch_Size has three possible modes:
 
-| Value | Meaning |
-|---|---|
-| 0 | Automatic selection based on available hardware. |
-| -1 | Process all paths simultaneously. |
-| >0 | User-defined batch size. |
+| Value                 | Meaning                                                                                                             |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------|
+| ```Batch_Size``` = 0  | Define an optiomal batch size based on ```Max_VRAM_MB``` or ```Max_CPU_RAM_MB```, depending on the target hardware. |
+| ```Batch_Size``` =-1  | Process all paths of the MonteCarlo in the same batch.                                                              |
+| ```Batch_Size``` $>0$ | User-defined batch size.                                                                                            |
+
+
 
 ### Output 
 
@@ -189,8 +240,8 @@ This block controls generated files.
 
 | Parameter	|Description| 
 |---|---|
-|out_dir |Output directory.  It is automatically created if missing.
-| Name_Paths_Out_File | File containing generated Monte Carlo paths.
+|out_dir |Output directory where all files will be saved.  It is automatically created if missing.
+| Name_Paths_Out_File | Name of the file containing generated Monte Carlo paths (if empty, no paths will be saved).
 | Name_Log_File |Simulation log file.
 |Format | Output format: TXT or BIN.
 
@@ -214,15 +265,15 @@ Multiple tests can be executed in a single run.
 
 ### Available Automated Tests
 
-| Test | Purpose                                                                                                                      |
-|---|------------------------------------------------------------------------------------------------------------------------------|
-| RNG | Verifies that the Gaussian random number generator correctly samples a standard normal distribution.                         |
-| IOBin | Verifies that binary files are correctly written to disk and reloaded without data corruption when using the binfary format. |
-| NoNoise | Verifies the deterministic zero-variance limit of the stochastic differential equation solver.                               |
-| BlackScholes | Verifies that, as the time discretization is refined, the numerical solution reproduces the exact Black-Scholes result.      |
-| Heston | Verifies that, as the time discretization is refined, the numerical solution reproduces the reference Heston result.         |
-| Bates | Verifies that, as the time discretization is refined, the numerical solution reproduces the reference Bates result.          |
-| AmericanOption | Validates the Least-Squares Monte Carlo (LSM / Longstaff-Schwartz) implementation for American option pricing.               |
+| Test | Purpose                                                                                                                     |
+|---|-----------------------------------------------------------------------------------------------------------------------------|
+| RNG | Verifies that the Gaussian random number generator correctly samples a standard normal distribution.                        |
+| IOBin | Verifies that binary files are correctly written to disk and reloaded without data corruption when using the binary format. |
+| NoNoise | Verifies the deterministic zero-variance limit of the stochastic differential equation solver.                              |
+| BlackScholes | Verifies that, as the time discretization is refined, the numerical solution reproduces the exact Black-Scholes result.     |
+| Heston | Verifies that, as the time discretization is refined, the numerical solution reproduces the reference Heston result.        |
+| Bates | Verifies that, as the time discretization is refined, the numerical solution reproduces the reference Bates result.         |
+| AmericanOption | Validates the Least-Squares Monte Carlo (LSM / Longstaff-Schwartz) implementation for American option pricing.              |
 
 
 > **Note**: Tests involving the SDEs, by progressively reducing the simulation time step, verify that the implemented numerical schemes reproduce analytical solutions or high-accuracy reference solutions within the expected numerical error.
