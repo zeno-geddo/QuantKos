@@ -1,0 +1,74 @@
+# ==========================================
+# 1. Build & Installation Directories
+# ==========================================
+build/
+build*/
+bin/
+dist/
+install/
+# Ignore IDE-specific build folders (CLion/VSCode)
+cmake-build-*/
+.vscode/
+.idea/
+
+# ==========================================
+# 2. C++ Compiled Artifacts
+# ==========================================
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# ==========================================
+# 3. CMake Generated Files
+# ==========================================
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+Makefile
+install_manifest.txt
+compile_commands.json
+
+# ==========================================
+# 4. Kokkos & HPC Specifics
+# ==========================================
+# If you download/build Kokkos as a subproject inside your repo
+kokkos/
+# Kokkos-specific nvcc/compiler wrapper artifacts
+*.ii
+*.i
+*.s
+*.cudafe1.*
+*.fatbin
+*.reg.c
+*.nsys-rep
+nsys-rep/
+
+# ==========================================
+# 5. Simulation Output & Data
+# ==========================================
+# Don't track massive simulation result files
+*.bin
+*.csv
+*.log
+outputs/
+logs/
+results/
+
+# ==========================================
+# 6. Doxygen outputs
+# ==========================================
+html/
+latex/
+
+# ==========================================
+# 7. OS & System Junk
+# ==========================================
+.DS_Store
+Thumbs.db

@@ -1,0 +1,201 @@
+// Copyright (C) 14/07/2026 Zeno GEDDO <zeno.geddo@gmail.com>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#pragma once
+
+#include <iostream>
+#include <string>
+#include <filesystem>
+#include <string_view>
+#include <vector>
+#include <sstream>
+#include "./../core/config/ConfigFileKeys.hpp"
+#include "./../core/config/ConfigFileKeysEnumMaps.hpp"
+
+/**
+ * @brief Utility namespace for handling user-facing console help.
+ * * Contains functions responsible for outputting startup welcome banners, terminal usage syntax
+ * instructions, and structural YAML configuration templates directly to the standard output stream.
+ */
+namespace KOps::HELP {
+    namespace K = KOps::Keys;
+    namespace KI = KOps::Implemented;
+
+    /**
+     * @brief Prints the stylized KOptions welcome banner to the terminal.
+     * * Outputs high-level metadata about the engine version, developer contact details,
+     * build constraints, and confirmation of the active parallel Kokkos compute backend.
+     */
+    inline void print_welcome_msg() {
+        constexpr std::string_view indent = "    ";
+        std::cout << "\n\n" << indent << "====================================================================\n"
+                << indent << "                              KOptions                              \n"
+                << indent << "====================================================================\n"
+                << indent << "    Framework         : Parallel SDE Option Pricing Engine          \n"
+                << indent << "    Compute Backend   : C++ (Performance Portability with Kokkos)   \n"
+                << indent << "--------------------------------------------------------------------\n"
+                << indent << "    Author            : Zeno GEDDO                                  \n"
+                << indent << "    Version           : v0.1.0 (Beta)                               \n"
+                << indent << "    Build Year        : 2026                                        \n"
+                << indent << "    License           : GNU GENERAL PUBLIC LICENSE (V.3, 29/06/2007)\n"
+                << indent << "    Contact           : zeno.geddo@gmail.com                        \n"
+                << indent << "====================================================================\n"
+                << std::endl;
+    }
+
+    /**
+     * @brief Prints a practical execution syntax and usage guide to the terminal console.
+     * @note Automatically extracts the raw file extension name from the path argument to demonstrate
+     * exactly how a user should pass their targeted YAML configuration file.
+     * * @param executable_path The absolute or relative launch path of the binary (`argv[0]`).
+     */
+    inline void print_usage(std::string_view executable_path) {
+        // Extract just the filename out of the absolute path wrapper
+        std::filesystem::path prog_path(executable_path);
+        std::string filename = prog_path.filename().string();
+
+        std::cout << "    [Usage Guide]\n"
+                << "      Execution Command Syntax:\n"
+                << "        ./" << filename << " <path_to_config_file.yaml>\n\n"
+                << "      Example Command Usage:\n"
+                << "        ./" << filename << " KOptions/KOptionsConfig.yaml\n\n"
+                << "    --------------------------------------------------------\n"
+                << "    Note: The configuration input file must be a validated \n"
+                << "          YAML/JSON specification containing comprehensive \n"
+                << "          model parameters .\n"
+                << "    ========================================================\n"
+                << std::endl;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Helper to generate a string of allowed options: "# [Opt1, Opt2, ...]"
+    // ------------------------------------------------------------------------
+    /**
+     * @brief Dynamically loops through an internal enum to string map to generate a clean string list of valid choices.
+     * * Helper template used to generate side-car inline comment strings in the console dump.
+     * * Outputs format structure: `# [Choice1, Choice2, ...]`
+     * * @tparam T The specific enum configuration type to extract and map out.
+     * @return A formatted std::string representing the available options collection.
+     */
+    template<typename T>
+    std::string get_allowed_options() {
+        std::stringstream ss;
+        ss << "# [";
+        const auto &map = KI::StrEnumMap<T>::get();
+        size_t i = 0;
+        for (const auto &pair: map) {
+            ss << pair.first;
+            if (i < map.size() - 1) ss << ", "; // Avoid inserting a comma also after the last entry
+            i++;
+        }
+        ss << "]";
+        return ss.str();
+    }
+
+    /**
+    * @brief Dumps a comprehensive (almost copy-pasteable),  blueprint template of a simulation configuration YAML file to console.
+    * * Uses internal configuration string keys (`ConfigFileKeys.hpp`) to accurately output every mandatory block,
+    * including:
+    * - **Market Parameters**,
+    * - **Contract Specification**,
+    * - **Stochastic Processes Block**,
+    * - **Numerical Control Framework**,
+    * - **ETC...**.
+    */
+    inline void print_example_config() {
+        std::cout << "\n--- Template Configuration File ---\n"
+                << "# Copy this structure into your .yaml file, and chose one one of the implementation between '[' and ']' ...\n\n";
+
+        // ---------------------------------------------------------
+        // Market Section
+        // ---------------------------------------------------------
+        std::cout << K::Market << ":\n"
+                << "  " << K::MarketParams::Price << ": 100.       # Initial asset price (S0)\n "
+                << "  " << K::MarketParams::Variance << ": 0.04    # Initial variance (v0)\n"
+                << "  " << K::MarketParams::r << ": 0.05           # Risk-free interest rate\n"
+                << "  " << K::MarketParams::q << ": 0.             # Continuous dividend yield\n";
+
+        // ---------------------------------------------------------
+
+
+        // ---------------------------------------------------------
+        // Option Section
+        // ---------------------------------------------------------
+        std::cout << K::Options << ":\n"
+                << "  " << K::OptionsParams::OptionType << "   : European   #" << get_allowed_options<KI::OptType>() <<
+                "\n"
+                << "  " << K::OptionsParams::OptionRight << "  : Call       #" << get_allowed_options<KI::OptRight>() <<
+                "\n"
+                << "  " << K::OptionsParams::StrikePrice << "  : 150        # Strike Price\n";
+
+
+        // ---------------------------------------------------------
+        // Model Section
+        // ---------------------------------------------------------
+        std::cout << K::Model << ":\n"
+                << "  [" << K::MathModelParams::IDHestonBlock << " :\n"
+                << "    " << K::MathModelParams::k << ": 2.       # Mean reversion speed of the variance (kappa)\n"
+                << "    " << K::MathModelParams::theta << ": 0.04 # Long-term mean of the variance\n"
+                << "    " << K::MathModelParams::sigma << ": 0.3  # Volatility of the variance (vol-of-vol)\n"
+                << "    " << K::MathModelParams::rho <<
+                ": 0.7    # Correlation between price and variance Brownian motions\n"
+                << "  ],\n"
+                << "  [" << K::MathModelParams::IDHestonBlock << " :\n"
+                << "    " << K::MathModelParams::k << ": 2.       # Mean reversion speed of the variance (kappa)\n"
+                << "    " << K::MathModelParams::theta << ": 0.04 # Long-term mean of the variance\n"
+                << "    " << K::MathModelParams::sigma << ": 0.3  # Volatility of the variance (vol-of-vol)\n"
+                << "    " << K::MathModelParams::rho <<
+                ": 0.7    # Correlation between price and variance Brownian motions\n"
+                << "    " << K::MathModelParams::lambda_J << ": 0.1  # Merton Jump Intensity (λ)\n"
+                << "    " << K::MathModelParams::mu_J << ": -0.1  # Merton Mean Jump Size (μJ)\n"
+                << "    " << K::MathModelParams::sigma_J << ": 0.15  # Merton Jump Volatility (σJ)\n"
+                << "  ]\n";
+
+
+        // ---------------------------------------------------------
+        // Numerics Section
+        // ---------------------------------------------------------
+        std::cout << K::Numerics << ":\n"
+                << "  " << K::NumSchemeParams::Scheme << ": Scheme " << get_allowed_options<KI::NumScheme>() << "\n";
+
+        // ---------------------------------------------------------
+        // Time Section
+        // ---------------------------------------------------------
+        std::cout << K::Time << ":\n"
+                << "  " << K::TimeParams::T_End << ": 1.       # Time to maturity (in years)\n"
+                << "  " << K::TimeParams::Inp_DT << ": 0.005   # Time step size (dt)\n";
+
+        // ---------------------------------------------------------
+        // MC Section
+        // ---------------------------------------------------------
+        std::cout << K::MC << ":\n"
+                << "  " << K::MCParams::N_Realizations << ": 1000       # Number of Monte Carlo realizations/paths\n"
+                << "  " << K::MCParams::Batch_Size <<
+                ": 0              # Number of paths run in parallel before saving (0 means auto-computed based on hardware, -1 means all paths)\n"
+                << "  " << K::MCParams::RNG_Seed <<
+                ": 184467440737095  # Random Number Generator Seed (uint62_t, must be > 0)\n"
+                << "  " << K::MCParams::Max_VRAM_MB << ": 256           # Max Available VRAM \n"
+                << "  " << K::MCParams::Max_CPU_RAM_MB << ": 4000       # Max Available RAM \n";
+
+        // Output Section
+        // ---------------------------------------------------------
+        std::cout << K::Output << ":\n"
+                << "  " << K::OutParams::out_dir << ": \"install/outputs\"\n"
+                << "  " << K::OutParams::Name_Paths_Out_File << ": \"KOptionsPaths.paths\"\n"
+                << "  " << K::OutParams::Name_Log_File << ": \"KOptions.log\"\n"
+                << "  " << K::OutParams::Format << ":  " << get_allowed_options<KI::IOFormat>() << "\n";
+    }
+}

@@ -1,0 +1,66 @@
+// Copyright (C) 14/07/2026 Zeno GEDDO <zeno.geddo@gmail.com>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#pragma once
+#include <cmath>
+#include <stdexcept>
+
+#include "./../Typedefs.hpp"
+#include "./../config/Config.hpp"
+
+/**
+ * @brief Namespace aggregating all tools needed to compute the exact Europen call option price considering the Black-Scholes model.
+ */
+namespace KOps::Engine::Analytical::BlackScholes {
+    namespace KT = KOps::Types;
+    namespace KC = KOps::Config;
+    namespace KI = KOps::Implemented;
+
+    /**
+    * @brief Eval CDF of a standard normal at point x.
+    * @param x, position in the x domain.
+    * @return Value of the Normal CDF at x.
+    */
+    inline KT::Real normalCDF(KT::Real x) {
+        return 0.5 * (1.0 + std::erf(x / std::sqrt(2.0)));
+    }
+
+    /**
+    * @brief Computes the analytical European Call price using the Black-Scholes model.
+    * @param conf, Configuration struct containing all parameters given by the user.
+    * @return Theoretical European Call price.
+    * @throw std::runtime_error If the option configuration is not a European Call.
+    */
+    inline KT::Real get_exact_eu_call_option_price(const KC::UInputs &conf) {
+        // Assume considering European Call
+        const bool condition = (conf.options.opt_right == KI::OptRight::Call) and (
+                                   conf.options.opt_type == KI::OptType::European);
+        if (!condition) {
+            throw std::runtime_error(
+                "Must consider a European Call option for the Black Scholes weak convergence test !");
+        }
+
+        const KT::Real S = conf.market.S0;
+        const KT::Real r = conf.market.r;
+        const KT::Real q = conf.market.q;
+        const KT::Real K = conf.options.StrikePrice;
+        const KT::Real T = conf.time.t_end;
+        const KT::Real vol = std::sqrt(conf.market.v0); // Extract Volatility from Variance
+
+        const KT::Real d1 = (std::log(S / K) + (r - q + 0.5 * vol * vol) * T) / (vol * std::sqrt(T));
+        const KT::Real d2 = d1 - vol * std::sqrt(T);
+        return S * std::exp(-q * T) * normalCDF(d1) - K * std::exp(-r * T) * normalCDF(d2);
+    }
+}
