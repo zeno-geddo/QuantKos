@@ -1,7 +1,7 @@
-# KOptions : Math Guide
+# QuantKos : Math Guide
 
-Welcome to the KOptions Math Guide.
-This document briefly describes the mathematical foundations of the KOptions framework. It presents the stochastic models currently implemented to simulate the dynamics of the underlying asset, together with the option contracts that can be priced using these models.
+Welcome to the QuantKos Math Guide.
+This document briefly describes the mathematical foundations of the QuantKos framework. It presents the stochastic models currently implemented to simulate the dynamics of the underlying asset, together with the option contracts that can be priced using these models.
 More the details about the models can in found in :
 - *The Heston Model and its Extensions in Matlab and C#*, by Fabrice D. ROUAH.
 
@@ -67,10 +67,10 @@ $$
 $$
 2\kappa\theta>\sigma^2.
 $$
-> When this condition is violated, the variance may reach zero during the simulation. The KOptions framework reports this condition since it may influence numerical stability depending on the discretization scheme.
+> When this condition is violated, the variance may reach zero during the simulation. The QuantKos framework reports this condition since it may influence numerical stability depending on the discretization scheme.
 
 > **Note: Implemented Schemes**.
-> KOptions implements a variety of discretizations schemes detailed in the book *The Heston Model and its Extensions in Matlab and C#* by Fabrice D. ROUAH.
+> QuantKos implements a variety of discretizations schemes detailed in the book *The Heston Model and its Extensions in Matlab and C#* by Fabrice D. ROUAH.
 
 ### II. Bates Stochastic Volatility Jump-Diffusion Model
 
@@ -137,7 +137,7 @@ The Bates model inherits all Heston parameters.
 
 # Supported Option Contracts
 
-The KOptions framework supports a wide range of derivative contracts, all of which can be priced using any of the implemented stochastic models.
+The QuantKos framework supports a wide range of derivative contracts, all of which can be priced using any of the implemented stochastic models.
 
 Unless otherwise specified, every option type is available in both **Call** and **Put** versions.
 
@@ -269,7 +269,7 @@ It is $$S_T\mathbf{1}_{S_T>K}$$ for a Call and $$S_T\mathbf{1}_{S_T<K}$$ for a P
 
 American options may be exercised at any time before maturity.
 
-Within KOptions, the optimal stopping problem is solved using the **Longstaff-Schwartz method**.
+Within QuantKos, the optimal stopping problem is solved using the **Longstaff-Schwartz method**.
 
 ***
 

@@ -1,5 +1,5 @@
 # ==========================================
-# KOptions: Heston Model Configuration for American Option
+# QuantKos: Exaples configuration
 # Params from pag 212, F.Rouah, The Heston Model and its Extensions in Matlab and C#
 # ==========================================
 Market:
@@ -36,6 +36,6 @@ MC:
 
 Output:
   out_dir: "" #"./install/outputs"
-  Name_Paths_Out_File: "" # "temp.paths" # KOptionsPaths.paths
-  Name_Log_File: "" #"KOptions.log"
+  Name_Paths_Out_File: "" # "temp.paths" # QuantKosPaths.paths
+  Name_Log_File: "" #"QuantKos.log"
   Format: BIN     # Available formats: TXT, BIN

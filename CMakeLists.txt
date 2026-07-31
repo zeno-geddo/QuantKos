@@ -15,7 +15,7 @@
 
 
 ## @file
-## @brief Root build configuration script for the KOptions option pricing engine.
+## @brief Root build configuration script for the QuantKos option pricing engine.
 ## @details This file defines global build parameters, compiler standards, user options,
 ##          installation layouts, and executes the "Find-or-Fetch" dependency resolver for yaml-cpp and Kokkos.
 ## @author Zeno GEDDO
@@ -38,9 +38,9 @@
 ##         currently untested.
 
 cmake_minimum_required(VERSION 3.20)
-project(KOptions VERSION 0.1.0
+project(QuantKos VERSION 0.1.0
         DESCRIPTION "High-performance parallel Monte Carlo option pricing engine."
-        HOMEPAGE_URL "https://github.com/zenogeddo/KOptions"
+        HOMEPAGE_URL "https://github.com/zenogeddo/QuantKos"
         LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -87,22 +87,22 @@ endif ()
 ## @section build_options
 ## @brief User-Configurable Build Options. Use these toggles to customize the precision type, testing suite, and dependency download policies.
 
-## @option KOPS_ENABLE_SINGLE_PRECISION
+## @option QKOS_ENABLE_SINGLE_PRECISION
 ## @brief Activates 32-bit single precision (float) calculations instead of 64-bit double precision.
 ## @details Increases parallel memory bandwidth on GPU hardware, but reduces numeric precision.
-option(KOPS_ENABLE_SINGLE_PRECISION "Use single precision (float) instead of double ?" OFF)
+option(QKOS_ENABLE_SINGLE_PRECISION "Use single precision (float) instead of double ?" OFF)
 
-## @option KOPS_ENABLE_TESTS
+## @option QKOS_ENABLE_TESTS
 ## @brief Directs CMake to compile the unit test suite and configure CTest execution.
-option(KOPS_ENABLE_TESTS "Build unit tests ?" ON)
+option(QKOS_ENABLE_TESTS "Build unit tests ?" ON)
 
-## @option KOPS_ENABLE_FETCHCONTENT
+## @option QKOS_ENABLE_FETCHCONTENT
 ## @brief Allows the build system to automatically download and compile missing dependencies from GitHub.
-option(KOPS_ENABLE_FETCHCONTENT "Enable FetchContent ?" OFF)
+option(QKOS_ENABLE_FETCHCONTENT "Enable FetchContent ?" OFF)
 
-## @option KOPS_BUILD_DOCS
+## @option QKOS_BUILD_DOCS
 ## @brief Generates HTML documentation using Doxygen during the build process.
-option(KOPS_BUILD_DOCS "Generate Doxygen documentation ?" ON)
+option(QKOS_BUILD_DOCS "Generate Doxygen documentation ?" ON)
 
 
 # -----------------------------------------------------------------------------
@@ -123,7 +123,7 @@ find_package(yaml-cpp QUIET)
 if (yaml-cpp_FOUND)
     message(STATUS "Found system yaml-cpp")
 else ()
-    if (KOPS_ENABLE_FETCHCONTENT)
+    if (QKOS_ENABLE_FETCHCONTENT)
         message(STATUS "yaml-cpp not found. Fetching from GitHub...")
 
         # Disable yaml-cpp tests/tools to prevent massive compile bloat
@@ -139,7 +139,7 @@ else ()
         FetchContent_MakeAvailable(yaml-cpp)
     else ()
         # Users must provide the path via : -Dyaml-cpp_ROOT=/path/to/yaml
-        message(FATAL_ERROR "System yaml-cpp not found and KOPS_ENABLE_FETCHCONTENT is OFF. "
+        message(FATAL_ERROR "System yaml-cpp not found and QKOS_ENABLE_FETCHCONTENT is OFF. "
                 "Please also provide -Dyaml-cpp_ROOT=/path/to/yaml when running 'cmake -B build' or enable fetching.")
     endif ()
 endif ()
@@ -155,7 +155,7 @@ find_package(Kokkos QUIET)
 if (Kokkos_FOUND)
     message(STATUS "Found Kokkos at: ${Kokkos_DIR}")
 else ()
-    if (KOPS_ENABLE_FETCHCONTENT)
+    if (QKOS_ENABLE_FETCHCONTENT)
         message(STATUS "Kokkos not found. Fetching from GitHub...")
 
         # Disable Kokkos tests/examples to save minutes of compile time
@@ -176,7 +176,7 @@ else ()
         FetchContent_MakeAvailable(kokkos)
     else ()
         # Users must provide the path via : -DKokkos_ROOT=/path/to/install
-        message(FATAL_ERROR "Kokkos not found and KOPS_ENABLE_FETCHCONTENT is OFF. "
+        message(FATAL_ERROR "Kokkos not found and QKOS_ENABLE_FETCHCONTENT is OFF. "
                 "Please also provide -DKokkos_ROOT=/taget/kokkos/dir when running 'cmake -B build' or enable fetching."
                 "Note: that '/taget/kokkos/dir' is the directory containing the `KokkosConfig.cmake` file, which is usually located in `/lib/cmake/Kokkos` inside your Kokkos installation directory."
         )
@@ -217,7 +217,7 @@ add_subdirectory(src)
 ## - If testing is active, initializes CTest pipelines and compiles the validation test binary.
 
 add_subdirectory(app)
-if (KOPS_ENABLE_TESTS)
+if (QKOS_ENABLE_TESTS)
     enable_testing()
     add_subdirectory(tests)
     message(STATUS "Activated build in unit tests")
@@ -228,7 +228,7 @@ endif ()
 # -----------------------------------------------------------------------------
 ## @section doc_sec 6.5 CODE Documentation Setup
 ## @brief Automatically generates and installs Doxygen HTML documentation.
-if (KOPS_BUILD_DOCS)
+if (QKOS_BUILD_DOCS)
     find_package(Doxygen QUIET) # silently sets a variable (DOXYGEN_FOUND) to FALSE if not found
     if (DOXYGEN_FOUND)
         message(STATUS "Doxygen found: Documentation target 'documentation' enabled.")
@@ -264,7 +264,7 @@ if (KOPS_BUILD_DOCS)
                 OPTIONAL # It tells CMake not to produce an error if the directory doesn't exist yet
         )
     else ()
-        message(WARNING "KOPS_BUILD_DOCS is ON, but Doxygen was not found! Please install Doxygen.")
+        message(WARNING "QKOS_BUILD_DOCS is ON, but Doxygen was not found! Please install Doxygen.")
     endif ()
 endif ()
 
@@ -273,7 +273,7 @@ endif ()
 # -----------------------------------------------------------------------------
 ## @section install_sec
 ## @brief Project Installation Execution. Collects system resources and copies user templates directly to the localized path hierarchy.
-install(FILES README.md KOptionsConfig.yaml DESTINATION share)
+install(FILES README.md QuantKosConfig.yaml DESTINATION share)
 
 
 # =============================================================================
@@ -282,11 +282,11 @@ install(FILES README.md KOptionsConfig.yaml DESTINATION share)
 #                                USAGE EXAMPLE
 # -----------------------------------------------------------------------------
 ## @section usage_example
-## @brief Guide to building, installing, and executing the KOptions simulation suite.
+## @brief Guide to building, installing, and executing the QuantKos simulation suite.
 ## @details Below are the shell commands required to configure, build, and run the engine locally:
 ## @code{.sh}
 ## # 1) Configure the build workspace and isolate the installation target in a custom prefix directory:
-## cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/KOps_dist .
+## cmake -B build -DCMAKE_INSTALL_PREFIX=$HOME/QKOS_dist .
 ## # Note : if -DCMAKE_INSTALL_PREFIX is omitted, the default install/ directory will be considered
 ##
 ## # 2) Compile all executable binaries and libraries utilizing parallel threads:
@@ -296,11 +296,11 @@ install(FILES README.md KOptionsConfig.yaml DESTINATION share)
 ## cmake --install build     # (or: cd build && make install)
 ##
 ## # 4) Navigate into your compiled installation directory:
-## cd ~/KOps_dist
+## cd ~/QKOS_dist
 ##
 ## # 5) Copy the stock configuration YAML template to your active running directory:
-## cp share/KOptions/KOptionsConfig.yaml .
+## cp share/QuantKos/QuantKosConfig.yaml .
 ##
 ## # 6) Execute the main option solver with your parameters:
-## ./bin/KOptions KOptionsConfig.yaml
+## ./bin/QuantKos QuantKosConfig.yaml
 ## @endcode

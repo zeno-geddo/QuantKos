@@ -1,7 +1,7 @@
-# KOptions: User Input Guide
+# QuantKos: User Input Guide
 
-Welcome to the KOptions User Input Guide.
-KOptions uses YAML configuration files to control simulations and validation tests.
+Welcome to the QuantKos User Input Guide.
+QuantKos uses YAML configuration files to control simulations and validation tests.
 
 Two types of input files are supported:
 
@@ -59,7 +59,7 @@ MC:
 Output:
   out_dir: outputs
   Name_Paths_Out_File: Paths.KOpaths
-  Name_Log_File: KOptions.KOlog
+  Name_Log_File: QuantKos.KOlog
   Format: BIN
 ```
 
@@ -250,7 +250,7 @@ This block controls generated files.
 
 The test configuration file is used to execute the automated validation suite.
 
-It does not price an option. Instead, it runs predefined tests designed to verify the correctness and numerical accuracy of KOptions.
+It does not price an option. Instead, it runs predefined tests designed to verify the correctness and numerical accuracy of QuantKos.
 
 Example:
 ```yaml

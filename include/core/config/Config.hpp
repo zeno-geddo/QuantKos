@@ -449,8 +449,8 @@ namespace KOps::Config {
      */
     struct OutputConfig {
         std::string out_dir = "outputs"; ///< Target directory for generated logs and paths.
-        std::string filename_paths_out = "KOptions.paths"; ///< Filename for the simulated path storage.
-        std::string filename_log = "KOptions.log"; ///< Filename for the runtime execution log.
+        std::string filename_paths_out = "QuantKos.paths"; ///< Filename for the simulated path storage.
+        std::string filename_log = "QuantKos.log"; ///< Filename for the runtime execution log.
         KI::IOFormat format = KI::IOFormat::TXT; ///< Output Data format (e.g., BIN or TXT).
 
         void print(std::string_view indent = "") const {

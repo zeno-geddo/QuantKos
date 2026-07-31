@@ -1,11 +1,11 @@
-# KOptions: Performance-Portable Monte Carlo Option Pricing Engine
+# QuantKos: Performance-Portable Monte Carlo Option Pricing Engine
 
-**KOptions** is a high-performance Monte Carlo option pricing engine written in modern **C++20** and built on top of the **Kokkos** performance portability framework. It provides a single-source implementation capable of targeting serial execution, multi-core CPUs, and modern GPUs while maintaining the same code base.
+**QuantKos** is a high-performance Monte Carlo option pricing engine written in modern **C++20** and built on top of the **Kokkos** performance portability framework. It provides a single-source implementation capable of targeting serial execution, multi-core CPUs, and modern GPUs while maintaining the same code base.
 
-KOptions has been designed as both a research and development framework for stochastic option pricing and a production-oriented pricing engine. 
+QuantKos has been designed as both a research and development framework for stochastic option pricing and a production-oriented pricing engine. 
 It cleanly separates stochastic models, numerical integration schemes, payoff evaluation and Monte Carlo orchestration, so that is it possible to easily extend it with new financial models or derivative contracts.
 
-Although KOptions is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on **Linux**, using **GCC**, **OpenMP**, and **NVIDIA CUDA**.
+Although QuantKos is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on **Linux**, using **GCC**, **OpenMP**, and **NVIDIA CUDA**.
 
 ---
 
@@ -30,7 +30,7 @@ The modular architecture makes it reasonably easy to add additional stochastic d
 
 ### Supported Option Contracts
 
-KOptions currently supports pricing of
+QuantKos currently supports pricing of
 
 - European options
 - American options (Longstaff-Schwartz Least-Squares Monte Carlo)
@@ -76,19 +76,19 @@ Detailed documentation is split into dedicated guides.
 | **USER_INPUT_GUIDE.md** | Complete description of the YAML configuration files used for simulations and validation tests.              |
 | **MATH_GUIDE.md** | Quick mathematical background of the implemented stochastic models, numerical schemes, and option contracts. |
 
-When Doxygen and Graphviz are installed, KOptions can also generate complete HTML and PDF API documentation during compilation.
+When Doxygen and Graphviz are installed, QuantKos can also generate complete HTML and PDF API documentation during compilation.
 
 ---
 
 ## 🚀 Quick Start
 
-The simplest way to build KOptions is to let CMake automatically download **Kokkos** and **yaml-cpp** using **FetchContent**.
+The simplest way to build QuantKos is to let CMake automatically download **Kokkos** and **yaml-cpp** using **FetchContent**.
 
 ### Clone the repository
 
 ```bash
-git clone https://github.com/zeno.geddo/KOptions.git
-cd KOptions
+git clone https://github.com/zeno-geddo/QuantKos.git
+cd QuantKos
 ```
 
 ### Create a build directory
@@ -140,30 +140,30 @@ cmake --install .
 
 ---
 
-## ▶️ Running KOptions
+## ▶️ Running QuantKos
 
 Execute the pricing engine by passing a simulation configuration file.
 
 ```bash
-./bin/KOptions share/KOptionsConfig.yaml
+./bin/QuantKos share/QuantKosConfig.yaml
 ```
 
 For OpenMP builds, the number of threads can be selected at runtime.
 
 ```bash
-./bin/KOptions share/KOptionsConfig.yaml --kokkos-threads=8
+./bin/QuantKos share/QuantKosConfig.yaml --kokkos-threads=8
 ```
 
 or equivalently
 
 ```bash
-OMP_NUM_THREADS=8 ./bin/KOptions share/KOptionsConfig.yaml
+OMP_NUM_THREADS=8 ./bin/QuantKos share/QuantKosConfig.yaml
 ```
 
 For CUDA builds on systems with multiple GPUs, a specific device can be selected.
 
 ```bash
-./bin/KOptions share/KOptionsConfig.yaml --kokkos-device-id=0
+./bin/QuantKos share/QuantKosConfig.yaml --kokkos-device-id=0
 ```
 
 The complete description of all configuration parameters is available in **USER_INPUT_GUIDE.md**.
@@ -172,7 +172,7 @@ The complete description of all configuration parameters is available in **USER_
 
 ## ⚙️ Simulation Configuration
 
-KOptions uses YAML configuration files.
+QuantKos uses YAML configuration files.
 
 A simulation file specifies
 
@@ -225,7 +225,7 @@ The full specification of every parameter is documented in **USER_INPUT_GUIDE.md
 
 ## 🧪 Validation Suite
 
-KOptions includes a standalone testing executable that validates the numerical implementation.
+QuantKos includes a standalone testing executable that validates the numerical implementation.
 
 Compile with
 
@@ -255,7 +255,7 @@ These tests are useful for validating new installations, verifying code modifica
 
 ## 🎯 Project Goals
 
-KOptions aims to provide
+QuantKos aims to provide
 
 - a clean and extensible C++ architecture for quantitative finance
 - performance portability across heterogeneous hardware
@@ -265,7 +265,7 @@ KOptions aims to provide
 
 ## 📄 License
 
-KOptions is distributed under the **GNU General Public License v3.0**.
+QuantKos is distributed under the **GNU General Public License v3.0**.
 
 See the `LICENSE` file for details.
 
@@ -281,7 +281,7 @@ If you encounter a portability issue on a hardware platform that is not yet offi
 
 ## 👤 Author
 
-KOptions was designed and developed by **[Zeno Geddo](https://github.com/zeno-geddo)** as an independent research and software engineering project in quantitative finance.
+QuantKos was designed and developed by **[Zeno Geddo](https://github.com/zeno-geddo)** as an independent research and software engineering project in quantitative finance.
 
 The project has been developed out of personal interest in stochastic differential equations, numerical methods, high-performance computing, and performance-portable scientific software.
 

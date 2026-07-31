@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
         // 2. Output the stylized welcome banner and engine metadata (Matches app/main.cpp output paradigms)
         constexpr std::string_view indent{"   "};
         std::cout << "\n\n" << indent << "**************************************************\n";
-        std::cout << indent << "          LAUNCHING KOPTIONS TEST ENGINE          \n";
+        std::cout << indent << "          LAUNCHING QUANTKOS TEST ENGINE          \n";
         std::cout << indent << "**************************************************\n\n";
 
         // 3. Centralized Test Registration

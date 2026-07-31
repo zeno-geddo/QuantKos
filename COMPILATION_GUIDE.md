@@ -1,9 +1,9 @@
-# KOptions: Compilation Guide
+# QuantKos: Compilation Guide
 
-Welcome to the KOptions Compilation Guide.
-This document provides a comprehensive blueprint explaining how to compile, install and launch the KOptions option pricing engine on modern multi-core CPU and GPU systems.
+Welcome to the QuantKos Compilation Guide.
+This document provides a comprehensive blueprint explaining how to compile, install and launch the QuantKos option pricing engine on modern multi-core CPU and GPU systems.
 
-> ⚠️ **Important Note:** KOptions is designed to be portable across all platforms supported by **Kokkos**. In principle, it should compile and run on **Linux**, **macOS**, and **Windows**, using any CPU architecture, compiler, and GPU backend supported by Kokkos.
+> ⚠️ **Important Note:** QuantKos is designed to be portable across all platforms supported by **Kokkos**. In principle, it should compile and run on **Linux**, **macOS**, and **Windows**, using any CPU architecture, compiler, and GPU backend supported by Kokkos.
 >
 > Kokkos currently supports:
 >
@@ -12,15 +12,15 @@ This document provides a comprehensive blueprint explaining how to compile, inst
 > * **Compilers:** GCC, Clang/LLVM, Intel oneAPI (icpx), NVIDIA HPC SDK (nvc++), Microsoft Visual Studio (MSVC), and other compilers officially supported by Kokkos.
 > * **GPU backends:** NVIDIA GPUs (CUDA), AMD GPUs (HIP/ROCm), Intel GPUs (SYCL/oneAPI), and any additional accelerator backends supported by the installed Kokkos version (e.g., OpenMP Target where available).
 >
-> At present, however, KOptions has been developed and tested only on a **Linux** system using **GCC** on an **Intel** CPU (using both OpemMP or procedural mode) and an **NVIDIA RTX** GPU (CUDA backend). We therefore expect this configuration to work reliably. Other supported platforms should also work in principle, but they have not yet been thoroughly tested and may still expose unknown bugs or portability issues.
+> At present, however, QuantKos has been developed and tested only on a **Linux** system using **GCC** on an **Intel** CPU (using both OpemMP or procedural mode) and an **NVIDIA RTX** GPU (CUDA backend). We therefore expect this configuration to work reliably. Other supported platforms should also work in principle, but they have not yet been thoroughly tested and may still expose unknown bugs or portability issues.
 
 ---
 ## 1. Prerequisites
 
-This section outlines the requirements and toolchains necessary to compile, install, and run the KOptions option pricing engine.
+This section outlines the requirements and toolchains necessary to compile, install, and run the QuantKos option pricing engine.
 
 ### Part I: Mandatory Requirements
-These components are strictly required to build and execute the KOptions engine on target hardware.
+These components are strictly required to build and execute the QuantKos engine on target hardware.
 
 #### A. Core Build Tools
 * **CMake** (v3.20 or higher): The build orchestrator.
@@ -34,7 +34,7 @@ These components are strictly required to build and execute the KOptions engine 
 * **Kokkos**: The performance-portability framework.
 * **yaml-cpp**: For parsing configuration files.
 
-> ⚠️ **Note:** The CMake build system can automatically configure, download, and statically build Kokkos and yaml-cpp via `FetchContent` if they are not detected locally on your host. More will be said about that when addressing KOptions compilation and installation.
+> ⚠️ **Note:** The CMake build system can automatically configure, download, and statically build Kokkos and yaml-cpp via `FetchContent` if they are not detected locally on your host. More will be said about that when addressing QuantKos compilation and installation.
 
 
 ### Part II: Recommended Development & Profiling Tools
@@ -57,7 +57,7 @@ Used to identify hardware-level bottlenecks in the code:
 ## 🐧 2.  Installing the System level Prerequisites on Linux
 
 This step-by-step guide walks you through setting up your environment on a fresh Linux instance (Ubuntu / Debian).
-Although KOptions could work with different GPUs brands, we will here focus on setting up machines with NVIDIA GPUs only.
+Although QuantKos could work with different GPUs brands, we will here focus on setting up machines with NVIDIA GPUs only.
 
 ### Step 1 (Required): Install Core Utilities & Documentation Tools
 
@@ -74,7 +74,7 @@ sudo apt install -y build-essential cmake cmake-curses-gui libomp-dev doxygen gr
 
 ### Step 2 (Required): Install GPU Toolchain (CUDA Compiler & SDK)
 
-To compile and execute KOptions on NVIDIA GPUs, you must install the **NVIDIA CUDA Toolkit**.
+To compile and execute QuantKos on NVIDIA GPUs, you must install the **NVIDIA CUDA Toolkit**.
 
 **Why `nvcc` is Essential.**
 
@@ -157,7 +157,7 @@ sudo apt install -y nsight-systems nsight-compute
 ```
 
 ### Step 4 (Recommended) : Dowload, Build and Install Kokkos 5
-Although KOptions can automatically download and build **Kokkos** through `FetchContent`, installing it separately is recommended if you plan to develop KOptions, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project for a different target hardware.
+Although QuantKos can automatically download and build **Kokkos** through `FetchContent`, installing it separately is recommended if you plan to develop QuantKos, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project for a different target hardware.
 
 In a clean development environment, you should avoid building a software directly inside the source folder. The best approach is to create a dedicated software directory layout to keep your raw materials separate from your finished, installed libraries.
 
@@ -181,7 +181,7 @@ git clone [https://github.com/kokkos/kokkos.git](https://github.com/kokkos/kokko
 
 To ensure maximum flexibility, it is best to compile Kokkos in several separated ways. 
 For example, building a CUDA version, an OpenMP version, and a procedural single-core version into distinct installation directories.
-This is optimal to deploy KOptions and compare its performances under different hardware conditions. Of course, if you are interested in running KOptions only on a specific hardware, stick with it and avoid compiling for others.  
+This is optimal to deploy QuantKos and compare its performances under different hardware conditions. Of course, if you are interested in running QuantKos only on a specific hardware, stick with it and avoid compiling for others.  
 
 Anyway, despite your hardware choice, you have to create a unique build directory for the target you want, execute the corresponding `cmake` command from the examples below, and then compile and install:
 
@@ -235,7 +235,7 @@ cmake $HOME/software/src/kokkos-5 \
   -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=OFF
 
 ```
-> ⚠️ **Note on CPU threads:** You can specify exactly how many CPU threads to use at runtime. Fon instance, running OMP_NUM_THREADS=8 before launching KOptions, will make it run in parallel with 8 threads. More about that will be said later.
+> ⚠️ **Note on CPU threads:** You can specify exactly how many CPU threads to use at runtime. Fon instance, running OMP_NUM_THREADS=8 before launching QuantKos, will make it run in parallel with 8 threads. More about that will be said later.
 
 
 #### Option C: GPU Accelerated (CUDA / Release)
@@ -306,7 +306,7 @@ Find the major/minor compute version returned in Step 1 and append its correspon
 
 ### Step 4 (Recommended): Download, Build and Install yaml-cpp
 
-Although KOptions can automatically download and build **yaml-cpp** through `FetchContent`, installing it separately is recommended if you plan to develop KOptions, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project.
+Although QuantKos can automatically download and build **yaml-cpp** through `FetchContent`, installing it separately is recommended if you plan to develop QuantKos, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project.
 
 As for Kokkos, it is good practice to keep the **source**, **build**, and **installation** directories separated.
 
@@ -349,12 +349,12 @@ cmake \
   -DYAML_CPP_BUILD_CONTRIB=OFF
 ```
 
-The options above produce a lightweight static installation suitable for linking with KOptions.
+The options above produce a lightweight static installation suitable for linking with QuantKos.
 
 * **`CMAKE_BUILD_TYPE=Release`** enables compiler optimizations and is recommended for production builds.
 * **`YAML_BUILD_SHARED_LIBS=OFF`** builds a static library, simplifying deployment and avoiding runtime dependency issues.
 * **`YAML_CPP_BUILD_TESTS=OFF`** skips building the yaml-cpp test suite.
-* **`YAML_CPP_BUILD_TOOLS=OFF`** disables optional utility programs that are not required by KOptions.
+* **`YAML_CPP_BUILD_TOOLS=OFF`** disables optional utility programs that are not required by QuantKos.
 * **`YAML_CPP_BUILD_CONTRIB=OFF`** disables the compilation of optional contributed examples and utilities.
 
 #### 3. Build and Install
@@ -398,23 +398,23 @@ The directory
 ~/software/installations/yaml-cpp/lib/cmake/yaml-cpp
 ```
 
-contains the CMake configuration files that KOptions uses to locate the library when `KOPS_ENABLE_FETCHCONTENT=OFF`.
+contains the CMake configuration files that QuantKos uses to locate the library when `QKOS_ENABLE_FETCHCONTENT=OFF`.
 
-> ⚠️ **Note:** If you prefer not to install yaml-cpp manually, simply enable `KOPS_ENABLE_FETCHCONTENT=ON` when configuring KOptions. CMake will automatically download, configure, build, and link yaml-cpp as part of the KOptions build process. This approach is probably easier for first-time users and for quick evaluations of the software.
+> ⚠️ **Note:** If you prefer not to install yaml-cpp manually, simply enable `QKOS_ENABLE_FETCHCONTENT=ON` when configuring QuantKos. CMake will automatically download, configure, build, and link yaml-cpp as part of the QuantKos build process. This approach is probably easier for first-time users and for quick evaluations of the software.
 
 
 ***
 
-# 3. Install KOptions
+# 3. Install QuantKos
 
-This section explains how to build and install the KOptions engine itself. Two workflows are supported:
+This section explains how to build and install the QuantKos engine itself. Two workflows are supported:
 
 * **Option A (Recommended for developers):** Use pre-installed local versions of **Kokkos** and **yaml-cpp**. This provides full control over the hardware backends and avoids recompiling dependencies every time.
 * **Option B (Recommended for first-time users):** Let CMake automatically download and build the required dependencies using `FetchContent`.
 
-In both cases, KOptions is built using the standard CMake workflow.
+In both cases, QuantKos is built using the standard CMake workflow.
 
-## Step 1: Download KOptions
+## Step 1: Download QuantKos
 
 Clone the repository into your preferred source directory:
 
@@ -422,45 +422,45 @@ Clone the repository into your preferred source directory:
 mkdir -p ~/software/src
 cd ~/software/src
 
-git clone https://github.com/zeno.geddo/KOptions.git
-cd KOptions
+git clone https://github.com/zeno-geddo/QuantKos.git
+cd QuantKos
 ```
 
 
 
-As for Kokkos, it is recommended (though not required) to keep the **source**, **build**, and **installation** directories separated. Besides keeping the project organized, this approach allows you to generate multiple independent KOptions builds from the same source tree—for example, a procedural (Serial) version, an OpenMP version, a CUDA-enabled version, or separate Debug and Release builds—without the different configurations interfering with one another.
+As for Kokkos, it is recommended (though not required) to keep the **source**, **build**, and **installation** directories separated. Besides keeping the project organized, this approach allows you to generate multiple independent QuantKos builds from the same source tree—for example, a procedural (Serial) version, an OpenMP version, a CUDA-enabled version, or separate Debug and Release builds—without the different configurations interfering with one another.
 
 ```text
 ~/software/
 ├── src/
-│   └── KOptions/
+│   └── QuantKos/
 ├── build/
-│   ├── KOptions-serial/
-│   ├── KOptions-openmp/
-│   ├── KOptions-cuda/
-│   └── KOptions-debug/
+│   ├── QuantKos-serial/
+│   ├── QuantKos-openmp/
+│   ├── QuantKos-cuda/
+│   └── QuantKos-debug/
 └── installations/
-    ├── KOptions-serial/
-    ├── KOptions-openmp/
-    ├── KOptions-cuda/
-    └── KOptions-debug/
+    ├── QuantKos-serial/
+    ├── QuantKos-openmp/
+    ├── QuantKos-cuda/
+    └── QuantKos-debug/
 ```
 
 For example, if you want to build the CUDA version, simply create a dedicated build directory:
 
 ```bash
-mkdir -p ~/software/build/KOptions-cuda
-cd ~/software/build/KOptions-cuda
+mkdir -p ~/software/build/QuantKos-cuda
+cd ~/software/build/QuantKos-cuda
 ```
 
-Later, you could similarly create `KOptions-openmp` or `KOptions-serial` build directories if you wish to compare performance across different hardware backends.
+Later, you could similarly create `QuantKos-openmp` or `QuantKos-serial` build directories if you wish to compare performance across different hardware backends.
 
 Of course, if you are just targeting a specific hardware and you do not need to run comparisons or benchmarks etc., just compile for that target.
 
 
-## Step 2: Build KOptions
+## Step 2: Build QuantKos
 
-KOptions can either link against an existing installation of **Kokkos** and **yaml-cpp**, or automatically download and build these dependencies using `FetchContent`.
+QuantKos can either link against an existing installation of **Kokkos** and **yaml-cpp**, or automatically download and build these dependencies using `FetchContent`.
 
 ### Option A: Build without using FetchContent
 
@@ -469,38 +469,38 @@ This approach assumes that **Kokkos** and **yaml-cpp** have already been built a
 First, enter the build directory corresponding to the version you want to generate. For example, to build the CUDA version:
 
 ```bash
-cd ~/software/build/KOptions-cuda
+cd ~/software/build/QuantKos-cuda
 ```
 
-Then configure the project by pointing CMake to the **KOptions source directory** and to the installation directories of the required dependencies:
+Then configure the project by pointing CMake to the **QuantKos source directory** and to the installation directories of the required dependencies:
 
 
 ```bash
 cmake \
-  $HOME/software/src/KOptions \
+  $HOME/software/src/QuantKos \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/KOptions-cuda \
-  -DKOPS_ENABLE_FETCHCONTENT=OFF \
-  -DKOPS_BUILD_DOC=ON \
-  -DKOPS_ENABLE_SINGLE_PRECISION=OFF \
-  -DKOPS_ENABLE_TESTS=ON \
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/QuantKos-cuda \
+  -DQKOS_ENABLE_FETCHCONTENT=OFF \
+  -DQKOS_BUILD_DOC=ON \
+  -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+  -DQKOS_ENABLE_TESTS=ON \
   -DKokkos_ROOT=$HOME/software/installations/kokkos-5/cuda/lib/cmake/Kokkos \
   -Dyaml-cpp_ROOT=$HOME/software/installations/yaml-cpp/lib/cmake/yaml-cpp
 ```
 
-> **⚠️ Note: Additional KOptions configuration options**
+> **⚠️ Note: Additional QuantKos configuration options**
 >
-> Besides the standard CMake and dependency settings, KOptions provides several project-specific options:
+> Besides the standard CMake and dependency settings, QuantKos provides several project-specific options:
 >
-> * **`KOPS_BUILD_TYPE=Release`** *(recommended for production)*: Compiles the project with compiler optimizations enabled and disables most debugging features. This produces the fastest executable and is the recommended configuration for production simulations and performance benchmarking. 
+> * **`QKOS_BUILD_TYPE=Release`** *(recommended for production)*: Compiles the project with compiler optimizations enabled and disables most debugging features. This produces the fastest executable and is the recommended configuration for production simulations and performance benchmarking. 
 > Alternatively, you can use the flag `Debug`, which builds the project with full debugging information and no optimization. This configuration is intended for development, debugging with tools such as gdb, and investigating runtime errors. 
 > Otherwise, the flag `RelWithDebInfo` provides a compromise between performance and debuggability by enabling compiler optimizations while retaining debugging symbols. This is often the preferred choice when profiling or diagnosing problems that only appear in optimized builds.
 >
-> * **`KOPS_BUILD_DOC=ON`** *(recommended)*: Automatically generates the KOptions API documentation with **Doxygen** during the build process (provided Doxygen is installed on the system).
+> * **`QKOS_BUILD_DOC=ON`** *(recommended)*: Automatically generates the QuantKos API documentation with **Doxygen** during the build process (provided Doxygen is installed on the system).
 >
-> * **`KOPS_ENABLE_SINGLE_PRECISION=ON`**: Compiles the engine using 32-bit `float` arithmetic instead of the default 64-bit `double`. This generally improves memory efficiency and can significantly increase performance—especially on GPUs—but at the cost of reduced numerical precision.
+> * **`QKOS_ENABLE_SINGLE_PRECISION=ON`**: Compiles the engine using 32-bit `float` arithmetic instead of the default 64-bit `double`. This generally improves memory efficiency and can significantly increase performance—especially on GPUs—but at the cost of reduced numerical precision.
 >
-> * **`KOPS_ENABLE_TESTS=ON`**: Builds the KOptions test executables together with the main application. This option is recommended for development or when verifying a new installation, as it allows the built-in test suite to be executed after compilation.
+> * **`QKOS_ENABLE_TESTS=ON`**: Builds the QuantKos test executables together with the main application. This option is recommended for development or when verifying a new installation, as it allows the built-in test suite to be executed after compilation.
 
 > **⚠️ Note: ccmake GUI. It could be helpful to use the ccmake gui to see more clearly the configuration options.**
 
@@ -526,7 +526,7 @@ The dependency paths deserve particular attention:
 
 If CMake cannot locate either package, verify that these directories actually contain the corresponding `*.cmake` configuration files.
 
-> ⚠️  **Note:** Because the selected Kokkos installation has already been compiled with its desired hardware backend (Serial, OpenMP, CUDA, HIP, etc.) and architecture, no additional Kokkos configuration flags are required when building KOptions. KOptions will simply link against the existing Kokkos installation.
+> ⚠️  **Note:** Because the selected Kokkos installation has already been compiled with its desired hardware backend (Serial, OpenMP, CUDA, HIP, etc.) and architecture, no additional Kokkos configuration flags are required when building QuantKos. QuantKos will simply link against the existing Kokkos installation.
 
 Once the configuration completes successfully, compile the project from the same build directory:
 
@@ -546,28 +546,28 @@ uses four CPU cores to build the project.
 
 ### Option B: Build using FetchContent
 
-This approach is probably recommended if **Kokkos** and **yaml-cpp** are not already installed on your system and you just want to use KOptions with developing and performing benchmarks. Note that, in this case, during the configuration step, CMake automatically downloads, configures, builds, and links both libraries.
+This approach is probably recommended if **Kokkos** and **yaml-cpp** are not already installed on your system and you just want to use QuantKos with developing and performing benchmarks. Note that, in this case, during the configuration step, CMake automatically downloads, configures, builds, and links both libraries.
 
 As for the previous option, first move to the build directory corresponding to the version you want to generate. For example, for a CUDA build:
 
 ```bash
-cd ~/software/build/KOptions-cuda
+cd ~/software/build/QuantKos-cuda
 ```
 
-Then configure the project by pointing CMake to the KOptions source directory and enabling `FetchContent`:
+Then configure the project by pointing CMake to the QuantKos source directory and enabling `FetchContent`:
 
 ```bash
 cmake \
-  $HOME/software/src/KOptions \
+  $HOME/software/src/QuantKos \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/KOptions-cuda \
-  -DKOPS_ENABLE_FETCHCONTENT=ON \
-  -DKOPS_BUILD_DOC=ON \
-  -DKOPS_ENABLE_SINGLE_PRECISION=OFF \
-  -DKOPS_ENABLE_TESTS=ON 
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/QuantKos-cuda \
+  -DQKOS_ENABLE_FETCHCONTENT=ON \
+  -DQKOS_BUILD_DOC=ON \
+  -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+  -DQKOS_ENABLE_TESTS=ON 
 ```
 
-Unlike the previous approach, Kokkos is now built as part of the KOptions compilation. Consequently, all Kokkos configuration options become available and can be specified directly on the CMake command line.
+Unlike the previous approach, Kokkos is now built as part of the QuantKos compilation. Consequently, all Kokkos configuration options become available and can be specified directly on the CMake command line.
 
 The most important options affecting performance are:
 
@@ -594,35 +594,35 @@ For example, an optimized OpenMP build can be configured with
 
 ```bash
 cmake \
-  $HOME/software/src/KOptions \
+  $HOME/software/src/QuantKos \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/KOptions-openmp \
-  -DKOPS_ENABLE_FETCHCONTENT=ON \
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/QuantKos-openmp \
+  -DQKOS_ENABLE_FETCHCONTENT=ON \
   -DKokkos_ENABLE_SERIAL=ON \
   -DKokkos_ENABLE_OPENMP=ON \
   -DKokkos_ENABLE_CUDA=OFF \
   -DKokkos_ARCH_NATIVE=ON \
-  -DKOPS_BUILD_DOC=ON \
-  -DKOPS_ENABLE_SINGLE_PRECISION=OFF \
-  -DKOPS_ENABLE_TESTS=ON 
+  -DQKOS_BUILD_DOC=ON \
+  -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+  -DQKOS_ENABLE_TESTS=ON 
 ```
 
 while an optimized CUDA build for an RTX 30-series GPU becomes
 
 ```bash
 cmake \
-  $HOME/software/src/KOptions \
+  $HOME/software/src/QuantKos \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/KOptions-cuda \
-  -DKOPS_ENABLE_FETCHCONTENT=ON \
+  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/QuantKos-cuda \
+  -DQKOS_ENABLE_FETCHCONTENT=ON \
   -DKokkos_ENABLE_SERIAL=ON \
   -DKokkos_ENABLE_OPENMP=OFF \
   -DKokkos_ENABLE_CUDA=ON \
   -DKokkos_ENABLE_CUDA_LAMBDA=ON \
   -DKokkos_ARCH_AMPERE86=ON \
-  -DKOPS_BUILD_DOC=ON \
-  -DKOPS_ENABLE_SINGLE_PRECISION=OFF \
-  -DKOPS_ENABLE_TESTS=ON 
+  -DQKOS_BUILD_DOC=ON \
+  -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+  -DQKOS_ENABLE_TESTS=ON 
   
 ```
 
@@ -640,7 +640,7 @@ or specify any desired number of compilation threads, for example
 cmake --build . -j4
 ```
 
-## Step 3: Install KOptions
+## Step 3: Install QuantKos
 
 After compilation completes successfully, install the executable and the accompanying configuration files:
 
@@ -651,22 +651,22 @@ cmake --install .
 If `CMAKE_INSTALL_PREFIX` was set to
 
 ```text
-$HOME/software/installations/KOptions
+$HOME/software/installations/QuantKos
 ```
 
 the resulting installation will have the following layout:
 
 ```text
-KOptions/
+QuantKos/
 ├── bin/
-│   ├── KOptions
+│   ├── QuantKos
 │   └── Tester
 ├── share/
 │    ├── documentation
 │    │        ├── html
 │    │        └── latex
 │    ├── TesterConfig.yalm
-│    └── KOptionsConfig.yalm
+│    └── QuantKosConfig.yalm
 ├── include/
 └── lib/
 ```
@@ -675,10 +675,10 @@ KOptions/
 
 The executables generated are found in `bin/` :
 
-* **`KOptions`**: the main option pricing engine.
-* **`Tester`** : the test and validation executable used to verify the correctness of the implementation and benchmark individual components. This is *optional*, i.e. it is generated only if `DKOPS_ENABLE_TESTS=ON`.
+* **`QuantKos`**: the main option pricing engine.
+* **`Tester`** : the test and validation executable used to verify the correctness of the implementation and benchmark individual components. This is *optional*, i.e. it is generated only if `DQKOS_ENABLE_TESTS=ON`.
 
-Both programs are launched by simply passing their corresponding default YAML configuration files, i.e. `KOptionsConfig.yalm` and `TesterConfig.yalm`.
+Both programs are launched by simply passing their corresponding default YAML configuration files, i.e. `QuantKosConfig.yalm` and `TesterConfig.yalm`.
 
 ###  About the Documentation Generated
 
@@ -688,8 +688,8 @@ By enabling the documentation during configuration:
 
 ```bash
 cmake \
-  $HOME/software/src/KOptions \
-  -DKOPS_BUILD_DOCUMENTATION=ON
+  $HOME/software/src/QuantKos \
+  -DQKOS_BUILD_DOCUMENTATION=ON
 ```
 
 Doxygen automatically extracts the documentation embedded in the source code and generates both **HTML** and **LaTeX** documentation. The documentation describes the software architecture, class hierarchies, namespaces, source file organization, and the public API of the library. When Graphviz is available, additional inheritance, collaboration, and call graphs are included.
@@ -713,9 +713,9 @@ which invokes `pdflatex` (and related tools) to produce the final PDF document, 
 
 ***
 
-## 5. Run KOptions
+## 5. Run QuantKos
 
-More about the KOptions runtime functionalities can be foun in the `README.md` and `USER_INPUT_GUIDE.md`. We here quickly remind some basic points. 
+More about the QuantKos runtime functionalities can be foun in the `README.md` and `USER_INPUT_GUIDE.md`. We here quickly remind some basic points. 
 
 ### Displaying the Command-Line Help
 
@@ -724,7 +724,7 @@ Both executables include a built-in help message describing the available comman
 To display it, simply run
 
 ```bash
-./bin/KOptions --help
+./bin/QuantKos --help
 ```
 
 or
@@ -739,7 +739,7 @@ The help output summarizes the accepted command-line arguments, and the contents
 
 ### Specifying CPU Threads or GPUs (Optional)
 
-KOptions relies on the native Kokkos command-line parser. Consequently, the execution backend can be configured at runtime without recompiling the application.
+QuantKos relies on the native Kokkos command-line parser. Consequently, the execution backend can be configured at runtime without recompiling the application.
 
 #### Running on Multiple CPU Cores (OpenMP builds)
 
@@ -747,13 +747,13 @@ If Kokkos was compiled with the OpenMP backend enabled, you can choose the numbe
 
 ```bash
 # Use exactly 8 OpenMP threads
-./bin/KOptions share/KOptionsConfig.yaml --kokkos-threads=8
+./bin/QuantKos share/QuantKosConfig.yaml --kokkos-threads=8
 ```
 
 Alternatively, the standard OpenMP environment variable may be used:
 
 ```bash
-OMP_NUM_THREADS=8 ./bin/KOptions share/KOptionsConfig.yaml
+OMP_NUM_THREADS=8 ./bin/QuantKos share/QuantKosConfig.yaml
 ```
 
 If the executable was built using the Serial backend only, these options are simply ignored and the program runs procedurally on a single CPU core.
@@ -768,10 +768,10 @@ On systems containing multiple NVIDIA GPUs, the desired device can be selected e
 
 ```bash
 # Execute on GPU 0
-./bin/KOptions share/KOptionsConfig.yaml --kokkos-device-id=0
+./bin/QuantKos share/QuantKosConfig.yaml --kokkos-device-id=0
 
 # Execute on GPU 1
-./bin/KOptions share/KOptionsConfig.yaml --kokkos-device-id=1
+./bin/QuantKos share/QuantKosConfig.yaml --kokkos-device-id=1
 ```
 
 
@@ -781,9 +781,9 @@ On systems containing multiple NVIDIA GPUs, the desired device can be selected e
 The option pricing engine is started by passing its default configuration file:
 
 ```bash
-cd $HOME/software/installations/KOptions
+cd $HOME/software/installations/QuantKos
 
-./bin/KOptions share/KOptionsConfig.yaml
+./bin/QuantKos share/QuantKosConfig.yaml
 ```
 
 The configuration file specifies all simulation parameters, including the stochastic model, option contract, numerical scheme, Monte Carlo settings, and output options.
@@ -795,7 +795,7 @@ The configuration file specifies all simulation parameters, including the stocha
 The validation executable is launched in exactly the same way:
 
 ```bash
-cd $HOME/software/installations/KOptions
+cd $HOME/software/installations/QuantKos
 
 ./bin/Tester share/TesterConfig.yaml
 ```

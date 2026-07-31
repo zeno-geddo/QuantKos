@@ -34,14 +34,14 @@ namespace KOps::HELP {
     namespace KI = KOps::Implemented;
 
     /**
-     * @brief Prints the stylized KOptions welcome banner to the terminal.
+     * @brief Prints the stylized QuantKos welcome banner to the terminal.
      * * Outputs high-level metadata about the engine version, developer contact details,
      * build constraints, and confirmation of the active parallel Kokkos compute backend.
      */
     inline void print_welcome_msg() {
         constexpr std::string_view indent = "    ";
         std::cout << "\n\n" << indent << "====================================================================\n"
-                << indent << "                              KOptions                              \n"
+                << indent << "                              QuantKos                              \n"
                 << indent << "====================================================================\n"
                 << indent << "    Framework         : Parallel SDE Option Pricing Engine          \n"
                 << indent << "    Compute Backend   : C++ (Performance Portability with Kokkos)   \n"
@@ -70,7 +70,7 @@ namespace KOps::HELP {
                 << "      Execution Command Syntax:\n"
                 << "        ./" << filename << " <path_to_config_file.yaml>\n\n"
                 << "      Example Command Usage:\n"
-                << "        ./" << filename << " KOptions/KOptionsConfig.yaml\n\n"
+                << "        ./" << filename << " QuantKos/QuantKosConfig.yaml\n\n"
                 << "    --------------------------------------------------------\n"
                 << "    Note: The configuration input file must be a validated \n"
                 << "          YAML/JSON specification containing comprehensive \n"
@@ -194,8 +194,8 @@ namespace KOps::HELP {
         // ---------------------------------------------------------
         std::cout << K::Output << ":\n"
                 << "  " << K::OutParams::out_dir << ": \"install/outputs\"\n"
-                << "  " << K::OutParams::Name_Paths_Out_File << ": \"KOptionsPaths.paths\"\n"
-                << "  " << K::OutParams::Name_Log_File << ": \"KOptions.log\"\n"
+                << "  " << K::OutParams::Name_Paths_Out_File << ": \"QuantKosPaths.paths\"\n"
+                << "  " << K::OutParams::Name_Log_File << ": \"QuantKos.log\"\n"
                 << "  " << K::OutParams::Format << ":  " << get_allowed_options<KI::IOFormat>() << "\n";
     }
 }
