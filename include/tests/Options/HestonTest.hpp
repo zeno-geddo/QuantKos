@@ -20,15 +20,14 @@
 #include "TestsUtils.hpp"
 
 /**
- * @namespace KOps::Tests::Heston
  * @brief Integration tests comparing numerical simulation results with Heston exact analytical solutions.
  */
-namespace KOps::Tests::Heston {
-    namespace KC = KOps::Config;
-    namespace KT = KOps::Types;
-    namespace KI = KOps::Implemented;
-    namespace KTU = KOps::Tests::Utils;
-    namespace KH = KOps::Engine::Analytical::Heston;
+namespace quantkos::Tests::Heston {
+    namespace KC = quantkos::Config;
+    namespace KT = quantkos::Types;
+    namespace KI = quantkos::Implemented;
+    namespace KTU = quantkos::Tests::Utils;
+    namespace KH = quantkos::Engine::Analytical::Heston;
 
     /**
      * @brief Generates a Heston model configuration where the Feller condition is satisfied.

@@ -22,8 +22,8 @@
 #include "../../IO/OutManager.hpp"
 #include "../schemes/RandNGenerator.hpp"
 
-namespace KOps::Engine {
-    namespace KIO = KOps::IO;
+namespace quantkos::Engine {
+    namespace KIO = quantkos::IO;
 
     /**
      * @brief Immutable snapshot container for Monte Carlo simulation outputs.

@@ -29,11 +29,11 @@
  * @namespace KOps::Tests::IOBIN
  * @brief Integration tests for validating binary data storage and retrieval.
  */
-namespace KOps::Tests::IOBIN {
-    namespace KC = KOps::Config;
-    namespace KE = KOps::Engine;
-    namespace KT = KOps::Types;
-    namespace KB = KOps::IO::Binary;
+namespace quantkos::Tests::IOBIN {
+    namespace KC = quantkos::Config;
+    namespace KE = quantkos::Engine;
+    namespace KT = quantkos::Types;
+    namespace KB = quantkos::IO::Binary;
 
     /**
      * @brief Verifies the integrity of the binary serialization system.

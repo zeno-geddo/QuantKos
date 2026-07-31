@@ -16,7 +16,7 @@
 
 /**
  * @file
- * @brief Master entry point and execution driver for the KOptions parallel testing engine.
+ * @brief Master entry point and execution driver for the QuantKos parallel testing engine.
  * @details This file coordinates the integration test suite. It initializes the Kokkos parallel
  * execution space, registers all numerical, structural, and convergence test suites, parses
  * selective YAML run configurations if provided, and safely coordinates resource deallocation
@@ -56,7 +56,7 @@
  * @param argv Array of command-line argument strings. `argv[1]` can optionally contain a YAML test filter.
  * @return int Returns @c 0 if all executed test suites pass their composite mathematical and
  * statistical tolerance thresholds; returns the number of failed suites otherwise.
- * @todo Should write a script that automatically compile and install KOptions with cuda, openmp, and procedural backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.
+ * @todo Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.
  */
 int main(int argc, char *argv[]) {
     // 1. Initialize the parallel hardware backend (binds thread pools / GPU virtual contexts)
@@ -70,8 +70,8 @@ int main(int argc, char *argv[]) {
         std::cout << indent << "**************************************************\n\n";
 
         // 3. Centralized Test Registration
-        namespace KTE = KOps::Tests;
-        namespace KTE = KOps::Tests;
+        namespace KTE = quantkos::Tests;
+        namespace KTE = quantkos::Tests;
         auto tester = KTE::TestEngine();
         tester.register_test("RNG",
                              "Verify that standard gaussian random variable is sampled correctly in Kokkos",

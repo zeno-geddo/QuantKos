@@ -31,16 +31,16 @@
 /**
  * @brief Namespace aggregating all structures containing parameters required to initialize and run a simulation.
  */
-namespace KOps::Config {
+namespace quantkos::Config {
     /** @brief Internal helper to make configuration error messages cleaner */
     inline std::string config_err_msg(std::string_view block, std::string_view key, const std::string &msg) {
         return "[" + std::string(block) + "." + std::string(key) + "] " + msg;
     }
 
     // Alias for easier access to the keys
-    namespace KI = KOps::Implemented;
-    namespace KK = KOps::Keys;
-    using Real = KOps::Types::Real;
+    namespace KI = quantkos::Implemented;
+    namespace KK = quantkos::Keys;
+    using Real = quantkos::Types::Real;
 
     /**
      * @brief Market environment configuration.

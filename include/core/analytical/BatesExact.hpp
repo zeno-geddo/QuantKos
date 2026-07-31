@@ -26,11 +26,11 @@
 /**
  * @brief Namespace aggregating all tools needed to compute the exact Europen call option price considering the Bates model.
  */
-namespace KOps::Engine::Analytical::Bates {
-    namespace KT = KOps::Types;
-    namespace KC = KOps::Config;
-    namespace KI = KOps::Implemented;
-    namespace KE = KOps::Engine::Analytical::Heston;
+namespace quantkos::Engine::Analytical::Bates {
+    namespace KT = quantkos::Types;
+    namespace KC = quantkos::Config;
+    namespace KI = quantkos::Implemented;
+    namespace KE = quantkos::Engine::Analytical::Heston;
 
     using Complex = std::complex<double>;
     const Complex i_unit{0., 1.};

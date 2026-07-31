@@ -27,7 +27,7 @@
  * @brief Namespace containing string constants for YAML configuration keys.
  * Modifications here must be synchronized with the parser implementation.
  */
-namespace KOps::Keys {
+namespace quantkos::Keys {
     // ------------------------------------------------------------------------
     // Top-Level Blocks
     // ------------------------------------------------------------------------

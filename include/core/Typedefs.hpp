@@ -13,24 +13,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// #pragma once
-#ifndef KOPTIONS_TYPEDEFS_HPP
-#define KOPTIONS_TYPEDEFS_HPP
+#pragma once
 
 /**
  * @brief Namespace containing core mathematical type definitions and compile-time constants.
- * * Provides a unified way to manage floating-point precision across the entire KOps engine
+ * * Provides a unified way to manage floating-point precision across the entire QuantKos engine
  * via CMake-defined preprocessor macros.
  */
-namespace KOps::Types {
+namespace quantkos::Types {
 
     /**
      * @brief The primary floating-point type used throughout the numerical simulation engine.
-     * * Defaults to @c double precision for maximum accuracy. If the CMake option @c KOPS_ENABLE_SINGLE_PRECISION
+     * * Defaults to @c double precision for maximum accuracy. If the CMake option @c QKOS_ENABLE_SINGLE_PRECISION
      * is enabled during the build process, this alias automatically resolves to @c float to improve
      * memory bandwidth and throughput on GPU architectures.
      */
-#ifdef KOPS_ENABLE_SINGLE_PRECISION
+#ifdef QKOS_ENABLE_SINGLE_PRECISION
     using Real = float;
 #else
     using Real = double; // Default to double
@@ -51,5 +49,3 @@ namespace KOps::Types {
     ///@}
 }
 
-
-#endif //KOPTIONS_TYPEDEFS_HPP

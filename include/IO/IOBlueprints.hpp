@@ -18,10 +18,10 @@
 #include "./../core/Typedefs.hpp"
 
 /**
- * @namespace KOps::IO
+ * @namespace quantkos::IO
  * @brief Handles all Input/Output operations, serialization, and disk-persistence interfaces for the Monte Carlo engine.
  *
- * @details The `KOps::IO` namespace serves as the primary abstraction layer for data movement between
+ * @details The `quantkos::IO` namespace serves as the primary abstraction layer for data movement between
  * system memory and external storage. Its architecture is built around three core principles:
  * * - **Polymorphism-First Design**: Uses interface blueprints (`WriterBlueprint`, `ReaderBlueprint`) to decouple
  * high-performance compute kernels from specific I/O backends (e.g., CSV, Binary, HDF5).
@@ -29,15 +29,15 @@
  * accidental duplication of file handles or heavy memory-mapped structures.
  * - **Batch-Oriented Throughput**: Designed to handle high-dimensional Monte Carlo paths in blocks.
  *
- * @note This namespace relies heavily on `KOps::Types` for precision control, ensuring that
+ * @note This namespace relies heavily on `quantkos::Types` for precision control, ensuring that
  * data written to disk matches the numerical precision requirements of the solver engines.
  *
  * @todo Implement `CSVWriter` class to handle streaming storage to CSV files for rapid inspections.
  * @todo Implement `DatabaseWriter` class to handle streaming storage directly into SQL-based repositories.
  * @todo Add compression support (Zlib/LZ4) for binary path serialization to minimize disk footprint.
  */
-namespace KOps::IO {
-    namespace KT = KOps::Types;
+namespace quantkos::IO {
+    namespace KT = quantkos::Types;
 
     /**
     * @brief Abstract base class (interface) defining the contract for path and payoff output writers.

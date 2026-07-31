@@ -29,9 +29,9 @@
  * * Contains functions responsible for outputting startup welcome banners, terminal usage syntax
  * instructions, and structural YAML configuration templates directly to the standard output stream.
  */
-namespace KOps::HELP {
-    namespace K = KOps::Keys;
-    namespace KI = KOps::Implemented;
+namespace quantkos::HELP {
+    namespace K = quantkos::Keys;
+    namespace KI = quantkos::Implemented;
 
     /**
      * @brief Prints the stylized QuantKos welcome banner to the terminal.

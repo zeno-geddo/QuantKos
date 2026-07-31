@@ -27,10 +27,10 @@
 #include "../config/ConfigFileEnums.hpp"
 #include "../memory/MemoryTypes.hpp"
 
-namespace KOps::Engine {
-    namespace KT = KOps::Types;
-    namespace KI = KOps::Implemented;
-    namespace KC = KOps::Config;
+namespace quantkos::Engine {
+    namespace KT = quantkos::Types;
+    namespace KI = quantkos::Implemented;
+    namespace KC = quantkos::Config;
 
     /**
      * @brief Evaluates and reports final statistical metrics from Monte Carlo simulation payoffs.

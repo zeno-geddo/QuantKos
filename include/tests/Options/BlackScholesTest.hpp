@@ -20,15 +20,14 @@
 #include "../../core/analytical/BlackScholesExact.hpp"
 
 /**
- * @namespace KOps::Tests::BlackScholes
  * @brief Integration tests validating convergence profiles against the analytical Black-Scholes model.
  */
-namespace KOps::Tests::BlackScholes {
-    namespace KC = KOps::Config;
-    namespace KT = KOps::Types;
-    namespace KI = KOps::Implemented;
-    namespace KTU = KOps::Tests::Utils;
-    namespace KBS = KOps::Engine::Analytical::BlackScholes;
+namespace quantkos::Tests::BlackScholes {
+    namespace KC = quantkos::Config;
+    namespace KT = quantkos::Types;
+    namespace KI = quantkos::Implemented;
+    namespace KTU = quantkos::Tests::Utils;
+    namespace KBS = quantkos::Engine::Analytical::BlackScholes;
 
     /**
      * @brief Generates a baseline configuration where stochastic volatility models (HESTON AND BATES) collapse to Black-Scholes.

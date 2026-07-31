@@ -25,10 +25,10 @@
 /**
  * @brief Namespace aggregating all tools needed to compute the exact Europen call option price considering the Heston Model.
  */
-namespace KOps::Engine::Analytical::Heston {
-    namespace KT = KOps::Types;
-    namespace KC = KOps::Config;
-    namespace KI = KOps::Implemented;
+namespace quantkos::Engine::Analytical::Heston {
+    namespace KT = quantkos::Types;
+    namespace KC = quantkos::Config;
+    namespace KI = quantkos::Implemented;
 
     using Complex = std::complex<double>;
     const Complex i_unit{0., 1.};

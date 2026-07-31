@@ -19,15 +19,14 @@
 #include "TestsUtils.hpp"
 
 /**
- * @namespace KOps::Tests::LSM
  * @brief Integration tests for validating American option pricing using the Longstaff-Schwartz Method (LSM).
  */
-namespace KOps::Tests::LSM {
-    namespace KC = KOps::Config;
-    namespace KT = KOps::Types;
-    namespace KI = KOps::Implemented;
-    namespace KTU = KOps::Tests::Utils;
-    namespace KE = KOps::Engine;
+namespace quantkos::Tests::LSM {
+    namespace KC = quantkos::Config;
+    namespace KT = quantkos::Types;
+    namespace KI = quantkos::Implemented;
+    namespace KTU = quantkos::Tests::Utils;
+    namespace KE = quantkos::Engine;
 
     /**
      * @brief Generates an American Put option configuration under Heston stochastic volatility parameters.

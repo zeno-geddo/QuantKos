@@ -26,9 +26,9 @@
  * and parallel reduction kernels to evaluate optimal early exercise boundaries.
  * @todo Should implement the control variate technique to improve the precision, see Pag. 208, eq. 7, the the book : Fabrice D. Rouah's *The Heston Model and its Extensions in Matlab and C#*.
  */
-namespace KOps::Engine::LSM {
-    namespace KI = KOps::Implemented;
-    namespace KT = KOps::Types;
+namespace quantkos::Engine::LSM {
+    namespace KI = quantkos::Implemented;
+    namespace KT = quantkos::Types;
 
     /**
      * @brief Fixed-size container for the calculated ordinary least-squares regression coefficients.

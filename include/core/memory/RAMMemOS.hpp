@@ -31,7 +31,7 @@
 #include <fstream>
 #endif
 
-namespace KOps::Engine {
+namespace quantkos::Engine {
 
 
     /**

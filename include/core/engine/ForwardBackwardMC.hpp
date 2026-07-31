@@ -34,11 +34,11 @@
 #include "../options/LSMAmerican.hpp"
 
 
-namespace KOps::Engine {
-    namespace KI = KOps::Implemented;
-    namespace KT = KOps::Types;
-    namespace KIO = KOps::IO;
-    namespace KIO = KOps::IO;
+namespace quantkos::Engine {
+    namespace KI = quantkos::Implemented;
+    namespace KT = quantkos::Types;
+    namespace KIO = quantkos::IO;
+    namespace KIO = quantkos::IO;
 
 
     /**

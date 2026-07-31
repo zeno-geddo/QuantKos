@@ -23,10 +23,10 @@
 #include "../../include/core/config/ConfigFileKeysEnumMaps.hpp"
 
 
-namespace KOps::Config {
+namespace quantkos::Config {
     // Short alias for cleaner code within this file
-    namespace K = KOps::Keys;
-    namespace KI = KOps::Implemented;
+    namespace K = quantkos::Keys;
+    namespace KI = quantkos::Implemented;
 
     // Helper to cast string_view to string for yaml-cpp (older versions compatibility)
     inline std::string str(std::string_view sv) {

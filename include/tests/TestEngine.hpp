@@ -23,10 +23,9 @@
 #include <yaml-cpp/yaml.h>
 
 /**
- * @namespace KOps::Tests
  * @brief Provides a lightweight testing framework for registering and executing test suites.
  */
-namespace KOps::Tests {
+namespace quantkos::Tests {
     /**
      * @struct TestSuite
      * @brief Represents an individual test case, containing its short description and the logic (i.e. funciton) to execute it.

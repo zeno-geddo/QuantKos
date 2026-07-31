@@ -22,13 +22,12 @@
 #include "../../core/Typedefs.hpp"
 
 /**
- * @namespace KOps::Tests::RNG
  * @brief Integration tests for validating parallel random number generation (RNG) distributions.
 */
-namespace KOps::Tests::RNG {
-    namespace KT = KOps::Types;
-    namespace KE = KOps::Engine;
-    namespace KC = KOps::Config;
+namespace quantkos::Tests::RNG {
+    namespace KT = quantkos::Types;
+    namespace KE = quantkos::Engine;
+    namespace KC = quantkos::Config;
 
     /**
     * @brief Generate a dummy configuration needed to initialize the random number generator.
@@ -91,7 +90,7 @@ namespace KOps::Tests::RNG {
          */
         KOKKOS_INLINE_FUNCTION
         void operator()(const int n_p) const {
-            KOps::Engine::ScopedRNG scoped_rng(rng_pool);
+            quantkos::Engine::ScopedRNG scoped_rng(rng_pool);
             auto &rn_generator = scoped_rng.return_unique_rng_state();
             for (int i = 0; i < n_t_steps; ++i) {
                 dummy_path_view(n_p, i) = Scheme.evolve_step(rn_generator);
