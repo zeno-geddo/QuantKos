@@ -19,13 +19,15 @@
 #include "../../core/analytical/BatesExact.hpp"
 #include "TestsUtils.hpp"
 
-
-namespace KOps::Tests::Bates {
-    namespace KC = KOps::Config;
-    namespace KT = KOps::Types;
-    namespace KI = KOps::Implemented;
-    namespace KTU = KOps::Tests::Utils;
-    namespace KB = KOps::Engine::Analytical::Bates;
+/**
+ * @brief Integration tests comparing numerical simulation results with Bates exact analytical solutions.
+ */
+namespace quantkos::Tests::Bates {
+    namespace KC = quantkos::Config;
+    namespace KT = quantkos::Types;
+    namespace KI = quantkos::Implemented;
+    namespace KTU = quantkos::Tests::Utils;
+    namespace KB = quantkos::Engine::Analytical::Bates;
 
     /**
      * @brief Generates a Bates model configuration with standard jump-diffusion test parameters.

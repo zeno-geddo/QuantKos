@@ -22,14 +22,13 @@
 
 
 /**
- * @namespace KOps::Tests::Utils
  * @brief Common test execution helper functions and statistical analysis tools.
  */
-namespace KOps::Tests::Utils {
-    namespace KC = KOps::Config;
-    namespace KT = KOps::Types;
-    namespace KI = KOps::Implemented;
-    namespace KE = KOps::Engine;
+namespace quantkos::Tests::Utils {
+    namespace KC = quantkos::Config;
+    namespace KT = quantkos::Types;
+    namespace KI = quantkos::Implemented;
+    namespace KE = quantkos::Engine;
 
 
     /**
@@ -107,7 +106,7 @@ namespace KOps::Tests::Utils {
      * @param indent Console layout spacing alignment.
      * @return A populated OptionPriceErr tracking structural step errors.
      */
-    [[nodiscard]] inline OptionPriceErr compare_numerical_and_expected_option_price(KOps::Config::UInputs &config,
+    [[nodiscard]] inline OptionPriceErr compare_numerical_and_expected_option_price(quantkos::Config::UInputs &config,
         const KT::Real expected_price,
         const std::string_view indent = "   ") {
         std::cout << indent << ">>> Calling the solver ...\n";

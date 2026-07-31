@@ -23,10 +23,10 @@
 /**
  * @brief Namespace aggregating all tools needed to compute the exact Europen call option price considering the Black-Scholes model.
  */
-namespace KOps::Engine::Analytical::BlackScholes {
-    namespace KT = KOps::Types;
-    namespace KC = KOps::Config;
-    namespace KI = KOps::Implemented;
+namespace quantkos::Engine::Analytical::BlackScholes {
+    namespace KT = quantkos::Types;
+    namespace KC = quantkos::Config;
+    namespace KI = quantkos::Implemented;
 
     /**
     * @brief Eval CDF of a standard normal at point x.

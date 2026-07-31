@@ -31,16 +31,16 @@
 /**
  * @brief Namespace aggregating all structures containing parameters required to initialize and run a simulation.
  */
-namespace KOps::Config {
+namespace quantkos::Config {
     /** @brief Internal helper to make configuration error messages cleaner */
     inline std::string config_err_msg(std::string_view block, std::string_view key, const std::string &msg) {
         return "[" + std::string(block) + "." + std::string(key) + "] " + msg;
     }
 
     // Alias for easier access to the keys
-    namespace KI = KOps::Implemented;
-    namespace KK = KOps::Keys;
-    using Real = KOps::Types::Real;
+    namespace KI = quantkos::Implemented;
+    namespace KK = quantkos::Keys;
+    using Real = quantkos::Types::Real;
 
     /**
      * @brief Market environment configuration.
@@ -449,8 +449,8 @@ namespace KOps::Config {
      */
     struct OutputConfig {
         std::string out_dir = "outputs"; ///< Target directory for generated logs and paths.
-        std::string filename_paths_out = "KOptions.paths"; ///< Filename for the simulated path storage.
-        std::string filename_log = "KOptions.log"; ///< Filename for the runtime execution log.
+        std::string filename_paths_out = "QuantKos.paths"; ///< Filename for the simulated path storage.
+        std::string filename_log = "QuantKos.log"; ///< Filename for the runtime execution log.
         KI::IOFormat format = KI::IOFormat::TXT; ///< Output Data format (e.g., BIN or TXT).
 
         void print(std::string_view indent = "") const {

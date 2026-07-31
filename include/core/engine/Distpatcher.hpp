@@ -25,10 +25,11 @@
 /**
  * @brief Namespace aggregating all tools to numerically compute options prices.
  * @todo Optimize Console String Formatting and Printing, adding level of verbosity and redirection to log file.
- */
-namespace KOps::Engine {
-    namespace KI = KOps::Implemented;
-    namespace KC = KOps::Config;
+  *@todo Should add other namespaces into this namespace to make the structure of the code clearer (e.g. memory, sde, ...)
+*/
+namespace quantkos::Engine {
+    namespace KI = quantkos::Implemented;
+    namespace KC = quantkos::Config;
 
     // Transfer service class
     /**

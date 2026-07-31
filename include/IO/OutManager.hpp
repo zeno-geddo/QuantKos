@@ -24,12 +24,12 @@
 #include "../core/memory/PathsMCBatchMem.hpp"
 #include "./../core/Typedefs.hpp"
 
-namespace KOps::IO {
-    namespace KC = KOps::Config;
-    namespace KI = KOps::Implemented;
-    namespace KT = KOps::Types;
-    namespace KE = KOps::Engine;
-    namespace KB = KOps::IO::Binary;
+namespace quantkos::IO {
+    namespace KC = quantkos::Config;
+    namespace KI = quantkos::Implemented;
+    namespace KT = quantkos::Types;
+    namespace KE = quantkos::Engine;
+    namespace KB = quantkos::IO::Binary;
 
     /**
      * @brief High-level coordinator that manages how and where simulation results are written to disk.

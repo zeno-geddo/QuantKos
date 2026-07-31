@@ -18,7 +18,7 @@
 #include <string>
 #include "./../core/config/Config.hpp"
 
-namespace KOps::Config {
+namespace quantkos::Config {
 
     /**
      * @brief Static utility class responsible for loading and parsing file-based configurations.

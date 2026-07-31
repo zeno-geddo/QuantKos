@@ -19,11 +19,11 @@
 #include "../../config/Config.hpp"
 #include "../../config/ConfigFileEnums.hpp"
 
-namespace KOps::Engine {
-    namespace KI = KOps::Implemented;
-    namespace KC = KOps::Config;
-    namespace KT = KOps::Types;
-    namespace KE = KOps::Engine;
+namespace quantkos::Engine {
+    namespace KI = quantkos::Implemented;
+    namespace KC = quantkos::Config;
+    namespace KT = quantkos::Types;
+    namespace KE = quantkos::Engine;
 
     /**
      * @brief Output data structure returned by all SDE integration step functions.

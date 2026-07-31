@@ -18,9 +18,9 @@
 #include "../Typedefs.hpp"
 #include "../config/ConfigFileEnums.hpp"
 
-namespace KOps::Engine {
-    namespace KI = KOps::Implemented;
-    namespace KT = KOps::Types;
+namespace quantkos::Engine {
+    namespace KI = quantkos::Implemented;
+    namespace KT = quantkos::Types;
 
 
     // ========================================================================

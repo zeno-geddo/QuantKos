@@ -14,7 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ## @file
-## @brief Build configuration script for compiling and installing the primary KOptions application binary.
+## @brief Build configuration script for compiling and installing the primary QuantKos application binary.
 ## @details This file handles the target definition for the user-facing executable, links it
 ##          to the shared/static core engine library, and sets up local binary deployment structures.
 ## @author Zeno GEDDO
@@ -26,8 +26,8 @@
 ## @section exec_sec (Main Executable Definition)
 ## @brief Adds the executable build target for the simulation solver.
 ## @details Compiles the user interface entry-point (`main.cpp`) to build the final,
-##          standalone executable named `KOptions`.
-add_executable(KOptions main.cpp)
+##          standalone executable named `QuantKos`.
+add_executable(QuantKos main.cpp)
 
 # -----------------------------------------------------------------------------
 # 2. Link to internal libraries
@@ -35,11 +35,11 @@ add_executable(KOptions main.cpp)
 # -----------------------------------------------------------------------------
 ## @section link_sec (Dependent Target Linking)
 ## @brief Binds the executable target to the core numerical framework.
-## @details Links `KOptions` to the target `KOptions_core` using `PRIVATE` scoping.
+## @details Links `QuantKos` to the target `QuantKos_core` using `PRIVATE` scoping.
 ##          This private dependency propagation automatically populates the executable target
 ##          with all necessary compiler standards, include folders, and upstream package targets
 ##          such as Kokkos and yaml-cpp.
-target_link_libraries(KOptions PRIVATE KOptions_core)
+target_link_libraries(QuantKos PRIVATE QuantKos_core)
 
 
 # -----------------------------------------------------------------------------
@@ -47,8 +47,8 @@ target_link_libraries(KOptions PRIVATE KOptions_core)
 # -----------------------------------------------------------------------------
 ## @section install_app_sec (Application Deployment Rules)
 ## @brief Installs the compiled executable binary into the workspace distribution structure.
-## @details Copies the built `KOptions` runtime target into the `bin/` folder of the localized
+## @details Copies the built `QuantKos` runtime target into the `bin/` folder of the localized
 ##          installation prefix (`CMAKE_INSTALL_PREFIX`), enabling clean workspace execution.
 
-install(TARGETS KOptions
-        RUNTIME DESTINATION bin) # Puts the 'KOptions' binary in the bin/ folder
+install(TARGETS QuantKos
+        RUNTIME DESTINATION bin) # Puts the 'QuantKos' binary in the bin/ folder

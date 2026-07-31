@@ -19,8 +19,8 @@
 #include <Kokkos_Random.hpp>
 #include "../config/Config.hpp"
 
-namespace KOps::Engine {
-    namespace KC = KOps::Config;
+namespace quantkos::Engine {
+    namespace KC = quantkos::Config;
 
     // ========================================================================
     // 1. HOST-SIDE MANAGER: Handles allocation and lifecycle of the global pool

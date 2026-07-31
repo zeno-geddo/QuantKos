@@ -22,15 +22,14 @@
 #include "../../IO/IOBinary.hpp"
 
 /**
- * @namespace KOps::Tests::NoNoise
  * @brief Verification tests running under zero-noise (deterministic) conditions.
  */
-namespace KOps::Tests::NoNoise {
-    namespace KC = KOps::Config;
-    namespace KE = KOps::Engine;
-    namespace KT = KOps::Types;
-    namespace KI = KOps::Implemented;
-    namespace KB = KOps::IO::Binary;
+namespace quantkos::Tests::NoNoise {
+    namespace KC = quantkos::Config;
+    namespace KE = quantkos::Engine;
+    namespace KT = quantkos::Types;
+    namespace KI = quantkos::Implemented;
+    namespace KB = quantkos::IO::Binary;
 
     /**
      * @brief Calculates the analytical exact solution for deterministic asset growth.
@@ -41,7 +40,7 @@ namespace KOps::Tests::NoNoise {
      * @param conf The simulation parameters containing interest rate (r), dividend yield (q), maturity (T), and initial spot (S0).
      * @return The theoretical exact spot price at maturity.
      */
-    inline double get_exact_solution(const KOps::Config::UInputs &conf) {
+    inline double get_exact_solution(const quantkos::Config::UInputs &conf) {
         // Expected: S_T = S_0 * exp((r - q) * T)
         const double expected_S_T = conf.market.S0 * std::exp(
                                         (conf.market.r - conf.market.q) * conf.time.t_end);

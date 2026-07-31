@@ -20,8 +20,8 @@
 #include "../Typedefs.hpp"
 
 
-namespace KOps::Engine {
-    namespace KT = KOps::Types;
+namespace quantkos::Engine {
+    namespace KT = quantkos::Types;
 
     /**
      * @brief 2D device View allocated on the default execution space to track asset price paths.

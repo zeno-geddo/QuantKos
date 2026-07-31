@@ -20,7 +20,7 @@
 /**
  * @brief Namespace aggregating all tools to compute the exact options prices using semi-analytical formulations.
  */
-namespace KOps::Engine::Analytical {
+namespace quantkos::Engine::Analytical {
     // 64-points Gauss-Legendre Integrator
     /**
      * @brief Performs 64-point Gauss-Legendre quadrature integration over the interval [a, b].

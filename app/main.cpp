@@ -16,12 +16,13 @@
 
 /**
  * @file main.cpp
- * @brief Main entry point for the KOptions parallel Monte Carlo option pricing engine.
+ * @brief Main entry point for the QuantKos parallel Monte Carlo option pricing engine.
  * @details This file coordinates the application sequence, whose task consist in computing an option price (and related statistics) given the user parameters.
  * It handles command-line arguments, offers inline console help templates, initializes the parallel Kokkos
  * runtime execution space, and dispatches the stochastic simulation workflow.
  * @author Zeno GEDDO
  * @date 2026
+ * @todo Should add a description to the other files as well.
  */
 
 #include <iostream>
@@ -49,7 +50,7 @@
 */
 int main(int argc, char *argv[]) {
 
-    namespace KH = KOps::HELP;
+    namespace KH = quantkos::HELP;
 
     // 1. Output the stylized welcome banner and engine version metadata
     KH::print_welcome_msg();
@@ -75,8 +76,8 @@ int main(int argc, char *argv[]) {
     Kokkos::initialize(argc, argv);
     int exit_code = 0;
     {
-        namespace KC = KOps::Config;
-        namespace KE = KOps::Engine;
+        namespace KC = quantkos::Config;
+        namespace KE = quantkos::Engine;
         try {
             // 1. Parse YAML Configuration
             const std::string input_file = argv[1];

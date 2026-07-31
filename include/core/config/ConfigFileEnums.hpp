@@ -17,7 +17,7 @@
 #pragma once
 
 
-namespace KOps::Implemented {
+namespace quantkos::Implemented {
     /**
     * @brief Defines the supported option exercise styles and payoff structures.
     */

@@ -25,10 +25,10 @@
 #include "./MemoryTypes.hpp"
 
 
-namespace KOps::Engine {
-    namespace KT = KOps::Types;
-    namespace KC = KOps::Config;
-    namespace KI = KOps::Implemented;
+namespace quantkos::Engine {
+    namespace KT = quantkos::Types;
+    namespace KC = quantkos::Config;
+    namespace KI = quantkos::Implemented;
 
 
     // ------------------------------------------------------------------------

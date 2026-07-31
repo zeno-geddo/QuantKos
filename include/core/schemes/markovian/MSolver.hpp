@@ -42,10 +42,10 @@
 //-------------------------------------------------------------------------------
 
 
-namespace KOps::Engine {
-    namespace KI = KOps::Implemented;
-    namespace KT = KOps::Types;
-    namespace KC = KOps::Config;
+namespace quantkos::Engine {
+    namespace KI = quantkos::Implemented;
+    namespace KT = quantkos::Types;
+    namespace KC = quantkos::Config;
 
     // ========================================================================
     // THE HARDWARE FUNCTOR (Thread-Level Execution)

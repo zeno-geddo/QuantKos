@@ -31,7 +31,7 @@
  *
  * File (YAML) → Parser → Current Validator → Config → Solver
  */
-namespace KOps::Implemented {
+namespace quantkos::Implemented {
     // --------------------------------------------------------
     // 1. The "Dictionary" Holders to Map Strings to Enums
     // --------------------------------------------------------

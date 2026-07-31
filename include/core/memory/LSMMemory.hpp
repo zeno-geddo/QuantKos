@@ -23,9 +23,9 @@
 #include "PathsMCBatchMem.hpp"
 #include "RAMMemOS.hpp"
 
-namespace KOps::Engine {
-    namespace KT = KOps::Types;
-    namespace KC = KOps::Config;
+namespace quantkos::Engine {
+    namespace KT = quantkos::Types;
+    namespace KC = quantkos::Config;
 
     /**
      * @brief Manages memory for American option pricing when using the Longstaff-Schwartz algorithm.

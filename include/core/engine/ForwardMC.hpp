@@ -28,10 +28,10 @@
 #include "../options/OptionPricer.hpp"
 
 
-namespace KOps::Engine {
-    namespace KI = KOps::Implemented;
-    namespace KT = KOps::Types;
-    namespace KIO = KOps::IO;
+namespace quantkos::Engine {
+    namespace KI = quantkos::Implemented;
+    namespace KT = quantkos::Types;
+    namespace KIO = quantkos::IO;
 
     /**
      * @brief Orchestrator for Forward Monte Carlo simulations.
