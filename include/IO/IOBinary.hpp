@@ -70,7 +70,8 @@ namespace quantkos::IO::Binary {
      * format precision (float vs. double) before loading the actual path matrix payload.
      */
     struct BinHeader {
-        const char file_key[8] = {'Q', 'U', 'A', 'N', 'T', 'K', 'O', 'S'}; ///< File signature key to identify valid QuantKos files.
+        const char file_key[8] = {'Q', 'U', 'A', 'N', 'T', 'K', 'O', 'S'};
+        ///< File signature key to identify valid QuantKos files.
         int version = 1; ///< File format version number for potential future compatibility checks.
         int byte_precision = sizeof(KT::Real); ///< Precision size (4 for 32-bit float, 8 for 64-bit double).
         int total_n_sims; ///< Total number of simulation paths stored in this file.
@@ -134,7 +135,8 @@ namespace quantkos::IO::Binary {
          * @param current_batch_size Number of active paths in the current execution batch.
          * @param BatchMem Buffer allocation structure containing the batch path data.
          */
-        void save_paths_batch_if_needed(int current_batch_size, const Engine::PathsMCBatchMem &BatchMem) override {
+        void save_paths_batch_if_needed(const int current_batch_size,
+                                        const Engine::PathsMCBatchMem &BatchMem) override {
             // Return without writing if no file is specified
             if (config.output.filename_paths_out.empty()) {
                 return;
@@ -184,23 +186,37 @@ namespace quantkos::IO::Binary {
             std::cout << indent << "========================================================\n";
 
             if (!config.output.filename_paths_out.empty()) {
+                // Get a default header to easily access the magic key
+                BinHeader standard_header;
+
+                // Calculate the total matrix payload size in Megabytes
+                const size_t total_payload_bytes = static_cast<size_t>(config.mc.N_Paths) *
+                                                   static_cast<size_t>(config.time.N_time_steps) *
+                                                   sizeof(KT::Real);
+                const double payload_mb = static_cast<double>(total_payload_bytes) / (1024.0 * 1024.0);
+
+                // Print format info
                 std::cout << indent << "   Export Format        :  High-Performance Binary\n";
                 std::cout << indent << "--------------------------------------------------------\n";
                 std::cout << indent << " [Binary File Layout Structure]\n";
-                std::cout << indent << "   |-- GLOBAL HEADER (" << sizeof(BinHeader) << " Bytes)\n";
-                std::cout << indent << "   |   |-- Magic Key    : 'QUANTKOS' (4 bytes)\n";
-                std::cout << indent << "   |   |-- Version      : 1 (int32)\n";
+                std::cout << indent << "   |-- GLOBAL HEADER (" << sizeof(BinHeader) << " bytes)\n";
+                std::cout << indent << "   |   |-- Magic Key    : "<<standard_header.file_key << "  (" << sizeof(
+                    BinHeader::file_key) << " bytes)\n";
+                std::cout << indent << "   |   |-- Version      : 1 " << "(" << sizeof(BinHeader::version) <<
+                        " bytes)\n";
                 std::cout << indent << "   |   |-- Precision    : " << sizeof(KT::Real) <<
                         " bytes per value (int32)\n";
-                std::cout << indent << "   |   |-- Total Paths  : " << config.mc.N_Paths << " (int32)\n";
-                std::cout << indent << "   |   |-- Time Steps   : " << config.time.N_time_steps << " (int32)\n";
-                std::cout << indent << "   |   |-- Time dt      : " << config.time.dt << " (float64)\n";
+                std::cout << indent << "   |   |-- Total Paths  : " << config.mc.N_Paths << " ( " << sizeof(config.mc.N_Paths)<< " bytes)\n";
+                std::cout << indent << "   |   |-- Time Steps   : " << config.time.N_time_steps << " ( " << sizeof(config.time.N_time_steps)<< " bytes)\n";
+                std::cout << indent << "   |   |-- Time dt      : " << config.time.dt << " ( " << sizeof(config.time.dt)<< " bytes)\n";
                 std::cout << indent << "   |\n";
                 std::cout << indent << "   |-- MATRIX PAYLOAD\n";
                 std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.
                         time.N_time_steps << " cols\n";
                 std::cout << indent << "       |-- Ordering     : Row-Major (C-Style Sequential)\n";
+                std::cout << indent << "       |-- Data Type    : " << KT::get_precision_string() << " (" << sizeof(KT::Real) << " bytes)\n";
                 std::cout << indent << "       |-- Contents     : Price time series\n";
+                std::cout << indent << "       |-- Matrix Size  : " << payload_mb << " MB\n";
             } else {
                 std::cout << indent << "  No output files will be written (filename empty).\n";
             }
@@ -275,20 +291,20 @@ namespace quantkos::IO::Binary {
          * @throw std::runtime_error If the file stream is closed, if the requested time falls outside
          * of the simulated timeline, or if the request does not align with the discrete time step (dt).
          */
-        std::vector<KT::Real> read_prices_at_target_time(double current_time) override {
+        std::vector<KT::Real> read_prices_at_target_time(const KT::Real current_time) override {
             if (!inp_stream.is_open()) {
                 throw std::runtime_error("[BinReader Error] Cannot read prices, file stream is closed.");
             }
 
             // Map continuous time to discrete index (a row major layour is assumed)
-            int target_col_idx = static_cast<int>(std::round(current_time / bin_header.dt)) - 1;
+            const int target_col_idx = static_cast<int>(std::round(current_time / bin_header.dt)) - 1;
             // Check That required time is in time domain
             if (target_col_idx < 0 || target_col_idx >= bin_header.n_time_steps) {
                 throw std::runtime_error("[BinReader Error] Requested time " + std::to_string(current_time) +
                                          " is outside the simulated time grid bounds.");
             }
             // Check that the required time is in the time grid and do not required interpolation
-            double actual_grid_time = (target_col_idx + 1) * bin_header.dt;
+            const double actual_grid_time = (target_col_idx + 1) * bin_header.dt;
             if (std::abs(current_time - actual_grid_time) > 1e-10) {
                 throw std::runtime_error("Requested time  " + std::to_string(current_time) +
                                          " does not align perfectly with the discrete simulation grid (dt = " +
@@ -300,9 +316,9 @@ namespace quantkos::IO::Binary {
             std::vector<KT::Real> target_prices(bin_header.total_n_sims);
 
             // Calculate the memory strides
-            std::streampos start_offset_bytes = sizeof(BinHeader) + (target_col_idx * sizeof(KT::Real));
+            const std::streampos start_offset_bytes = sizeof(BinHeader) + (target_col_idx * sizeof(KT::Real));
             //Absolute location in a file from beginning
-            std::streamoff row_stride_bytes = bin_header.n_time_steps * sizeof(KT::Real);
+            const std::streamoff row_stride_bytes = bin_header.n_time_steps * sizeof(KT::Real);
             // jumping of a simulation (relative distance)
 
             // Read Prices
@@ -340,11 +356,11 @@ namespace quantkos::IO::Binary {
             }
             // Read header
             inp_stream.read(reinterpret_cast<char *>(&bin_header), sizeof(BinHeader));
-            // Check if heaser is ok
+            // Check if header is ok
             if (bin_header.file_key[0] != 'Q' || bin_header.file_key[1] != 'U' ||
                 bin_header.file_key[2] != 'A' || bin_header.file_key[3] != 'N' ||
                 bin_header.file_key[4] != 'T' || bin_header.file_key[5] != 'K' ||
-                bin_header.file_key[6] != 'T' || bin_header.file_key[7] != 'S') {
+                bin_header.file_key[6] != 'O' || bin_header.file_key[7] != 'S') {
                 throw std::runtime_error(
                     "[BinReader Error] Magic key mismatch. File is corrupted or not a QuantKos.paths file.");
             }

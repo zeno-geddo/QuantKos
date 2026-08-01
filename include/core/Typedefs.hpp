@@ -27,12 +27,25 @@ namespace quantkos::Types {
      * * Defaults to @c double precision for maximum accuracy. If the CMake option @c QKOS_ENABLE_SINGLE_PRECISION
      * is enabled during the build process, this alias automatically resolves to @c float to improve
      * memory bandwidth and throughput on GPU architectures.
+     * @todo Improve the way single precision is handled
      */
 #ifdef QKOS_ENABLE_SINGLE_PRECISION
     using Real = float;
 #else
     using Real = double; // Default to double
 #endif
+
+    /**
+     * @brief Helper function to get a string showing the precision used.
+    */
+    inline std::string get_precision_string() {
+#ifdef QKOS_ENABLE_SINGLE_PRECISION
+        return "float (single precision)";
+#else
+        return "double (double precision)";
+#endif
+    }
+
 
     /** @name Type-Safe Literal Constants
      * Compile-time constants cast to the engine's current @c Real precision.

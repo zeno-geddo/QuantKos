@@ -17,6 +17,7 @@
 #include <string>
 #include <cmath>
 
+#include "TestsUtils.hpp"
 #include "../../core/config/Config.hpp"
 #include "../../core/engine/Distpatcher.hpp"
 #include "../../IO/IOBinary.hpp"
@@ -30,6 +31,7 @@ namespace quantkos::Tests::NoNoise {
     namespace KT = quantkos::Types;
     namespace KI = quantkos::Implemented;
     namespace KB = quantkos::IO::Binary;
+    namespace KTU = quantkos::Tests::Utils;
 
     /**
      * @brief Calculates the analytical exact solution for deterministic asset growth.
@@ -58,7 +60,9 @@ namespace quantkos::Tests::NoNoise {
         // General Config
         auto config = KC::UInputs();
 
+        // default outpaths name since the test needs also to reload the results
         config.output.format = KI::IOFormat::BIN;
+        config.output.filename_log = "";
 
         config.mc.N_Paths = 100;
         config.mc.batch_size = config.mc.N_Paths;
@@ -111,14 +115,16 @@ namespace quantkos::Tests::NoNoise {
         std::cout << indent << "[   INFO   ] Expected Final Price : " << expected_S_T << "\n";
 
         // Loop testing all models
-        static const std::map<KI::MathModel, KI::NumScheme> models_to_test = {
-            {KI::MathModel::Heston, KI::NumScheme::Euler}
-        };
+        //static const std::map<KI::MathModel, KI::NumScheme> models_to_test = {
+        //    {KI::MathModel::Heston, KI::NumScheme::Euler}
+        //};
 
-        for (const auto &model: models_to_test) {
+        auto models_to_test = KTU::get_models_to_test();
+
+        for (const auto &[fst, snd]: models_to_test) {
             // Set missing params
-            config.model.id_model = model.first;
-            config.scheme.id_scheme = model.second;
+            config.model.id_model = fst;
+            config.scheme.id_scheme = snd;
             std::string name_out_file = "Test_" + KI::enum_to_string(config.model.id_model) + "_"
                                         + KI::enum_to_string(config.scheme.id_scheme) + ".paths";
             config.output.filename_paths_out = name_out_file;

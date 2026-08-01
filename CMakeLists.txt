@@ -91,6 +91,10 @@ endif ()
 ## @brief Activates 32-bit single precision (float) calculations instead of 64-bit double precision.
 ## @details Increases parallel memory bandwidth on GPU hardware, but reduces numeric precision.
 option(QKOS_ENABLE_SINGLE_PRECISION "Use single precision (float) instead of double ?" OFF)
+if (QKOS_ENABLE_SINGLE_PRECISION)
+    add_compile_definitions(QKOS_ENABLE_SINGLE_PRECISION) # Define the preprocessor macro so that float can be actually used
+    message(STATUS "WARNING: Using single precision for the computations may currently cause a degradation in the result quality!")
+endif()
 
 ## @option QKOS_ENABLE_TESTS
 ## @brief Directs CMake to compile the unit test suite and configure CTest execution.

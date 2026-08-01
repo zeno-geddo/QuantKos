@@ -134,9 +134,7 @@ namespace quantkos::Engine {
             std::cout << indent << "========================================================\n";
             std::cout << indent << " [Hardware Backend Framework]\n";
             std::cout << indent << "   Active Execution Space   :  " << batch_mem.execution_space_name() << "\n";
-            std::cout << indent << "   Compute Precision Type   :  " << (sizeof(KT::Real) == 8
-                                                                             ? "64-bit Double"
-                                                                             : "32-bit Float") << "\n";
+            std::cout << indent << "   Compute Precision Type   :  " << KT::get_precision_string() << "\n";
             std::cout << indent << "--------------------------------------------------------\n";
             std::cout << indent << " [Simulation Matrix Framework]\n";
             std::cout << indent << "   Total MC Simulations        :  " << config.mc.N_Paths << "\n";
@@ -229,6 +227,7 @@ namespace quantkos::Engine {
          */
         explicit BackwardLSMProgressTracker(const Config::UInputs &conf)
             : config(conf), steps_completed(0) {
+            total_lsm_steps = config.time.N_time_steps -1 ;
         }
 
         /// @name Lifecycle Protocols
@@ -260,26 +259,39 @@ namespace quantkos::Engine {
          */
         void update_progress() {
             steps_completed++;
-            print_progress_bar(steps_completed);
+
+            // Calculate current integer percentage
+            if (total_lsm_steps <= 0) return; // Prevent division by zero if there are almost no time steps
+            const int current_percent = static_cast<int>(
+                (static_cast<float>(steps_completed) / static_cast<float>(total_lsm_steps)) * 100.0f
+            );
+
+            // Print the progress bar if target percentage reached
+            if (current_percent >= last_printed_percent + update_interval_percent) {
+                print_progress_bar(steps_completed);
+                last_printed_percent = current_percent; // Update the threshold
+            }
+
         }
 
         /**
          * @brief Completes the progress bar and seals the terminal section.
          */
         void finalize_tracking() {
-            const int total_lsm_steps = config.time.N_time_steps - 1;
             print_progress_bar(total_lsm_steps);
             std::cout << "\n\n  ========================================================\n" << std::endl;
         }
 
     private:
         const Config::UInputs &config; ///< Reference to the master configuration tree
+        int total_lsm_steps; //< Internal counter keeping the loop size (// T-1 regressions steps)
         int steps_completed; ///< Internal counter bridging the reverse induction loop mapping
+        static constexpr int update_interval_percent = 10; //< Frequency, in percentage of the total, when to print time steps
+        int last_printed_percent = 0; ///< Internal counter keeping the last percentage printed
         std::chrono::steady_clock::time_point start_time; ///< Starting time of the backward phase
 
         void print_progress_bar(const int current_step) const {
             constexpr int bar_width = 20;
-            const int total_lsm_steps = config.time.N_time_steps - 1; // T-1 regressions
 
             // Prevent division by zero if there are almost no time steps
             if (total_lsm_steps <= 0) return;
