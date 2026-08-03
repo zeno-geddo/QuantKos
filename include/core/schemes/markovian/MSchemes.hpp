@@ -29,6 +29,7 @@ namespace quantkos::Engine {
      * @brief Output data structure returned by all SDE integration step functions.
      * * Encapsulates the current state of the SDE (Asset Price and Variance).
      * @note Designed to be trivially copyable, good for GPU registers.
+     * @todo Should consider tracking lnS instead of S to avoid using too many exp(), which are slow, and accumulate more error when using single precision.
      */
     struct SDEState {
         KT::Real S; ///< The underlying asset spot price ($S_t$).
@@ -133,8 +134,8 @@ namespace quantkos::Engine {
         KOKKOS_INLINE_FUNCTION
         SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
             // Get Random Normal Variables
-            KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
-            KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
+            const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
 
             // Cholesky Decomposition for correlated Brownian Motion
             const KT::Real Z_v = Z_1;

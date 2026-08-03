@@ -105,7 +105,7 @@ cd build
 ```bash
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
-    -DKOPS_ENABLE_FETCHCONTENT=ON \
+    -DQKOS_ENABLE_FETCHCONTENT=ON \
     -DKokkos_ENABLE_SERIAL=ON \
     -DKokkos_ENABLE_OPENMP=OFF \
     -DKokkos_ENABLE_CUDA=OFF \
@@ -117,7 +117,7 @@ cmake .. \
 ```bash
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
-    -DKOPS_ENABLE_FETCHCONTENT=ON \
+    -DQKOS_ENABLE_FETCHCONTENT=ON \
     -DKokkos_ENABLE_SERIAL=ON \
     -DKokkos_ENABLE_OPENMP=ON \
     -DKokkos_ENABLE_CUDA=OFF \
@@ -230,7 +230,7 @@ QuantKos includes a standalone testing executable that validates the numerical i
 Compile with
 
 ```text
--DKOPS_ENABLE_TESTS=ON
+-DQKOS_ENABLE_TESTS=ON
 ```
 
 and execute

@@ -545,7 +545,7 @@ namespace quantkos::Config {
             std::cout << indent << "========================================================\n" << std::endl;
         }
 
-        /** @brief Tells if you should synch the paths at the end of each batch from device to host using kokkos
+        /** @brief Tells if you should sync the paths at the end of each batch from device to host using kokkos
          */
         [[nodiscard]] bool requires_paths_on_host() const {
             // Check if the user requested path outputs (assuming std::string)

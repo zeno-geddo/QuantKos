@@ -21,7 +21,6 @@
  * via CMake-defined preprocessor macros.
  */
 namespace quantkos::Types {
-
     /**
      * @brief The primary floating-point type used throughout the numerical simulation engine.
      * * Defaults to @c double precision for maximum accuracy. If the CMake option @c QKOS_ENABLE_SINGLE_PRECISION
@@ -34,17 +33,6 @@ namespace quantkos::Types {
 #else
     using Real = double; // Default to double
 #endif
-
-    /**
-     * @brief Helper function to get a string showing the precision used.
-    */
-    inline std::string get_precision_string() {
-#ifdef QKOS_ENABLE_SINGLE_PRECISION
-        return "float (single precision)";
-#else
-        return "double (double precision)";
-#endif
-    }
 
 
     /** @name Type-Safe Literal Constants
@@ -60,5 +48,26 @@ namespace quantkos::Types {
     constexpr Real real_025 = static_cast<Real>(0.25); ///< 0.25 literal constant.
     constexpr Real real_1p5 = static_cast<Real>(1.5); ///< 1.5 literal constant.
     ///@}
-}
 
+    /**
+     * @brief Helper function to get a string showing the precision used.
+    */
+    inline std::string get_precision_string() {
+#ifdef QKOS_ENABLE_SINGLE_PRECISION
+        return "float (single precision)";
+#else
+        return "double (double precision)";
+#endif
+    }
+
+    /**
+ * @brief Helper function to know is using single precision at run time
+*/
+    inline bool is_real_using_single_precision() {
+#ifdef QKOS_ENABLE_SINGLE_PRECISION
+        return true;
+#else
+        return false;
+#endif
+    }
+}

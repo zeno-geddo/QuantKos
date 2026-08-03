@@ -52,7 +52,7 @@ namespace quantkos::Tests::NoNoise {
     /**
      * @brief Generates a default configuration designed for deterministic testing.
      * @details Configures a mock Heston model with all volatility components set to zero
-     * (v0 = 0, kappa = 0, theta = 0, sigma = 0). This forces the asset to evolve purely
+     * (v0 = 0, kappa = 0, theta = 0, sigma = 0, lambda_J = 0, mu_J = 0, sigma_J = 0). This forces the asset to evolve purely
      * via continuous risk-free drift.
      * @return A populated configuration structure with zero-variance parameters.
      */
@@ -60,9 +60,11 @@ namespace quantkos::Tests::NoNoise {
         // General Config
         auto config = KC::UInputs();
 
-        // default outpaths name since the test needs also to reload the results
+        // NOTE : Use the test needs also to reload the results
+        // NOTE : The names of the paths will be given in the test loop
         config.output.format = KI::IOFormat::BIN;
         config.output.filename_log = "";
+        config.output.out_dir = "temp_res_no_noise_test";
 
         config.mc.N_Paths = 100;
         config.mc.batch_size = config.mc.N_Paths;
@@ -80,6 +82,14 @@ namespace quantkos::Tests::NoNoise {
         config.model.heston.theta = 0.;
         config.model.heston.sigma = 0.;
         config.model.heston.rho = 0.0;
+
+        config.model.bates.k = 0.;
+        config.model.bates.theta = 0.;
+        config.model.bates.sigma = 0.;
+        config.model.bates.rho = 0.0;
+        config.model.bates.lambda_J = 0.0; // zero jump intensity
+        config.model.bates.mu_J = 0.0; // zero log jump size
+        config.model.bates.sigma_J = 0.0; // std deviation jump size
 
         return config;
     }
@@ -111,7 +121,7 @@ namespace quantkos::Tests::NoNoise {
         auto config = getDefaultConfig();
 
         // Get Exact Solution
-        KT::Real expected_S_T = get_exact_solution(config);
+        const double expected_S_T = get_exact_solution(config);
         std::cout << indent << "[   INFO   ] Expected Final Price : " << expected_S_T << "\n";
 
         // Loop testing all models
@@ -151,9 +161,14 @@ namespace quantkos::Tests::NoNoise {
             std::vector<KT::Real> simulated_prices = binReader.read_prices_at_target_time(config.time.t_end);
 
             // Check if last Price at T_Final is correct
+            // Use 1e-8 for double, but relax to 5e-3 for single precision
+            const double epsilon = KT::is_real_using_single_precision() ?  1e-4: 1e-8;
+
             for (size_t i = 0; i < simulated_prices.size(); ++i) {
                 // We use 1e-5 to account for floating point drift during 365 compounded steps
-                if (std::abs(simulated_prices[i] - expected_S_T) > 1e-8) {
+                if (std::abs(simulated_prices[i] - expected_S_T) > epsilon) {
+                    std::cout << indent << "[  FAILED  ] Path " << i << " deviated! Expected: "
+                            << expected_S_T << ", Got: " << simulated_prices[i] << "\n";
                     std::cerr << indent << "[  FAILED  ] Path " << i << " deviated! Expected: "
                             << expected_S_T << ", Got: " << simulated_prices[i] << "\n";
                     test_passed = false;
@@ -165,15 +180,16 @@ namespace quantkos::Tests::NoNoise {
         }
 
 
-        // Clean up out binary file generated
-        std::filesystem::path file_out_paths = std::filesystem::path(config.output.out_dir) / config.output.
-                                               filename_paths_out;
-        if (std::filesystem::exists(file_out_paths)) {
-            std::filesystem::remove(file_out_paths);
+        // Clean up out binary file generated (all the output folder folder)
+        std::filesystem::path out_dir_path = config.output.out_dir;
+        if (std::filesystem::exists(out_dir_path)) {
+            std::filesystem::remove_all(out_dir_path);
         }
 
         if (test_passed) {
             std::cout << indent << "[   PASSED   ] All terminal prices match the theoretical drift.\n";
+        } else {
+            std::cout << indent << "[  FAILED  ] Terminal prices does not match the theoretical drift.\n";
         }
         std::cout << indent << "====================================================================\n" << std::endl;
         return test_passed;

@@ -233,7 +233,7 @@ namespace quantkos::Tests::Utils {
             }
 
             // Check If numerical results are correct for this specific model/scheme combo
-            bool model_passed = evaluate_quality_numerical_results(convergence_results);
+            const bool model_passed = evaluate_quality_numerical_results(convergence_results);
             if (!model_passed) {
                 all_tests_passed = false; // Mark the whole suite as failed if one combo fails
             }
