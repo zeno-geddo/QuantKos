@@ -120,15 +120,21 @@ namespace quantkos::Tests {
                             std::cout << indent << "[ SUCCESS ] " << target_test_suite.description <<
                                     " Suite passed successfully.\n\n";
                         } else {
-                            std::cerr << indent << "[ FAILURE ] " << target_test_suite.description <<
+                            std::cout << indent << "[ TEST FAILURE ] " << target_test_suite.description <<
+                                    " Suite detected an error!\n\n";
+                            std::cerr << indent << "[ TEST FAILURE ] " << target_test_suite.description <<
                                     " Suite detected an error!\n\n";
                             n_tests_failed++;
                         }
                     } catch (const std::runtime_error &e) {
+                        std::cout << indent << "[ FATAL RUNTIME ERROR ] " << target_test_suite.description
+                                << " Suite made the software crash failed with: \n\n " << e.what() << "\n\n";
                         std::cerr << indent << "[ FATAL RUNTIME ERROR ] " << target_test_suite.description
                                 << " Suite made the software crash failed with: \n\n " << e.what() << "\n\n";
                         n_tests_failed++;
                     } catch (...) {
+                        std::cout << indent << "[ FATAL ERROR ] " << target_test_suite.description <<
+                                " Suite made the software crash!\n\n";
                         std::cerr << indent << "[ FATAL ERROR ] " << target_test_suite.description <<
                                 " Suite made the software crash!\n\n";
                         n_tests_failed++;

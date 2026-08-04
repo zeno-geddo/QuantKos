@@ -44,6 +44,7 @@ namespace quantkos::Tests::Heston {
      * Mathematically, this guarantees that the variance process $v_t$ remains strictly positive ($v_t > 0$)
      * and never touches the boundary at zero.
      * * @return A populated configuration with parameters optimized for stable Heston model testing.
+     * @note The random seed is fixed (taking the default values) for all the resolutions and numerical schemes
      */
     inline KC::UInputs getDefaultConfigGoodIntegrand() {
         // See pag 28, F.Rouah, The Heston Model and its Extensions in Matlab and C#
@@ -78,7 +79,7 @@ namespace quantkos::Tests::Heston {
         config.model.heston.sigma = 0.5;
         config.model.heston.rho = -0.8;
 
-        // Bates
+        // Bates (to check that the bates goes back to the heston correctly)
         config.model.bates.k = 5.;
         config.model.bates.theta = 0.05;
         config.model.bates.sigma = 0.5;
@@ -106,7 +107,7 @@ namespace quantkos::Tests::Heston {
     inline bool run_test() {
         std::string id_test {"TEST 5 : Heston Weak Convergence to Heston SDE exact option price"};
         auto config = getDefaultConfigGoodIntegrand();
-        const KT::Real exact_price = KH::get_exact_eu_call_option_price(config);
+        const double exact_price = KH::get_exact_eu_call_option_price(config);
         return KTU::run_weak_convergence_test(id_test,
                                               config,
                                               exact_price,

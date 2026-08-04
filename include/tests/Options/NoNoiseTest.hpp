@@ -165,6 +165,17 @@ namespace quantkos::Tests::NoNoise {
             const double epsilon = KT::is_real_using_single_precision() ?  1e-4: 1e-8;
 
             for (size_t i = 0; i < simulated_prices.size(); ++i) {
+
+                // Check if you have a nan
+                if (!std::isfinite(simulated_prices[i])) {
+                    std::cout << indent << "[  FAILED  ] Path " << i
+                              << " produced a non-finite value: " << simulated_prices[i] << "\n";
+                    std::cerr << indent << "[  FAILED  ] Path " << i
+                              << " produced a non-finite value: " << simulated_prices[i] << "\n";
+                    test_passed = false;
+                    break;
+                }
+
                 // We use 1e-5 to account for floating point drift during 365 compounded steps
                 if (std::abs(simulated_prices[i] - expected_S_T) > epsilon) {
                     std::cout << indent << "[  FAILED  ] Path " << i << " deviated! Expected: "

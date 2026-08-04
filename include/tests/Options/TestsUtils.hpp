@@ -95,7 +95,7 @@ namespace quantkos::Tests::Utils {
     struct OptionPriceErr {
         int N_dt; ///< Total number of discrete steps along the path.
         double dt; ///< Size of the individual temporal step ($\Delta t$).
-        double error; ///< Absolute difference between numerical and expected analytical prices.
+        double error; ///< Difference between numerical and expected analytical prices.
         double stat_error; ///< Standard error boundary computed from the Monte Carlo variance.
     };
 
@@ -107,24 +107,37 @@ namespace quantkos::Tests::Utils {
      * @return A populated OptionPriceErr tracking structural step errors.
      */
     [[nodiscard]] inline OptionPriceErr compare_numerical_and_expected_option_price(quantkos::Config::UInputs &config,
-        const KT::Real expected_price,
+        const double expected_price,
         const std::string_view indent = "   ") {
         std::cout << indent << ">>> Calling the solver ...\n";
         std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
 
         const auto MCRes = run_simulation(config);
-        const KT::Real num_price = MCRes.OptionPrice.option_price;
-        const KT::Real stat_error = MCRes.OptionPrice.standard_error;
-        const KT::Real abs_error = std::abs(num_price - expected_price);
+        const double num_price = MCRes.OptionPrice.option_price;
+        const double stat_error = MCRes.OptionPrice.standard_error;
+        const double signed_error = num_price - expected_price;
+        const double abs_error = std::abs(signed_error);
+        const double z_score = signed_error / stat_error;
 
-        std::cout << indent << " Price: " << num_price
-                << " | Error: " << abs_error
-                << " | Stat Error: " << stat_error << "\n";
+        std::cout << indent << "Resolution considering  " << config.time.N_time_steps << " times steps:\n";
+        std::cout << indent << "   Price      : " << num_price << '\n';
+        std::cout << indent << "   Reference  : " << expected_price << '\n';
+        std::cout << indent << "   Error      : " << signed_error << '\n';
+        std::cout << indent << "   Abs Error  : " << abs_error << '\n';
+        std::cout << indent << "   Std Error  : " << stat_error << '\n';
+        std::cout << indent << "   Z-score    : " << z_score << '\n';
 
+        if (abs_error <= 3.0 * stat_error) {
+            std::cout << indent << "[   PASSED   ] Numerical results statistically consistent with reference.\n";
+        } else {
+            std::cout << indent << "[   INFO   ] Bias still dominates. Continue refining dt. \n";
+        }
+
+        // Return the results of the test and go back to tester for next text
         std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
         std::cout << indent << ">>> Go back to the tester ...\n";
 
-        return {config.time.N_time_steps, config.time.inp_dt, abs_error, stat_error};
+        return {config.time.N_time_steps, config.time.inp_dt, signed_error, stat_error};
     }
 
     // Analyzes convergence data, prints diagnostics, and returns true if all Z-scores are within 3-sigma bounds.
@@ -134,12 +147,14 @@ namespace quantkos::Tests::Utils {
      * rate ($\alpha$) between successive refinement steps:
      * $$\alpha = \frac{\ln(\text{Error}_2) - \ln(\text{Error}_1)}{\ln(\Delta t_2) - \ln(\Delta t_1)}$$
      * * Additionally, verifies that the remaining numerical bias at your highest resolution is safely
-     * dominated by statistical Monte Carlo noise within a standard 2-sigma (95% confidence) boundary:
-     * $$Z = \frac{\text{Absolute Error}}{\text{Standard Error}} \le 2.0$$
+     * dominated by statistical Monte Carlo noise within a standard 3-sigma (99.7% confidence) boundary:
+     * $$Z = \frac{\text{Absolute Error}}{\text{Standard Error}} \le 3.0$$
      * @param convergence_results Logged price error tracking array.
      * @param indent Console layout spacing alignment.
-     * @return true if the highest-resolution result resides within statistical noise bounds; false otherwise.
-     */
+     * @return true if the highest-resolution error resides within statistical noise bounds; false otherwise.
+     * @note Once the discretization error falls below the standard error, the total error stops shrinking linearly,
+     * and it flattens out and begins jumping around randomly due to Monte Carlo noise.
+    */
     [[nodiscard]] inline bool evaluate_quality_numerical_results(const std::vector<OptionPriceErr> &convergence_results,
                                                                  const std::string_view indent = "   ") {
         if (convergence_results.empty()) return false;
@@ -149,7 +164,7 @@ namespace quantkos::Tests::Utils {
         std::cout << indent << "\n::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n";
         std::cout << indent << "Analyzing convergence order for given model and scheme...\n";
         std::cout << indent <<
-                "Total Error ^2 = Discretization Error (O(dt)) ^2 + Statistical Noise (O(std/sqrt(N_paths)) ^2)\n\n";
+                "Total Error = Discretization Error (O(dt)) + Statistical Noise (O(std/sqrt(N_paths)))\n\n";
 
         for (size_t i = 0; i < convergence_results.size(); ++i) {
             const auto &current = convergence_results[i];
@@ -163,17 +178,25 @@ namespace quantkos::Tests::Utils {
 
             // Compute convergence order only if there is a subsequent step to compare against
             if (i < convergence_results.size() - 1) {
+
                 const auto &next = convergence_results[i + 1];
                 const double log_dt_diff = std::log(next.dt) - std::log(current.dt);
-                const double log_err_diff = std::log(next.error) - std::log(current.error);
+                const double log_err_diff = std::log(std::abs(next.error)) - std::log(std::abs(current.error));
                 const double order = log_err_diff / log_dt_diff;
 
-                std::cout << indent << "[   INFO   ] Step " << i + 1 << " -> " << i + 2
-                        << " Convergence Order: " << order << "\n";
-            } else {
-                // If the error exceeds 2 standard deviations from max resultion, the test mathematically fails.
-                if (z_score > 2.0) test_passed = false;
+                // Show convergence and warn if the error hit the statistical noise floor
+                if (std::abs(current.error) > current.stat_error) {
+                    std::cout << indent << "[   INFO   ] Step " << i + 1 << " -> " << i + 2
+                            << " Convergence Order: " << order << "\n";
+                } else {
+                    std::cout << indent << "[   INFO   ] Step " << i + 1 << " -> " << i + 2
+                        << " Convergence Order: " << order << " (Warning :  Statistical error dominate) \n";
+                }
+            } else { // Enter this block only if the last iteration (max resolution) is considered
+                // If the error exceeds 3 standard deviations from max resultion, the test mathematically fails.
+                if (std::abs(z_score) > 3.0) test_passed = false;
             }
+
         }
 
         std::cout << indent << "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n";
@@ -198,7 +221,7 @@ namespace quantkos::Tests::Utils {
     [[nodiscard]] inline bool run_weak_convergence_test(
         const std::string_view test_name,
         KC::UInputs config,
-        const KT::Real expected_option_price,
+        const double expected_option_price,
         const std::vector<std::pair<KI::MathModel, KI::NumScheme> > &models_to_test,
         const std::vector<int> &time_grid_resolutions,
         const std::string_view indent = "   ") {

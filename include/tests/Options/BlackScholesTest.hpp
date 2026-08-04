@@ -41,6 +41,7 @@ namespace quantkos::Tests::BlackScholes {
      * This represents the exact Black-Scholes framework with constant volatility $\sigma_{\text{BS}} = \sqrt{v_0} = \sqrt{0.04} = 0.20$ (20%).
      * @return A populated configuration with parameters locked to constant-volatility GBM dynamics.
      * @note When consideteing the Bates model, all the Merton jumps parameters are set to zero.
+     * @note The random seed is fixed (taking the default values) for all the resolutions and numerical schemes
     */
     inline KC::UInputs getDefaultConfig() {
         auto config = KC::UInputs();
@@ -96,7 +97,7 @@ namespace quantkos::Tests::BlackScholes {
     inline bool run_test() {
         std::string id_test {"TEST 4 : Heston Weak Convergence to Black-Scholes SDE exact option price"};
         auto config = getDefaultConfig();
-        const KT::Real exact_price = KBS::get_exact_eu_call_option_price(config);
+        const double exact_price = KBS::get_exact_eu_call_option_price(config);
         return KTU::run_weak_convergence_test(id_test,
                                               config,
                                               exact_price,

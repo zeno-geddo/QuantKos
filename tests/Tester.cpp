@@ -105,6 +105,7 @@ int main(int argc, char *argv[]) {
             std::cout << indent << " STATUS   : ALL PASSED OK \n";
         } else {
             std::cout << indent << " STATUS   : FAILED (" << failed_tests << " suite(s) broke constraints)\n";
+            std::cerr << indent << " STATUS   : FAILED (" << failed_tests << " suite(s) broke constraints)\n";
         }
         std::cout << indent << "**************************************************\n\n" << std::endl;
     } // CRITICAL: Local scope ends here. All test variables, managers, registries, and Kokkos

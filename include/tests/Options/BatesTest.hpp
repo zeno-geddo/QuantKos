@@ -47,7 +47,8 @@ namespace quantkos::Tests::Bates {
      * - **Jump Parameters**: Configured with $\lambda_J = 0.11$ (roughly 1 jump every 9 years), $\mu_J = -0.15$ (an average
      * crash size of -15%), and $\sigma_J = 0.11$ (jump size uncertainty).
      * * @return A populated configuration with parameters optimized for Bates jump-diffusion pricing.
-     */
+     * @note The random seed is fixed (taking the default values) for all the resolutions and numerical schemes
+    */
     inline KC::UInputs getDefaultConfigGoodIntegrand() {
         // Heston params from pag 28, F.Rouah, The Heston Model and its Extensions in Matlab and C#
         // Bates params
@@ -112,7 +113,7 @@ namespace quantkos::Tests::Bates {
     inline bool run_test() {
         std::string id_test {"TEST 6 : Bates Weak Convergence to Bates SDE exact option price"};
         auto config = getDefaultConfigGoodIntegrand();
-        const KT::Real exact_price = KB::get_exact_eu_call_option_price(config);
+        const double exact_price = KB::get_exact_eu_call_option_price(config);
         return KTU::run_weak_convergence_test(id_test,
                                               config,
                                               exact_price,
