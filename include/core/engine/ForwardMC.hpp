@@ -148,7 +148,6 @@ namespace quantkos::Engine {
                                                                                  ▼
                                                                       Coalesced VRAM Write
          * ```
-         * @todo IMPORTANT, THE COPY TO HOST MUST BE DONE ONLY WHEN NEEDED SINCE IT TAKE APPROX 35% OF TIME. SO KEEP ONLY IN WHEN NEED TO SAVE THE RESULTS AND IN THE CASES WHERE BACKWARD PHASE IS NEEDED (E.G. AMERICAN OPTIONS).
         */
         void run_mc_forward(PathsMCBatchMem &BatchMem,
                             const RNGManager &RNGen,
