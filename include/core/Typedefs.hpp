@@ -44,6 +44,8 @@ namespace quantkos::Types {
     constexpr Real real_zero = static_cast<Real>(0.0); ///< Zero literal constant.
     constexpr Real real_one = static_cast<Real>(1.0); ///< One literal constant.
     constexpr Real real_two = static_cast<Real>(2.0); ///< Two literal constant.
+    constexpr Real real_3 = static_cast<Real>(3.0); ///< 3. literal constant.
+    constexpr Real real_4 = static_cast<Real>(4.0); ///< 4. literal constant.
     constexpr Real real_05 = static_cast<Real>(0.5); ///< 0.5 literal constant.
     constexpr Real real_025 = static_cast<Real>(0.25); ///< 0.25 literal constant.
     constexpr Real real_1p5 = static_cast<Real>(1.5); ///< 1.5 literal constant.

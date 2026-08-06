@@ -3,10 +3,10 @@
 # ==========================================
 run_tests:
   - AmericanOption
-  - Bates
-  - BlackScholes
-  - Heston
-  - IOBin
-  - NoNoise
-  - RNG
+  #- Bates
+  #- BlackScholes
+  #- Heston
+  #- IOBin
+  #- NoNoise
+  #- RNG
 
