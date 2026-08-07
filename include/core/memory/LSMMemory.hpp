@@ -21,7 +21,7 @@
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
 #include "PathsMCBatchMem.hpp"
-#include "RAMMemOS.hpp"
+#include "MemOSQuery.hpp"
 
 namespace quantkos::Engine {
     namespace KT = quantkos::Types;

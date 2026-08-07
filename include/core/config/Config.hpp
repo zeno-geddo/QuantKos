@@ -183,9 +183,9 @@ namespace quantkos::Config {
          * @note Inherits from Heston to share common stochastic volatility parameters.
          */
         struct Bates : public Heston {
-            Real lambda_J = 0.1; ///< Average jump intensity per unit time.
-            Real mu_J = -0.1; ///< Mean of the jump size distribution (log-space).
-            Real sigma_J = 0.15; ///< Standard deviation of the jump size (log-space).
+            Real lambda_J = 0.1; ///< Average jump intensity per unit time. [1/years]
+            Real mu_J = -0.1; ///< Mean of the jump size distribution in log-space (Expected log-return of a jump). It is dimensionless, the jumps act multiplicatively on the stock price. Example: $\mu_J = -0.1 \implies \text{median price multiplier } e^{-0.1} \approx 0.9048$. When a jump hits, the asset price drops on average by $\approx 9.52\%$.
+            Real sigma_J = 0.15; ///< Standard deviation of the jump size in log-space (Standard deviation of jump log-return). Dimensionless. Example: $\sigma_J = 0.15$ means a $15\%$ volatility spread around the mean jump size in log-space.
         } bates;
 
         /**

@@ -225,7 +225,7 @@ namespace quantkos::Engine::LSM {
         // =================================================================
         // STEP 0 : Chose the basis for the regression
         // =================================================================
-        /** @brief Translates structural configuration enums to compile-time capacity constraints. */
+        /** @brief Chose the basis for the regression. Translates structural configuration enums to compile-time capacity constraints. */
         static constexpr size_t get_n_basis() {
             if constexpr (Basis == KI::LSRegressionBasis::LaguerreP02) {
                 return 3;
@@ -264,7 +264,7 @@ namespace quantkos::Engine::LSM {
             }
             )
             ;
-            Kokkos::fence();
+            // Kokkos::fence(); // Fence not needed since there is a deep copty after
         }
 
         // =================================================================
@@ -284,14 +284,14 @@ namespace quantkos::Engine::LSM {
                                                              const DevView1D &d_best_future_outcomes,
                                                              const KT::Real discount_factor,
                                                              const KT::Real strike_price) {
-            // 1. Compute terms M and B of linear system MC = B
-            // NOTE : Run the parallel reduction on the GPU to get terms needed in the matrix multiplication
+            // 1. Compute terms matrix M and vector B of linear system MC = B
+            // NOTE : Run the parallel reduction on the GPU to get terms needed in the matrix multiplication.
             const RegressionSums<NBasis> sums = compute_regression_sums_on_device(d_slice_prices_at_target_time,
                 d_best_future_outcomes,
                 discount_factor,
                 strike_price);
 
-            // 2. Get C = M^-1 B
+            // 2. Get the coefs, C = M^-1 B
             // Solve the system containing the (NBasisxNBasis) matrix on the CPU Host
             return solve_system_on_host_cholesky(sums);
         }
@@ -334,14 +334,14 @@ namespace quantkos::Engine::LSM {
                                                     ? intrinsic_val
                                                     : discounted_future_cf;
                     // if : intrinsic_val > expected_val_of_holding the option is exercised (holding will be statistically worst). The future cash flow is overwritten with the intrinsic_val of today
-                    // else : we hold the option, based on statistical average of all paths, holding will likely yield a biger payout in the future
+                    // else : we hold the option, based on statistical average of all paths, holding will likely yield a bigger payout in the future
                 } else {
                     d_best_future_outcomes(i) = discounted_future_cf; // Hold since exiting is impossible
                 }
             }
             )
             ;
-            Kokkos::fence();
+            // Kokkos::fence(); // // Fence not needed since there is a deep copty after
         }
 
         // =================================================================
@@ -363,7 +363,7 @@ namespace quantkos::Engine::LSM {
             }
             )
             ;
-            Kokkos::fence();
+            // Kokkos::fence(); // Fence not needed, there is a deepcopy just after
         }
 
         // =================================================================

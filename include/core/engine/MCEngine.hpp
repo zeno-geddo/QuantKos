@@ -18,7 +18,7 @@
 #include "../config/Config.hpp"
 #include "../options/OptionPricer.hpp"
 #include "./../memory/PathsMCBatchMem.hpp"
-#include "./../memory/RAMMemOS.hpp"
+#include "./../memory/MemOSQuery.hpp"
 #include "../../IO/OutManager.hpp"
 #include "../schemes/RandNGenerator.hpp"
 
