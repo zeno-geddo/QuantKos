@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <chrono> // for timing
+#include <utility>
 
 #include "../schemes/markovian/MSolver.hpp"
 #include "../config/Config.hpp"
@@ -51,9 +52,11 @@ namespace quantkos::Engine {
 
         /**
          * @brief Constructs a forward runner instance given the user parameters.
-         * @param conf The configuration inputs reference containing runtime parameters.
+         * @param conf The configuration inputs containing runtime parameters.
          */
-        explicit ForwardMCRunner(const KC::UInputs &conf) : config(conf) {
+        explicit ForwardMCRunner(KC::UInputs  conf) : config(std::move(conf)) {
+            // Apply scaling to the local copy so that the master config is not effected
+            config.apply_price_scaling();
         }
 
         /// @name Lifecycle Protocols
@@ -108,7 +111,7 @@ namespace quantkos::Engine {
         }
 
     private:
-        const KC::UInputs &config; ///< Read-only alias pointing back to the application configuration environment.
+        KC::UInputs config; ///< Copy of the master config. By copying the configuration the original values cannot be modified.
 
         /**
          * @brief Configures internal lambda handlers (to synch and/or write results generated within a batch) and triggers the batches run mechanism.

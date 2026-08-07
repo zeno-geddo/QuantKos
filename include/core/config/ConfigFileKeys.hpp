@@ -124,7 +124,8 @@ namespace quantkos::Keys {
      * @brief Keys for MonteCarlo parameters (expected in the MC block).
      */
     namespace MCParams {
-        static constexpr std::string_view N_Realizations = "N_Paths"; ///< jey for Total number of SDE realizations.
+        static constexpr std::string_view normalize_prices = "Normalize_prices"; ///< Key for bool for normalizing prices.
+        static constexpr std::string_view N_Realizations = "N_Paths"; ///< Key for Total number of SDE realizations.
         static constexpr std::string_view Batch_Size = "Batch_Size"; ///< Key number of paths per kernel launch.
         static constexpr std::string_view RNG_Seed = "RNG_Seed"; ///< Key Initial seed for RNG.
         static constexpr std::string_view Max_VRAM_MB = "Max_VRAM_MB"; ///< Key for limit on GPU VRAM allocation.

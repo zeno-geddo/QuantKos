@@ -389,6 +389,7 @@ namespace quantkos::Config {
      * and the stochastic seed for path generation.
      */
     struct MCConfig {
+        bool normalize_prices = true; ///< Automatically scales prices (monetary parameters) by a factor N=S0 (so that S0=1) for numerical stability.
         int N_Paths = 1000; ///< Total number of SDE realizations.
         int batch_size = 0;
         ///< Number of paths per kernel launch. (Set to 0 for automatic tuning, -1 for tot numb simulations.)
@@ -432,6 +433,7 @@ namespace quantkos::Config {
         /** @brief Outputs MC configuration summary to standard console. */
         void print(std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::MC << "]\n"
+                    << indent << "    Normalize Prices               :    " << normalize_prices << "\n"
                     << indent << "    Number of Realizations         :    " << N_Paths << "\n"
                     << indent << "    Batch Size required            :    " << batch_size << "\n"
                     << indent << "    Seed Random Number Generator   :    " << rng_seed << "\n"
@@ -519,7 +521,27 @@ namespace quantkos::Config {
             time.validate();
             mc.validate();
             output.validate();
+
             std::cout << ">>> Input configuration validated successfully.\n" << std::endl;
+        }
+
+        /**
+          * @brief Normalizes monetary parameters relative to S0.
+          * Help protecting algorithms from floating-point overflow/underflows and ill-conditioned matrices.
+          */
+        void apply_price_scaling() {
+            if (mc.normalize_prices) {
+                // 1. Save the original S0 to scale the final option price back later
+                price_scale_factor = market.S0;
+
+                // 2. Scale the Market and Option inputs
+                market.S0 = 1.0;
+                options.StrikePrice /= price_scale_factor;
+                options.BarrierPrice /= price_scale_factor;
+
+                std::cout << "  [ Config ] Monetary parameters scaled. "
+                          << "Scale Factor = N: "<< price_scale_factor << "(Note: S0_n = S0/N = 1).\n";
+            }
         }
 
         /** @brief Prints a formatted summary of the entire simulation configuration. */
@@ -556,5 +578,13 @@ namespace quantkos::Config {
 
             return wants_file_output || is_american;
         }
+
+        /** @brief Safely get scaling factor
+        */
+         [[nodiscard]] double get_price_scaling_factor() const {
+            return price_scale_factor;
+        }
+    private:
+        double price_scale_factor = 1.0; //Stores the scaling factor used by the engine to normalinze the monetary parameters (S0, K, Barrier, etc). Default is 1.0 (no scaling).
     };
 }

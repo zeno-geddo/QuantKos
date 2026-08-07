@@ -80,7 +80,7 @@ namespace quantkos::Tests::Utils {
      * @param config The active user input parameters.
      * @return Resulting Monte Carlo pricing outputs and error metrics.
      */
-    [[nodiscard]] inline KE::MCResults run_simulation(KC::UInputs &config) {
+    [[nodiscard]] inline KE::MCResults run_simulation(KC::UInputs config) {
         // Validate and print configuration
         config.validate();
         config.print_summary();

@@ -69,7 +69,6 @@ namespace quantkos::Config {
                 conf.market.r = node[str(KK::MarketParams::r)].as<Real>();
             if (node[str(KK::MarketParams::q)])
                 conf.market.q = node[str(KK::MarketParams::q)].as<Real>();
-
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Market) + "' missing.");
         }
@@ -136,8 +135,6 @@ namespace quantkos::Config {
                     conf.model.heston.sigma = b[str(KK::MathModelParams::sigma)].as<Real>();
                 if (b[str(KK::MathModelParams::rho)])
                     conf.model.heston.rho = b[str(KK::MathModelParams::rho)].as<Real>();
-
-
             }
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Model) + "' missing.");
@@ -178,6 +175,16 @@ namespace quantkos::Config {
         // ---------------------------------------------------------
         if (root[str(KK::MC)]) {
             const auto &node = root[str(KK::MC)];
+            if (node[str(KK::MCParams::normalize_prices)])
+                try {
+                    conf.mc.normalize_prices = node[str(KK::MCParams::normalize_prices)].as<bool>();
+                } catch (...) {
+                    throw std::runtime_error(config_err_msg(
+                        KK::MC,
+                        KK::MCParams::normalize_prices,
+                        "must be a boolean value (true/false, yes/no, 1/0)."
+                    ));
+                }
             if (node[str(KK::MCParams::N_Realizations)])
                 conf.mc.N_Paths = node[str(KK::MCParams::N_Realizations)].as<int>();
             if (node[str(KK::MCParams::Batch_Size)])

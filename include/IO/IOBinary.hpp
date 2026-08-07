@@ -77,6 +77,7 @@ namespace quantkos::IO::Binary {
         int total_n_sims; ///< Total number of simulation paths stored in this file.
         int n_time_steps; ///< Discrete time steps simulated per path.
         KT::Real dt; ///< The size of each time step (dt) to reconstruct the uniform time grid.
+        double scale_factor; ///< Scaling Factor to obtain the real price data (the output can contain normalized ones).
     };
 
     // ========================================================================
@@ -200,7 +201,7 @@ namespace quantkos::IO::Binary {
                 std::cout << indent << "--------------------------------------------------------\n";
                 std::cout << indent << " [Binary File Layout Structure]\n";
                 std::cout << indent << "   |-- GLOBAL HEADER (" << sizeof(BinHeader) << " bytes)\n";
-                std::cout << indent << "   |   |-- Magic Key    : "<<standard_header.file_key << "  (" << sizeof(
+                std::cout << indent << "   |   |-- Magic Key    : " << standard_header.file_key << "  (" << sizeof(
                     BinHeader::file_key) << " bytes)\n";
                 std::cout << indent << "   |   |-- Version      : 1 " << "(" << sizeof(BinHeader::version) <<
                         " bytes)\n";
@@ -209,13 +210,14 @@ namespace quantkos::IO::Binary {
                 std::cout << indent << "   |   |-- Total Paths  : " << config.mc.N_Paths << " ( " << sizeof(config.mc.N_Paths)<< " bytes)\n";
                 std::cout << indent << "   |   |-- Time Steps   : " << config.time.N_time_steps << " ( " << sizeof(config.time.N_time_steps)<< " bytes)\n";
                 std::cout << indent << "   |   |-- Time dt      : " << config.time.dt << " ( " << sizeof(config.time.dt)<< " bytes)\n";
+                std::cout << indent << "   |   |-- Scale factor : " << config.get_price_scaling_factor() << " ( " << sizeof(config.get_price_scaling_factor())<< " bytes)\n";
                 std::cout << indent << "   |\n";
                 std::cout << indent << "   |-- MATRIX PAYLOAD\n";
                 std::cout << indent << "       |-- Dimensions   : " << config.mc.N_Paths << " rows x " << config.
                         time.N_time_steps << " cols\n";
                 std::cout << indent << "       |-- Ordering     : Row-Major (C-Style Sequential)\n";
                 std::cout << indent << "       |-- Data Type    : " << KT::get_precision_string() << " (" << sizeof(KT::Real) << " bytes)\n";
-                std::cout << indent << "       |-- Contents     : Price time series\n";
+                std::cout << indent << "       |-- Contents     : Time series of scaled prices  (must multiply by scale factor to get real prices)\n";
                 std::cout << indent << "       |-- Matrix Size  : " << payload_mb << " MB\n";
             } else {
                 std::cout << indent << "  No output files will be written (filename empty).\n";
@@ -238,6 +240,7 @@ namespace quantkos::IO::Binary {
             header.total_n_sims = config.mc.N_Paths;
             header.n_time_steps = config.time.N_time_steps;
             header.dt = config.time.dt;
+            header.scale_factor = config.get_price_scaling_factor();
 
             // 2. Dump Header Struct directly to disk
             // reinterpret_cast forces the compiler to treat the memory address as an array of raw, unsigned bytes (const char*).
@@ -322,6 +325,7 @@ namespace quantkos::IO::Binary {
             // jumping of a simulation (relative distance)
 
             // Read Prices
+            const double scale = bin_header.scale_factor;
             for (int i = 0; i < bin_header.total_n_sims; ++i) {
                 // Calculate absolute byte position for this specific element by adding a relative distance (streamoff) to the starting point
                 std::streampos element_pos = start_offset_bytes + (static_cast<std::streamoff>(i) * row_stride_bytes);
@@ -329,6 +333,8 @@ namespace quantkos::IO::Binary {
                 inp_stream.seekg(element_pos, std::ios::beg);
                 // Read exactly one floating point number into our vector
                 inp_stream.read(reinterpret_cast<char *>(&target_prices[i]), sizeof(KT::Real));
+                // Multiply in-place to scale the price
+                target_prices[i] = static_cast<KT::Real>(static_cast<double>(target_prices[i]) * scale);
             }
 
             // Clear any EOF flags that might have triggered, allowing future reads

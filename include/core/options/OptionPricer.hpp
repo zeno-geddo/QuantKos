@@ -143,9 +143,7 @@ namespace quantkos::Engine {
 
             size_t itm_count = 0;
             double sum_sq_diff = 0.0;
-            //for(const auto& p : all_payoffs) {
             for (size_t i = 0; i < static_cast<size_t>(N); ++i) {
-                //const auto payoff = static_cast<double>(p);
                 const KT::Real curr_payoff = all_payoffs(i);
                 const double diff = static_cast<double>(curr_payoff) - sample_mean;
                 sum_sq_diff += diff * diff;
@@ -155,12 +153,13 @@ namespace quantkos::Engine {
             const double safe_variance = sum_sq_diff / (N - 1.0); // Unbiased sample variance
             metrics.prob_itm = static_cast<double>(itm_count) / N;
 
-            // Apply Discounting to get the Option Price etc.
-            metrics.option_price = sample_mean * discount_factor;
-            metrics.standard_error = std::sqrt(safe_variance / N) * discount_factor;
+            // Apply Discounting ans scaling to get the Option Price etc.
+            const double effective_scale = discount_factor * get_scaling_factor();
+            metrics.option_price = sample_mean * effective_scale;
+            metrics.standard_error = std::sqrt(safe_variance / N) * effective_scale;
 
             // Analyze shape of option price distribution
-            analyze_option_price_distribution(discount_factor, N);
+            analyze_option_price_distribution(effective_scale, N);
 
             // Mark as successfully computed
             metrics.is_computed = true;
@@ -235,31 +234,47 @@ namespace quantkos::Engine {
         MCOpPrices metrics; ///< Local state storage wrapper instance.
 
         /**
+        * @brief helper function getting the scaling factor needed
+         * @return  The scaling factor to be used to get the correct options prices
+         */
+        [[nodiscard]] double get_scaling_factor() {
+            if (config.options.opt_type == KI::OptType::BinaryCashOrNothing) {
+                // For Binary Cash, the GPU just outputs 1.0 if ITM.
+                // It is directly scaled by the requested cash payout, ignoring S0.
+                return 1.;
+            } else {
+                // For all other options, the GPU outputs normalized asset prices. We scale back by S0.
+                return config.get_price_scaling_factor();
+            }
+        }
+
+
+        /**
          * @brief Sorts vector results in-place to compute distribution empirical quantiles.
-         * @param discount_factor Constant asset continuous discount modifier asset multiplier.
+         * @param effective_scale Discount factor multiplied by scaling factor.
          * @param N_paths Total active configurations paths dimension scalar value.
          */
-        void analyze_option_price_distribution(const double discount_factor, const double N_paths) {
-            // Compute the percentiles
-
+        void analyze_option_price_distribution(const double effective_scale, const double N_paths) {
+            // Sort the payoffs
             //std::sort(std::execution::par, all_payoffs.begin(), all_payoffs.end());
             Kokkos::sort(all_payoffs);
 
-            metrics.p0 = static_cast<double>(all_payoffs(0)) * discount_factor;
-            metrics.p1 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.01))) * discount_factor;
-            metrics.p5 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.05))) * discount_factor;
-            metrics.p10 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.10))) * discount_factor;
-            metrics.p20 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.20))) * discount_factor;
-            metrics.p30 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.30))) * discount_factor;
-            metrics.p40 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.40))) * discount_factor;
-            metrics.median = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.50))) * discount_factor;
-            metrics.p60 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.60))) * discount_factor;
-            metrics.p70 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.70))) * discount_factor;
-            metrics.p80 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.80))) * discount_factor;
-            metrics.p90 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.90))) * discount_factor;
-            metrics.p95 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.95))) * discount_factor;
-            metrics.p99 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.99))) * discount_factor;
-            metrics.p100 = static_cast<double>(all_payoffs(all_payoffs.size() - 1)) * discount_factor;
+            // Compute the percentiles
+            metrics.p0 = static_cast<double>(all_payoffs(0)) * effective_scale;
+            metrics.p1 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.01))) * effective_scale;
+            metrics.p5 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.05))) * effective_scale;
+            metrics.p10 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.10))) * effective_scale;
+            metrics.p20 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.20))) * effective_scale;
+            metrics.p30 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.30))) * effective_scale;
+            metrics.p40 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.40))) * effective_scale;
+            metrics.median = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.50))) * effective_scale;
+            metrics.p60 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.60))) * effective_scale;
+            metrics.p70 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.70))) * effective_scale;
+            metrics.p80 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.80))) * effective_scale;
+            metrics.p90 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.90))) * effective_scale;
+            metrics.p95 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.95))) * effective_scale;
+            metrics.p99 = static_cast<double>(all_payoffs(static_cast<size_t>(N_paths * 0.99))) * effective_scale;
+            metrics.p100 = static_cast<double>(all_payoffs(all_payoffs.size() - 1)) * effective_scale;
         }
     };
 } // namespace KOps::Engine

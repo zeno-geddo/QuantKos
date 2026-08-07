@@ -28,6 +28,7 @@ Time:
   Inp_DT: 0.00025   # Time step size in years (dt)
 
 MC:
+  Normalize_prices : true # If true, it normalizes monetary parameters relative to S0 (if false, keeps everything untouched).
   N_Paths: 1000000 # Number of Monte Carlo realizations/paths
   Batch_Size: 0 # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
   RNG_Seed: 88471920573105

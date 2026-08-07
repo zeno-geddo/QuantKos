@@ -59,6 +59,7 @@ namespace quantkos::Tests::Bates {
         config.output.format = KI::IOFormat::BIN;
         config.output.filename_paths_out = "";
 
+        config.mc.normalize_prices = true;
         config.mc.N_Paths = 1'000'000;
         config.mc.batch_size = 0;
 

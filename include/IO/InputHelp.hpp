@@ -182,6 +182,7 @@ namespace quantkos::HELP {
         // MC Section
         // ---------------------------------------------------------
         std::cout << K::MC << ":\n"
+                << "  " << K::MCParams::N_Realizations << ": true       # If true, it normalizes monetary parameters relative to S0 (if false, keeps everything untouched)\n"
                 << "  " << K::MCParams::N_Realizations << ": 1000       # Number of Monte Carlo realizations/paths\n"
                 << "  " << K::MCParams::Batch_Size <<
                 ": 0              # Number of paths run in parallel before saving (0 means auto-computed based on hardware, -1 means all paths)\n"

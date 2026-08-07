@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <utility>
 
 #include "../config/Config.hpp"
 
@@ -68,9 +69,11 @@ namespace quantkos::Engine {
     public:
         /**
          * @brief Constructs a forward-backward runner instance bound to the master user configuration.
-         * @param conf Configuration inputs reference containing runtime parameters.
+         * @param conf Configuration inputs containing runtime parameters.
          */
-        explicit ForwardBackwardMCRunner(const KC::UInputs &conf) : config(conf) {
+        explicit ForwardBackwardMCRunner(KC::UInputs conf) : config(std::move(conf)) {
+            // Apply scaling to the local copy so that the master config is not effected
+            config.apply_price_scaling();
         }
 
         /// @name Lifecycle Protocols
@@ -126,7 +129,7 @@ namespace quantkos::Engine {
         }
 
     private:
-        const KC::UInputs &config; ///< Reference to global user parameters.
+        KC::UInputs config; ///< Copy of the master config. By copying the configuration the original values cannot be modified.
 
         // ====================================================================
         // PHASE 1: GENERATE PATHS (Write to CPU RAM temp daata)

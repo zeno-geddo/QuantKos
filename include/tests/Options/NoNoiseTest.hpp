@@ -62,6 +62,8 @@ namespace quantkos::Tests::NoNoise {
 
         // NOTE : Use the test needs also to reload the results
         // NOTE : The names of the paths will be given in the test loop
+        config.mc.normalize_prices = true;
+
         config.output.format = KI::IOFormat::BIN;
         config.output.filename_log = "";
         config.output.out_dir = "temp_res_no_noise_test";
@@ -107,7 +109,7 @@ namespace quantkos::Tests::NoNoise {
      * 4. Asserts that the final prices on all paths match the exact analytical ODE solution.
      * * @return true if all simulated paths match the exact solution within numerical limits; false otherwise.
      * @note This test also tests that the saving and reading simulated data on disk work correctly.
-     */
+    */
     inline bool run_test() {
         // NOTE : When no randomness, the stock should grow purely by the deterministic drift: S_T = S_0 e^{(r-q)T}.
 
@@ -117,62 +119,57 @@ namespace quantkos::Tests::NoNoise {
                 << indent << "====================================================================\n";
         std::cout << indent << "[   RUN   ] Zero Variance Forward Growth Check\n";
 
-        bool test_passed = true;
-        auto config = getDefaultConfig();
+        bool overall_test_passed = true;
 
-        // Get Exact Solution
+        // STEP 1: Get exact solution
+        auto config = getDefaultConfig();
+        config.validate();
         const double expected_S_T = get_exact_solution(config);
         std::cout << indent << "[   INFO   ] Expected Final Price : " << expected_S_T << "\n";
 
-        // Loop testing all models
-        //static const std::map<KI::MathModel, KI::NumScheme> models_to_test = {
-        //    {KI::MathModel::Heston, KI::NumScheme::Euler}
-        //};
 
-        auto models_to_test = KTU::get_models_to_test();
-
+        // STEP 2 : Run test for each model/scheme
+        const auto models_to_test = KTU::get_models_to_test();
         for (const auto &[fst, snd]: models_to_test) {
-            // Set missing params
+            // STEP 2a : Set config for numerical solver
             config.model.id_model = fst;
             config.scheme.id_scheme = snd;
             std::string name_out_file = "Test_" + KI::enum_to_string(config.model.id_model) + "_"
                                         + KI::enum_to_string(config.scheme.id_scheme) + ".paths";
             config.output.filename_paths_out = name_out_file;
-
-            // Check and print params
-            std::cout << indent << "[   INFO   ] MODEL   : " << KI::enum_to_string(config.model.id_model) << "\n";
-            std::cout << indent << "[   INFO   ] SCHEME  : " << KI::enum_to_string(config.scheme.id_scheme) << "\n";
-
-            std::cout  << indent << ">>> Calling the solver ...\n";
-            std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
             config.validate();
             config.print_summary();
 
-            // Run model (keep the scope to be sure that dispatcher is destructed correctly)
+            // Check and print params
+            std::cout << indent << "[   INFO   ] MODEL   : " << KI::enum_to_string(config.model.id_model) << "\n";
+            std::cout << indent << "[   INFO   ] SCHEME  : " << KI::enum_to_string(config.scheme.id_scheme) <<
+                    "\n";
+
+            std::cout << indent << ">>> Calling the solver ...\n";
+            std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
+
+            // STEP 2b :Run model (keep within a dedicated the scope to be sure that dispatcher is destructed correctly)
             {
                 auto MCDisp = KE::MCDispatcher(config);
                 MCDisp.launch_montecarlo();
             }
 
-            //  Read the data back from disks (this also tests that writing and loading works correclty)
+            //STEP 2c :  Read the data back from disks (this also tests that writing and loading works correclty)
             std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
-            std::cout  << indent << ">>> Go back to the tester ...\n";
+            std::cout << indent << ">>> Go back to the tester ...\n";
             KB::BinReader binReader(config);
             std::vector<KT::Real> simulated_prices = binReader.read_prices_at_target_time(config.time.t_end);
 
             // Check if last Price at T_Final is correct
-            // Use 1e-8 for double, but relax to 5e-3 for single precision
-            const double epsilon = KT::is_real_using_single_precision() ?  1e-4: 1e-8;
-
+            const double epsilon = KT::is_real_using_single_precision() ? 5e-3 : 1e-8;
             for (size_t i = 0; i < simulated_prices.size(); ++i) {
-
                 // Check if you have a nan
                 if (!std::isfinite(simulated_prices[i])) {
                     std::cout << indent << "[  FAILED  ] Path " << i
-                              << " produced a non-finite value: " << simulated_prices[i] << "\n";
+                            << " produced a non-finite value: " << simulated_prices[i] << "\n";
                     std::cerr << indent << "[  FAILED  ] Path " << i
-                              << " produced a non-finite value: " << simulated_prices[i] << "\n";
-                    test_passed = false;
+                            << " produced a non-finite value: " << simulated_prices[i] << "\n";
+                    overall_test_passed = false;
                     break;
                 }
 
@@ -182,27 +179,27 @@ namespace quantkos::Tests::NoNoise {
                             << expected_S_T << ", Got: " << simulated_prices[i] << "\n";
                     std::cerr << indent << "[  FAILED  ] Path " << i << " deviated! Expected: "
                             << expected_S_T << ", Got: " << simulated_prices[i] << "\n";
-                    test_passed = false;
+                    overall_test_passed = false;
                     break;
                 }
                 std::cout << indent << "[   PASSED   ] Path " << i <<
                         " (Simulated : " << simulated_prices[i] << ", Expected : " << expected_S_T << ")\n";
             }
+
+            // Clean up out binary file generated (all the output folder folder)
+            std::filesystem::path out_dir_path = config.output.out_dir;
+            if (std::filesystem::exists(out_dir_path)) {
+                std::filesystem::remove_all(out_dir_path);
+            }
         }
 
-
-        // Clean up out binary file generated (all the output folder folder)
-        std::filesystem::path out_dir_path = config.output.out_dir;
-        if (std::filesystem::exists(out_dir_path)) {
-            std::filesystem::remove_all(out_dir_path);
-        }
-
-        if (test_passed) {
+        // STEP 3 : Check if the tests passed.
+        if (overall_test_passed) {
             std::cout << indent << "[   PASSED   ] All terminal prices match the theoretical drift.\n";
         } else {
             std::cout << indent << "[  FAILED  ] Terminal prices does not match the theoretical drift.\n";
         }
         std::cout << indent << "====================================================================\n" << std::endl;
-        return test_passed;
+        return overall_test_passed;
     }
 }

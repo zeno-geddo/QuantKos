@@ -50,6 +50,7 @@ Time:
   Inp_DT: 0.00025
 
 MC:
+  Normalize_prices: true 
   N_Paths: 500000
   Batch_Size: 0
   RNG_Seed: 88471920573105
@@ -214,13 +215,14 @@ $$
 
 The MC block controls the Monte Carlo simulation.
 
-| Parameter | Description                                                                               |
-|---|-------------------------------------------------------------------------------------------|
-| N_Paths | Total number of simulated Monte Carlo paths.                                              |
-| Batch_Size | Number of paths processed simultaneously in a batch (it allow for very large simulation). |
-| RNG_Seed | Seed used by the random number generator.                                                 |
-| Max_VRAM_MB | Maximum GPU memory allowed.                                                               |
-| Max_CPU_RAM_MB | Maximum host memory allowed.                                                              |
+| Parameter        | Description                                                                               |
+|------------------|-------------------------------------------------------------------------------------------|
+| Normalize_prices | If true, it normalizes monetary parameters relative to S0 (if false, keeps everything untouched).|
+| N_Paths          | Total number of simulated Monte Carlo paths.                                              |
+| Batch_Size       | Number of paths processed simultaneously in a batch (it allow for very large simulation). |
+| RNG_Seed         | Seed used by the random number generator.                                                 |
+| Max_VRAM_MB      | Maximum GPU memory allowed.                                                               |
+| Max_CPU_RAM_MB   | Maximum host memory allowed.                                                              |
 
 #### About the Batch Size
 
