@@ -389,7 +389,7 @@ namespace quantkos::Config {
      * and the stochastic seed for path generation.
      */
     struct MCConfig {
-        bool normalize_prices = true; ///< Automatically scales prices (monetary parameters) by a factor N=S0 (so that S0=1) for numerical stability.
+        bool normalize_prices = true; ///< Automatically scales prices (monetary parameters) by a factor N=S0 (so that S0=1) for numerical stability if set to true. If false it does nothing.
         int N_Paths = 1000; ///< Total number of SDE realizations.
         int batch_size = 0;
         ///< Number of paths per kernel launch. (Set to 0 for automatic tuning, -1 for tot numb simulations.)

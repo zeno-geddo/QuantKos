@@ -133,8 +133,10 @@ namespace quantkos::Engine {
             std::cout << indent << "                    MC EXECUTION SPACE                       \n";
             std::cout << indent << "========================================================\n";
             std::cout << indent << " [Hardware Backend Framework]\n";
+            std::cout << indent << "   Build Mode               :  " << KT::get_build_mode_string() << "\n";
             std::cout << indent << "   Active Execution Space   :  " << batch_mem.execution_space_name() << "\n";
             std::cout << indent << "   Compute Precision Type   :  " << KT::get_precision_string() << "\n";
+            std::cout << indent << "   Use Fast Math            :  " << KT::get_fast_math_string() << "\n";
             std::cout << indent << "--------------------------------------------------------\n";
             std::cout << indent << " [Simulation Matrix Framework]\n";
             std::cout << indent << "   Total MC Simulations        :  " << config.mc.N_Paths << "\n";

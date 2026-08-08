@@ -34,6 +34,24 @@ namespace quantkos::Types {
     using Real = double; // Default to double
 #endif
 
+    /**
+* @brief Helper function to know is using single precision at run time
+*/
+    inline constexpr bool is_real_using_single_precision() {
+#ifdef QKOS_ENABLE_SINGLE_PRECISION
+        return true;
+#else
+        return false;
+#endif
+    }
+
+    /**
+     * @brief Helper function to get a string showing the precision used.
+    */
+    inline constexpr const char * get_precision_string() {
+        return is_real_using_single_precision() ? "float (single precision)": "double (double precision)";
+    }
+
 
     /** @name Type-Safe Literal Constants
      * Compile-time constants cast to the engine's current @c Real precision.
@@ -51,25 +69,39 @@ namespace quantkos::Types {
     constexpr Real real_1p5 = static_cast<Real>(1.5); ///< 1.5 literal constant.
     ///@}
 
-    /**
-     * @brief Helper function to get a string showing the precision used.
-    */
-    inline std::string get_precision_string() {
-#ifdef QKOS_ENABLE_SINGLE_PRECISION
-        return "float (single precision)";
-#else
-        return "double (double precision)";
-#endif
-    }
+
+
 
     /**
- * @brief Helper function to know is using single precision at run time
-*/
-    inline bool is_real_using_single_precision() {
-#ifdef QKOS_ENABLE_SINGLE_PRECISION
+     * @brief Checks if Fast Math optimizations are active at compile time.
+     */
+    inline constexpr bool is_fast_math_enabled() {
+#if defined(QKOS_USE_FAST_MATH) || defined(__FAST_MATH__) || defined(_M_FP_FAST)
         return true;
 #else
         return false;
 #endif
     }
+
+    /**
+     * @brief Returns a human-readable string for Fast Math state.
+     */
+    inline constexpr const char *get_fast_math_string() {
+        return is_fast_math_enabled() ? "True (Non-IEEE)" : "False (Strict IEEE)";
+    }
+
+
+        /**
+         * @brief Returns the active build type ("Release", "Debug", "RelWithDebInfo").
+         */
+        inline constexpr const char* get_build_mode_string() {
+#if defined(QKOS_BUILD_TYPE)
+            return QKOS_BUILD_TYPE;
+#elif defined(NDEBUG)
+            return "Release";
+#else
+            return "Debug";
+#endif
+        }
+
 }

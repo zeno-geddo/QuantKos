@@ -39,7 +39,7 @@
 
 cmake_minimum_required(VERSION 3.20)
 project(QuantKos VERSION 0.1.0
-        DESCRIPTION "High-performance parallel Monte Carlo option pricing engine."
+        DESCRIPTION "High-performance, platform independent parallel Monte Carlo option pricing engine."
         HOMEPAGE_URL "https://github.com/zenogeddo/QuantKos"
         LANGUAGES CXX)
 
@@ -94,7 +94,15 @@ option(QKOS_ENABLE_SINGLE_PRECISION "Use single precision (float) instead of dou
 if (QKOS_ENABLE_SINGLE_PRECISION)
     add_compile_definitions(QKOS_ENABLE_SINGLE_PRECISION) # Define the preprocessor macro so that float can be actually used
     message(STATUS "WARNING: Using single precision for the computations may currently cause a degradation in the result quality!")
-endif()
+endif ()
+
+## @option QKOS_ENABLE_FAST_MATH
+## @brief Enable aggressive non-IEEE fast-math optimizations
+option(QKOS_ENABLE_FAST_MATH "Enable aggressive non-IEEE compliant fast-math optimizations" OFF)
+if (QKOS_ENABLE_FAST_MATH)
+    add_compile_definitions(QKOS_ENABLE_FAST_MATH) # Define the preprocessor macro so that float can be actually used
+    message(STATUS "WARNING: Enable aggressive non-IEEE fast-math optimizations!")
+endif ()
 
 ## @option QKOS_ENABLE_TESTS
 ## @brief Directs CMake to compile the unit test suite and configure CTest execution.
@@ -211,6 +219,10 @@ endif ()
 ## @brief Source Library Tree Assembly. Traverses the `src/` directory to build the core mathematical integration and model solvers.
 add_subdirectory(src)
 
+# Pass active configuration name to C++ preprocessor
+target_compile_definitions(QuantKos_core PUBLIC
+        QKOS_BUILD_TYPE="$<CONFIG>"
+)
 
 # -----------------------------------------------------------------------------
 # 6. Build the App and Tests (Consumers)

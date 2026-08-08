@@ -18,6 +18,7 @@
 ## @details This file defines the core 'QuantKos_core' library target, configures precision compiler definitions,
 ##          binds package dependencies, and manages compiler and linker flags for multiple build configurations (Release, Debug, etc.).
 ## @author Zeno GEDDO
+## @note More info about the flags on : https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 ## @date 2026
 
 # -----------------------------------------------------------------------------
@@ -35,7 +36,7 @@ add_library(QuantKos_core
 # -----------------------------------------------------------------------------
 # 2. APPLY OPTIONS
 # -----------------------------------------------------------------------------
-## @section def_sec 2. Preprocessor & Precision Setup
+## @section def_sec 2a. Precision Setup
 ## @brief Controls internal float/double type matching based on user toggles.
 ## @details Inspects the user build option `QKOS_ENABLE_SINGLE_PRECISION`. If enabled, it sets
 ##          the compiler flag `QKOS_USE_SINGLE_PRECISION` publicly, ensuring correct 32-bit float matching
@@ -47,6 +48,42 @@ if (QKOS_ENABLE_SINGLE_PRECISION)
 else ()
     message(STATUS "Precision: DOUBLE (double)")
 endif ()
+
+## @section def_sec 2b. FastMath Setup
+## @brief Controls fast math setups based on user toggles.
+## @details Inspects the user build option `QKOS_ENABLE_FAST_MATH`.
+## If enabled, fast math flags are included during compilation.
+
+if (QKOS_ENABLE_FAST_MATH)
+    message(STATUS "Math Mode: FAST-MATH ENABLED (Aggressive Floating Points optimizations active)")
+    target_compile_definitions(QuantKos_core PUBLIC QKOS_USE_FAST_MATH)
+
+    # 1. Host Compiler Fast-Math Flags (GCC / Clang / AppleClang)
+    target_compile_options(QuantKos_core PUBLIC
+            $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
+            -ffast-math
+            >
+    )
+
+    # 2. GPU Compiler Fast-Math Flags (CUDA / NVCC)
+    # Passed when Kokkos CUDA backend is active (works with nvcc_wrapper or native CUDA language)
+    if (Kokkos_ENABLE_CUDA)
+        message(STATUS "  └--> Applying CUDA GPU fast-math (--use_fast_math)")
+        target_compile_options(QuantKos_core PUBLIC
+                $<$<BOOL:${Kokkos_ENABLE_CUDA}>:SHELL:--use_fast_math>
+        )
+    endif()
+
+    # 3. GPU Compiler Fast-Math Flags (AMD / HIP)
+    if (Kokkos_ENABLE_HIP)
+        message(STATUS "  └--> Applying AMD / HIP GPU fast-math (-ffast-math)")
+        target_compile_options(QuantKos_core PUBLIC
+                $<$<BOOL:${Kokkos_ENABLE_HIP}>:-ffast-math>
+        )
+    endif()
+else()
+    message(STATUS "Math Mode: STRICT IEEE preserved (aggressive FAST-MATH disabled)")
+endif()
 
 
 # -----------------------------------------------------------------------------
@@ -169,13 +206,12 @@ endif()
 ## - `-O3`: Activates loop vectorization, automatic inlining, and registers.
 ## - `-march=native`: Inspects and exploits instruction sets (like AVX-512) native to the compilation host.
 ## - `-flto`: Link Time Optimization; performs cross-file optimizations across files.
-## - `-fno-math-errno`: Bypasses updating POSIX error variables after math commands, enabling SIMD execution.
+## - `-fno-math-errno`: Bypasses updating POSIX error variables after math commands, enabling SIMD execution. (set before in the global optimizations)
 target_compile_options(QuantKos_core PRIVATE
         $<$<CONFIG:Release>:
         -O3                         # High-level optimization: vectorization, loop unrolling, and inlining
         -march=native               # Tune code for the specific CPU features (AVX, AVX-512) of the host machine
         -flto                       # Link Time Optimization: allows optimizations across different translation units
-        # -ffast-math               # Enable aggressive math optimizations, breaks IEEE-754 floating point standards to go faster (may break NaN checks and precision)
         >
 )
 
@@ -223,7 +259,7 @@ target_link_options(QuantKos_core PRIVATE
 ##          under `lib/` and `bin/`, packing dependencies inside the `QuantKosTargets` export list.
 
 install(TARGETS QuantKos_core
-        EXPORT QuantKosTargets          # Creates a "package" name for others to find
+        EXPORT QuantKosTargets       # Creates a "package" name for others to find
         LIBRARY DESTINATION lib      # Where .so files go
         ARCHIVE DESTINATION lib      # Where .a files go
         RUNTIME DESTINATION bin)     # Where .dll files go (Windows)

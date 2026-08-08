@@ -126,7 +126,7 @@ namespace quantkos::Tests::IOBIN {
                 for (int i = 0; i < config.mc.N_Paths; ++i) {
                     const auto expected_value = static_cast<KT::Real>((i * 1000) + expected_col_idx);
 
-                    if (std::abs(extracted_prices[i] - expected_value) > 1e-5) {
+                    if (std::abs(extracted_prices[i] - expected_value) > 1e-3) { // Account for single precision induced errors
                         std::cerr << indent << "[  FAILED  ] Data mismatch at path " << i
                                 << ". Expected: " << expected_value << ", Got: " << extracted_prices[i] << "\n";
                         current_run_passed = false;
