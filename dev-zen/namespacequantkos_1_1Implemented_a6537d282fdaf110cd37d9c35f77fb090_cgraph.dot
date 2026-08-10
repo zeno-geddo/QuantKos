@@ -1,0 +1,11 @@
+digraph "quantkos::Implemented::string_to_enum"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="quantkos::Implemented\l::string_to_enum",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Converts a string configuration value to its corresponding enum member."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Implemented\l::StrEnumMap::get",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Implemented_1_1StrEnumMap.html#ae443d4bb006480ec8a1db383dc2e1ce1",tooltip="Returns a reference to the static map for the requested type."];
+}

@@ -1,0 +1,13 @@
+digraph "quantkos::IO::OutputManager::print_paths_info_planned_outputs"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="quantkos::IO::OutputManager\l::print_paths_info_planned\l_outputs",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Prints a quick, clear summary of where and how files will be saved."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::Forward\lBackwardMCRunner::get_option_price",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html#aa62cc60ac6c779dce034339348771a6d",tooltip="Entry point to run the American pricing engine."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="quantkos::Engine::Forward\lMCRunner::get_option_prices",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCRunner.html#ac86a1154cda2f65879a791fbceef6627",tooltip="High-level orchestration method that runs the forward Monte Carlo engine."];
+}

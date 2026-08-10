@@ -1,0 +1,12 @@
+digraph "quantkos::Engine::LSM::RegressionSums&lt; NBasis &gt;"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  Node1 [id="Node000001",label="quantkos::Engine::LSM\l::RegressionSums\< NBasis \>",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Aggregator structure used during Kokkos parallel reductions."];
+  Node2 -> Node1 [id="edge1_Node000001_Node000002",dir="back",color="darkorchid3",style="dashed",tooltip=" ",label=" M",fontcolor="grey" ];
+  Node2 [id="Node000002",label="quantkos::Engine::LSM\l::Matrix\< 4 \>",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1LSM_1_1Matrix.html",tooltip=" "];
+  Node3 -> Node1 [id="edge2_Node000001_Node000003",dir="back",color="darkorchid3",style="dashed",tooltip=" ",label=" B",fontcolor="grey" ];
+  Node3 [id="Node000003",label="quantkos::Engine::LSM\l::Vector\< 4 \>",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1LSM_1_1Vector.html",tooltip=" "];
+}

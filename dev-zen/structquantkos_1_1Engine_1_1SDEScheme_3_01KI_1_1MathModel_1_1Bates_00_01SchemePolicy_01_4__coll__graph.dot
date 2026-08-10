@@ -1,0 +1,10 @@
+digraph "quantkos::Engine::SDEScheme&lt; KI::MathModel::Bates, SchemePolicy &gt;"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  Node1 [id="Node000001",label="quantkos::Engine::SDEScheme\l\< KI::MathModel::Bates,\l SchemePolicy \>",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Universal Jump-Diffusion wrapper for the Bates model."];
+  Node2 -> Node1 [id="edge1_Node000001_Node000002",dir="back",color="darkorchid3",style="dashed",tooltip=" ",label=" heston_core",fontcolor="grey" ];
+  Node2 [id="Node000002",label="quantkos::Engine::SDEScheme\l\< KI::MathModel::Heston,\l SchemePolicy \>",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1SDEScheme.html",tooltip=" "];
+}

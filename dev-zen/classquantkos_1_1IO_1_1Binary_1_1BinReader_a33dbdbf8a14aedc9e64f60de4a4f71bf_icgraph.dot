@@ -1,0 +1,13 @@
+digraph "quantkos::IO::Binary::BinReader::read_prices_at_target_time"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="quantkos::IO::Binary\l::BinReader::read_prices\l_at_target_time",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Extracts the cross-sectional spot prices across all simulated paths at a target timeline coordinate."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Tests::IOBIN\l::run_test",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1IOBIN.html#a0d3a47c6156d0e5bdf06c06c5b554a28",tooltip="Verifies the integrity of the binary serialization system (both when normalizing prices is on and off..."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="quantkos::Tests::NoNoise\l::run_test",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1NoNoise.html#a50ee150de4accb83b54883d7eee78ca7",tooltip="Runs the Zero Variance Forward Growth integration test."];
+}

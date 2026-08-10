@@ -1,0 +1,11 @@
+digraph "quantkos::Engine::ForwardMCProgressTracker::start_tracking"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="quantkos::Engine::Forward\lMCProgressTracker::start\l_tracking",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Initializes the tracking state, recording the starting system timestamp."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::run\l_forward_all_mc_batches",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Engine.html#a0b5dbc54600aedc0d5462d47e5a8c60d",tooltip="HEAVY-LIFT HELPER FUNCTION FOR FORWARD PHASE. Executes and coordinates the forward Monte Carlo simula..."];
+}
