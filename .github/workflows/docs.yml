@@ -1,0 +1,31 @@
+name: QuantKos Documentation
+
+on:
+  push:
+    branches: [main, dev-zen]
+
+jobs:
+  build-docs:
+    deploy-gh-pages:
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+  
+        - name: Install Doxygen
+          run: sudo apt update && sudo apt install -y doxygen graphviz
+  
+        - name: Generate documentation using doxygen
+          run: doxygen Doxyfile
+  
+        - name: Deploy to GitHub Pages
+          uses: peaceiris/actions-gh-pages@v4
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: ./documentation/html
+            destination_dir: ${{ github.ref_name }} # Creates a /main or /dev subfolder
+            keep_files: true                       # Stops 'dev' from deleting 'main'
+            
+

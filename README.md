@@ -67,8 +67,10 @@ The simulation engine includes
 ---
 
 ## 📚 Documentation
+- 📖 [Main Branch Documentation (Stable)](https://zeno-geddo.github.io/QuantKos/main/)
+- 🧪 [Dev Branch Documentation (Latest)](https://zeno-geddo.github.io/QuantKos/dev-zen/)
 
-Detailed documentation is split into dedicated guides.
+Note that the documentation is split into dedicated guides.
 
 | Document | Description                                                                                                  |
 |----------|--------------------------------------------------------------------------------------------------------------|
@@ -106,6 +108,10 @@ cd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DQKOS_ENABLE_FETCHCONTENT=ON \
+    -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+    -DQKOS_USE_FAST_MATH=OFF \
+    -DQKOS_ENABLE_TESTS=ON \
+    -DQKOS_BUILD_DOC=ON \
     -DKokkos_ENABLE_SERIAL=ON \
     -DKokkos_ENABLE_OPENMP=OFF \
     -DKokkos_ENABLE_CUDA=OFF \
@@ -118,6 +124,11 @@ cmake .. \
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DQKOS_ENABLE_FETCHCONTENT=ON \
+    -DQKOS_ENABLE_TESTS=ON \
+    -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+    -DQKOS_USE_FAST_MATH=OFF \
+    -DQKOS_BUILD_DOC=ON \
+    -DQKOS_ENABLE_TESTS=ON \
     -DKokkos_ENABLE_SERIAL=ON \
     -DKokkos_ENABLE_OPENMP=ON \
     -DKokkos_ENABLE_CUDA=OFF \

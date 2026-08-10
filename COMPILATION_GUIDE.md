@@ -483,6 +483,7 @@ cmake \
   -DQKOS_ENABLE_FETCHCONTENT=OFF \
   -DQKOS_BUILD_DOC=ON \
   -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+  -DQKOS_USE_FAST_MATH=OFF \
   -DQKOS_ENABLE_TESTS=ON \
   -DKokkos_ROOT=$HOME/software/installations/kokkos-5/cuda/lib/cmake/Kokkos \
   -Dyaml-cpp_ROOT=$HOME/software/installations/yaml-cpp/lib/cmake/yaml-cpp
@@ -498,8 +499,10 @@ cmake \
 >
 > * **`QKOS_BUILD_DOC=ON`** *(recommended)*: Automatically generates the QuantKos API documentation with **Doxygen** during the build process (provided Doxygen is installed on the system).
 >
-> * **`QKOS_ENABLE_SINGLE_PRECISION=ON`**: Compiles the engine using 32-bit `float` arithmetic instead of the default 64-bit `double`. This generally improves memory efficiency and can significantly increase performance—especially on GPUs—but at the cost of reduced numerical precision.
+> * **`QKOS_ENABLE_SINGLE_PRECISION=ON`**: Compiles the engine using 32-bit `float` arithmetic instead of the default 64-bit `double`. This generally improves memory efficiency and can increase performance—especially on GPUs—but at the cost of reduced numerical precision.
 >
+> * **`QKOS_USE_FAST_MATH=ON`**: Enables aggressive non-IEEE compliant floating point optimizations. Can increase compute throughput, but may slightly reduce numerical precision and will disable runtime safety checks.
+> 
 > * **`QKOS_ENABLE_TESTS=ON`**: Builds the QuantKos test executables together with the main application. This option is recommended for development or when verifying a new installation, as it allows the built-in test suite to be executed after compilation.
 
 > **⚠️ Note: ccmake GUI. It could be helpful to use the ccmake gui to see more clearly the configuration options.**
@@ -564,6 +567,7 @@ cmake \
   -DQKOS_ENABLE_FETCHCONTENT=ON \
   -DQKOS_BUILD_DOC=ON \
   -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+  -DQKOS_USE_FAST_MATH=OFF \
   -DQKOS_ENABLE_TESTS=ON 
 ```
 
@@ -604,6 +608,7 @@ cmake \
   -DKokkos_ARCH_NATIVE=ON \
   -DQKOS_BUILD_DOC=ON \
   -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+  -DQKOS_USE_FAST_MATH=OFF \
   -DQKOS_ENABLE_TESTS=ON 
 ```
 
@@ -622,6 +627,7 @@ cmake \
   -DKokkos_ARCH_AMPERE86=ON \
   -DQKOS_BUILD_DOC=ON \
   -DQKOS_ENABLE_SINGLE_PRECISION=OFF \
+  -DQKOS_USE_FAST_MATH=OFF \
   -DQKOS_ENABLE_TESTS=ON 
   
 ```
