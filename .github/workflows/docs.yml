@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-      - develop
+      - dev-zen
+  workflow_dispatch:
 
 jobs:
   deploy-gh-pages:
