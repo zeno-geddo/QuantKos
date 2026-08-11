@@ -86,7 +86,7 @@ else ()
 endif ()
 
 
-## @section def_sec 2b. Optimization report setup
+## @section def_sec 2c. Optimization report setup
 ## @brief Controls the generation of cpu optimization report.
 ## @details Inspects the user build option `QKOS_ENABLE_CPU_OPT_REPORTS`.
 ## If enabled, optimization reports concerning inlining and vectorizations are saved in the build.
@@ -99,10 +99,11 @@ if (QKOS_ENABLE_CPU_OPT_REPORTS)
             # --- GNU GCC Options (Outputs to file) ---
             $<$<CXX_COMPILER_ID:GNU>:
             # Combines vec + inline + optimized + missed into ONE destination file
-            #-fopt-info-vec-inline-optimized-missed=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
-            -fopt-info-inline-optimized=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
-            -fopt-info-vec-optimized=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
-            -fopt-info-vec-missed=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            -fopt-info-vec-inline-optimized-missed=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            #-fopt-info-inline-optimized #=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            #-fopt-info-vec-all #=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            #-fopt-info-vec-optimized=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            #-fopt-info-vec-missed=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
             >
 
             # --- Clang & AppleClang Options (Outputs directly to Terminal stderr) ---
@@ -115,6 +116,13 @@ if (QKOS_ENABLE_CPU_OPT_REPORTS)
     )
 
 endif ()
+
+## @section def_sec 2d. Link-Time Optimization setup
+# Apply LTO specifically to QuantKos_core after the target exists
+if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+    set_property(TARGET QuantKos_core PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 
 # -----------------------------------------------------------------------------
 # 3. LINKING & INCLUDES
