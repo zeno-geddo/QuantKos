@@ -8,4 +8,6 @@ digraph "quantkos::Engine::MSolver::execute_batch"
   Node1 [id="Node000001",label="quantkos::Engine::MSolver\l::execute_batch",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Launches the Monte Carlo path simulation for the current batch calling the integration kernel."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
   Node2 [id="Node000002",label="quantkos::Engine::RNGManager\l::get_global_rng_pool",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1RNGManager.html#a6c7a94f6dfa66e573fa5f02e30c16527",tooltip="Passes access to the GPU random memory pool to the parallel execution batches."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="quantkos::Config::UInputs\l::requires_paths_allocated",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1UInputs.html#a18be2df557d093bcb36dcb4b1d8bddef",tooltip="Tells if you should sync the paths at the end of each batch from device to host using kokkos."];
 }

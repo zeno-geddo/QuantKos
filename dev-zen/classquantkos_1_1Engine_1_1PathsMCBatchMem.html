@@ -124,6 +124,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0e23b4968c0babf7fcbc90ac44b09f48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies modified batch data from the host back to the device.  <br /></td></tr>
 <tr class="separator:a0e23b4968c0babf7fcbc90ac44b09f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Memory Interrogation Utilities</div></td></tr>
+<tr class="memitem:a980732f19677184c01640abe97f1c1d7" id="r_a980732f19677184c01640abe97f1c1d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a980732f19677184c01640abe97f1c1d7">are_paths_allocated</a> () const</td></tr>
+<tr class="memdesc:a980732f19677184c01640abe97f1c1d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tells if the paths batch are allocated of not (they are not always need, so when not needed are not allocated)  <br /></td></tr>
+<tr class="separator:a980732f19677184c01640abe97f1c1d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65a95642a334321276bdcbf1c936edbf" id="r_a65a95642a334321276bdcbf1c936edbf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a65a95642a334321276bdcbf1c936edbf">execution_space_name</a> () const</td></tr>
 <tr class="memdesc:a65a95642a334321276bdcbf1c936edbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name of the active default hardware execution space (e.g., Cuda, HIP, OpenMP).  <br /></td></tr>
 <tr class="separator:a65a95642a334321276bdcbf1c936edbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,17 +187,17 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a76c66487094c6f3cbcc7778f8d1beba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Kokkos Device Views</div></td></tr>
 <tr class="memitem:aadc5425caa82ef6bce7a5b1f8be128e5" id="r_aadc5425caa82ef6bce7a5b1f8be128e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacequantkos_1_1Engine.html#aa17bfa358d88733fc366ca09ada0ee45">DevBatchPathsView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#aadc5425caa82ef6bce7a5b1f8be128e5">d_batch_view</a></td></tr>
-<tr class="memdesc:aadc5425caa82ef6bce7a5b1f8be128e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device-side view for asset paths (N_sims_per_batch, TotN_T_steps).  <br /></td></tr>
+<tr class="memdesc:aadc5425caa82ef6bce7a5b1f8be128e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device-side view for asset paths (N_sims_per_batch, TotN_T_steps). Always allocated.  <br /></td></tr>
 <tr class="separator:aadc5425caa82ef6bce7a5b1f8be128e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90171cd4f7e765c1bac2aca136adedf3" id="r_a90171cd4f7e765c1bac2aca136adedf3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacequantkos_1_1Engine.html#a9432912504b19aa6138ba67a998cd5bd">DevBatchPayoffView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a90171cd4f7e765c1bac2aca136adedf3">d_payoffs</a></td></tr>
-<tr class="memdesc:a90171cd4f7e765c1bac2aca136adedf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device-side view for option payoffs (N_sims_per_batch).  <br /></td></tr>
+<tr class="memdesc:a90171cd4f7e765c1bac2aca136adedf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device-side view for option payoffs (N_sims_per_batch). Always allocated.  <br /></td></tr>
 <tr class="separator:a90171cd4f7e765c1bac2aca136adedf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Kokkos Host Views</div></td></tr>
 <tr class="memitem:a14bccf5f7a6205f209fbf8b701273a2b" id="r_a14bccf5f7a6205f209fbf8b701273a2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacequantkos_1_1Engine.html#abdafb860da072ed3ff90c684a5b9ba74">HostBatchPathsView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a14bccf5f7a6205f209fbf8b701273a2b">h_batch_view</a></td></tr>
-<tr class="memdesc:a14bccf5f7a6205f209fbf8b701273a2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-side mirror for asset paths synchronization.  <br /></td></tr>
+<tr class="memdesc:a14bccf5f7a6205f209fbf8b701273a2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-side mirror for asset paths synchronization. Allocated only if needed.  <br /></td></tr>
 <tr class="separator:a14bccf5f7a6205f209fbf8b701273a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7892f47ae140f4291fab498d6ef2fd1f" id="r_a7892f47ae140f4291fab498d6ef2fd1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacequantkos_1_1Engine.html#a6c11eb0211a3d0518b0f888e6269a8da">HostBatchPayoffView</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a7892f47ae140f4291fab498d6ef2fd1f">h_payoffs</a></td></tr>
-<tr class="memdesc:a7892f47ae140f4291fab498d6ef2fd1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-side mirror for payoff data synchronization.  <br /></td></tr>
+<tr class="memdesc:a7892f47ae140f4291fab498d6ef2fd1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-side mirror for payoff data synchronization. Allocated only if needed.  <br /></td></tr>
 <tr class="separator:a7892f47ae140f4291fab498d6ef2fd1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -238,6 +241,11 @@ Public Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classquantkos_1_1Engine_1_1PathsMCBatchMem_a38bcfb5d6a7d5ea347a89f536feaeea1_cgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1PathsMCBatchMem_a38bcfb5d6a7d5ea347a89f536feaeea1_cgraph" alt=""/></div>
+</div>
 
 </div>
 </div>
@@ -334,6 +342,38 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a980732f19677184c01640abe97f1c1d7" name="a980732f19677184c01640abe97f1c1d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a980732f19677184c01640abe97f1c1d7">&#9670;&#160;</a></span>are_paths_allocated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool quantkos::Engine::PathsMCBatchMem::are_paths_allocated </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tells if the paths batch are allocated of not (they are not always need, so when not needed are not allocated) </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classquantkos_1_1Engine_1_1PathsMCBatchMem_a980732f19677184c01640abe97f1c1d7_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1PathsMCBatchMem_a980732f19677184c01640abe97f1c1d7_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
 <a id="a4b49ef4ae9b41b542a1c4c559566d6e0" name="a4b49ef4ae9b41b542a1c4c559566d6e0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4b49ef4ae9b41b542a1c4c559566d6e0">&#9670;&#160;</a></span>bytes_to_mb()</h2>
 
@@ -394,6 +434,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Copies modified batch data from the host back to the device. </p>
+<dl class="section note"><dt>Note</dt><dd>The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase. </dd></dl>
 
 </div>
 </div>
@@ -422,11 +463,6 @@ Here is the caller graph for this function:</div>
 
 <p>Copies current batch data from the device to the host. </p>
 <dl class="section note"><dt>Note</dt><dd>The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase. </dd></dl>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classquantkos_1_1Engine_1_1PathsMCBatchMem_ab2ed0432d6d86cbf711f52348e453cb4_cgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1PathsMCBatchMem_ab2ed0432d6d86cbf711f52348e453cb4_cgraph" alt=""/></div>
-</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -693,9 +729,12 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Dynamically audits if the host memory allocation slice is physically contiguous in memory. </p>
-<ul>
-<li></li>
-</ul>
+<p>*</p><dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>When attempting to check the contiguity but paths are not allocated. </td></tr>
+  </table>
+  </dd>
+</dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1009,9 +1048,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Estimates the full, unrolled paths footprint in MB if all simulation steps were kept in RAM at once. </p>
-<ul>
-<li></li>
-</ul>
+<p>*</p><dl class="section note"><dt>Note</dt><dd>Give an estimate of the total footprint also if the paths are not allocated. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1068,7 +1105,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Device-side view for asset paths (N_sims_per_batch, TotN_T_steps). </p>
+<p>Device-side view for asset paths (N_sims_per_batch, TotN_T_steps). Always allocated. </p>
 
 </div>
 </div>
@@ -1084,7 +1121,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Device-side view for option payoffs (N_sims_per_batch). </p>
+<p>Device-side view for option payoffs (N_sims_per_batch). Always allocated. </p>
 
 </div>
 </div>
@@ -1100,7 +1137,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Host-side mirror for asset paths synchronization. </p>
+<p>Host-side mirror for asset paths synchronization. Allocated only if needed. </p>
 
 </div>
 </div>
@@ -1116,7 +1153,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Host-side mirror for payoff data synchronization. </p>
+<p>Host-side mirror for payoff data synchronization. Allocated only if needed. </p>
 
 </div>
 </div>

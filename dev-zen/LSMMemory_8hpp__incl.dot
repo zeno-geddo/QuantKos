@@ -51,12 +51,13 @@ digraph "include/core/memory/LSMMemory.hpp"
   Node19 [id="Node000019",label="./MemoryTypes.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$MemoryTypes_8hpp.html",tooltip=" "];
   Node19 -> Node2 [id="edge27_Node000019_Node000002",color="steelblue1",style="solid",tooltip=" "];
   Node19 -> Node3 [id="edge28_Node000019_Node000003",color="steelblue1",style="solid",tooltip=" "];
-  Node1 -> Node20 [id="edge29_Node000001_Node000020",color="steelblue1",style="solid",tooltip=" "];
-  Node20 [id="Node000020",label="MemOSQuery.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$MemOSQuery_8hpp.html",tooltip=" "];
+  Node17 -> Node20 [id="edge29_Node000017_Node000020",color="steelblue1",style="solid",tooltip=" "];
+  Node20 [id="Node000020",label="./MemOSQuery.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$MemOSQuery_8hpp.html",tooltip=" "];
   Node20 -> Node8 [id="edge30_Node000020_Node000008",color="steelblue1",style="solid",tooltip=" "];
   Node20 -> Node5 [id="edge31_Node000020_Node000005",color="steelblue1",style="solid",tooltip=" "];
   Node20 -> Node21 [id="edge32_Node000020_Node000021",color="steelblue1",style="solid",tooltip=" "];
   Node21 [id="Node000021",label="unistd.h",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node20 -> Node22 [id="edge33_Node000020_Node000022",color="steelblue1",style="solid",tooltip=" "];
   Node22 [id="Node000022",label="fstream",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node1 -> Node20 [id="edge34_Node000001_Node000020",color="steelblue1",style="solid",tooltip=" "];
 }

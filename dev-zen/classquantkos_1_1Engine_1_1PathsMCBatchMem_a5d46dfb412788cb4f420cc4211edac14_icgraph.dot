@@ -11,4 +11,6 @@ digraph "quantkos::Engine::PathsMCBatchMem::host_payoffs_memory_bytes"
   Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node3 [id="Node000003",label="quantkos::Engine::PathsMCBatch\lMem::tot_host_memory_bytes",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a85320c914bb610f6fb3908d16012c4ae",tooltip="Returns the combined host-side RAM footprint (Paths + Payoffs) allocated for mirroring."];
   Node3 -> Node2 [id="edge3_Node000003_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 -> Node4 [id="edge4_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="quantkos::Engine::PathsMCBatch\lMem::PathsMCBatchMem",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a38bcfb5d6a7d5ea347a89f536feaeea1",tooltip="Constructs the manager and allocates hardware-aligned memory buffers. (Must be initialized explicitly..."];
 }

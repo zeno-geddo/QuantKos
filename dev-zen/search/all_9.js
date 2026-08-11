@@ -28,11 +28,12 @@ var searchData=
   ['apply_5ffinal_5fdiscount_25',['apply_final_discount',['../classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html#a70d5a260a79b6dfe68cfe670aee9905e',1,'quantkos::Engine::LSM::LSMEngine']]],
   ['apply_5fprice_5fscaling_26',['apply_price_scaling',['../structquantkos_1_1Config_1_1UInputs.html#aa2b78f3a00354de376cd383329c91a44',1,'quantkos::Config::UInputs']]],
   ['architecture_27',['3. Targeting Your Specific GPU Architecture',['../md_COMPILATION__GUIDE.html#autotoc_md21',1,'']]],
-  ['asian_28',['Asian',['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19a32547be4653a13e1009e513426eeae62',1,'quantkos::Implemented']]],
-  ['asian_20option_29',['Asian Option',['../md_MATH__GUIDE.html#autotoc_md55',1,'']]],
-  ['asset_20or_20nothing_30',['Asset-or-Nothing',['../md_MATH__GUIDE.html#autotoc_md66',1,'']]],
-  ['author_31',['👤 Author',['../index.html#autotoc_md101',1,'']]],
-  ['automated_20test_20configuration_32',['2. Automated Test Configuration',['../md_USER__INPUT__GUIDE.html#autotoc_md115',1,'']]],
-  ['automated_20tests_33',['Available Automated Tests',['../md_USER__INPUT__GUIDE.html#autotoc_md116',1,'']]],
-  ['available_20automated_20tests_34',['Available Automated Tests',['../md_USER__INPUT__GUIDE.html#autotoc_md116',1,'']]]
+  ['are_5fpaths_5fallocated_28',['are_paths_allocated',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a980732f19677184c01640abe97f1c1d7',1,'quantkos::Engine::PathsMCBatchMem']]],
+  ['asian_29',['Asian',['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19a32547be4653a13e1009e513426eeae62',1,'quantkos::Implemented']]],
+  ['asian_20option_30',['Asian Option',['../md_MATH__GUIDE.html#autotoc_md55',1,'']]],
+  ['asset_20or_20nothing_31',['Asset-or-Nothing',['../md_MATH__GUIDE.html#autotoc_md66',1,'']]],
+  ['author_32',['👤 Author',['../index.html#autotoc_md101',1,'']]],
+  ['automated_20test_20configuration_33',['2. Automated Test Configuration',['../md_USER__INPUT__GUIDE.html#autotoc_md115',1,'']]],
+  ['automated_20tests_34',['Available Automated Tests',['../md_USER__INPUT__GUIDE.html#autotoc_md116',1,'']]],
+  ['available_20automated_20tests_35',['Available Automated Tests',['../md_USER__INPUT__GUIDE.html#autotoc_md116',1,'']]]
 ];
