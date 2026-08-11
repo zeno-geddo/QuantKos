@@ -94,27 +94,26 @@ $(function() {
 </ul>
 <p>At present, however, QuantKos has been developed and tested only on a <b>Linux</b> system using <b>GCC</b> on an <b>Intel</b> CPU (using both OpemMP or procedural mode) and an <b>NVIDIA RTX</b> GPU (CUDA backend). We therefore expect this configuration to work reliably. Other supported platforms should also work in principle, but they have not yet been thoroughly tested and may still expose unknown bugs or portability issues. </p>
 </blockquote>
-<h1><a class="anchor" id="autotoc_md1"></a>
-&lt;/blockquote&gt;</h1>
-<h1><a class="anchor" id="autotoc_md2"></a>
+<hr  />
+ <h1><a class="anchor" id="autotoc_md1"></a>
 1. Prerequisites</h1>
 <p>This section outlines the requirements and toolchains necessary to compile, install, and run the QuantKos option pricing engine.</p>
-<h2><a class="anchor" id="autotoc_md3"></a>
+<h2><a class="anchor" id="autotoc_md2"></a>
 Part I: Mandatory Requirements</h2>
 <p>These components are strictly required to build and execute the QuantKos engine on target hardware.</p>
-<h3><a class="anchor" id="autotoc_md4"></a>
+<h3><a class="anchor" id="autotoc_md3"></a>
 A. Core Build Tools</h3>
 <ul>
 <li><b>CMake</b> (v3.20 or higher): The build orchestrator.</li>
 <li><b>C++20 or C++23 Compiler</b> (<a href="https://gcc.gnu.org/">GCC 10+</a> or <a href="https://clang.llvm.org/">Clang 12+</a>).</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md5"></a>
+<h3><a class="anchor" id="autotoc_md4"></a>
 B. Hardware Toolchains (Target-Dependent)</h3>
 <ul>
 <li><b>OpenMP</b>: Required if compiling for multi-core CPU thread-level parallelism.</li>
 <li><b>NVIDIA CUDA Toolkit</b>: Provides the <code>nvcc</code> compiler, required if compiling for GPU-accelerated execution on NVIDIA hardware.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md6"></a>
+<h3><a class="anchor" id="autotoc_md5"></a>
 C. Dependencies</h3>
 <ul>
 <li><b>Kokkos</b>: The performance-portability framework.</li>
@@ -123,20 +122,20 @@ C. Dependencies</h3>
 <blockquote class="doxtable">
 <p>&zwj;⚠️ <b>Note:</b> The CMake build system can automatically configure, download, and statically build Kokkos and yaml-cpp via <code>FetchContent</code> if they are not detected locally on your host. More will be said about that when addressing QuantKos compilation and installation. </p>
 </blockquote>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md6"></a>
 Part II: Recommended Development &amp; Profiling Tools</h2>
 <p>While not required to execute standard pricing runs, these tools are highly recommended for active development, codebase maintenance, and performance optimization.</p>
-<h3><a class="anchor" id="autotoc_md8"></a>
+<h3><a class="anchor" id="autotoc_md7"></a>
 A. Building Tool</h3>
 <ul>
 <li><b>ccmake</b>: terminal GUI for easier and more advanced build configuration.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md9"></a>
+<h3><a class="anchor" id="autotoc_md8"></a>
 B. Documentation Engine</h3>
 <ul>
 <li><b>Doxygen &amp; Graphviz</b>: Automated tools to parse C++ source annotations and CMake configurations to generate hyperlinked HTML (and Latex) documentation with architecture graphs.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md10"></a>
+<h3><a class="anchor" id="autotoc_md9"></a>
 C. GPU Profiling Suite (NVIDIA Nsight)</h3>
 <p>Used to identify hardware-level bottlenecks in the code:</p>
 <ul>
@@ -144,10 +143,10 @@ C. GPU Profiling Suite (NVIDIA Nsight)</h3>
 <li>**NVIDIA Nsight Compute (<code>ncu</code>)**: A deep-dive CUDA kernel profiler. Provides hardware metrics such as warp occupancy, register pressure, memory access patterns, and cache hit rates. Important for fine-tuning SDE integration loops.</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md11"></a>
+<h1><a class="anchor" id="autotoc_md10"></a>
 🐧 2.  Installing the System level Prerequisites on Linux</h1>
 <p>This step-by-step guide walks you through setting up your environment on a fresh Linux instance (Ubuntu / Debian). Although QuantKos could work with different GPUs brands, we will here focus on setting up machines with NVIDIA GPUs only.</p>
-<h2><a class="anchor" id="autotoc_md12"></a>
+<h2><a class="anchor" id="autotoc_md11"></a>
 Step 1 (Required): Install Core Utilities &amp; Documentation Tools</h2>
 <p>The baseline compilers, build generators, multi-threading libraries, and documentation utilities can be installed cleanly from the default package manager:</p>
 <div class="fragment"><div class="line"># 1. Update system package lists</div>
@@ -155,7 +154,7 @@ Step 1 (Required): Install Core Utilities &amp; Documentation Tools</h2>
 <div class="line"> </div>
 <div class="line"># 2. Install base compilers, CMake, ccmake interface, OpenMP, and Doxygen (with Graphviz)</div>
 <div class="line">sudo apt install -y build-essential cmake cmake-curses-gui libomp-dev doxygen graphviz</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md13"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md12"></a>
 Step 2 (Required): Install GPU Toolchain (CUDA Compiler &amp; SDK)</h2>
 <p>To compile and execute QuantKos on NVIDIA GPUs, you must install the <b>NVIDIA CUDA Toolkit</b>.</p>
 <p><b>Why <code>nvcc</code> is Essential.</b></p>
@@ -193,7 +192,7 @@ Step 2 (Required): Install GPU Toolchain (CUDA Compiler &amp; SDK)</h2>
 <div class="line"># 5. Update package lists and install the CUDA Toolkit</div>
 <div class="line">sudo apt update</div>
 <div class="line">sudo apt install -y cuda-toolkit-13-1</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md14"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md13"></a>
 Configure the Environment</h3>
 <p>The CUDA Toolkit is typically installed under <code>/usr/local/cuda</code>. To make the compiler and runtime libraries visible to CMake, Kokkos, and your shell, append the following lines to your shell startup file (e.g. <code>~/.bashrc</code> or <code>~/.zshrc</code>):</p>
 <div class="fragment"><div class="line"># NVIDIA CUDA Toolkit</div>
@@ -204,17 +203,17 @@ Configure the Environment</h3>
 </div><!-- fragment --><p>Finally, verify that the CUDA compiler is correctly installed:</p>
 <div class="fragment"><div class="line">nvcc --version</div>
 </div><!-- fragment --><p>You should see the installed CUDA Toolkit version together with the build information for <code>nvcc</code>. If the command cannot be found, verify that the environment variables above have been configured correctly.</p>
-<h2><a class="anchor" id="autotoc_md15"></a>
+<h2><a class="anchor" id="autotoc_md14"></a>
 Step 3 (Optional): Install Standalone GPU Profiling Tools</h2>
 <p>NVIDIA Nsight Systems (<code>nsys</code>) and Nsight Compute (<code>ncu</code>) are automatically bundled inside the full CUDA Toolkit installation. However, on headless remote profiling servers, virtual staging partitions, or benchmark runtimes where a compiler is not needed but performance evaluation is required, you can install the profiling utilities as lightweight, standalone packages:</p>
 <div class="fragment"><div class="line"># Install only the standalone profiling suites (Ensure NVIDIA repos are configured first)</div>
 <div class="line">sudo apt update</div>
 <div class="line">sudo apt install -y nsight-systems nsight-compute</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md16"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md15"></a>
 Step 4 (Recommended) : Dowload, Build and Install Kokkos 5</h2>
 <p>Although QuantKos can automatically download and build <b>Kokkos</b> through <code>FetchContent</code>, installing it separately is recommended if you plan to develop QuantKos, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project for a different target hardware.</p>
 <p>In a clean development environment, you should avoid building a software directly inside the source folder. The best approach is to create a dedicated software directory layout to keep your raw materials separate from your finished, installed libraries.</p>
-<h3><a class="anchor" id="autotoc_md17"></a>
+<h3><a class="anchor" id="autotoc_md16"></a>
 1. Recommended Directory Structure</h3>
 <p>It is highly recommended to establish the following structure:</p>
 <ul>
@@ -226,7 +225,7 @@ Step 4 (Recommended) : Dowload, Build and Install Kokkos 5</h2>
 <div class="fragment"><div class="line">mkdir -p ~/software/src</div>
 <div class="line">cd ~/software/src</div>
 <div class="line">git clone [https://github.com/kokkos/kokkos.git](https://github.com/kokkos/kokkos.git) kokkos-5</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md18"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md17"></a>
 2. Isolated Hardware Builds</h3>
 <p>To ensure maximum flexibility, it is best to compile Kokkos in several separated ways. For example, building a CUDA version, an OpenMP version, and a procedural single-core version into distinct installation directories. This is optimal to deploy QuantKos and compare its performances under different hardware conditions. Of course, if you are interested in running QuantKos only on a specific hardware, stick with it and avoid compiling for others. <br  />
 </p>
@@ -240,7 +239,7 @@ Step 4 (Recommended) : Dowload, Build and Install Kokkos 5</h2>
 <div class="line"># Build and Install</div>
 <div class="line">make -j$(nproc) # you can specify the number of cores used to build</div>
 <div class="line">make install</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md19"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md18"></a>
 Option A: Procedural Single Core (Release)</h3>
 <p>From your target build directory, use this for procedural CPU compilation without multi-threading.</p>
 <div class="fragment"><div class="line">cmake $HOME/software/src/kokkos-5 \</div>
@@ -254,7 +253,7 @@ Option A: Procedural Single Core (Release)</h3>
 <div class="line">  -DKokkos_ARCH_NATIVE=ON \</div>
 <div class="line">  -DKokkos_ENABLE_DEBUG=OFF \</div>
 <div class="line">  -DKokkos_ENABLE_DEBUG_BOUNDS_CHECK=OFF</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md20"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md19"></a>
 Option B: Multi-Core CPU (OpenMP / Release)</h3>
 <p>From your target build directory, use this to utilize all available physical cores on your CPU via OpenMP thread-level parallelism.</p>
 <div class="fragment"><div class="line">cmake $HOME/software/src/kokkos-5 \</div>
@@ -271,7 +270,7 @@ Option B: Multi-Core CPU (OpenMP / Release)</h3>
 </div><!-- fragment --> <blockquote class="doxtable">
 <p>&zwj;⚠️ <b>Note on CPU threads:</b> You can specify exactly how many CPU threads to use at runtime. Fon instance, running OMP_NUM_THREADS=8 before launching QuantKos, will make it run in parallel with 8 threads. More about that will be said later. </p>
 </blockquote>
-<h3><a class="anchor" id="autotoc_md21"></a>
+<h3><a class="anchor" id="autotoc_md20"></a>
 Option C: GPU Accelerated (CUDA / Release)</h3>
 <p>From your target build directory, use this for massive parallel throughput on NVIDIA GPUs.</p>
 <div class="fragment"><div class="line">cmake $HOME/software/src/kokkos-5 \   </div>
@@ -290,14 +289,14 @@ Option C: GPU Accelerated (CUDA / Release)</h3>
 </div><!-- fragment --> <blockquote class="doxtable">
 <p>&zwj;⚠️ <b>Note on GPU Architectures:</b> Change <code>AMPERE86</code> to match your specific GPU architecture, e.g., <code>ADA89</code> for RTX 40-series, <code>TURING75</code> for RTX 20-series. </p>
 </blockquote>
-<h3><a class="anchor" id="autotoc_md22"></a>
+<h3><a class="anchor" id="autotoc_md21"></a>
 3. Targeting Your Specific GPU Architecture</h3>
 <p>Kokkos relies on compile-time architecture flags to compile GPU device code directly into optimized machine instructions (SASS), avoiding heavy runtime JIT-compilation penalties. If you do not explicitly declare your GPU architecture, the build will likely generate a configuration error.</p>
-<h3><a class="anchor" id="autotoc_md23"></a>
+<h3><a class="anchor" id="autotoc_md22"></a>
 Step 3.1: Query Your GPU Compute Capability</h3>
 <p>To find your hardware's exact architectural generation, query the NVIDIA driver by running this command in your terminal:</p>
 <div class="fragment"><div class="line">nvidia-smi --query-gpu=name,compute_cap --format=csv</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md24"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md23"></a>
 Understanding the Output:</h3>
 <ul>
 <li><b>Success Case:</b> The terminal will return your card name followed by its Compute Capability version decimal, for example: <div class="fragment"><div class="line">name, compute_cap</div>
@@ -305,7 +304,7 @@ Understanding the Output:</h3>
 </div><!-- fragment --></li>
 <li><b>Failure Case:</b> If the system returns <code>"command not found"</code> or cannot communicate with the driver, your NVIDIA kernel modules are not active or the drivers require a system update.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md25"></a>
+<h3><a class="anchor" id="autotoc_md24"></a>
 Step 3.2: Match Your Compute Capability to the Kokkos Flag</h3>
 <p>Find the major/minor compute version returned in Step 1 and append its corresponding CMake flag to your build configuration:</p>
 <table class="markdownTable">
@@ -327,11 +326,11 @@ Step 3.2: Match Your Compute Capability to the Kokkos Flag</h3>
 <blockquote class="doxtable">
 <p>&zwj;⚠️ <b>Note on Legacy Architectures:</b> If you have an older card (such as Pascal 6.0/6.1 like the GTX 1080), be aware that CUDA 13.x has deprecated support for these chips. To compile for Pascal generation targets, you must downgrade your environment to the CUDA 12.x toolkit family. </p>
 </blockquote>
-<h2><a class="anchor" id="autotoc_md26"></a>
+<h2><a class="anchor" id="autotoc_md25"></a>
 Step 4 (Recommended): Download, Build and Install yaml-cpp</h2>
 <p>Although QuantKos can automatically download and build <b>yaml-cpp</b> through <code>FetchContent</code>, installing it separately is recommended if you plan to develop QuantKos, reuse the library in other projects, or avoid recompiling dependencies every time you configure the project.</p>
 <p>As for Kokkos, it is good practice to keep the <b>source</b>, <b>build</b>, and <b>installation</b> directories separated.</p>
-<h3><a class="anchor" id="autotoc_md27"></a>
+<h3><a class="anchor" id="autotoc_md26"></a>
 1. Recommended Directory Structure</h3>
 <p>A typical directory layout is</p>
 <ul>
@@ -347,7 +346,7 @@ Step 4 (Recommended): Download, Build and Install yaml-cpp</h2>
 </div><!-- fragment --><p>Create an independent build directory:</p>
 <div class="fragment"><div class="line">mkdir -p ~/software/build/yaml-cpp</div>
 <div class="line">cd ~/software/build/yaml-cpp</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md28"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md27"></a>
 2. Configure the Build</h3>
 <p>Configure the project with CMake:</p>
 <div class="fragment"><div class="line">cmake \</div>
@@ -366,7 +365,7 @@ Step 4 (Recommended): Download, Build and Install yaml-cpp</h2>
 <li>**<code>YAML_CPP_BUILD_TOOLS=OFF</code>** disables optional utility programs that are not required by QuantKos.</li>
 <li>**<code>YAML_CPP_BUILD_CONTRIB=OFF</code>** disables the compilation of optional contributed examples and utilities.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md29"></a>
+<h3><a class="anchor" id="autotoc_md28"></a>
 3. Build and Install</h3>
 <p>Compile the library using all available CPU cores:</p>
 <div class="fragment"><div class="line">cmake --build . -j$(nproc)</div>
@@ -392,7 +391,7 @@ Step 4 (Recommended): Download, Build and Install yaml-cpp</h2>
 <p>&zwj;⚠️ <b>Note:</b> If you prefer not to install yaml-cpp manually, simply enable <code>QKOS_ENABLE_FETCHCONTENT=ON</code> when configuring QuantKos. CMake will automatically download, configure, build, and link yaml-cpp as part of the QuantKos build process. This approach is probably easier for first-time users and for quick evaluations of the software. </p>
 </blockquote>
 <hr  />
-<h1><a class="anchor" id="autotoc_md30"></a>
+<h1><a class="anchor" id="autotoc_md29"></a>
 3. Install QuantKos</h1>
 <p>This section explains how to build and install the QuantKos engine itself. Two workflows are supported:</p>
 <ul>
@@ -400,7 +399,7 @@ Step 4 (Recommended): Download, Build and Install yaml-cpp</h2>
 <li><b>Option B (Recommended for first-time users):</b> Let CMake automatically download and build the required dependencies using <code>FetchContent</code>.</li>
 </ul>
 <p>In both cases, QuantKos is built using the standard CMake workflow.</p>
-<h2><a class="anchor" id="autotoc_md31"></a>
+<h2><a class="anchor" id="autotoc_md30"></a>
 Step 1: Download QuantKos</h2>
 <p>Clone the repository into your preferred source directory:</p>
 <div class="fragment"><div class="line">mkdir -p ~/software/src</div>
@@ -427,10 +426,10 @@ Step 1: Download QuantKos</h2>
 <div class="line">cd ~/software/build/QuantKos-cuda</div>
 </div><!-- fragment --><p>Later, you could similarly create <code>QuantKos-openmp</code> or <code>QuantKos-serial</code> build directories if you wish to compare performance across different hardware backends.</p>
 <p>Of course, if you are just targeting a specific hardware and you do not need to run comparisons or benchmarks etc., just compile for that target.</p>
-<h2><a class="anchor" id="autotoc_md32"></a>
+<h2><a class="anchor" id="autotoc_md31"></a>
 Step 2: Build QuantKos</h2>
 <p>QuantKos can either link against an existing installation of <b>Kokkos</b> and <b>yaml-cpp</b>, or automatically download and build these dependencies using <code>FetchContent</code>.</p>
-<h3><a class="anchor" id="autotoc_md33"></a>
+<h3><a class="anchor" id="autotoc_md32"></a>
 Option A: Build without using FetchContent</h3>
 <p>This approach assumes that <b>Kokkos</b> and <b>yaml-cpp</b> have already been built and installed as described in Section 2.</p>
 <p>First, enter the build directory corresponding to the version you want to generate. For example, to build the CUDA version:</p>
@@ -442,6 +441,7 @@ Option A: Build without using FetchContent</h3>
 <div class="line">  -DCMAKE_INSTALL_PREFIX=$HOME/software/installations/QuantKos-cuda \</div>
 <div class="line">  -DQKOS_ENABLE_FETCHCONTENT=OFF \</div>
 <div class="line">  -DQKOS_BUILD_DOC=ON \</div>
+<div class="line">  -DQKOS_QKOS_ENABLE_CPU_OPT_REPORTS=ON \</div>
 <div class="line">  -DQKOS_ENABLE_SINGLE_PRECISION=OFF \</div>
 <div class="line">  -DQKOS_USE_FAST_MATH=OFF \</div>
 <div class="line">  -DQKOS_ENABLE_TESTS=ON \</div>
@@ -453,9 +453,10 @@ Option A: Build without using FetchContent</h3>
 <ul>
 <li>**<code>QKOS_BUILD_TYPE=Release</code>** *(recommended for production)*: Compiles the project with compiler optimizations enabled and disables most debugging features. This produces the fastest executable and is the recommended configuration for production simulations and performance benchmarking. Alternatively, you can use the flag <code>Debug</code>, which builds the project with full debugging information and no optimization. This configuration is intended for development, debugging with tools such as gdb, and investigating runtime errors. Otherwise, the flag <code>RelWithDebInfo</code> provides a compromise between performance and debuggability by enabling compiler optimizations while retaining debugging symbols. This is often the preferred choice when profiling or diagnosing problems that only appear in optimized builds.</li>
 <li>**<code>QKOS_BUILD_DOC=ON</code>** *(recommended)*: Automatically generates the QuantKos API documentation with <b>Doxygen</b> during the build process (provided Doxygen is installed on the system).</li>
-<li>**<code>QKOS_ENABLE_SINGLE_PRECISION=ON</code>**: Compiles the engine using 32-bit <code>float</code> arithmetic instead of the default 64-bit <code>double</code>. This generally improves memory efficiency and can increase performance—especially on GPUs—but at the cost of reduced numerical precision.</li>
-<li>**<code>QKOS_USE_FAST_MATH=ON</code>**: Enables aggressive non-IEEE compliant floating point optimizations. Can increase compute throughput, but may slightly reduce numerical precision and will disable runtime safety checks.</li>
-<li>**<code>QKOS_ENABLE_TESTS=ON</code>**: Builds the QuantKos test executables together with the main application. This option is recommended for development or when verifying a new installation, as it allows the built-in test suite to be executed after compilation. </li>
+<li>**<code>QKOS_ENABLE_CPU_OPT_REPORTS=OFF</code>** *(recommended)*: If ON, it prints or log on a file (depending on the compiler) what the compiler inlined and vectorized.</li>
+<li>**<code>QKOS_ENABLE_SINGLE_PRECISION=OFF</code>** *(recommended)*: If ON, compiles the engine using 32-bit <code>float</code> arithmetic instead of the default 64-bit <code>double</code>. This generally improves memory efficiency and can increase performance—especially on GPUs—but at the cost of reduced numerical precision.</li>
+<li>**<code>QKOS_USE_FAST_MATH=OFF</code>** *(recommended)*: If ON, Enables aggressive non-IEEE compliant floating point optimizations. Can increase compute throughput, but may slightly reduce numerical precision and will disable runtime safety checks.</li>
+<li>**<code>QKOS_ENABLE_TESTS=ON</code>**: If ON, builds the QuantKos test executables together with the main application. This option is recommended for development or when verifying a new installation, as it allows the built-in test suite to be executed after compilation. If not needed, it is recommended to turn it off to decrease compilation time. </li>
 </ul>
 </blockquote>
 <blockquote class="doxtable">
@@ -481,7 +482,7 @@ Option A: Build without using FetchContent</h3>
 </div><!-- fragment --><p>You may replace <code>$(nproc)</code> with any desired number of compilation threads. For example,</p>
 <div class="fragment"><div class="line">cmake --build . -j4</div>
 </div><!-- fragment --><p> uses four CPU cores to build the project.</p>
-<h3><a class="anchor" id="autotoc_md34"></a>
+<h3><a class="anchor" id="autotoc_md33"></a>
 Option B: Build using FetchContent</h3>
 <p>This approach is probably recommended if <b>Kokkos</b> and <b>yaml-cpp</b> are not already installed on your system and you just want to use QuantKos with developing and performing benchmarks. Note that, in this case, during the configuration step, CMake automatically downloads, configures, builds, and links both libraries.</p>
 <p>As for the previous option, first move to the build directory corresponding to the version you want to generate. For example, for a CUDA build:</p>
@@ -551,7 +552,7 @@ Option B: Build using FetchContent</h3>
 <div class="fragment"><div class="line">cmake --build . -j$(nproc)</div>
 </div><!-- fragment --><p>or specify any desired number of compilation threads, for example</p>
 <div class="fragment"><div class="line">cmake --build . -j4</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md35"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md34"></a>
 Step 3: Install QuantKos</h2>
 <p>After compilation completes successfully, install the executable and the accompanying configuration files:</p>
 <div class="fragment"><div class="line">cmake --install .</div>
@@ -579,7 +580,7 @@ Step 3: Install QuantKos</h2>
 <li>**<code>Tester</code>** : the test and validation executable used to verify the correctness of the implementation and benchmark individual components. This is <em>optional</em>, i.e. it is generated only if <code>DQKOS_ENABLE_TESTS=ON</code>.</li>
 </ul>
 <p>Both programs are launched by simply passing their corresponding default YAML configuration files, i.e. <code>QuantKosConfig.yalm</code> and <code>TesterConfig.yalm</code>.</p>
-<h3><a class="anchor" id="autotoc_md36"></a>
+<h3><a class="anchor" id="autotoc_md35"></a>
 About the Documentation Generated</h3>
 <p>If Doxygen and Graphviz are installed (Section 1), the project can generate a complete set of API and architecture documentation.</p>
 <p>By enabling the documentation during configuration:</p>
@@ -595,10 +596,10 @@ About the Documentation Generated</h3>
 <div class="line">make</div>
 </div><!-- fragment --><p>which invokes <code>pdflatex</code> (and related tools) to produce the final PDF document, typically named <code>refman.pdf</code>.</p>
 <hr  />
-<h2><a class="anchor" id="autotoc_md37"></a>
+<h2><a class="anchor" id="autotoc_md36"></a>
 5. Run QuantKos</h2>
 <p>More about the QuantKos runtime functionalities can be foun in the <code><a class="el" href="README_8md.html">README.md</a></code> and <code><a class="el" href="USER__INPUT__GUIDE_8md.html">USER_INPUT_GUIDE.md</a></code>. We here quickly remind some basic points.</p>
-<h3><a class="anchor" id="autotoc_md38"></a>
+<h3><a class="anchor" id="autotoc_md37"></a>
 Displaying the Command-Line Help</h3>
 <p>Both executables include a built-in help message describing the available command-line options.</p>
 <p>To display it, simply run</p>
@@ -606,10 +607,10 @@ Displaying the Command-Line Help</h3>
 </div><!-- fragment --><p>or</p>
 <div class="fragment"><div class="line">./bin/Tester --help</div>
 </div><!-- fragment --><p>The help output summarizes the accepted command-line arguments, and the contents of the expected <code>.yalm</code> configuration file.</p>
-<h3><a class="anchor" id="autotoc_md39"></a>
+<h3><a class="anchor" id="autotoc_md38"></a>
 Specifying CPU Threads or GPUs (Optional)</h3>
 <p>QuantKos relies on the native Kokkos command-line parser. Consequently, the execution backend can be configured at runtime without recompiling the application.</p>
-<h4><a class="anchor" id="autotoc_md40"></a>
+<h4><a class="anchor" id="autotoc_md39"></a>
 Running on Multiple CPU Cores (OpenMP builds)</h4>
 <p>If Kokkos was compiled with the OpenMP backend enabled, you can choose the number of threads used during execution:</p>
 <div class="fragment"><div class="line"># Use exactly 8 OpenMP threads</div>
@@ -617,7 +618,7 @@ Running on Multiple CPU Cores (OpenMP builds)</h4>
 </div><!-- fragment --><p>Alternatively, the standard OpenMP environment variable may be used:</p>
 <div class="fragment"><div class="line">OMP_NUM_THREADS=8 ./bin/QuantKos share/QuantKosConfig.yaml</div>
 </div><!-- fragment --><p>If the executable was built using the Serial backend only, these options are simply ignored and the program runs procedurally on a single CPU core.</p>
-<h4><a class="anchor" id="autotoc_md41"></a>
+<h4><a class="anchor" id="autotoc_md40"></a>
 Running on NVIDIA GPUs (CUDA builds)</h4>
 <p>When compiled with CUDA support, Kokkos automatically selects an available GPU.</p>
 <p>On systems containing multiple NVIDIA GPUs, the desired device can be selected explicitly:</p>
@@ -626,14 +627,14 @@ Running on NVIDIA GPUs (CUDA builds)</h4>
 <div class="line"> </div>
 <div class="line"># Execute on GPU 1</div>
 <div class="line">./bin/QuantKos share/QuantKosConfig.yaml --kokkos-device-id=1</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md42"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md41"></a>
 Running the Option Pricing Engine</h3>
 <p>The option pricing engine is started by passing its default configuration file:</p>
 <div class="fragment"><div class="line">cd $HOME/software/installations/QuantKos</div>
 <div class="line"> </div>
 <div class="line">./bin/QuantKos share/QuantKosConfig.yaml</div>
 </div><!-- fragment --><p>The configuration file specifies all simulation parameters, including the stochastic model, option contract, numerical scheme, Monte Carlo settings, and output options.</p>
-<h3><a class="anchor" id="autotoc_md43"></a>
+<h3><a class="anchor" id="autotoc_md42"></a>
 Running the Built-in Test Suite</h3>
 <p>The validation executable is launched in exactly the same way:</p>
 <div class="fragment"><div class="line">cd $HOME/software/installations/QuantKos</div>

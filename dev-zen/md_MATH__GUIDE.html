@@ -82,7 +82,7 @@ $(function() {
   <div class="headertitle"><div class="title">QuantKos : Math Guide</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md46"></a> Welcome to the QuantKos Math Guide. This document briefly describes the mathematical foundations of the QuantKos framework. It presents the stochastic models currently implemented to simulate the dynamics of the underlying asset, together with the option contracts that can be priced using these models. More the details about the models can in found in :</p><ul>
+<div class="textblock"><p><a class="anchor" id="autotoc_md45"></a> Welcome to the QuantKos Math Guide. This document briefly describes the mathematical foundations of the QuantKos framework. It presents the stochastic models currently implemented to simulate the dynamics of the underlying asset, together with the option contracts that can be priced using these models. More the details about the models can in found in :</p><ul>
 <li><em>The Heston Model and its Extensions in Matlab and C#</em>, by Fabrice D. ROUAH.</li>
 </ul>
 <p>The framework has been designed to be modular and extensible, allowing additional stochastic differential equation (SDE) models and derivative contracts to be integrated with restricted changes to the pricing engine.</p>
@@ -93,9 +93,9 @@ $(function() {
 </ul>
 <p>These models can be combined with all supported option contracts presented later in this guide.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md47"></a>
+<h1><a class="anchor" id="autotoc_md46"></a>
 Stochastic Models</h1>
-<h2><a class="anchor" id="autotoc_md48"></a>
+<h2><a class="anchor" id="autotoc_md47"></a>
 Common Market Parameters</h2>
 <p>Both implemented stochastic models share the same market environment.</p>
 <table class="markdownTable">
@@ -116,13 +116,13 @@ Common Market Parameters</h2>
 </table>
 <p>The Brownian motions satisfy the Itô correlation relation</p>
 <p>$$ dW_{1,t}\,dW_{2,t}=\rho\,dt. $$</p>
-<h2><a class="anchor" id="autotoc_md49"></a>
+<h2><a class="anchor" id="autotoc_md48"></a>
 I. Heston Stochastic Volatility Model</h2>
 <p>The Heston model extends the classical Black-Scholes framework by replacing the assumption of constant volatility with a stochastic variance process exhibiting mean reversion.</p>
 <p>The dynamics are</p>
 <p>$$ dS_t=(r-q)S_t\,dt+\sqrt{v_t}S_t\,dW_{1,t}, $$</p>
 <p>$$ dv_t=\kappa(\theta-v_t)\,dt+\sigma\sqrt{v_t}\,dW_{2,t}. $$</p>
-<h3><a class="anchor" id="autotoc_md50"></a>
+<h3><a class="anchor" id="autotoc_md49"></a>
 Parameters</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -149,7 +149,7 @@ Parameters</h3>
 <blockquote class="doxtable">
 <p>&zwj;<b>Note: Implemented Schemes</b>. QuantKos implements a variety of discretizations schemes detailed in the book <em>The Heston Model and its Extensions in Matlab and C#</em> by Fabrice D. ROUAH. </p>
 </blockquote>
-<h2><a class="anchor" id="autotoc_md51"></a>
+<h2><a class="anchor" id="autotoc_md50"></a>
 II. Bates Stochastic Volatility Jump-Diffusion Model</h2>
 <p>The Bates model extends the Heston model by incorporating a Merton jump process into the asset dynamics while preserving the stochastic variance process.</p>
 <p>The governing equations are</p>
@@ -165,7 +165,7 @@ II. Bates Stochastic Volatility Jump-Diffusion Model</h2>
 </ul>
 <p>The martingale drift correction is</p>
 <p>$$ \kappa_J= E[J]-1= \exp!\left(\mu_J+\frac12\sigma_J^2\right)-1. $$</p>
-<h3><a class="anchor" id="autotoc_md52"></a>
+<h3><a class="anchor" id="autotoc_md51"></a>
 Core Parameters</h3>
 <p>The Bates model inherits all Heston parameters.</p>
 <table class="markdownTable">
@@ -184,7 +184,7 @@ Core Parameters</h3>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">$\rho$   </td><td class="markdownTableBodyNone">Asset-variance correlation   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md53"></a>
+<h3><a class="anchor" id="autotoc_md52"></a>
 Jump Parameters</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -199,7 +199,7 @@ Jump Parameters</h3>
 <td class="markdownTableBodyNone">$\kappa_J$   </td><td class="markdownTableBodyNone">Drift martingale compensation term   </td></tr>
 </table>
 <hr  />
-<h1><a class="anchor" id="autotoc_md54"></a>
+<h1><a class="anchor" id="autotoc_md53"></a>
 Supported Option Contracts</h1>
 <p>The QuantKos framework supports a wide range of derivative contracts, all of which can be priced using any of the implemented stochastic models.</p>
 <p>Unless otherwise specified, every option type is available in both <b>Call</b> and <b>Put</b> versions.</p>
@@ -212,44 +212,44 @@ Supported Option Contracts</h1>
 <li>$M$ the maximum asset price observed during the option lifetime,</li>
 <li>$m$ the minimum asset price observed during the option lifetime.</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md55"></a>
+<h3><a class="anchor" id="autotoc_md54"></a>
 European Option</h3>
 <p>A European option may only be exercised at maturity.</p>
 <p>For a Call, the payoff is $$\max(S_T-K,0)$$, while for a Put the payoff is $$\max(K-S_T,0)$$.</p>
 <p>The price is obtained as the discounted expectation of the terminal payoff under the risk-neutral measure.</p>
-<h3><a class="anchor" id="autotoc_md56"></a>
+<h3><a class="anchor" id="autotoc_md55"></a>
 Asian Option</h3>
 <p>Asian options replace the terminal asset price with the arithmetic average</p>
 <p>$$ A=\frac1N\sum_{i=1}^{N}S_{t_i}, $$</p>
 <p>making them less sensitive to temporary price fluctuations.</p>
 <p>The payoff is $$\max(A-K,0)$$ for a Call and $$\max(K-A,0)$$ for a Put.</p>
-<h3><a class="anchor" id="autotoc_md57"></a>
+<h3><a class="anchor" id="autotoc_md56"></a>
 Barrier Options</h3>
 <p>Barrier options become active or inactive depending on whether the underlying crosses a barrier during its lifetime.</p>
-<h4><a class="anchor" id="autotoc_md58"></a>
+<h4><a class="anchor" id="autotoc_md57"></a>
 Up-and-Out</h4>
 <p>The option is cancelled if</p>
 <p>$$ S_t\ge B. $$</p>
 <p>Otherwise, it behaves as a European option.</p>
-<h4><a class="anchor" id="autotoc_md59"></a>
+<h4><a class="anchor" id="autotoc_md58"></a>
 Down-and-Out</h4>
 <p>The option is cancelled if</p>
 <p>$$ S_t\le B. $$</p>
 <p>Otherwise, it behaves as a European option.</p>
-<h4><a class="anchor" id="autotoc_md60"></a>
+<h4><a class="anchor" id="autotoc_md59"></a>
 Up-and-In</h4>
 <p>The option becomes active only after</p>
 <p>$$ S_t\ge B. $$</p>
 <p>If the barrier is never reached, the payoff is zero.</p>
-<h4><a class="anchor" id="autotoc_md61"></a>
+<h4><a class="anchor" id="autotoc_md60"></a>
 Down-and-In</h4>
 <p>The option becomes active only after</p>
 <p>$$ S_t\le B. $$</p>
 <p>If the barrier is never reached, the payoff is zero.</p>
-<h3><a class="anchor" id="autotoc_md62"></a>
+<h3><a class="anchor" id="autotoc_md61"></a>
 Lookback Options</h3>
 <p>Lookback options exploit the historical extrema of the simulated asset path.</p>
-<h4><a class="anchor" id="autotoc_md63"></a>
+<h4><a class="anchor" id="autotoc_md62"></a>
 Floating Strike</h4>
 <p>The strike is determined by the path itself.</p>
 <p>For a Call, the payoff is</p>
@@ -258,27 +258,27 @@ Floating Strike</h4>
 <p>For a Put,</p>
 <p>$$ \max(M-S_T,0), $$</p>
 <p>where $M$ is the maximum observed asset price.</p>
-<h4><a class="anchor" id="autotoc_md64"></a>
+<h4><a class="anchor" id="autotoc_md63"></a>
 Fixed Strike</h4>
 <p>The strike remains fixed.</p>
 <p>The payoff is $\max(M-K,0)$ for a Call and $\max(K-m,0)$ for a Put.</p>
-<h3><a class="anchor" id="autotoc_md65"></a>
+<h3><a class="anchor" id="autotoc_md64"></a>
 Binary Options</h3>
 <p>Binary options pay a discontinuous payoff whenever they expire in the money.</p>
-<h4><a class="anchor" id="autotoc_md66"></a>
+<h4><a class="anchor" id="autotoc_md65"></a>
 Cash-or-Nothing</h4>
 <p>A fixed cash amount $Q$ is paid.</p>
 <p>The payoff is $$Q\mathbf{1}_{S_T&gt;K}$$ for a Call and $$Q\mathbf{1}_{S_T&lt;K}$$ for a Put.</p>
-<h4><a class="anchor" id="autotoc_md67"></a>
+<h4><a class="anchor" id="autotoc_md66"></a>
 Asset-or-Nothing</h4>
 <p>The payoff equals the terminal asset value.</p>
 <p>It is $$S_T\mathbf{1}_{S_T&gt;K}$$ for a Call and $$S_T\mathbf{1}_{S_T&lt;K}$$ for a Put.</p>
-<h3><a class="anchor" id="autotoc_md68"></a>
+<h3><a class="anchor" id="autotoc_md67"></a>
 American Option</h3>
 <p>American options may be exercised at any time before maturity.</p>
 <p>Within QuantKos, the optimal stopping problem is solved using the <b>Longstaff-Schwartz method</b>.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md69"></a>
+<h1><a class="anchor" id="autotoc_md68"></a>
 Pricing Methodology</h1>
 <p>Regardless of the chosen stochastic model or option contract, pricing follows the same workflow.</p>
 <ol type="1">
