@@ -522,7 +522,7 @@ namespace quantkos::Config {
             mc.validate();
             output.validate();
 
-            std::cout << ">>> Input configuration validated successfully.\n" << std::endl;
+            std::cout << "  [ Config ] Input configuration validated successfully\n\n";
         }
 
         /**
@@ -540,7 +540,7 @@ namespace quantkos::Config {
                 options.BarrierPrice /= price_scale_factor;
 
                 std::cout << "  [ Config ] Monetary parameters scaled. "
-                          << "Scale Factor = N: "<< price_scale_factor << "(Note: S0_n = S0/N = 1).\n";
+                          << "Scale Factor = N = "<< price_scale_factor << "  (S0_n = S0/N = 1)\n";
             }
         }
 
@@ -569,7 +569,7 @@ namespace quantkos::Config {
 
         /** @brief Tells if you should sync the paths at the end of each batch from device to host using kokkos
          */
-        [[nodiscard]] bool requires_paths_on_host() const {
+        [[nodiscard]] bool requires_paths_allocated() const {
             // Check if the user requested path outputs (assuming std::string)
             const bool wants_file_output = !output.filename_paths_out.empty();
 

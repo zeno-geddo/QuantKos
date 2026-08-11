@@ -23,6 +23,7 @@
 #include "../config/Config.hpp"
 #include "../config/ConfigFileEnums.hpp"
 #include "./MemoryTypes.hpp"
+#include "./MemOSQuery.hpp"
 
 
 namespace quantkos::Engine {
@@ -51,14 +52,16 @@ namespace quantkos::Engine {
 
         /** @name Kokkos Device Views */
         ///@{
-        DevBatchPathsView d_batch_view; ///< Device-side view for asset paths (N_sims_per_batch, TotN_T_steps).
-        DevBatchPayoffView d_payoffs; ///< Device-side view for option payoffs (N_sims_per_batch).
+        DevBatchPathsView d_batch_view;
+        ///< Device-side view for asset paths (N_sims_per_batch, TotN_T_steps). Always allocated.
+        DevBatchPayoffView d_payoffs; ///< Device-side view for option payoffs (N_sims_per_batch). Always allocated.
         ///@}
 
         /** @name Kokkos Host Views */
         ///@{
-        HostBatchPathsView h_batch_view; ///< Host-side mirror for asset paths synchronization.
-        HostBatchPayoffView h_payoffs; ///< Host-side mirror for payoff data synchronization.
+        HostBatchPathsView h_batch_view;
+        ///< Host-side mirror for asset paths synchronization. Allocated only if needed.
+        HostBatchPayoffView h_payoffs; ///< Host-side mirror for payoff data synchronization. Allocated only if needed.
         ///@}
 
         /**
@@ -66,10 +69,12 @@ namespace quantkos::Engine {
         * (Must be initialized explicitly)
         * @param conf reference to master configuration, containing also memory budget and path counts.
         */
-        explicit PathsMCBatchMem(const KC::UInputs &conf) : config(conf) {
+        explicit PathsMCBatchMem(const KC::UInputs &conf) : config(conf),
+                                                            require_paths_allocated(config.requires_paths_allocated()) {
             // Memory is allocated during the construction of the class
             allocate_batch_memory();
-            std::cout << "  [Batch Memory] Memory allocated correctly." << std::endl;
+            std::cout << "  [Batch Memory] Allocated "<< bytes_to_mb(tot_host_memory_bytes())<< "MB of host memory correctly \n";
+            std::cout << "  [Batch Memory] Allocated "<< bytes_to_mb(tot_device_memory_bytes())<< "MB of device memory correctly \n";
         }
 
         /**
@@ -117,16 +122,20 @@ namespace quantkos::Engine {
          * @note The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase.
          */
         void deep_copy_to_host() const {
-            if (config.requires_paths_on_host()) {
+            if (require_paths_allocated) {
                 Kokkos::deep_copy(h_batch_view, d_batch_view);
             }
             Kokkos::deep_copy(h_payoffs, d_payoffs);
         }
 
 
-        /** @brief Copies modified batch data from the host back to the device. */
+        /** @brief Copies modified batch data from the host back to the device.
+         * @note The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase.
+        */
         void deep_copy_to_device() const {
-            Kokkos::deep_copy(d_batch_view, h_batch_view);
+            if (require_paths_allocated) {
+                Kokkos::deep_copy(d_batch_view, h_batch_view);
+            }
             Kokkos::deep_copy(d_payoffs, h_payoffs);
         }
 
@@ -135,6 +144,12 @@ namespace quantkos::Engine {
         //-------------------------------------------
         /** @name Memory Interrogation Utilities */
         ///@{
+
+        /** @brief Tells if the paths batch are allocated of not (they are not always need, so when not needed are not allocated)
+         */
+        [[nodiscard]] bool are_paths_allocated() const {
+            return require_paths_allocated;
+        }
 
         /**
          * @brief Returns the name of the active default hardware execution space (e.g., Cuda, HIP, OpenMP).
@@ -148,7 +163,10 @@ namespace quantkos::Engine {
          */
         [[nodiscard]] size_t device_paths_memory_bytes() const {
             // span: distance between lowest and highest address, must be contiguous memory to work
-            return d_batch_view.span() * sizeof(KT::Real);
+            if (require_paths_allocated) {
+                return d_batch_view.span() * sizeof(KT::Real);
+            }
+            return 0;
         }
 
         /**
@@ -171,6 +189,7 @@ namespace quantkos::Engine {
          * @note Returns 0 if executing on CPU-only builds where device and host share the same pointers.
          */
         [[nodiscard]] size_t host_paths_memory_bytes() const {
+            if (!require_paths_allocated) return 0; // Zero memory if paths are not allocated
             // Only count host memory if it's a true separate physical allocation (GPU builds)
             if (h_batch_view.data() != nullptr && h_batch_view.data() != d_batch_view.data()) {
                 // span: distance between lowest and highest address, must be contiguous memory to work
@@ -204,7 +223,8 @@ namespace quantkos::Engine {
         }
 
         /** * @brief Estimates the full, unrolled paths footprint in MB if all simulation steps were kept in RAM at once.
-         */
+        @note Give an estimate of the total footprint also if the paths are not allocated.
+        */
         [[nodiscard]] double total_paths_footprint_mb() const {
             const size_t total_bytes = static_cast<size_t>(config.mc.N_Paths) * static_cast<size_t>(config.time.
                                            N_time_steps)
@@ -245,8 +265,12 @@ namespace quantkos::Engine {
         }
 
         /** * @brief Dynamically audits if the host memory allocation slice is physically contiguous in memory.
-         */
+        @throw std::runtime_error When attempting to check the contiguity but paths are not allocated.
+        */
         [[nodiscard]] bool is_host_contiguous() const {
+            if (!require_paths_allocated) {
+                throw std::runtime_error("Attempted to check contiguity on unallocated h_batch_view.");
+            }
             // Dynamically checks the actual memory slice, catching non-contiguous subviews or LayoutStride edge cases.
             return h_batch_view.span_is_contiguous();
         }
@@ -295,6 +319,7 @@ namespace quantkos::Engine {
 
     private:
         const KC::UInputs &config; ///< Local reference mapping back to the master input settings.
+        const bool require_paths_allocated;
 
         /** * @brief Allocates and mirrors device/host views based on hardware budget.
         */
@@ -322,17 +347,22 @@ namespace quantkos::Engine {
                 );
             }
 
+            // Show available RAM
+            std::cout << "  [OS Memory Query] Available Host RAM " << get_available_memory_from_os_mb() << "MB\n";
 
             // Allocate the PATHS views using our newly stored class attributes
-            std::cout << "  [Batch Memory] Allocating reusable buffers ("
-                    << n_sims_per_batch << " x " << config.time.N_time_steps << ") for the paths of the MC batches..."
-                    << std::endl;
-            d_batch_view = DevBatchPathsView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
-            h_batch_view = Kokkos::create_mirror_view(d_batch_view);
+            if (require_paths_allocated) {
+                std::cout << "  [Batch Memory] Allocating reusable buffers ("
+                        << n_sims_per_batch << " x " << config.time.N_time_steps <<
+                        ") for the paths of the MC batches...\n";
+                d_batch_view = DevBatchPathsView("gpu_paths_batch_buffer", n_sims_per_batch, config.time.N_time_steps);
+                h_batch_view = Kokkos::create_mirror_view(d_batch_view);
+            }
+
 
             // Allocate the PAYOFFS views
             std::cout << "  [Batch Memory] Allocating reusable buffers ("
-                    << n_sims_per_batch << ") for the payoffs of the MC batches..." << std::endl;
+                    << n_sims_per_batch << ") for the payoffs of the MC batches...\n";
             d_payoffs = DevBatchPayoffView("gpu_payoffs_batch_buffer", n_sims_per_batch);
             h_payoffs = Kokkos::create_mirror_view(d_payoffs);
         }

@@ -221,7 +221,8 @@ namespace quantkos::Engine {
             }; // End of lambda
 
             // Dispatch Kernel based on runtime condition
-            if (must_store_paths()) {
+            // NOTE : bridge run time data to compile-time types
+            if (config.requires_paths_allocated()) {
                 launch_markovian_kernel(std::bool_constant<true>{});
             } else {
                 launch_markovian_kernel(std::bool_constant<false>{});

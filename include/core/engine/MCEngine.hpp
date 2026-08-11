@@ -152,17 +152,19 @@ namespace quantkos::Engine {
                     n_full_batches() << "\n";
             std::cout << indent << "   N Sims Per Partial Batch       :  " << batch_mem.
                     n_sims_left_over_after_full_batches() << "\n";
+            std::cout << indent << "   Paths MEM allocated ?          :  " << batch_mem.are_paths_allocated() << "\n";
             std::cout << indent << "   Batch Paths MEM Footprint      :  " << batch_mem.bytes_to_mb(
                 batch_mem.device_paths_memory_bytes()) << " MB\n";
+            std::cout << indent << "   Payoffs MEM allocated ?        :  1\n";
             std::cout << indent << "   Batch Payoffs MEM Footprint    :  " << batch_mem.bytes_to_mb(
                 batch_mem.device_payoffs_memory_bytes()) << " MB\n";
             std::cout << indent << "   Batch TOT MEM Footprint        :  " << batch_mem.bytes_to_mb(
                 batch_mem.tot_device_memory_bytes()) << " MB\n";
-            std::cout << indent << "   Full MC Paths MEM Footprint    :  " << batch_mem.total_paths_footprint_mb() <<
+            std::cout << indent << "   Est. Full MC Paths MEM Footprint   :  " << batch_mem.total_paths_footprint_mb() <<
                     " MB\n";
-            std::cout << indent << "   Full MC Payoffs MEM Footprint  :  " << batch_mem.total_payoffs_footprint_mb() <<
+            std::cout << indent << "   Est. Full MC Payoffs MEM Footprint :  " << batch_mem.total_payoffs_footprint_mb() <<
                     " MB\n";
-            std::cout << indent << "   Available RAM (OS Query)       :  " << get_available_memory_from_os_mb() <<
+            std::cout << indent << "   Remaining RAM (OS Query)           :  " << get_available_memory_from_os_mb() <<
                     " MB\n";
             std::cout << indent << "========================================================\n" << std::endl;
         }

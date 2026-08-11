@@ -108,7 +108,7 @@ namespace quantkos::IO {
             if (active_writer) {
                 active_writer->print_planned_outputs_summary();
             } else {
-                std::cout << "   <<< NOTE: No outputs files will be saved since filenames were not specified.\n\n";
+                std::cout << "   <<< [OutManager] No outputs files will be saved since filenames were not specified\n\n";
             }
         }
 
