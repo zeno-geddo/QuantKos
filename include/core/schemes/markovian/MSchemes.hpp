@@ -144,7 +144,7 @@ namespace quantkos::Engine {
             // Mathematically: (r - q)dt - (v_n * 0.5 * dt) + (sqrt(v_n) * sqrt(dt)) * Z_S
             const KT::Real sqrt_v_n = Kokkos::sqrt(v_n);
             const KT::Real exponent = r_minus_q_dt - (v_n * half_dt) + (sqrt_v_n * sqrt_dt) * Z_S;
-            const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Special Function Unit (SFU) Call
+            const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Special Function Unit (SFU) Call (slow)
 
             // EVOLVE & TRUNCATE VARIANCE (Fused Multiply-Add (FMA) optimized variance step)
             KT::Real v_np1 = v_n * one_minus_k_dt + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v;

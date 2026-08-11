@@ -86,6 +86,36 @@ else()
 endif()
 
 
+## @section def_sec 2b. Optimization report setup
+## @brief Controls the generation of cpu optimization report.
+## @details Inspects the user build option `QKOS_ENABLE_CPU_OPT_REPORTS`.
+## If enabled, optimization reports concerning inlining and vectorizations are saved in the build.
+if (QKOS_ENABLE_CPU_OPT_REPORTS)
+    message(STATUS "Compiler Diagnostics: Optimization Reports ENABLED. If using GCC, data are saved to gcc_cpu_optimization_report.txt. If using Clang, data are printed to the terminal.")
+    message(STATUS "On GCC/Clang)")
+
+
+    target_compile_options(QuantKos_core PRIVATE
+            # --- GNU GCC Options (Outputs to file) ---
+            $<$<CXX_COMPILER_ID:GNU>:
+            # Combines vec + inline + optimized + missed into ONE destination file
+            #-fopt-info-vec-inline-optimized-missed=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            -fopt-info-inline-optimized=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            -fopt-info-vec-optimized=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            -fopt-info-vec-missed=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            >
+
+            # --- Clang & AppleClang Options (Outputs directly to Terminal stderr) ---
+            $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
+            -Rpass=loop-vectorize          # Reports successfully vectorized loops
+            -Rpass-missed=loop-vectorize   # Reports loops that failed vectorization
+            -Rpass-analysis=loop-vectorize # Detailed analysis on vectorization decisions
+            -Rpass=inline                  # Reports successfully inlined functions
+            >
+    )
+
+endif()
+
 # -----------------------------------------------------------------------------
 # 3. LINKING & INCLUDES
 # -----------------------------------------------------------------------------

@@ -104,6 +104,10 @@ if (QKOS_ENABLE_FAST_MATH)
     message(STATUS "WARNING: Enable aggressive non-IEEE fast-math optimizations!")
 endif ()
 
+## @option QKOS_ENABLE_CPU_OPT_REPORTS
+## @brief Enable generating text files showing the inlining and vectorization performed
+option(QKOS_ENABLE_CPU_OPT_REPORTS "Enable compiler optimization reports (inlining/vectorization)" OFF)
+
 ## @option QKOS_ENABLE_TESTS
 ## @brief Directs CMake to compile the unit test suite and configure CTest execution.
 option(QKOS_ENABLE_TESTS "Build unit tests ?" ON)
