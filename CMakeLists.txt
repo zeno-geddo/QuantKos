@@ -37,7 +37,7 @@
 ##         While these toolchains conform to the standards used, they are
 ##         currently untested.
 
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 project(QuantKos VERSION 0.1.0
         DESCRIPTION "High-performance, platform independent parallel Monte Carlo option pricing engine."
         HOMEPAGE_URL "https://github.com/zenogeddo/QuantKos"
@@ -210,9 +210,18 @@ if (Kokkos_ENABLE_CUDA OR Kokkos_ENABLE_HIP OR Kokkos_ENABLE_SYCL)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
     message(STATUS "GPU backend active in Kokkos. Host Link-Time Optimization (LTO) disabled to prevent compilation conflicts.")
 else ()
-    # CPU only: Turn LTO ON to maximize host-side optimization and cross-file inlining
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-    message(STATUS "CPU-only target. Host Link-Time Optimization (LTO/IPO) is ENABLED.")
+    # CPU only: Check if the compiler actually supports IPO/LTO
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ipo_supported OUTPUT ipo_output)
+
+    if (ipo_supported)
+        # CPU only: Turn LTO ON to maximize host-side optimization and cross-file inlining
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+        message(STATUS "CPU-only target. Host Link-Time Optimization (LTO/IPO) is ENABLED.")
+    else ()
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
+        message(WARNING "CPU-only target, but compiler does NOT support IPO/LTO. Disabled. Details: ${ipo_output}")
+    endif ()
 endif ()
 
 

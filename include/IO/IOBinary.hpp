@@ -166,7 +166,7 @@ namespace quantkos::IO::Binary {
                 // Loop through row-by-row
                 for (int i = 0; i < current_batch_size; ++i) {
                     // 2. Read the scattered RAM data (whatever layout it is) into our clean buffer
-                    for (size_t j = 0; j < config.time.N_time_steps; ++j) {
+                    for (int j = 0; j < config.time.N_time_steps; ++j) {
                         row_buffer[j] = BatchMem.h_batch_view(i, j);
                     }
 

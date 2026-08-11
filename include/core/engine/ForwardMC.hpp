@@ -187,7 +187,7 @@ namespace quantkos::Engine {
             //                                                          Coalesced VRAM Write
 
             // Pass a labda function that copy the prices and payoffs computed to the host
-            auto copy_prices_and_payoffs = [&](const int batch_idx, const int current_batch_size) {
+            auto copy_prices_and_payoffs = [&]([[maybe_unused]] const int batch_idx, const int current_batch_size) {
                 BatchMem.deep_copy_to_host();
                 OPricer.accumulate_batch_payoffs(BatchMem.h_payoffs, current_batch_size);
             };

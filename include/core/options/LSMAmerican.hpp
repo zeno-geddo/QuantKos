@@ -80,9 +80,7 @@ namespace quantkos::Engine::LSM {
          */
         KOKKOS_INLINE_FUNCTION
         Matrix &operator+=(const Matrix &src) {
-#pragma unroll
             for (size_t i = 0; i < NBasis; ++i) {
-#pragma unroll
                 for (size_t j = 0; j < NBasis; ++j) {
                     M[i][j] += src.M[i][j];
                 }
@@ -116,7 +114,6 @@ namespace quantkos::Engine::LSM {
          */
         KOKKOS_INLINE_FUNCTION
         Vector &operator+=(const Vector &src) {
-#pragma unroll
             for (size_t i = 0; i < NBasis; ++i) {
                 B[i] += src.B[i];
             }
@@ -404,10 +401,8 @@ namespace quantkos::Engine::LSM {
 
                     // Update M and B using the unified templated logic
                     // The compiler should unroll these loops, making it as fast as manual coding
-#pragma unroll
                     for (size_t row = 0; row < NBasis; ++row) {
                         regr_sum.B(row) += static_cast<double>(L[row]) * Y;
-#pragma unroll
                         for (size_t col = 0; col < NBasis; ++col) {
                             regr_sum.M(row, col) += static_cast<double>(L[row]) * static_cast<double>(L[col]);
                         }
@@ -444,7 +439,6 @@ namespace quantkos::Engine::LSM {
             double continuation_value = 0.0;
 
             // Accumulate the weighted sum (coeffs * basis)
-#pragma unroll
             for (size_t i = 0; i < NBasis; ++i) {
                 continuation_value += coeffs.C[i] * static_cast<double>(L[i]);
             }
@@ -470,7 +464,6 @@ namespace quantkos::Engine::LSM {
             // Tikhonov Regularization
             // Add a tiny amount of noise (1 part per million) relative to the signal present in the data (average diagonal element)
             //             KT::Real trace = 0.0;
-            // #pragma unroll
             //             for (size_t i = 0; i < NBasis; ++i) {
             //                 trace += sums.M(i, i);
             //             }
@@ -485,10 +478,8 @@ namespace quantkos::Engine::LSM {
             double M[NBasis][NBasis];
             double B[NBasis];
 
-#pragma unroll
             for (size_t i = 0; i < NBasis; ++i) {
                 B[i] = sums.B(i);
-#pragma unroll
                 for (size_t j = 0; j < NBasis; ++j) {
                     M[i][j] = sums.M(i, j) + ((i == j) ? reg : 0.0);
                 }
@@ -502,7 +493,6 @@ namespace quantkos::Engine::LSM {
             for (size_t i = 0; i < NBasis; ++i) {
                 for (size_t j = 0; j <= i; ++j) {
                     double s = 0.0;
-#pragma unroll
                     for (size_t k = 0; k < j; ++k) s += L[i][k] * L[j][k];
 
                     if (i == j) {
@@ -519,7 +509,6 @@ namespace quantkos::Engine::LSM {
             double y[NBasis];
             for (size_t i = 0; i < NBasis; ++i) {
                 double s = 0.0;
-#pragma unroll
                 for (size_t k = 0; k < i; ++k) s += L[i][k] * y[k];
                 y[i] = (B[i] - s) / L[i][i];
             }
@@ -528,7 +517,6 @@ namespace quantkos::Engine::LSM {
             Coeffs<NBasis> C;
             for (int i = static_cast<int>(NBasis) - 1; i >= 0; --i) {
                 double s = 0.0;
-#pragma unroll
                 for (size_t k = i + 1; k < NBasis; ++k) s += L[k][i] * C[k];
                 C[i] = (y[i] - s) / L[i][i];
             }
