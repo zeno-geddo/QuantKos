@@ -147,7 +147,8 @@ Variables</h2></td></tr>
 <li><code>-Wall</code> &amp; <code>-Wextra</code>: Turns on standard and advanced compiler diagnostic warnings.</li>
 <li><code>-Wpedantic</code>: Rejects non-standard compiler-specific C++ extensions.</li>
 <li><code>-Wshadow</code>: Triggers warnings when local variables shadow outer scope declarations.</li>
-<li><code>-Wnon-virtual-dtor</code>: Flags classes with virtual methods that are missing virtual destructors.</li>
+<li><code>-Wnon-virtual-dtor</code>: Flags classes with virtual methods that are missing virtual destructors. <dl class="section note"><dt>Note</dt><dd>Base warnings active in ALL build modes (Release, RelWithDebInfo, Debug), Strict / Noisy warnings active ONLY in Debug mode</dd></dl>
+</li>
 </ul>
 <h1><a class="anchor" id="public_opt_sec"></a>
 3.5. Public Optimization Flags</h1>
@@ -185,7 +186,6 @@ Adaptive Debug Sanitizers (PUBLIC Propagation)</h2>
 <p>Maximizes runtime execution performance:</p><ul>
 <li><code>-O3</code>: Activates loop vectorization, automatic inlining, and registers.</li>
 <li><code>-march=native</code>: Inspects and exploits instruction sets (like AVX-512) native to the compilation host.</li>
-<li><code>-flto</code>: Link Time Optimization; performs cross-file optimizations across files.</li>
 <li><code>-fno-math-errno</code>: Bypasses updating POSIX error variables after math commands, enabling SIMD execution. (set before in the global optimizations)</li>
 </ul>
 <h1><a class="anchor" id="reldeb_sec"></a>
