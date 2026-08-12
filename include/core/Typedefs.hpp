@@ -67,6 +67,7 @@ namespace quantkos::Types {
     constexpr Real real_05 = static_cast<Real>(0.5); ///< 0.5 literal constant.
     constexpr Real real_025 = static_cast<Real>(0.25); ///< 0.25 literal constant.
     constexpr Real real_1p5 = static_cast<Real>(1.5); ///< 1.5 literal constant.
+    constexpr auto real_2PI = static_cast<Real>(6.283185307179586); ///< 2*pi literal constant.
     ///@}
 
 

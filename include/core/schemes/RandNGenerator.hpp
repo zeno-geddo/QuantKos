@@ -17,10 +17,13 @@
 
 #include <Kokkos_Core.hpp>
 #include <Kokkos_Random.hpp>
+
 #include "../config/Config.hpp"
+#include "./../Typedefs.hpp"
 
 namespace quantkos::Engine {
     namespace KC = quantkos::Config;
+    namespace KT = quantkos::Types;
 
     // ========================================================================
     // 1. HOST-SIDE MANAGER: Handles allocation and lifecycle of the global pool
@@ -145,8 +148,7 @@ namespace quantkos::Engine {
         /**
          * @brief Destroys the guard and safely returns the state back to the pool.
          */
-        KOKKOS_INLINE_FUNCTION
-        ~ScopedRNG() {
+        KOKKOS_INLINE_FUNCTION ~ScopedRNG() {
             global_rng_pool.free_state(unique_rng_state); // Release state automatically on destruction
         }
 
@@ -156,8 +158,7 @@ namespace quantkos::Engine {
          * @brief Accessor to expose the raw random number generator state to the mathematical SDE schemes.
          * @return A reference to this thread's uniquely checked-out generator.
          */
-        KOKKOS_INLINE_FUNCTION
-        RNGManager::RNGeneratorState &return_unique_rng_state() {
+        KOKKOS_INLINE_FUNCTION RNGManager::RNGeneratorState &return_unique_rng_state() {
             return unique_rng_state;
         }
 
@@ -165,4 +166,63 @@ namespace quantkos::Engine {
         RNGManager::GlobalRNGPool global_rng_pool; ///< Local reference to the master pool.
         RNGManager::RNGeneratorState unique_rng_state; ///< The exact sequence "checked out" by the calling thread.
     };
-}
+
+
+    /**
+    * @brief Container for two random variables
+    */
+    struct RVPair {
+        KT::Real Z1;
+        KT::Real Z2;
+    };
+
+    /**
+    * @brief Generates two independent Normal Random Variables
+    * Uses branchless Box-Muller on GPU to maximize Warp occupancy.
+    * Uses Marsaglia Polar on CPU to leverage branch prediction and avoid trig overhead.
+    */
+    template<typename LocalRNGType>
+    struct NormalPair {
+        /** @brief Generate uniform random number with kokkos with the precision required at compile time
+        */
+        KOKKOS_INLINE_FUNCTION static KT::Real get_uniform(LocalRNGType &local_rg) {
+            if constexpr (std::is_same_v<KT::Real, float>) {
+                return local_rg.frand(); // Natively generates 32-bit float
+            } else {
+                return local_rg.drand(); // Natively generates 64-bit double
+            }
+        }
+
+        /** @brief Call operator generating the normal variable pair at the precision specified at compile time
+        */
+        KOKKOS_INLINE_FUNCTION RVPair operator()(LocalRNGType &local_rg) const {
+            RVPair pair{};
+
+            KOKKOS_IF_ON_DEVICE((
+                // GPU Box-Muller Code
+                const KT::Real U1 = KT::real_one - get_uniform(local_rg);
+                const KT::Real U2 = get_uniform(local_rg);
+                const KT::Real R = Kokkos::sqrt(-KT::real_two * Kokkos::log(U1));
+                const KT::Real theta = KT::real_2PI * U2;
+                pair.Z1 = R * Kokkos::cos(theta);
+                pair.Z2 = R * Kokkos::sin(theta);
+            ))
+
+            KOKKOS_IF_ON_HOST((
+                // CPU Marsaglia Code
+                KT::Real u, v, s;
+                do {
+                u = KT::real_two * get_uniform(local_rg) - KT::real_one;
+                v = KT::real_two * get_uniform(local_rg) - KT::real_one;
+                s = u * u + v * v;
+                } while (s >= KT::real_one || s == KT::real_zero);
+
+                const KT::Real multiplier = Kokkos::sqrt(-KT::real_two * Kokkos::log(s) / s);
+                pair.Z1 = u * multiplier;
+                pair.Z2 = v * multiplier;
+            ))
+
+            return pair;
+        }
+    };
+};

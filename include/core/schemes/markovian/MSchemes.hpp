@@ -18,6 +18,7 @@
 #include <Kokkos_Core.hpp>
 #include "../../config/Config.hpp"
 #include "../../config/ConfigFileEnums.hpp"
+#include "core/schemes/RandNGenerator.hpp"
 
 namespace quantkos::Engine {
     namespace KI = quantkos::Implemented;
@@ -29,7 +30,6 @@ namespace quantkos::Engine {
      * @brief Output data structure returned by all SDE integration step functions.
      * * Encapsulates the current state of the SDE (Asset Price and Variance).
      * @note Designed to be trivially copyable, good for GPU registers.
-     * @todo
      */
     struct SDEState {
         KT::Real S; ///< The underlying asset spot price ($S_t$).
@@ -53,13 +53,15 @@ namespace quantkos::Engine {
             throw std::runtime_error("SDESolver math kernel not yet implemented for this scheme combination!");
         }
 
-        // Dummy fallback function to allow un-specialized paths to compile successfully
+        /**
+         * @brief Dummy fallback function to allow un-specialized paths to compile successfully
+         * @return Just return the input price and variance $(S_{n}, v_{n})$.
+         */
         template<typename RNGeneratorType>
-
-
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &rn_generator) const {
-            return {S_n, v_n};
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &rn_generator) const {
+            return SDEState{.S = S_n, .v = v_n};
         }
     };
 
@@ -125,16 +127,16 @@ namespace quantkos::Engine {
          * @param S_n Asset price at time $t_n$.
          * @param v_n Variance at time $t_n$.
          * @param local_rn_generator Kokkos Thread-local normal random number generator.
-         * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
+         * @return The updated state $(S_{n+1}, v_{n+1})$.
          */
         template<typename RNGeneratorType>
-
-
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &local_rn_generator) const {
             // Get Random Normal Variables
-            const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
-            const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            const auto [Z_1, Z_2] = NormalPair<RNGeneratorType>{}(local_rn_generator);
 
             // Cholesky Decomposition for correlated Brownian Motion
             const KT::Real Z_v = Z_1;
@@ -150,7 +152,7 @@ namespace quantkos::Engine {
             KT::Real v_np1 = v_n * one_minus_k_dt + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v;
             v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
 
-            return {S_np1, v_np1};
+            return SDEState{.S = S_np1, .v = v_np1};
         }
     };
 
@@ -219,15 +221,16 @@ namespace quantkos::Engine {
          * @param S_n Asset price at time $t_n$.
          * @param v_n Variance at time $t_n$.
          * @param local_rn_generator Kokkos Thread-local normal random number generator.
-         * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
+         * @return The updated state  $(S_{n+1}, v_{n+1})$.
          */
         template<typename RNGeneratorType>
-
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &local_rn_generator) const {
             // Get Random Normal Variables
-            const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
-            const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            const auto [Z_1, Z_2] = NormalPair<RNGeneratorType>{}(local_rn_generator);
 
             // Cholesky Decomposition for correlated Brownian Motion
             const KT::Real Z_v = Z_1;
@@ -244,7 +247,7 @@ namespace quantkos::Engine {
             KT::Real v_np1 = implicit_denominator_v *
                              (v_n + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v + milstein_correction);
             v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
-            return {S_np1, v_np1};
+            return SDEState{.S = S_np1, .v = v_np1};
         }
     };
 
@@ -270,7 +273,6 @@ namespace quantkos::Engine {
     */
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::AndersonQE> {
-
         // Precomputed constant scalar invariants
         KT::Real r_minus_q_dt;
         KT::Real half_dt;
@@ -279,8 +281,8 @@ namespace quantkos::Engine {
         KT::Real rho_complement;
 
         // QE-Specific eps security values
-        KT::Real eps_param = KT::is_real_using_single_precision() ? 1e-6f: 1e-12;
-        KT::Real eps_psi = KT::is_real_using_single_precision() ? 1e-6f: 1e-12;
+        KT::Real eps_param = KT::is_real_using_single_precision() ? 1e-6f : 1e-12;
+        KT::Real eps_psi = KT::is_real_using_single_precision() ? 1e-6f : 1e-12;
 
         // QE-Specific Structural Constants
         KT::Real psi_c = KT::real_1p5; // 1.5 as in Anderson
@@ -356,12 +358,13 @@ namespace quantkos::Engine {
          * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
          */
         template<typename RNGeneratorType>
-
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &local_rn_generator) const {
             // Generate noise
-            const KT::Real Z_V = static_cast<KT::Real>(local_rn_generator.normal());
-            const KT::Real Z_indep = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_V = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_indep = static_cast<KT::Real>(local_rn_generator.normal());
+            const auto [Z_V, Z_indep] = NormalPair<RNGeneratorType>{}(local_rn_generator);
 
             // Determine Distribution Shape (Psi)
             // (Compute Conditional Mean (m) and Variance (s^2) of V(t+dt))
@@ -433,7 +436,7 @@ namespace quantkos::Engine {
                                       (Kokkos::sqrt(integrated_sigma) * Z_indep); // Eq. 7.48, F. Rouah
             const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Eq. 7.48, F. Rouah
 
-            return {S_np1, v_np1};
+            return SDEState{.S = S_np1, .v = v_np1};
         }
     };
 
@@ -485,8 +488,9 @@ namespace quantkos::Engine {
         * @brief Evolves the Heston model and then applies discrete Poisson jumps.
         */
         template<typename RNGeneratorType>
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &local_rn_generator) const {
             // 1. Evolve the continuous part using the spoofed Heston core
             auto [S_temp, v_next] = heston_core.evolve_step(S_n, v_n, local_rn_generator);
 
@@ -507,7 +511,7 @@ namespace quantkos::Engine {
             if (N > 0) {
                 // Compute current jump size
                 // Note : The total log-jump size is \sum_{i=1}^{N}(mu_J + sigma_J*Z_{J,I}) = N*mu_J + sqrt(N)*sigma_J*Z_{J}
-                const KT::Real real_N = static_cast<KT::Real>(N);
+                const auto real_N = static_cast<KT::Real>(N);
                 const KT::Real Z = static_cast<KT::Real>(local_rn_generator.normal());
                 const KT::Real aggregate_mu = real_N * mu_J;
                 const KT::Real aggregate_sigma = Kokkos::sqrt(real_N) * sigma_J;
@@ -516,7 +520,7 @@ namespace quantkos::Engine {
                 // Update Price : multiply the continuous stock price by the exponentiated jump sum.
                 S_next *= jump_magnitude;
             }
-            return {S_next, v_next};
+            return SDEState{.S = S_next, .v = v_next};
         }
 
     private:
@@ -526,8 +530,7 @@ namespace quantkos::Engine {
          * @param orig_config The master user configuration.
          * @return A modified configuration object designed for continuous Heston core where the mertingale correction has been applied.
          */
-        KOKKOS_INLINE_FUNCTION
-        static KC::UInputs create_spoofed_config_from_original(const KC::UInputs &orig_config) {
+        KOKKOS_INLINE_FUNCTION static KC::UInputs create_spoofed_config_from_original(const KC::UInputs &orig_config) {
             KC::UInputs spoofed_config = orig_config; // copy the input config
 
             // 1. C++ Object Slicing: Copies ALL base Heston fields (k, theta, sigma, rho) in one go

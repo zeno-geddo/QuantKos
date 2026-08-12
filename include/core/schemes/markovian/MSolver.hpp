@@ -24,24 +24,6 @@
 #include "../../options/Payoff.hpp"
 
 
-//-------------------------------------------------------------------------------
-//      [ HOST (CPU) SIDE ]                             [ DEVICE (GPU) SIDE ]
-//
-// +-----------------------------+
-// |         SDESolver           |
-// |  (Orchestrates launch data)  |
-// +--------------+--------------+
-//                |
-//                | Instantiates & Populates
-//                v
-// +-----------------------------+               +-----------------------------+
-// |     IntegrationKernel       | ------------> | Thread Lane 0: operator()(0) |
-// |  (A trivially copyable      |   Parallel    | Thread Lane 1: operator()(1) |
-// |   snapshot of state data)   |   Launch      | Thread Lane 2: operator()(2) |
-// +-----------------------------+               +-----------------------------+
-//-------------------------------------------------------------------------------
-
-
 namespace quantkos::Engine {
     namespace KI = quantkos::Implemented;
     namespace KT = quantkos::Types;
@@ -64,6 +46,24 @@ namespace quantkos::Engine {
          * @note- **Smart Pruning (@c StorePaths)**: If full price history is not needed (e.g., for European options), the compiler
          * completely removes the code that writes the full price path to VRAM. This can save memory bandwidth
          * and speeds up execution.
+    * ```text
+    * //-------------------------------------------------------------------------------
+    *      [ HOST (CPU) SIDE ]                             [ DEVICE (GPU) SIDE ]
+    *
+    * +-----------------------------+
+    * |         SDESolver           |
+    * |  (Orchestrates launch data)  |
+    * +--------------+--------------+
+    *                |
+    *                | Instantiates & Populates
+    *                v
+    * +-----------------------------+               +-----------------------------+
+    * |     IntegrationKernel       | ------------> | Thread Lane 0: operator()(0) |
+    * |  (A trivially copyable      |   Parallel    | Thread Lane 1: operator()(1) |
+    * |   snapshot of state data)   |   Launch      | Thread Lane 2: operator()(2) |
+    * +-----------------------------+               +-----------------------------+
+    * -------------------------------------------------------------------------------
+    * ```
     */
     template<KI::MathModel ModelPolicy,
         KI::NumScheme SchemePolicy,
@@ -97,7 +97,7 @@ namespace quantkos::Engine {
          */
         KOKKOS_INLINE_FUNCTION
         void operator()(const int n_p) const {
-            // Get the random generator for given threat
+            // Get the random generator for given threat (generator automatically freed when goes out of scope)
             ScopedRNG scoped_rng(rng_pool);
             auto &rn_generator = scoped_rng.return_unique_rng_state(); // create a temporary state in thread's register
 
