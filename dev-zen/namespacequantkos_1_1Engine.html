@@ -157,7 +157,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-side manager for the massive GPU random number generator pool.  <a href="classquantkos_1_1Engine_1_1RNGManager.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1RVPair.html">RVPair</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container for two random variables.  <a href="structquantkos_1_1Engine_1_1RVPair.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container for two random variables to be used in the sde.  <a href="structquantkos_1_1Engine_1_1RVPair.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1ScopedRNG.html">ScopedRNG</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device-side tool for managing individual thread random states.  <a href="classquantkos_1_1Engine_1_1ScopedRNG.html#details">More...</a><br /></td></tr>
@@ -208,6 +208,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a30fcd6d42fabdcbd26ef93423671b81a" id="r_a30fcd6d42fabdcbd26ef93423671b81a"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#a30fcd6d42fabdcbd26ef93423671b81a">get_available_memory_from_os_mb</a> ()</td></tr>
 <tr class="memdesc:a30fcd6d42fabdcbd26ef93423671b81a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the amount of physical RAM currently available on the system.  <br /></td></tr>
 <tr class="separator:a30fcd6d42fabdcbd26ef93423671b81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0552502934a67e0002621c8cc75c0154" id="r_a0552502934a67e0002621c8cc75c0154"><td class="memTemplParams" colspan="2">template&lt;typename LocalRNGType &gt; </td></tr>
+<tr class="memitem:a0552502934a67e0002621c8cc75c0154"><td class="memTemplItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#a0552502934a67e0002621c8cc75c0154">get_uniform</a> (LocalRNGType &amp;local_rg)</td></tr>
+<tr class="memdesc:a0552502934a67e0002621c8cc75c0154"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a uniform random number in (0, 1] natively matching the active precision (defined at compile time).  <br /></td></tr>
+<tr class="separator:a0552502934a67e0002621c8cc75c0154"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Namespace aggregating all tools to numerically compute options prices. </p>
@@ -369,6 +373,39 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespacequantkos_1_1Engine_aa2bb7c749a362127cf8045610d02c8f8_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Engine_aa2bb7c749a362127cf8045610d02c8f8_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
+<a id="a0552502934a67e0002621c8cc75c0154" name="a0552502934a67e0002621c8cc75c0154"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0552502934a67e0002621c8cc75c0154">&#9670;&#160;</a></span>get_uniform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LocalRNGType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">KOKKOS_INLINE_FUNCTION <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a> quantkos::Engine::get_uniform </td>
+          <td>(</td>
+          <td class="paramtype">LocalRNGType &amp;&#160;</td>
+          <td class="paramname"><em>local_rg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generates a uniform random number in (0, 1] natively matching the active precision (defined at compile time). </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">LocalRNGType</td><td>The Kokkos thread-local generator state type. </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Engine_a0552502934a67e0002621c8cc75c0154_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Engine_a0552502934a67e0002621c8cc75c0154_icgraph" alt=""/></div>
 </div>
 
 </div>

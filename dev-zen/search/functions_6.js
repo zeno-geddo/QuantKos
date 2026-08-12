@@ -21,7 +21,7 @@ var searchData=
   ['get_5fprice_5fscaling_5ffactor_18',['get_price_scaling_factor',['../structquantkos_1_1Config_1_1UInputs.html#a863044a0795fbe28b65da9b318c73636',1,'quantkos::Config::UInputs']]],
   ['get_5fram_5favailable_5fmemory_5ffrom_5fos_5fkb_19',['get_ram_available_memory_from_os_kb',['../namespacequantkos_1_1Engine.html#aa2bb7c749a362127cf8045610d02c8f8',1,'quantkos::Engine']]],
   ['get_5ftime_5fgrid_5fresolutions_20',['get_time_grid_resolutions',['../namespacequantkos_1_1Tests_1_1Utils.html#ae07ad4b57fc25a56afdd8b0a52cbf31e',1,'quantkos::Tests::Utils']]],
-  ['get_5funiform_21',['get_uniform',['../structquantkos_1_1Engine_1_1NormalPair.html#a4d5a6e8fcf02b701b3adc730a145ee06',1,'quantkos::Engine::NormalPair']]],
+  ['get_5funiform_21',['get_uniform',['../namespacequantkos_1_1Engine.html#a0552502934a67e0002621c8cc75c0154',1,'quantkos::Engine']]],
   ['getdefaultconfig_22',['getdefaultconfig',['../namespacequantkos_1_1Tests_1_1BlackScholes.html#add3cb2788f48d856e3ddf058394925df',1,'quantkos::Tests::BlackScholes::getDefaultConfig()'],['../namespacequantkos_1_1Tests_1_1NoNoise.html#aeaf7509c3bd846c735b6f7c2f08fdb80',1,'quantkos::Tests::NoNoise::getDefaultConfig()']]],
   ['getdefaultconfiggoodintegrand_23',['getdefaultconfiggoodintegrand',['../namespacequantkos_1_1Tests_1_1LSM.html#a0d8e6ee891c9a60fd6e9ba2dfc665750',1,'quantkos::Tests::LSM::getDefaultConfigGoodIntegrand()'],['../namespacequantkos_1_1Tests_1_1Bates.html#abb2cc79f0772e07e30abe2d0eab424c5',1,'quantkos::Tests::Bates::getDefaultConfigGoodIntegrand()'],['../namespacequantkos_1_1Tests_1_1Heston.html#ab81a7641d68e80e2092f0eb1455b99bc',1,'quantkos::Tests::Heston::getDefaultConfigGoodIntegrand()']]]
 ];

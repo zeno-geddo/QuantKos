@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>QuantKos: quantkos::Engine::NormalPair&lt; LocalRNGType &gt; Struct Template Reference</title>
+<title>QuantKos: quantkos::Engine::NormalPair&lt; LocalRNGType, skip_second &gt; Struct Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -85,9 +85,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="structquantkos_1_1Engine_1_1NormalPair-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">quantkos::Engine::NormalPair&lt; LocalRNGType &gt; Struct Template Reference</div></div>
+  <div class="headertitle"><div class="title">quantkos::Engine::NormalPair&lt; LocalRNGType, skip_second &gt; Struct Template Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -98,68 +97,35 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac1d92bbc7271ba41461be23aa946820f" id="r_ac1d92bbc7271ba41461be23aa946820f"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="structquantkos_1_1Engine_1_1RVPair.html">RVPair</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html#ac1d92bbc7271ba41461be23aa946820f">operator()</a> (LocalRNGType &amp;local_rg) const</td></tr>
-<tr class="memdesc:ac1d92bbc7271ba41461be23aa946820f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call operator generating the normal variable pair at the precision specified at compile time.  <br /></td></tr>
-<tr class="separator:ac1d92bbc7271ba41461be23aa946820f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a4d5a6e8fcf02b701b3adc730a145ee06" id="r_a4d5a6e8fcf02b701b3adc730a145ee06"><td class="memItemLeft" align="right" valign="top">static KOKKOS_INLINE_FUNCTION <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html#a4d5a6e8fcf02b701b3adc730a145ee06">get_uniform</a> (LocalRNGType &amp;local_rg)</td></tr>
-<tr class="memdesc:a4d5a6e8fcf02b701b3adc730a145ee06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate uniform random number with kokkos with the precision required at compile time.  <br /></td></tr>
-<tr class="separator:a4d5a6e8fcf02b701b3adc730a145ee06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a510bf74bc0012ddba3f84542205bd9e7" id="r_a510bf74bc0012ddba3f84542205bd9e7"><td class="memItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="structquantkos_1_1Engine_1_1RVPair.html">RVPair</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html#a510bf74bc0012ddba3f84542205bd9e7">operator()</a> (LocalRNGType &amp;local_rg) const</td></tr>
+<tr class="memdesc:a510bf74bc0012ddba3f84542205bd9e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call operator generating the normal variable pair at the precision specified at compile time.  <br /></td></tr>
+<tr class="separator:a510bf74bc0012ddba3f84542205bd9e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><div class="compoundTemplParams">template&lt;typename LocalRNGType&gt;<br />
-struct quantkos::Engine::NormalPair&lt; LocalRNGType &gt;</div><p>Generates two independent Normal Random Variables Uses branchless Box-Muller on GPU to maximize Warp occupancy. Uses Marsaglia Polar on CPU to leverage branch prediction and avoid trig overhead. </p>
+<div class="textblock"><div class="compoundTemplParams">template&lt;typename LocalRNGType, bool skip_second = false&gt;<br />
+struct quantkos::Engine::NormalPair&lt; LocalRNGType, skip_second &gt;</div><p>Generates two independent Normal Random Variables Uses branchless Box-Muller on GPU to maximize Warp occupancy. Uses Marsaglia Polar on CPU to leverage branch prediction and avoid trig overhead. </p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">LocalRNGType</td><td>the type of the local random variable generator </td></tr>
+    <tr><td class="paramname">skip_second</td><td>a compile time bool specifying if you want to compute botgh random variables or just one. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pair of scalars representing to independent normal random variables if both are required, a pair of scalar where the first is a normal rv and the second is 0 (a dummy number) </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a4d5a6e8fcf02b701b3adc730a145ee06" name="a4d5a6e8fcf02b701b3adc730a145ee06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d5a6e8fcf02b701b3adc730a145ee06">&#9670;&#160;</a></span>get_uniform()</h2>
+<a id="a510bf74bc0012ddba3f84542205bd9e7" name="a510bf74bc0012ddba3f84542205bd9e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a510bf74bc0012ddba3f84542205bd9e7">&#9670;&#160;</a></span>operator()()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename LocalRNGType &gt; </div>
+template&lt;typename LocalRNGType , bool skip_second = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static KOKKOS_INLINE_FUNCTION <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a> <a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html">quantkos::Engine::NormalPair</a>&lt; LocalRNGType &gt;::get_uniform </td>
-          <td>(</td>
-          <td class="paramtype">LocalRNGType &amp;&#160;</td>
-          <td class="paramname"><em>local_rg</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Generate uniform random number with kokkos with the precision required at compile time. </p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="structquantkos_1_1Engine_1_1NormalPair_a4d5a6e8fcf02b701b3adc730a145ee06_icgraph.png" border="0" usemap="#astructquantkos_1_1Engine_1_1NormalPair_a4d5a6e8fcf02b701b3adc730a145ee06_icgraph" alt=""/></div>
-</div>
-
-</div>
-</div>
-<a id="ac1d92bbc7271ba41461be23aa946820f" name="ac1d92bbc7271ba41461be23aa946820f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1d92bbc7271ba41461be23aa946820f">&#9670;&#160;</a></span>operator()()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename LocalRNGType &gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">KOKKOS_INLINE_FUNCTION <a class="el" href="structquantkos_1_1Engine_1_1RVPair.html">RVPair</a> <a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html">quantkos::Engine::NormalPair</a>&lt; LocalRNGType &gt;::operator() </td>
+          <td class="memname">KOKKOS_INLINE_FUNCTION <a class="el" href="structquantkos_1_1Engine_1_1RVPair.html">RVPair</a> <a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html">quantkos::Engine::NormalPair</a>&lt; LocalRNGType, skip_second &gt;::operator() </td>
           <td>(</td>
           <td class="paramtype">LocalRNGType &amp;&#160;</td>
           <td class="paramname"><em>local_rg</em></td><td>)</td>
@@ -174,11 +140,6 @@ template&lt;typename LocalRNGType &gt; </div>
 </div><div class="memdoc">
 
 <p>Call operator generating the normal variable pair at the precision specified at compile time. </p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="structquantkos_1_1Engine_1_1NormalPair_ac1d92bbc7271ba41461be23aa946820f_cgraph.png" border="0" usemap="#astructquantkos_1_1Engine_1_1NormalPair_ac1d92bbc7271ba41461be23aa946820f_cgraph" alt=""/></div>
-</div>
 
 </div>
 </div>

@@ -85,7 +85,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">RandNGenerator.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -115,9 +116,9 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device-side tool for managing individual thread random states.  <a href="classquantkos_1_1Engine_1_1ScopedRNG.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1RVPair.html">quantkos::Engine::RVPair</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container for two random variables.  <a href="structquantkos_1_1Engine_1_1RVPair.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container for two random variables to be used in the sde.  <a href="structquantkos_1_1Engine_1_1RVPair.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html">quantkos::Engine::NormalPair&lt; LocalRNGType &gt;</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html">quantkos::Engine::NormalPair&lt; LocalRNGType, skip_second &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates two independent Normal Random Variables Uses branchless Box-Muller on GPU to maximize Warp occupancy. Uses Marsaglia Polar on CPU to leverage branch prediction and avoid trig overhead.  <a href="structquantkos_1_1Engine_1_1NormalPair.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -128,6 +129,13 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacequantkos_1_1Engine" id="r_namespacequantkos_1_1Engine"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html">quantkos::Engine</a></td></tr>
 <tr class="memdesc:namespacequantkos_1_1Engine"><td class="mdescLeft">&#160;</td><td class="mdescRight">Namespace aggregating all tools to numerically compute options prices. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a0552502934a67e0002621c8cc75c0154" id="r_a0552502934a67e0002621c8cc75c0154"><td class="memTemplParams" colspan="2">template&lt;typename LocalRNGType &gt; </td></tr>
+<tr class="memitem:a0552502934a67e0002621c8cc75c0154"><td class="memTemplItemLeft" align="right" valign="top">KOKKOS_INLINE_FUNCTION <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#a0552502934a67e0002621c8cc75c0154">quantkos::Engine::get_uniform</a> (LocalRNGType &amp;local_rg)</td></tr>
+<tr class="memdesc:a0552502934a67e0002621c8cc75c0154"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a uniform random number in (0, 1] natively matching the active precision (defined at compile time).  <br /></td></tr>
+<tr class="separator:a0552502934a67e0002621c8cc75c0154"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
