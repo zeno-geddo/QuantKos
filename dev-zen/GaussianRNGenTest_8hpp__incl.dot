@@ -45,6 +45,7 @@ digraph "include/tests/RNG/GaussianRNGenTest.hpp"
   Node16 -> Node18 [id="edge22_Node000016_Node000018",color="steelblue1",style="solid",tooltip=" "];
   Node18 [id="Node000018",label="algorithm",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node16 -> Node13 [id="edge23_Node000016_Node000013",color="steelblue1",style="solid",tooltip=" "];
-  Node1 -> Node7 [id="edge24_Node000001_Node000007",color="steelblue1",style="solid",tooltip=" "];
-  Node1 -> Node12 [id="edge25_Node000001_Node000012",color="steelblue1",style="solid",tooltip=" "];
+  Node5 -> Node12 [id="edge24_Node000005_Node000012",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node7 [id="edge25_Node000001_Node000007",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node12 [id="edge26_Node000001_Node000012",color="steelblue1",style="solid",tooltip=" "];
 }

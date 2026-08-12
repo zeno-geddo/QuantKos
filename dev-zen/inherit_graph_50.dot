@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Tests::TestEngine",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Tests_1_1TestEngine.html",tooltip="Manages the registration and execution of multiple TestSuite objects."];
+  Node0 [id="Node000000",label="quantkos::Tests::RNG\l::CustomGaussianRNGTestKernel",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Tests_1_1RNG_1_1CustomGaussianRNGTestKernel.html",tooltip="Parallel execution functor testing the Custom NormalPair generation."];
 }

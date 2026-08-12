@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Tests::Utils\l::OptionPriceErr",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html",tooltip="Data snapshot tracking simulation errors and steps for a specific grid resolution."];
+  Node0 [id="Node000000",label="quantkos::Tests::RNG\l::DummyKokkosDefGaussianSDEScheme",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Tests_1_1RNG_1_1DummyKokkosDefGaussianSDEScheme.html",tooltip="A simplified stochastic differential equation (SDE) scheme used for RNG validation."];
 }

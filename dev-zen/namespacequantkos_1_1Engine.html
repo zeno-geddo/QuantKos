@@ -122,7 +122,6 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orchestrator for Forward Monte Carlo simulations.  <a href="classquantkos_1_1Engine_1_1ForwardMCRunner.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html">MarkovianIntegrationKernel</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parallel execution code (functor) run on device (CPU/GPU) where each thread simulates a single asset path using a markovian model.  <a href="structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1MCDispatcher.html">MCDispatcher</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orchestrates the runtime-to-compile-time dispatching loop for Monte Carlo execution.  <a href="classquantkos_1_1Engine_1_1MCDispatcher.html#details">More...</a><br /></td></tr>
@@ -132,6 +131,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1MSolver.html">MSolver</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-side parallel launch coordinator and execution bridge.  <a href="classquantkos_1_1Engine_1_1MSolver.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1NormalPair.html">NormalPair</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates two independent Normal Random Variables Uses branchless Box-Muller on GPU to maximize Warp occupancy. Uses Marsaglia Polar on CPU to leverage branch prediction and avoid trig overhead.  <a href="structquantkos_1_1Engine_1_1NormalPair.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html">OptionPricer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates and reports final statistical metrics from Monte Carlo simulation payoffs.  <a href="classquantkos_1_1Engine_1_1OptionPricer.html#details">More...</a><br /></td></tr>
@@ -153,6 +155,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1RNGManager.html">RNGManager</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host-side manager for the massive GPU random number generator pool.  <a href="classquantkos_1_1Engine_1_1RNGManager.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1RVPair.html">RVPair</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container for two random variables.  <a href="structquantkos_1_1Engine_1_1RVPair.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1ScopedRNG.html">ScopedRNG</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Device-side tool for managing individual thread random states.  <a href="classquantkos_1_1Engine_1_1ScopedRNG.html#details">More...</a><br /></td></tr>

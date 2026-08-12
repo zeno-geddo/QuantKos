@@ -9,5 +9,7 @@ digraph "quantkos::Engine::ScopedRNG::return_unique_rng_state"
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node2 [id="Node000002",label="quantkos::Engine::Markovian\lIntegrationKernel::operator()",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html#a47ec89831ce4294b7eac3915f653e429",tooltip="Parallel execution kernel processing a single isolated Monte Carlo path (realization) using a markovi..."];
   Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="quantkos::Tests::RNG\l::GaussianRNGTestKernel\l::operator()",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Tests_1_1RNG_1_1GaussianRNGTestKernel.html#a47ca5da3d4f7c0b41244b9926e63cacb",tooltip="Parallel thread execution operator generating random paths."];
+  Node3 [id="Node000003",label="quantkos::Tests::RNG\l::KokkosDefGaussianRNGTestKernel\l::operator()",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Tests_1_1RNG_1_1KokkosDefGaussianRNGTestKernel.html#a5c3a0e65ce2c44548c7d5d859ca14d25",tooltip="Parallel thread execution operator generating random paths."];
+  Node1 -> Node4 [id="edge3_Node000001_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="quantkos::Tests::RNG\l::CustomGaussianRNGTestKernel\l::operator()",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Tests_1_1RNG_1_1CustomGaussianRNGTestKernel.html#a22b860af97f06f93b738d919d162f265",tooltip=" "];
 }

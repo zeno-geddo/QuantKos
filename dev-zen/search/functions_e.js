@@ -10,7 +10,8 @@ var searchData=
   ['run_5fforward_5fall_5fmc_5fbatches_7',['run_forward_all_mc_batches',['../namespacequantkos_1_1Engine.html#a0b5dbc54600aedc0d5462d47e5a8c60d',1,'quantkos::Engine']]],
   ['run_5fsimulation_8',['run_simulation',['../namespacequantkos_1_1Tests_1_1Utils.html#a7ba58271fae7a001558c83b87d90e476',1,'quantkos::Tests::Utils']]],
   ['run_5ftest_9',['run_test',['../namespacequantkos_1_1Tests_1_1IOBIN.html#a0d3a47c6156d0e5bdf06c06c5b554a28',1,'quantkos::Tests::IOBIN::run_test()'],['../namespacequantkos_1_1Tests_1_1LSM.html#af8142e2cbf2957687b7124902e15fc42',1,'quantkos::Tests::LSM::run_test()'],['../namespacequantkos_1_1Tests_1_1Bates.html#a964fdf7cc22700bdc4cc24e553b961cf',1,'quantkos::Tests::Bates::run_test()'],['../namespacequantkos_1_1Tests_1_1BlackScholes.html#a10d200477b9810ca394f1e0e876b1105',1,'quantkos::Tests::BlackScholes::run_test()'],['../namespacequantkos_1_1Tests_1_1Heston.html#ac83c9c8e51fbd7563ee9d5cebfae3b3e',1,'quantkos::Tests::Heston::run_test()'],['../namespacequantkos_1_1Tests_1_1NoNoise.html#a50ee150de4accb83b54883d7eee78ca7',1,'quantkos::Tests::NoNoise::run_test()']]],
-  ['run_5ftest_5fgaussian_10',['run_test_gaussian',['../namespacequantkos_1_1Tests_1_1RNG.html#ad9274708d72b4d2d3018680985e2064c',1,'quantkos::Tests::RNG']]],
-  ['run_5ftests_11',['run_tests',['../classquantkos_1_1Tests_1_1TestEngine.html#a0fe923c788633291351d6c94316dae86',1,'quantkos::Tests::TestEngine']]],
-  ['run_5fweak_5fconvergence_5ftest_12',['run_weak_convergence_test',['../namespacequantkos_1_1Tests_1_1Utils.html#a0b57a4bcb249c0dfb7dec2bd4348661a',1,'quantkos::Tests::Utils']]]
+  ['run_5ftest_5fcustom_5fgaussian_10',['run_test_custom_gaussian',['../namespacequantkos_1_1Tests_1_1RNG.html#a83ef36dc83f1472b9688a80eec8a71a6',1,'quantkos::Tests::RNG']]],
+  ['run_5ftest_5fgaussian_11',['run_test_gaussian',['../namespacequantkos_1_1Tests_1_1RNG.html#ad9274708d72b4d2d3018680985e2064c',1,'quantkos::Tests::RNG']]],
+  ['run_5ftests_12',['run_tests',['../classquantkos_1_1Tests_1_1TestEngine.html#a0fe923c788633291351d6c94316dae86',1,'quantkos::Tests::TestEngine']]],
+  ['run_5fweak_5fconvergence_5ftest_13',['run_weak_convergence_test',['../namespacequantkos_1_1Tests_1_1Utils.html#a0b57a4bcb249c0dfb7dec2bd4348661a',1,'quantkos::Tests::Utils']]]
 ];

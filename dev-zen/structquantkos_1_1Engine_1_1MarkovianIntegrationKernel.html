@@ -91,9 +91,6 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Parallel execution code (functor) run on device (CPU/GPU) where each thread simulates a single asset path using a markovian model.  
- <a href="structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html#details">More...</a></p>
-
 <p><code>#include &lt;<a class="el" href="MSolver_8hpp_source.html">MSolver.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -134,23 +131,35 @@ Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;<a class="el" href="namespacequantkos_1_1Implemented.html#a97f1bf0cc5d401b8a2450fe1b2da7aa6">KI::MathModel</a> ModelPolicy, <a class="el" href="namespacequantkos_1_1Implemented.html#a4891217b10509468c9ada24f07f0f374">KI::NumScheme</a> SchemePolicy, <a class="el" href="namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19">KI::OptType</a> OptType, <a class="el" href="namespacequantkos_1_1Implemented.html#a114c027448b76520d405547c3a2fddd3">KI::OptRight</a> OptRight, bool StorePaths&gt;<br />
-struct quantkos::Engine::MarkovianIntegrationKernel&lt; ModelPolicy, SchemePolicy, OptType, OptRight, StorePaths &gt;</div><p>Parallel execution code (functor) run on device (CPU/GPU) where each thread simulates a single asset path using a markovian model. </p>
-<ul>
-<li>This struct packages all simulation parameters into a self-contained snapshot. Because it has no pointers to CPU memory (it is <em>trivially copyable</em>), it can be copied cleanly to discrete GPU devices without causing memory access violations.</li>
-<li><dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">ModelPolicy</td><td>Stochastic asset model to consider (e.g., Heston, Bates, etc.). </td></tr>
-    <tr><td class="paramname">SchemePolicy</td><td>Time-stepping scheme to use (e.g., Euler, Milstein, AndersonQE, etc.). </td></tr>
-    <tr><td class="paramname">OptType</td><td>Option contract payoff logic (e.g., European, Asian, Barrier, etc.). </td></tr>
-    <tr><td class="paramname">OptRight</td><td>Option contract right (Call or Put). </td></tr>
-    <tr><td class="paramname">StorePaths</td><td>Set to <code>true</code> to save the full simulated asset price path to memory, or <code>false</code> to save memory. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>- <b>Smart Pruning (<code>StorePaths</code>)</b>: If full price history is not needed (e.g., for European options), the compiler completely removes the code that writes the full price path to VRAM. This can save memory bandwidth and speeds up execution. </dd></dl>
-</li>
-</ul>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+struct quantkos::Engine::MarkovianIntegrationKernel&lt; ModelPolicy, SchemePolicy, OptType, OptRight, StorePaths &gt;</div><pre class="fragment"> @brief Parallel execution code (functor) run on device (CPU/GPU) where each thread simulates a single asset path using a markovian model.
+ * This struct packages all simulation parameters into a self-contained snapshot. Because it has
+ no pointers to CPU memory (it is *trivially copyable*), it can be copied cleanly to discrete GPU devices
+ without causing memory access violations.
+ * @tparam ModelPolicy Stochastic asset model to consider (e.g., Heston, Bates, etc.).
+ @tparam SchemePolicy Time-stepping scheme to use (e.g., Euler, Milstein, AndersonQE, etc.).
+ @tparam OptType Option contract payoff logic (e.g., European, Asian, Barrier, etc.).
+ @tparam OptRight Option contract right (Call or Put).
+ @tparam StorePaths Set to @c true to save the full simulated asset price path to memory, or @c false to save memory.
+ @note- **Smart Pruning (@c StorePaths)**: If full price history is not needed (e.g., for European options), the compiler
+ completely removes the code that writes the full price path to VRAM. This can save memory bandwidth
+ and speeds up execution.
+</pre> <div class="fragment"><div class="line">//-------------------------------------------------------------------------------</div>
+<div class="line">     [ HOST (CPU) SIDE ]                             [ DEVICE (GPU) SIDE ]</div>
+<div class="line"> </div>
+<div class="line">+-----------------------------+</div>
+<div class="line">|         SDESolver           |</div>
+<div class="line">|  (Orchestrates launch data)  |</div>
+<div class="line">+--------------+--------------+</div>
+<div class="line">               |</div>
+<div class="line">               | Instantiates &amp; Populates</div>
+<div class="line">               v</div>
+<div class="line">+-----------------------------+               +-----------------------------+</div>
+<div class="line">|     IntegrationKernel       | ------------&gt; | Thread Lane 0: operator()(0) |</div>
+<div class="line">|  (A trivially copyable      |   Parallel    | Thread Lane 1: operator()(1) |</div>
+<div class="line">|   snapshot of state data)   |   Launch      | Thread Lane 2: operator()(2) |</div>
+<div class="line">+-----------------------------+               +-----------------------------+</div>
+<div class="line">-------------------------------------------------------------------------------</div>
+</div><!-- fragment --> </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a47ec89831ce4294b7eac3915f653e429" name="a47ec89831ce4294b7eac3915f653e429"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a47ec89831ce4294b7eac3915f653e429">&#9670;&#160;</a></span>operator()()</h2>
 

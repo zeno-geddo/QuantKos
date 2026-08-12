@@ -7,9 +7,16 @@ digraph "quantkos::Tests::RNG::run_test_gaussian"
   rankdir="LR";
   Node1 [id="Node000001",label="quantkos::Tests::RNG\l::run_test_gaussian",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Validates that the parallel RNG pool produces a correct standard normal distribution."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="quantkos::Tests::RNG\l::execute_rng_kernel",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#ad20a24b9b72deed5d4e79bb70ae535b8",tooltip="Executes the Gaussian RNG test kernel independently."];
-  Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="quantkos::Tests::RNG\l::initialize_rng_manager",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a62288d31ab2a60e4ee3559e72fc3eff6",tooltip="Initialize the random number generator and return it."];
-  Node3 -> Node4 [id="edge3_Node000003_Node000004",color="steelblue1",style="solid",tooltip=" "];
-  Node4 [id="Node000004",label="quantkos::Tests::RNG\l::get_dummy_config",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a4a541425f2b39fd4c3653a849be9ac01",tooltip="Generate a dummy configuration needed to initialize the random number generator."];
+  Node2 [id="Node000002",label="quantkos::Tests::RNG\l::run_test_custom_gaussian",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a83ef36dc83f1472b9688a80eec8a71a6",tooltip="Validates the Custom NormalPair functor (Box-Muller/Marsaglia)."];
+  Node2 -> Node3 [id="edge2_Node000002_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="quantkos::Tests::RNG\l::execute_custom_rng\l_kernel",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#aaaa483ba6d2aecaf855655c9fab71f4d",tooltip=" "];
+  Node2 -> Node4 [id="edge3_Node000002_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="quantkos::Tests::RNG\l::initialize_rng_manager",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a62288d31ab2a60e4ee3559e72fc3eff6",tooltip="Initialize the random number generator and return it."];
+  Node4 -> Node5 [id="edge4_Node000004_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="quantkos::Tests::RNG\l::get_dummy_config",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a4a541425f2b39fd4c3653a849be9ac01",tooltip="Generate a dummy configuration needed to initialize the random number generator."];
+  Node1 -> Node6 [id="edge5_Node000001_Node000006",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="quantkos::Tests::RNG\l::test_default_kokkos\l_gaussian",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a428b33882a51a3b78130f46040fe3b7b",tooltip="Validates that the parallel RNG pool produces a correct standard normal distribution."];
+  Node6 -> Node7 [id="edge6_Node000006_Node000007",color="steelblue1",style="solid",tooltip=" "];
+  Node7 [id="Node000007",label="quantkos::Tests::RNG\l::execute_rng_kernel\l_kookkos_def",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#ab652c5f0a2173aa63b7f2ea7574ed6e5",tooltip="Executes the Gaussian RNG test kernel independently."];
+  Node6 -> Node4 [id="edge7_Node000006_Node000004",color="steelblue1",style="solid",tooltip=" "];
 }

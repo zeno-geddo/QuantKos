@@ -9,5 +9,10 @@ digraph "quantkos::Tests::RNG::get_dummy_config"
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node2 [id="Node000002",label="quantkos::Tests::RNG\l::initialize_rng_manager",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a62288d31ab2a60e4ee3559e72fc3eff6",tooltip="Initialize the random number generator and return it."];
   Node2 -> Node3 [id="edge2_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="quantkos::Tests::RNG\l::run_test_gaussian",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#ad9274708d72b4d2d3018680985e2064c",tooltip="Validates that the parallel RNG pool produces a correct standard normal distribution."];
+  Node3 [id="Node000003",label="quantkos::Tests::RNG\l::run_test_custom_gaussian",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a83ef36dc83f1472b9688a80eec8a71a6",tooltip="Validates the Custom NormalPair functor (Box-Muller/Marsaglia)."];
+  Node3 -> Node4 [id="edge3_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="quantkos::Tests::RNG\l::run_test_gaussian",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#ad9274708d72b4d2d3018680985e2064c",tooltip="Validates that the parallel RNG pool produces a correct standard normal distribution."];
+  Node2 -> Node5 [id="edge4_Node000002_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="quantkos::Tests::RNG\l::test_default_kokkos\l_gaussian",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1RNG.html#a428b33882a51a3b78130f46040fe3b7b",tooltip="Validates that the parallel RNG pool produces a correct standard normal distribution."];
+  Node5 -> Node4 [id="edge5_Node000005_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
 }

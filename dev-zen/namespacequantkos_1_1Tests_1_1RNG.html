@@ -95,11 +95,17 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Tests_1_1RNG_1_1DummyGaussianSDEScheme.html">DummyGaussianSDEScheme</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simplified stochastic differential equation (SDE) scheme used for <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> validation.  <a href="structquantkos_1_1Tests_1_1RNG_1_1DummyGaussianSDEScheme.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Tests_1_1RNG_1_1CustomGaussianRNGTestKernel.html">CustomGaussianRNGTestKernel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parallel execution functor testing the Custom NormalPair generation.  <a href="structquantkos_1_1Tests_1_1RNG_1_1CustomGaussianRNGTestKernel.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Tests_1_1RNG_1_1GaussianRNGTestKernel.html">GaussianRNGTestKernel</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parallel execution functor testing standard normal random number generation.  <a href="structquantkos_1_1Tests_1_1RNG_1_1GaussianRNGTestKernel.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Tests_1_1RNG_1_1DummyCustomGaussianSDEScheme.html">DummyCustomGaussianSDEScheme</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A stochastic scheme that utilizes the new paired custom Normal <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> generator.  <a href="structquantkos_1_1Tests_1_1RNG_1_1DummyCustomGaussianSDEScheme.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Tests_1_1RNG_1_1DummyKokkosDefGaussianSDEScheme.html">DummyKokkosDefGaussianSDEScheme</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simplified stochastic differential equation (SDE) scheme used for <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> validation.  <a href="structquantkos_1_1Tests_1_1RNG_1_1DummyKokkosDefGaussianSDEScheme.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Tests_1_1RNG_1_1KokkosDefGaussianRNGTestKernel.html">KokkosDefGaussianRNGTestKernel</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parallel execution functor testing standard normal random number generation.  <a href="structquantkos_1_1Tests_1_1RNG_1_1KokkosDefGaussianRNGTestKernel.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
@@ -110,9 +116,17 @@ Functions</h2></td></tr>
 <tr class="memitem:a62288d31ab2a60e4ee3559e72fc3eff6" id="r_a62288d31ab2a60e4ee3559e72fc3eff6"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#a62288d31ab2a60e4ee3559e72fc3eff6">initialize_rng_manager</a> ()</td></tr>
 <tr class="memdesc:a62288d31ab2a60e4ee3559e72fc3eff6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the random number generator and return it.  <br /></td></tr>
 <tr class="separator:a62288d31ab2a60e4ee3559e72fc3eff6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad20a24b9b72deed5d4e79bb70ae535b8" id="r_ad20a24b9b72deed5d4e79bb70ae535b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#ad20a24b9b72deed5d4e79bb70ae535b8">execute_rng_kernel</a> (const int batch_size, const int N_time_steps, Kokkos::View&lt; <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a> ** &gt; d_z_values, KE::RNGManager::GlobalRNGPool rng_pool)</td></tr>
-<tr class="memdesc:ad20a24b9b72deed5d4e79bb70ae535b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the Gaussian <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> test kernel independently.  <br /></td></tr>
-<tr class="separator:ad20a24b9b72deed5d4e79bb70ae535b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab652c5f0a2173aa63b7f2ea7574ed6e5" id="r_ab652c5f0a2173aa63b7f2ea7574ed6e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#ab652c5f0a2173aa63b7f2ea7574ed6e5">execute_rng_kernel_kookkos_def</a> (const int batch_size, const int N_time_steps, Kokkos::View&lt; <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a> ** &gt; d_z_values, KE::RNGManager::GlobalRNGPool rng_pool)</td></tr>
+<tr class="memdesc:ab652c5f0a2173aa63b7f2ea7574ed6e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Executes the Gaussian <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> test kernel independently.  <br /></td></tr>
+<tr class="separator:ab652c5f0a2173aa63b7f2ea7574ed6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428b33882a51a3b78130f46040fe3b7b" id="r_a428b33882a51a3b78130f46040fe3b7b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#a428b33882a51a3b78130f46040fe3b7b">test_default_kokkos_gaussian</a> ()</td></tr>
+<tr class="memdesc:a428b33882a51a3b78130f46040fe3b7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates that the parallel <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> pool produces a correct standard normal distribution.  <br /></td></tr>
+<tr class="separator:a428b33882a51a3b78130f46040fe3b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaaa483ba6d2aecaf855655c9fab71f4d" id="r_aaaa483ba6d2aecaf855655c9fab71f4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#aaaa483ba6d2aecaf855655c9fab71f4d">execute_custom_rng_kernel</a> (const int batch_size, const int N_time_steps, Kokkos::View&lt; <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a> ** &gt; d_z_values, KE::RNGManager::GlobalRNGPool rng_pool)</td></tr>
+<tr class="separator:aaaa483ba6d2aecaf855655c9fab71f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83ef36dc83f1472b9688a80eec8a71a6" id="r_a83ef36dc83f1472b9688a80eec8a71a6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#a83ef36dc83f1472b9688a80eec8a71a6">run_test_custom_gaussian</a> ()</td></tr>
+<tr class="memdesc:a83ef36dc83f1472b9688a80eec8a71a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates the Custom NormalPair functor (Box-Muller/Marsaglia).  <br /></td></tr>
+<tr class="separator:a83ef36dc83f1472b9688a80eec8a71a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9274708d72b4d2d3018680985e2064c" id="r_ad9274708d72b4d2d3018680985e2064c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#ad9274708d72b4d2d3018680985e2064c">run_test_gaussian</a> ()</td></tr>
 <tr class="memdesc:ad9274708d72b4d2d3018680985e2064c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates that the parallel <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> pool produces a correct standard normal distribution.  <br /></td></tr>
 <tr class="separator:ad9274708d72b4d2d3018680985e2064c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -120,8 +134,8 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Integration tests for validating parallel random number generation (<a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a>) distributions. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ad20a24b9b72deed5d4e79bb70ae535b8" name="ad20a24b9b72deed5d4e79bb70ae535b8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad20a24b9b72deed5d4e79bb70ae535b8">&#9670;&#160;</a></span>execute_rng_kernel()</h2>
+<a id="aaaa483ba6d2aecaf855655c9fab71f4d" name="aaaa483ba6d2aecaf855655c9fab71f4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaa483ba6d2aecaf855655c9fab71f4d">&#9670;&#160;</a></span>execute_custom_rng_kernel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -130,7 +144,60 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void quantkos::Tests::RNG::execute_rng_kernel </td>
+          <td class="memname">void quantkos::Tests::RNG::execute_custom_rng_kernel </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>batch_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>N_time_steps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Kokkos::View&lt; <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">KT::Real</a> ** &gt;&#160;</td>
+          <td class="paramname"><em>d_z_values</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">KE::RNGManager::GlobalRNGPool&#160;</td>
+          <td class="paramname"><em>rng_pool</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1RNG_aaaa483ba6d2aecaf855655c9fab71f4d_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1RNG_aaaa483ba6d2aecaf855655c9fab71f4d_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
+<a id="ab652c5f0a2173aa63b7f2ea7574ed6e5" name="ab652c5f0a2173aa63b7f2ea7574ed6e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab652c5f0a2173aa63b7f2ea7574ed6e5">&#9670;&#160;</a></span>execute_rng_kernel_kookkos_def()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void quantkos::Tests::RNG::execute_rng_kernel_kookkos_def </td>
           <td>(</td>
           <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>batch_size</em>, </td>
@@ -167,11 +234,11 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Executes the Gaussian <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> test kernel independently. </p>
-<p>This function is separated to ensure it only captures POD (Plain Old Data) types, preventing the GPU compiler from trying to inspect or capture Host-only configuration objects containing std::string. </p>
+<p>This function is separated to ensure it only captures POD (Plain Old Data) types, preventing the GPU compiler from trying to inspect or capture Host-only configuration objects containing std::string. </p><dl class="section note"><dt>Note</dt><dd>Use kokkos default box-muller normal rn generator </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="namespacequantkos_1_1Tests_1_1RNG_ad20a24b9b72deed5d4e79bb70ae535b8_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1RNG_ad20a24b9b72deed5d4e79bb70ae535b8_icgraph" alt=""/></div>
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1RNG_ab652c5f0a2173aa63b7f2ea7574ed6e5_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1RNG_ab652c5f0a2173aa63b7f2ea7574ed6e5_icgraph" alt=""/></div>
 </div>
 
 </div>
@@ -245,6 +312,43 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a83ef36dc83f1472b9688a80eec8a71a6" name="a83ef36dc83f1472b9688a80eec8a71a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83ef36dc83f1472b9688a80eec8a71a6">&#9670;&#160;</a></span>run_test_custom_gaussian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool quantkos::Tests::RNG::run_test_custom_gaussian </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validates the Custom NormalPair functor (Box-Muller/Marsaglia). </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1RNG_a83ef36dc83f1472b9688a80eec8a71a6_cgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1RNG_a83ef36dc83f1472b9688a80eec8a71a6_cgraph" alt=""/></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1RNG_a83ef36dc83f1472b9688a80eec8a71a6_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1RNG_a83ef36dc83f1472b9688a80eec8a71a6_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
 <a id="ad9274708d72b4d2d3018680985e2064c" name="ad9274708d72b4d2d3018680985e2064c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad9274708d72b4d2d3018680985e2064c">&#9670;&#160;</a></span>run_test_gaussian()</h2>
 
@@ -272,13 +376,51 @@ Here is the caller graph for this function:</div>
 <p>Generates a massive sample size (1,000,000 paths over 365 steps) of normal draws on the active execution space, copies them back to host memory, and verifies that the measured mean and variance fall within highly strict statistical thresholds:</p><ul>
 <li><b>Expected Mean</b>: 0.0 (Tolerance: +/- 0.005)</li>
 <li><b>Expected Variance</b>: 1.0 (Tolerance: +/- 0.01) <dl class="section return"><dt>Returns</dt><dd>true if both statistics satisfy their tolerance boundaries; false otherwise. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000015">Todo:</a></b></dt><dd>Fix the warning generated when using GPUs. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000014">Todo:</a></b></dt><dd>Fix the warning generated when using GPUs. </dd></dl>
 </li>
 </ul>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespacequantkos_1_1Tests_1_1RNG_ad9274708d72b4d2d3018680985e2064c_cgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1RNG_ad9274708d72b4d2d3018680985e2064c_cgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
+<a id="a428b33882a51a3b78130f46040fe3b7b" name="a428b33882a51a3b78130f46040fe3b7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428b33882a51a3b78130f46040fe3b7b">&#9670;&#160;</a></span>test_default_kokkos_gaussian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool quantkos::Tests::RNG::test_default_kokkos_gaussian </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validates that the parallel <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html" title="Integration tests for validating parallel random number generation (RNG) distributions.">RNG</a> pool produces a correct standard normal distribution. </p>
+<dl class="section note"><dt>Note</dt><dd>Use kokkos default box-muller normal rn generator </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1RNG_a428b33882a51a3b78130f46040fe3b7b_cgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1RNG_a428b33882a51a3b78130f46040fe3b7b_cgraph" alt=""/></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1RNG_a428b33882a51a3b78130f46040fe3b7b_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1RNG_a428b33882a51a3b78130f46040fe3b7b_icgraph" alt=""/></div>
 </div>
 
 </div>

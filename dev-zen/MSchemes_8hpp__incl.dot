@@ -39,4 +39,11 @@ digraph "include/core/schemes/markovian/MSchemes.hpp"
   Node16 [id="Node000016",label="algorithm",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node14 -> Node11 [id="edge18_Node000014_Node000011",color="steelblue1",style="solid",tooltip=" "];
   Node1 -> Node11 [id="edge19_Node000001_Node000011",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node17 [id="edge20_Node000001_Node000017",color="steelblue1",style="solid",tooltip=" "];
+  Node17 [id="Node000017",label="core/schemes/RandNGenerator.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$RandNGenerator_8hpp.html",tooltip=" "];
+  Node17 -> Node2 [id="edge21_Node000017_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node17 -> Node18 [id="edge22_Node000017_Node000018",color="steelblue1",style="solid",tooltip=" "];
+  Node18 [id="Node000018",label="Kokkos_Random.hpp",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
+  Node17 -> Node3 [id="edge23_Node000017_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node17 -> Node10 [id="edge24_Node000017_Node000010",color="steelblue1",style="solid",tooltip=" "];
 }

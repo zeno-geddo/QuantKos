@@ -1,0 +1,11 @@
+digraph "quantkos::Engine::NormalPair::get_uniform"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="quantkos::Engine::Normal\lPair::get_uniform",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Generate uniform random number with kokkos with the precision required at compile time."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::Normal\lPair::operator()",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1NormalPair.html#ac1d92bbc7271ba41461be23aa946820f",tooltip="Call operator generating the normal variable pair at the precision specified at compile time."];
+}

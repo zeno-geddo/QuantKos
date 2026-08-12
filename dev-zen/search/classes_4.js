@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gaussianrngtestkernel_0',['GaussianRNGTestKernel',['../structquantkos_1_1Tests_1_1RNG_1_1GaussianRNGTestKernel.html',1,'quantkos::Tests::RNG']]]
+  ['heston_0',['Heston',['../structquantkos_1_1Config_1_1MathModelConfig_1_1Heston.html',1,'quantkos::Config::MathModelConfig']]]
 ];

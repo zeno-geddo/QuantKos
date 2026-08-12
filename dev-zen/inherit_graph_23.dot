@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Engine::Markovian\lIntegrationKernel\< ModelPolicy,\l SchemePolicy, OptType, OptRight,\l StorePaths \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html",tooltip="Parallel execution code (functor) run on device (CPU/GPU) where each thread simulates a single asset ..."];
+  Node0 [id="Node000000",label="quantkos::Engine::Markovian\lIntegrationKernel\< ModelPolicy,\l SchemePolicy, OptType, OptRight,\l StorePaths \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html",tooltip=" "];
 }

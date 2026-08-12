@@ -36,7 +36,8 @@ var searchData=
   ['down_20and_20out_33',['Down-and-Out',['../md_MATH__GUIDE.html#autotoc_md58',1,'']]],
   ['download_20build_20and_20install_20yaml_20cpp_34',['Step 4 (Recommended): Download, Build and Install yaml-cpp',['../md_COMPILATION__GUIDE.html#autotoc_md25',1,'']]],
   ['download_20quantkos_35',['Step 1: Download QuantKos',['../md_COMPILATION__GUIDE.html#autotoc_md30',1,'']]],
-  ['dt_36',['dt',['../structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html#a8b9884bfa7435968495f303ba50f9679',1,'quantkos::Tests::Utils::OptionPriceErr::dt'],['../structquantkos_1_1IO_1_1Binary_1_1BinHeader.html#adcaf98cd9a43b44a984c7ea14c513252',1,'quantkos::IO::Binary::BinHeader::dt'],['../structquantkos_1_1Config_1_1TimeConfig.html#a21d7598e7e9a36b67f4ac041703d8e86',1,'quantkos::Config::TimeConfig::dt']]],
-  ['dummy_5fpath_5fview_37',['dummy_path_view',['../structquantkos_1_1Tests_1_1RNG_1_1GaussianRNGTestKernel.html#adc6e16883c619f704c615241dfb3772c',1,'quantkos::Tests::RNG::GaussianRNGTestKernel']]],
-  ['dummygaussiansdescheme_38',['DummyGaussianSDEScheme',['../structquantkos_1_1Tests_1_1RNG_1_1DummyGaussianSDEScheme.html',1,'quantkos::Tests::RNG']]]
+  ['dt_36',['dt',['../structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html#a8b9884bfa7435968495f303ba50f9679',1,'quantkos::Tests::Utils::OptionPriceErr::dt'],['../structquantkos_1_1Config_1_1TimeConfig.html#a21d7598e7e9a36b67f4ac041703d8e86',1,'quantkos::Config::TimeConfig::dt'],['../structquantkos_1_1IO_1_1Binary_1_1BinHeader.html#adcaf98cd9a43b44a984c7ea14c513252',1,'quantkos::IO::Binary::BinHeader::dt']]],
+  ['dummy_5fpath_5fview_37',['dummy_path_view',['../structquantkos_1_1Tests_1_1RNG_1_1CustomGaussianRNGTestKernel.html#a5b41d80f7b18e165f38099192bd8e2df',1,'quantkos::Tests::RNG::CustomGaussianRNGTestKernel::dummy_path_view'],['../structquantkos_1_1Tests_1_1RNG_1_1KokkosDefGaussianRNGTestKernel.html#a65abbce78b2cd0dbd7d5dec93c8a7ef1',1,'quantkos::Tests::RNG::KokkosDefGaussianRNGTestKernel::dummy_path_view']]],
+  ['dummycustomgaussiansdescheme_38',['DummyCustomGaussianSDEScheme',['../structquantkos_1_1Tests_1_1RNG_1_1DummyCustomGaussianSDEScheme.html',1,'quantkos::Tests::RNG']]],
+  ['dummykokkosdefgaussiansdescheme_39',['DummyKokkosDefGaussianSDEScheme',['../structquantkos_1_1Tests_1_1RNG_1_1DummyKokkosDefGaussianSDEScheme.html',1,'quantkos::Tests::RNG']]]
 ];

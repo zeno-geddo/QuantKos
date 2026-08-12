@@ -14,7 +14,7 @@ var searchData=
   ['characteristics_11',['Performance Characteristics',['../namespacequantkos_1_1IO_1_1Binary.html#autotoc_md44',1,'']]],
   ['clone_20the_20repository_12',['Clone the repository',['../index.html#autotoc_md81',1,'']]],
   ['cmakelists_13',['CMakeLists',['../namespaceCMakeLists.html',1,'']]],
-  ['cmakelists_2etxt_14',['cmakelists.txt',['../tests_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../src_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../CMakeLists_8txt.html',1,'(Global Namespace)'],['../app_2CMakeLists_8txt.html',1,'(Global Namespace)']]],
+  ['cmakelists_2etxt_14',['cmakelists.txt',['../tests_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../app_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../src_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../CMakeLists_8txt.html',1,'(Global Namespace)']]],
   ['code_20documentation_20setup_15',['6.5 CODE Documentation Setup',['..//home/runner/work/QuantKos/QuantKos/CMakeLists.txt#doc_sec',1,'']]],
   ['coeffs_16',['Coeffs',['../structquantkos_1_1Engine_1_1LSM_1_1Coeffs.html',1,'quantkos::Engine::LSM']]],
   ['command_20line_20help_17',['Displaying the Command-Line Help',['../md_COMPILATION__GUIDE.html#autotoc_md37',1,'']]],
@@ -23,7 +23,7 @@ var searchData=
   ['compilation_20guide_20',['QuantKos: Compilation Guide',['../md_COMPILATION__GUIDE.html',1,'']]],
   ['compilation_5fguide_2emd_21',['COMPILATION_GUIDE.md',['../COMPILATION__GUIDE_8md.html',1,'']]],
   ['compiler_20sdk_22',['Step 2 (Required): Install GPU Toolchain (CUDA Compiler &amp; SDK)',['../md_COMPILATION__GUIDE.html#autotoc_md12',1,'']]],
-  ['complex_23',['complex',['../namespacequantkos_1_1Engine_1_1Analytical_1_1Heston.html#aaa7d8ddce30360f64dfbec1a224dbb56',1,'quantkos::Engine::Analytical::Heston::Complex'],['../namespacequantkos_1_1Engine_1_1Analytical_1_1Bates.html#ad36b265b7ba434b58e2878de908bc273',1,'quantkos::Engine::Analytical::Bates::Complex']]],
+  ['complex_23',['complex',['../namespacequantkos_1_1Engine_1_1Analytical_1_1Bates.html#ad36b265b7ba434b58e2878de908bc273',1,'quantkos::Engine::Analytical::Bates::Complex'],['../namespacequantkos_1_1Engine_1_1Analytical_1_1Heston.html#aaa7d8ddce30360f64dfbec1a224dbb56',1,'quantkos::Engine::Analytical::Heston::Complex']]],
   ['compute_20capability_24',['Step 3.1: Query Your GPU Compute Capability',['../md_COMPILATION__GUIDE.html#autotoc_md22',1,'']]],
   ['compute_20capability_20to_20the_20kokkos_20flag_25',['Step 3.2: Match Your Compute Capability to the Kokkos Flag',['../md_COMPILATION__GUIDE.html#autotoc_md24',1,'']]],
   ['compute_5fregression_5fsums_5fon_5fdevice_26',['compute_regression_sums_on_device',['../classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html#a01153fe8f0587f2d66febbf577dcd3f9',1,'quantkos::Engine::LSM::LSMEngine']]],
@@ -56,5 +56,6 @@ var searchData=
   ['create_20a_20build_20directory_53',['Create a build directory',['../index.html#autotoc_md82',1,'']]],
   ['cuda_20builds_54',['Running on NVIDIA GPUs (CUDA builds)',['../md_COMPILATION__GUIDE.html#autotoc_md40',1,'']]],
   ['cuda_20compiler_20sdk_55',['Step 2 (Required): Install GPU Toolchain (CUDA Compiler &amp; SDK)',['../md_COMPILATION__GUIDE.html#autotoc_md12',1,'']]],
-  ['cuda_20release_56',['Option C: GPU Accelerated (CUDA / Release)',['../md_COMPILATION__GUIDE.html#autotoc_md20',1,'']]]
+  ['cuda_20release_56',['Option C: GPU Accelerated (CUDA / Release)',['../md_COMPILATION__GUIDE.html#autotoc_md20',1,'']]],
+  ['customgaussianrngtestkernel_57',['CustomGaussianRNGTestKernel',['../structquantkos_1_1Tests_1_1RNG_1_1CustomGaussianRNGTestKernel.html',1,'quantkos::Tests::RNG']]]
 ];

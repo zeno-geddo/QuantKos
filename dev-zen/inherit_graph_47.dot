@@ -5,7 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::IO::WriterBlueprint",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1IO_1_1WriterBlueprint.html",tooltip="Abstract base class (interface) defining the contract for path and payoff output writers."];
-  Node0 -> Node1 [id="edge3_Node000000_Node000001",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node1 [id="Node000001",label="quantkos::IO::Binary\l::BinWriter",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1IO_1_1Binary_1_1BinWriter.html",tooltip="High-performance file writer that serializes simulated asset price paths to disk in binary format."];
+  Node0 [id="Node000000",label="quantkos::IO::OutputManager",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1IO_1_1OutputManager.html",tooltip="High-level coordinator that manages how and where simulation results are written to disk."];
 }

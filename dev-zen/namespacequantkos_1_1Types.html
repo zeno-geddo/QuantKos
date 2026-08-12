@@ -144,6 +144,9 @@ Variables</h2></td></tr>
 <tr class="memitem:a89c6ebcd8f9059cc0c884f64a065707e" id="r_a89c6ebcd8f9059cc0c884f64a065707e"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">Real</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Types.html#a89c6ebcd8f9059cc0c884f64a065707e">real_1p5</a> = static_cast&lt;<a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">Real</a>&gt;(1.5)</td></tr>
 <tr class="memdesc:a89c6ebcd8f9059cc0c884f64a065707e"><td class="mdescLeft">&#160;</td><td class="mdescRight">1.5 literal constant.  <br /></td></tr>
 <tr class="separator:a89c6ebcd8f9059cc0c884f64a065707e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f5c1feec9d9f6b73001247175a7d597" id="r_a3f5c1feec9d9f6b73001247175a7d597"><td class="memItemLeft" align="right" valign="top">constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Types.html#a3f5c1feec9d9f6b73001247175a7d597">real_2PI</a> = static_cast&lt;<a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">Real</a>&gt;(6.283185307179586)</td></tr>
+<tr class="memdesc:a3f5c1feec9d9f6b73001247175a7d597"><td class="mdescLeft">&#160;</td><td class="mdescRight">2*pi literal constant.  <br /></td></tr>
+<tr class="separator:a3f5c1feec9d9f6b73001247175a7d597"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Namespace containing core mathematical type definitions and compile-time constants. </p>
@@ -165,7 +168,7 @@ Variables</h2></td></tr>
 
 <p>The primary floating-point type used throughout the numerical simulation engine. </p>
 <ul>
-<li>Defaults to <code>double</code> precision for maximum accuracy. If the CMake option <code>QKOS_ENABLE_SINGLE_PRECISION</code> is enabled during the build process, this alias automatically resolves to <code>float</code> to improve memory bandwidth and throughput on GPU architectures. <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000013">Todo:</a></b></dt><dd>Improve the way single precision is handled </dd></dl>
+<li>Defaults to <code>double</code> precision for maximum accuracy. If the CMake option <code>QKOS_ENABLE_SINGLE_PRECISION</code> is enabled during the build process, this alias automatically resolves to <code>float</code> to improve memory bandwidth and throughput on GPU architectures. <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>Improve the way single precision is handled </dd></dl>
 </li>
 </ul>
 
@@ -412,6 +415,30 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>1.5 literal constant. </p>
+
+</div>
+</div>
+<a id="a3f5c1feec9d9f6b73001247175a7d597" name="a3f5c1feec9d9f6b73001247175a7d597"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f5c1feec9d9f6b73001247175a7d597">&#9670;&#160;</a></span>real_2PI</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto quantkos::Types::real_2PI = static_cast&lt;<a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">Real</a>&gt;(6.283185307179586)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>2*pi literal constant. </p>
 
 </div>
 </div>
