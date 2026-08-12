@@ -503,7 +503,7 @@ namespace quantkos::Engine {
                 // Multiply random fractions util accumulated value drops below the target threshold
                 // The number of multiplications done maps to the exact number of jumps occurred inside the discrete interval
                 N++;
-                p *= static_cast<KT::Real>(local_rn_generator.drand());
+                p *= get_uniform(local_rn_generator); //static_cast<KT::Real>(local_rn_generator.drand());
             } while (p >= exp_minus_lambda_dt);
 
             // 3. Draw the jump size and update price
@@ -512,7 +512,7 @@ namespace quantkos::Engine {
                 // Compute current jump size
                 // Note : The total log-jump size is \sum_{i=1}^{N}(mu_J + sigma_J*Z_{J,I}) = N*mu_J + sqrt(N)*sigma_J*Z_{J}
                 const auto real_N = static_cast<KT::Real>(N);
-                const KT::Real Z = static_cast<KT::Real>(local_rn_generator.normal());
+                const KT::Real Z = NormalPair<decltype(local_rn_generator), true>{}(local_rn_generator).Z1;
                 const KT::Real aggregate_mu = real_N * mu_J;
                 const KT::Real aggregate_sigma = Kokkos::sqrt(real_N) * sigma_J;
                 const KT::Real jump_magnitude = Kokkos::exp(aggregate_mu + aggregate_sigma * Z);

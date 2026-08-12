@@ -168,58 +168,74 @@ namespace quantkos::Engine {
     };
 
 
+
     /**
-    * @brief Container for two random variables
+     * @brief Generates a uniform random number in (0, 1] natively matching the active precision (defined at compile time).
+     * @tparam LocalRNGType The Kokkos thread-local generator state type.
+     */
+    template<typename LocalRNGType>
+    KOKKOS_INLINE_FUNCTION KT::Real get_uniform(LocalRNGType &local_rg) {
+        if constexpr (std::is_same_v<KT::Real, float>) {
+            return local_rg.frand(); // Natively generates 32-bit float
+        } else {
+            return local_rg.drand(); // Natively generates 64-bit double
+        }
+    }
+
+    /**
+    * @brief Container for two random variables to be used in the sde
     */
-    struct RVPair {
-        KT::Real Z1;
-        KT::Real Z2;
-    };
+        struct RVPair {
+            KT::Real Z1;
+            KT::Real Z2;
+        };
 
     /**
     * @brief Generates two independent Normal Random Variables
     * Uses branchless Box-Muller on GPU to maximize Warp occupancy.
     * Uses Marsaglia Polar on CPU to leverage branch prediction and avoid trig overhead.
+    * @tparam LocalRNGType the type of the local random variable generator
+    * @tparam skip_second a compile time bool specifying if you want to compute botgh random variables or just one.
+    * @return A pair of scalars representing to independent normal random variables if both are required,
+    * a pair of scalar where the first is a normal rv and the second is 0 (a dummy number)
     */
-    template<typename LocalRNGType>
+    template<typename LocalRNGType, bool skip_second = false>
     struct NormalPair {
-        /** @brief Generate uniform random number with kokkos with the precision required at compile time
-        */
-        KOKKOS_INLINE_FUNCTION static KT::Real get_uniform(LocalRNGType &local_rg) {
-            if constexpr (std::is_same_v<KT::Real, float>) {
-                return local_rg.frand(); // Natively generates 32-bit float
-            } else {
-                return local_rg.drand(); // Natively generates 64-bit double
-            }
-        }
 
         /** @brief Call operator generating the normal variable pair at the precision specified at compile time
         */
         KOKKOS_INLINE_FUNCTION RVPair operator()(LocalRNGType &local_rg) const {
-            RVPair pair{};
+            auto pair = RVPair{.Z1= KT::real_zero, .Z2 = KT::real_zero};
 
             KOKKOS_IF_ON_DEVICE((
                 // GPU Box-Muller Code
-                const KT::Real U1 = KT::real_one - get_uniform(local_rg);
-                const KT::Real U2 = get_uniform(local_rg);
+                const KT::Real U1 = KT::real_one - get_uniform<LocalRNGType>(local_rg);
+                const KT::Real U2 = get_uniform<LocalRNGType>(local_rg);
                 const KT::Real R = Kokkos::sqrt(-KT::real_two * Kokkos::log(U1));
                 const KT::Real theta = KT::real_2PI * U2;
                 pair.Z1 = R * Kokkos::cos(theta);
-                pair.Z2 = R * Kokkos::sin(theta);
+                // Compute second rv only if needed
+                if constexpr (!skip_second) {
+                    pair.Z2 = R * Kokkos::sin(theta);
+            }
             ))
 
             KOKKOS_IF_ON_HOST((
                 // CPU Marsaglia Code
                 KT::Real u, v, s;
                 do {
-                u = KT::real_two * get_uniform(local_rg) - KT::real_one;
-                v = KT::real_two * get_uniform(local_rg) - KT::real_one;
+                u = KT::real_two * get_uniform<LocalRNGType>(local_rg) - KT::real_one;
+                v = KT::real_two * get_uniform<LocalRNGType>(local_rg) - KT::real_one;
                 s = u * u + v * v;
                 } while (s >= KT::real_one || s == KT::real_zero);
 
                 const KT::Real multiplier = Kokkos::sqrt(-KT::real_two * Kokkos::log(s) / s);
                 pair.Z1 = u * multiplier;
-                pair.Z2 = v * multiplier;
+                // Compute second rv only if needed
+                if constexpr (!skip_second) {
+                    pair.Z2 = v * multiplier;
+                }
+
             ))
 
             return pair;
