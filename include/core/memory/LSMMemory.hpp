@@ -141,7 +141,7 @@ namespace quantkos::Engine {
             // Note: subview only gives a window, it does not allocate any new memory
 
             // 0. Move data to host using PCIe BUS, it is the slowest copy (cannot copy directly from gpu to master matrix in cpu)
-            BatchMem.deep_copy_to_host();
+            BatchMem.deep_copy_paths_to_host_if_needed();
 
             // 1. Create Target: CPU Master Matrix subview
             const int path_start_idx = batch_idx * BatchMem.n_sims_per_batch;

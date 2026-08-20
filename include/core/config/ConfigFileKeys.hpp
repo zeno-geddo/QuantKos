@@ -130,6 +130,7 @@ namespace quantkos::Keys {
         static constexpr std::string_view RNG_Seed = "RNG_Seed"; ///< Key Initial seed for RNG.
         static constexpr std::string_view Max_VRAM_MB = "Max_VRAM_MB"; ///< Key for limit on GPU VRAM allocation.
         static constexpr std::string_view Max_CPU_RAM_MB = "Max_CPU_RAM_MB"; ///< Limit on CPU host memory allocation.
+        static constexpr std::string_view analyze_risk_neutral_payoff_distribution = "analyze_risk_neutral_payoff_distribution"; ///< Key to analyze the distribution of the risk-neutral discounted payoffs
     }
 
     // ------------------------------------------------------------------------

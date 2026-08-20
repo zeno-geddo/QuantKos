@@ -353,7 +353,7 @@ namespace quantkos::Engine {
  * @param Solver Reference to the specialized temporal integration solver.
  * @param OWriter Reference to the output file persistence and logging manager.
  * @param MCTracker Reference to the console execution progress bar and ETA tracker.
- * @param host_deep_copy The injected lambda or callable functor containing batch-specific host copy logic.
+ * @param custom_host_deep_copy The injected lambda or callable functor containing batch-specific host copy logic.
  *
  * * ### Host-Device Execution Lifecycle Flow:
      * ```text
@@ -391,7 +391,7 @@ namespace quantkos::Engine {
         const SolverType &Solver,
         KIO::OutputManager &OWriter,
         ForwardMCProgressTracker &MCTracker,
-        HostDeepCopy &&host_deep_copy // Lambda function to copy desired data to host
+        HostDeepCopy &&custom_host_deep_copy // Lambda function to copy desired data to host
     ) {
         //       [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
         //
@@ -426,20 +426,20 @@ namespace quantkos::Engine {
         const int n_total_batch_loops = BatchMem.total_batch_loops();
 
         MCTracker.start_tracking();
-        for (int b = 0; b < n_total_batch_loops; ++b) {
-            const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
+        for (int n_curr_batch = 0; n_curr_batch < n_total_batch_loops; ++n_curr_batch) {
+            const int current_batch_size = (n_curr_batch < n_full_batches) ? full_batch_size : n_sims_left_over;
 
             // 1. Fire parallel integration kernels on the active Kokkos execution space (Device/GPU)
             Solver.execute_batch(current_batch_size, BatchMem, RNGen);
 
             // 2. Execute the custom host-device synchronization policy (e.g. DMA transfers, accumulation)
-            host_deep_copy(b, current_batch_size); // Note : Injected via Lambda
+            custom_host_deep_copy(n_curr_batch, current_batch_size); // Note : Injected via Lambda
 
             // 3. Write path diagnostics/trajectories to the file system if configured
             OWriter.save_paths_batch_if_needed(current_batch_size, BatchMem); //Save batch to disk
 
             // 4. Advance progress and compute linear clock ETA using the tracker defined in the Canvas
-            MCTracker.update_progress(b + 1);
+            MCTracker.update_progress(n_curr_batch + 1);
         }
         MCTracker.finalize_tracking();
     }

@@ -118,25 +118,25 @@ namespace quantkos::Engine {
         //-------------------------------------------
         /** @name Synchronization Routines */
         ///@{
-        /** @brief Copies current batch data from the device to the host.
+        /** @brief Copies current batch path data from the device to the host.
          * @note The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase.
          */
-        void deep_copy_to_host() const {
+        void deep_copy_paths_to_host_if_needed() const {
             if (require_paths_allocated) {
                 Kokkos::deep_copy(h_batch_view, d_batch_view);
             }
-            Kokkos::deep_copy(h_payoffs, d_payoffs);
+            // Kokkos::deep_copy(h_payoffs, d_payoffs);
         }
 
 
-        /** @brief Copies modified batch data from the host back to the device.
+        /** @brief Copies modified batch path data from the host back to the device.
          * @note The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase.
         */
-        void deep_copy_to_device() const {
+        void deep_copy_paths_to_device_if_needed() const {
             if (require_paths_allocated) {
                 Kokkos::deep_copy(d_batch_view, h_batch_view);
             }
-            Kokkos::deep_copy(d_payoffs, h_payoffs);
+            // Kokkos::deep_copy(d_payoffs, h_payoffs);
         }
 
         //-------------------------------------------
@@ -364,7 +364,7 @@ namespace quantkos::Engine {
             std::cout << "  [Batch Memory] Allocating reusable buffers ("
                     << n_sims_per_batch << ") for the payoffs of the MC batches...\n";
             d_payoffs = DevBatchPayoffView("gpu_payoffs_batch_buffer", n_sims_per_batch);
-            h_payoffs = Kokkos::create_mirror_view(d_payoffs);
+            // h_payoffs = Kokkos::create_mirror_view(d_payoffs);
         }
 
         /** * @brief Computes optimal batch size based on available device VRAM or host RAM.

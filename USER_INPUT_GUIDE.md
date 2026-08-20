@@ -215,14 +215,15 @@ $$
 
 The MC block controls the Monte Carlo simulation.
 
-| Parameter        | Description                                                                               |
-|------------------|-------------------------------------------------------------------------------------------|
-| Normalize_prices | If true, it normalizes monetary parameters relative to S0 (if false, keeps everything untouched).|
-| N_Paths          | Total number of simulated Monte Carlo paths.                                              |
-| Batch_Size       | Number of paths processed simultaneously in a batch (it allow for very large simulation). |
-| RNG_Seed         | Seed used by the random number generator.                                                 |
-| Max_VRAM_MB      | Maximum GPU memory allowed.                                                               |
-| Max_CPU_RAM_MB   | Maximum host memory allowed.                                                              |
+| Parameter        | Description                                                                                                                                                                                                                      |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Normalize_prices | If true, it normalizes monetary parameters relative to S0 (if false, keeps everything untouched).                                                                                                                                |
+| N_Paths          | Total number of simulated Monte Carlo paths.                                                                                                                                                                                     |
+| Batch_Size       | Number of paths processed simultaneously in a batch (it allow for very large simulation).                                                                                                                                        |
+| RNG_Seed         | Seed used by the random number generator.                                                                                                                                                                                        |
+| Max_VRAM_MB      | Maximum GPU memory allowed.                                                                                                                                                                                                      |
+| Max_CPU_RAM_MB   | Maximum host memory allowed.                                                                                                                                                                                                     |
+| analyze_risk_neutral_payoff_distribution   | If true, analyze the distribution of the risk-neutral discounted payoffs. Note: to analyze the disrtibution the payoffs need to be sorted on CPU, and this take times. Too speed up, be sure to use openmp also when using cuda. |
 
 #### About the Batch Size
 

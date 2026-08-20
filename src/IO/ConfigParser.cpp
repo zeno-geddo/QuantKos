@@ -195,6 +195,9 @@ namespace quantkos::Config {
                 conf.mc.Max_VRAM_MB = node[str(KK::MCParams::Max_VRAM_MB)].as<long long>();
             if (node[str(KK::MCParams::Max_CPU_RAM_MB)])
                 conf.mc.Max_CPU_RAM_MB = node[str(KK::MCParams::Max_CPU_RAM_MB)].as<long long>();
+            if (node[str(KK::MCParams::analyze_risk_neutral_payoff_distribution)])
+                conf.mc.analyze_risk_neutral_payoff_distribution = node[str(
+                    KK::MCParams::analyze_risk_neutral_payoff_distribution)].as<bool>();
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::MC) + "' missing.");
         }

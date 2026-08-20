@@ -396,7 +396,7 @@ namespace quantkos::Config {
         uint64_t rng_seed = 184467440737095ULL; ///< Initial seed for the independent random number generation.
         long long Max_VRAM_MB = 256; ///< Limit on GPU VRAM allocation.
         long long Max_CPU_RAM_MB = 4000; ///< Limit on CPU host memory allocation.
-
+        bool analyze_risk_neutral_payoff_distribution = false; ///< Analyze the distribution of the risk-neutral discounted payoffs (The payoffs are sorted and the percentiles are computed and discounting is applied)
 
         /**
        * @brief Validates hardware limits and simulation parameters.
@@ -438,7 +438,8 @@ namespace quantkos::Config {
                     << indent << "    Batch Size required            :    " << batch_size << "\n"
                     << indent << "    Seed Random Number Generator   :    " << rng_seed << "\n"
                     << indent << "    User VRAM Limit (MB)           :    " << Max_VRAM_MB << "\n"
-                    << indent << "    User CPU RAM Limit (MB)        :    " << Max_CPU_RAM_MB << "\n";
+                    << indent << "    User CPU RAM Limit (MB)        :    " << Max_CPU_RAM_MB << "\n"
+                    << indent << "    Analyze risk-neutral discounted payoffs distribution   :    " << analyze_risk_neutral_payoff_distribution << "\n";
         }
     };
 

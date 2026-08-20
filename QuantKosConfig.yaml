@@ -9,7 +9,7 @@ Market:
   q: 0.0        # Continuous dividend yield
 
 Options:
-  OptionType: Asian #American
+  OptionType:  Asian #American
   OptionRight: Put
   StrikePrice: 10.
 
@@ -33,7 +33,8 @@ MC:
   Batch_Size: 0 # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
   RNG_Seed: 88471920573105
   Max_VRAM_MB: 256 #512 #2048 # Max Available VRAM (Default 256 MB)
-  Max_CPU_RAM_MB: 6000 #8000 Max Available RAM
+  Max_CPU_RAM_MB: 8000 #8000 Max Available RAM
+  analyze_risk_neutral_payoff_distribution: true # Analyze risk-neutral discounted payoff distribution
 
 Output:
   out_dir: "" #"./install/outputs"

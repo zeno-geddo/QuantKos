@@ -54,7 +54,7 @@ namespace quantkos::Engine {
             // Kokkos allocates a massive, flat array of independent mathematical state registers directly inside the device memory space (VRAM or system RAM).
             // The number of states allocated is chosen by Kokkos to match the maximum physical hardware concurrency of your chip (often tens of thousands of individual slots).
             // Each slot is initialized with a slightly scrambled version of your seed.
-            uint64_t initial_seed = config.mc.rng_seed;
+            const uint64_t initial_seed = config.mc.rng_seed;
             global_rng_pool = GlobalRNGPool(initial_seed);
             std::cout << "  [RNGenerator] Global Random Number Pool initialized correctly." << std::endl;
         }
