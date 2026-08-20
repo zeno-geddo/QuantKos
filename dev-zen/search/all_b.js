@@ -14,7 +14,7 @@ var searchData=
   ['characteristics_11',['Performance Characteristics',['../namespacequantkos_1_1IO_1_1Binary.html#autotoc_md44',1,'']]],
   ['clone_20the_20repository_12',['Clone the repository',['../index.html#autotoc_md81',1,'']]],
   ['cmakelists_13',['CMakeLists',['../namespaceCMakeLists.html',1,'']]],
-  ['cmakelists_2etxt_14',['cmakelists.txt',['../tests_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../app_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../src_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../CMakeLists_8txt.html',1,'(Global Namespace)']]],
+  ['cmakelists_2etxt_14',['cmakelists.txt',['../app_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../tests_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../src_2CMakeLists_8txt.html',1,'(Global Namespace)'],['../CMakeLists_8txt.html',1,'(Global Namespace)']]],
   ['code_20documentation_20setup_15',['6.5 CODE Documentation Setup',['..//home/runner/work/QuantKos/QuantKos/CMakeLists.txt#doc_sec',1,'']]],
   ['coeffs_16',['Coeffs',['../structquantkos_1_1Engine_1_1LSM_1_1Coeffs.html',1,'quantkos::Engine::LSM']]],
   ['command_20line_20help_17',['Displaying the Command-Line Help',['../md_COMPILATION__GUIDE.html#autotoc_md37',1,'']]],

@@ -7,7 +7,7 @@ digraph "quantkos::Engine::ForwardMCRunner::get_option_prices"
   rankdir="LR";
   Node1 [id="Node000001",label="quantkos::Engine::Forward\lMCRunner::get_option_prices",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="High-level orchestration method that runs the forward Monte Carlo engine."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="quantkos::Engine::Option\lPricer::evaluate_option_price",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1OptionPricer.html#a958636408d616396b60348837c9cc186",tooltip="Computes final option statistics and performs empirical quantiles."];
+  Node2 [id="Node000002",label="quantkos::Engine::Option\lPricer::evaluate_option_price",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1OptionPricer.html#a958636408d616396b60348837c9cc186",tooltip="Computes final option and performs empirical quantiles risk neutral discounted payoff distribution if..."];
   Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
   Node3 [id="Node000003",label="quantkos::Engine::Option\lPricer::get_option_price_data",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1OptionPricer.html#a9dedfb81e1716c9e40420a6d569ce1fe",tooltip="Exposes read-only access to the final computed metrics data structure."];
   Node1 -> Node4 [id="edge3_Node000001_Node000004",color="steelblue1",style="solid",tooltip=" "];

@@ -2,7 +2,7 @@ var searchData=
 [
   ['i_20heston_20stochastic_20volatility_20model_0',['I. Heston Stochastic Volatility Model',['../md_MATH__GUIDE.html#autotoc_md48',1,'']]],
   ['i_3a_20mandatory_20requirements_1',['Part I: Mandatory Requirements',['../md_COMPILATION__GUIDE.html#autotoc_md2',1,'']]],
-  ['i_5funit_2',['i_unit',['../namespacequantkos_1_1Engine_1_1Analytical_1_1Heston.html#a329f707ea847fd678d9cecc379a79f58',1,'quantkos::Engine::Analytical::Heston::i_unit'],['../namespacequantkos_1_1Engine_1_1Analytical_1_1Bates.html#a699b440d23c4a53e7ee9c5daadc291d3',1,'quantkos::Engine::Analytical::Bates::i_unit']]],
+  ['i_5funit_2',['i_unit',['../namespacequantkos_1_1Engine_1_1Analytical_1_1Bates.html#a699b440d23c4a53e7ee9c5daadc291d3',1,'quantkos::Engine::Analytical::Bates::i_unit'],['../namespacequantkos_1_1Engine_1_1Analytical_1_1Heston.html#a329f707ea847fd678d9cecc379a79f58',1,'quantkos::Engine::Analytical::Heston::i_unit']]],
   ['id_5fmodel_3',['id_model',['../structquantkos_1_1Config_1_1MathModelConfig.html#a448fa0b3950212d2c19ba08c2524b432',1,'quantkos::Config::MathModelConfig']]],
   ['id_5fscheme_4',['id_scheme',['../structquantkos_1_1Config_1_1NumSchemeConfig.html#a8f8f2ef1dcb9f9b637ccced2c88ff7da',1,'quantkos::Config::NumSchemeConfig']]],
   ['ii_20bates_20stochastic_20volatility_20jump_20diffusion_20model_5',['II. Bates Stochastic Volatility Jump-Diffusion Model',['../md_MATH__GUIDE.html#autotoc_md50',1,'']]],
@@ -40,5 +40,6 @@ var searchData=
   ['is_5fhost_5fcontiguous_37',['is_host_contiguous',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#aa284dd41bfa9db6733fa10ac12f7d75b',1,'quantkos::Engine::PathsMCBatchMem']]],
   ['is_5fhost_5frow_5fmajor_38',['is_host_row_major',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a4b0c59de421d363dacdb7c9ae20c32f2',1,'quantkos::Engine::PathsMCBatchMem']]],
   ['is_5freal_5fusing_5fsingle_5fprecision_39',['is_real_using_single_precision',['../namespacequantkos_1_1Types.html#a8c704f9d43e21008b8b480926176195a',1,'quantkos::Types']]],
-  ['isolated_20hardware_20builds_40',['2. Isolated Hardware Builds',['../md_COMPILATION__GUIDE.html#autotoc_md17',1,'']]]
+  ['isolated_20hardware_20builds_40',['2. Isolated Hardware Builds',['../md_COMPILATION__GUIDE.html#autotoc_md17',1,'']]],
+  ['itm_41',['itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1PayoffsBatchStats.html#a1b02998f094a594ba723d067192d47cb',1,'quantkos::Engine::OptionPricer::PayoffsBatchStats']]]
 ];

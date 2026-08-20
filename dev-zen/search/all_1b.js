@@ -38,7 +38,7 @@ var searchData=
   ['standard_20vanilla_20options_35',['Standard Vanilla Options',['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19aeefbba9e3bbb0e8d0d2505803bae26de',1,'quantkos::Implemented']]],
   ['standard_5ferror_36',['standard_error',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a38a907579ecc0c25bb3ece7153070982',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
   ['start_37',['🚀 Quick Start',['../index.html#autotoc_md80',1,'']]],
-  ['start_5ftracking_38',['start_tracking',['../classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html#aa04f788935793c90535efb256363f523',1,'quantkos::Engine::ForwardMCProgressTracker::start_tracking()'],['../classquantkos_1_1Engine_1_1BackwardLSMProgressTracker.html#a9f88c11bc5fdf925e117916e3f944bd0',1,'quantkos::Engine::BackwardLSMProgressTracker::start_tracking()']]],
+  ['start_5ftracking_38',['start_tracking',['../classquantkos_1_1Engine_1_1BackwardLSMProgressTracker.html#a9f88c11bc5fdf925e117916e3f944bd0',1,'quantkos::Engine::BackwardLSMProgressTracker::start_tracking()'],['../classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html#aa04f788935793c90535efb256363f523',1,'quantkos::Engine::ForwardMCProgressTracker::start_tracking()']]],
   ['stat_5ferror_39',['stat_error',['../structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html#a0a0c1d80bad0c39730b5d50618a534da',1,'quantkos::Tests::Utils::OptionPriceErr']]],
   ['static_20analysis_20warnings_40',['4. Default Static Analysis Warnings',['../namespaceCMakeLists.html#warning_sec',1,'']]],
   ['step_201_20required_20_3a_20install_20core_20utilities_20documentation_20tools_41',['Step 1 (Required): Install Core Utilities &amp; Documentation Tools',['../md_COMPILATION__GUIDE.html#autotoc_md11',1,'']]],
@@ -62,6 +62,7 @@ var searchData=
   ['structure_59',['structure',['../md_COMPILATION__GUIDE.html#autotoc_md26',1,'1. Recommended Directory Structure'],['../md_COMPILATION__GUIDE.html#autotoc_md16',1,'1. Recommended Directory Structure']]],
   ['suite_60',['suite',['../index.html#autotoc_md93',1,'🧪 Validation Suite'],['../md_COMPILATION__GUIDE.html#autotoc_md42',1,'Running the Built-in Test Suite']]],
   ['suite_20nvidia_20nsight_61',['C. GPU Profiling Suite (NVIDIA Nsight)',['../md_COMPILATION__GUIDE.html#autotoc_md9',1,'']]],
-  ['supported_20option_20contracts_62',['supported option contracts',['../index.html#autotoc_md74',1,'Supported Option Contracts'],['../md_MATH__GUIDE.html#autotoc_md53',1,'Supported Option Contracts']]],
-  ['system_20level_20prerequisites_20on_20linux_63',['🐧 2.  Installing the System level Prerequisites on Linux',['../md_COMPILATION__GUIDE.html#autotoc_md10',1,'']]]
+  ['sum_62',['sum',['../structquantkos_1_1Engine_1_1OptionPricer_1_1PayoffsBatchStats.html#ab0cc387866cbf418d7ca5ce94ec624b4',1,'quantkos::Engine::OptionPricer::PayoffsBatchStats']]],
+  ['supported_20option_20contracts_63',['supported option contracts',['../md_MATH__GUIDE.html#autotoc_md53',1,'Supported Option Contracts'],['../index.html#autotoc_md74',1,'Supported Option Contracts']]],
+  ['system_20level_20prerequisites_20on_20linux_64',['🐧 2.  Installing the System level Prerequisites on Linux',['../md_COMPILATION__GUIDE.html#autotoc_md10',1,'']]]
 ];

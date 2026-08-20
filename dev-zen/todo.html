@@ -99,7 +99,7 @@ $(function() {
 <dt>Member <a class="el" href="classquantkos_1_1Engine_1_1BackwardLSMMemory.html#a123cbfed3e40a4cda17068ebb6259e53">quantkos::Engine::BackwardLSMMemory::copy_current_mc_batch_to_master_mc_matrix</a>  (const int batch_idx, const int current_batch_size)</dt>
 <dd><a class="anchor" id="_todo000007"></a>COPY FROM HOST BATCH AND MASTER HOST MATRIX, THAN WHEN RUNNING ON GPU HAVE DIFFERENT LAYOUT, TAKE AS MUCH TIME AS COPYING THE BATCH FROM DEVICE TO HOST. MUST BE FOUND A BETTER WAY TO DO THAT.  </dd>
 <dt>Member <a class="el" href="classquantkos_1_1Engine_1_1ForwardMCRunner.html#ac86a1154cda2f65879a791fbceef6627">quantkos::Engine::ForwardMCRunner&lt; ModelPolicy, SchemePolicy, OptType, OptRight &gt;::get_option_prices</a>  () const</dt>
-<dd><a class="anchor" id="_todo000005"></a>If calling this in a loop, should add the possibility to reuse the helper classes to avoid repeating initialization overheads.  </dd>
+<dd><a class="anchor" id="_todo000005"></a>If calling this in a calibration loop, should add the possibility to reuse the helper classes to avoid repeating initialization overheads.  </dd>
 <dt>Namespace <a class="el" href="namespacequantkos_1_1Engine_1_1LSM.html">quantkos::Engine::LSM</a>  </dt>
 <dd><a class="anchor" id="_todo000008"></a>Should implement the control variate technique to improve the precision, see Pag. 208, eq. 7, the the book : Fabrice D. Rouah's <em>The Heston Model and its Extensions in Matlab and C#</em>.  </dd>
 <dt>Class <a class="el" href="classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html">quantkos::Engine::LSM::LSMEngine&lt; OptRight, Basis &gt;</a>  </dt>
@@ -108,7 +108,7 @@ $(function() {
 <dd><a class="anchor" id="_todo000004"></a>Should improve the dispatching procedure to reduce the compilation time, especially if many other models will be added.  </dd>
 <dt>Class <a class="el" href="classquantkos_1_1Engine_1_1MSolver.html">quantkos::Engine::MSolver&lt; ModelPolicy, SchemePolicy, OptType, OptRight &gt;</a>  </dt>
 <dd><a class="anchor" id="_todo000011"></a>Should implement non-markovian models. This could be modified to work also with a non marlovian integration kernel.  </dd>
-<dt>Member <a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a8d9b3a1926b0a176b9bca97bb722e205">quantkos::Engine::OptionPricer::accumulate_batch_payoffs</a>  (const HostBatchPayoffView &amp;h_payoffs, const int curr_batch_size)</dt>
+<dt>Member <a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a311c3a9644f625715c922339721653d2">quantkos::Engine::OptionPricer::accumulate_batch_payoffs</a>  (const DevBatchPayoffView &amp;d_payoffs, const int curr_batch_size)</dt>
 <dd><a class="anchor" id="_todo000010"></a>This is inefficient, should better manage the memory  </dd>
 <dt>Namespace <a class="el" href="namespacequantkos_1_1IO.html">quantkos::IO</a>  </dt>
 <dd><p class="startdd"><a class="anchor" id="_todo000013"></a>Implement <code>CSVWriter</code> class to handle streaming storage to CSV files for rapid inspections. </p>

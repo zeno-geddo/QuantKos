@@ -301,7 +301,10 @@ template&lt;<a class="el" href="namespacequantkos_1_1Implemented.html#a97f1bf0cc
 <ul>
 <li>This method manges the local infrastructure stack needed to run the simulation, including batch memory buffers, SDE solvers, option payoff accumulation tracking, and output writers.</li>
 <li><dl class="section return"><dt>Returns</dt><dd>An aggregated <a class="el" href="structquantkos_1_1Engine_1_1MCResults.html" title="Immutable snapshot container for Monte Carlo simulation outputs.">MCResults</a> object containing the results of the MonteCarlo. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>If calling this in a loop, should add the possibility to reuse the helper classes to avoid repeating initialization overheads. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>If calling this in a calibration loop, should add the possibility to reuse the helper classes to avoid repeating initialization overheads. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The total number of MC simulations are performed in batches to handle cases when not enough memory is available for the full MC </dd>
+<dd>
+To compute the option price, the global random number pool is created once (not a new one for each batch) since states advance dynamically. Using the same pool for different batches is the correct approach, otherwise you would repeat identical simulations paths in different batches. </dd></dl>
 </li>
 </ul>
 <div class="dynheader">

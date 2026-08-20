@@ -198,10 +198,10 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a0b5dbc54600aedc0d5462d47e5a8c60d" id="r_a0b5dbc54600aedc0d5462d47e5a8c60d"><td class="memTemplParams" colspan="2">template&lt;typename SolverType , typename HostDeepCopy &gt; </td></tr>
-<tr class="memitem:a0b5dbc54600aedc0d5462d47e5a8c60d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#a0b5dbc54600aedc0d5462d47e5a8c60d">run_forward_all_mc_batches</a> (<a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html">PathsMCBatchMem</a> &amp;BatchMem, const <a class="el" href="classquantkos_1_1Engine_1_1RNGManager.html">RNGManager</a> &amp;RNGen, const SolverType &amp;Solver, <a class="el" href="classquantkos_1_1IO_1_1OutputManager.html">KIO::OutputManager</a> &amp;OWriter, <a class="el" href="classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html">ForwardMCProgressTracker</a> &amp;MCTracker, HostDeepCopy &amp;&amp;host_deep_copy)</td></tr>
-<tr class="memdesc:a0b5dbc54600aedc0d5462d47e5a8c60d"><td class="mdescLeft">&#160;</td><td class="mdescRight">HEAVY-LIFT HELPER FUNCTION FOR FORWARD PHASE. Executes and coordinates the forward Monte Carlo simulation across all path batches.  <br /></td></tr>
-<tr class="separator:a0b5dbc54600aedc0d5462d47e5a8c60d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0367e2eb7237c136e5a750b17ce309d" id="r_aa0367e2eb7237c136e5a750b17ce309d"><td class="memTemplParams" colspan="2">template&lt;typename SolverType , typename HostDeepCopy &gt; </td></tr>
+<tr class="memitem:aa0367e2eb7237c136e5a750b17ce309d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#aa0367e2eb7237c136e5a750b17ce309d">run_forward_all_mc_batches</a> (<a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html">PathsMCBatchMem</a> &amp;BatchMem, const <a class="el" href="classquantkos_1_1Engine_1_1RNGManager.html">RNGManager</a> &amp;RNGen, const SolverType &amp;Solver, <a class="el" href="classquantkos_1_1IO_1_1OutputManager.html">KIO::OutputManager</a> &amp;OWriter, <a class="el" href="classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html">ForwardMCProgressTracker</a> &amp;MCTracker, HostDeepCopy &amp;&amp;custom_host_deep_copy)</td></tr>
+<tr class="memdesc:aa0367e2eb7237c136e5a750b17ce309d"><td class="mdescLeft">&#160;</td><td class="mdescRight">HEAVY-LIFT HELPER FUNCTION FOR FORWARD PHASE. Executes and coordinates the forward Monte Carlo simulation across all path batches.  <br /></td></tr>
+<tr class="separator:aa0367e2eb7237c136e5a750b17ce309d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2bb7c749a362127cf8045610d02c8f8" id="r_aa2bb7c749a362127cf8045610d02c8f8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#aa2bb7c749a362127cf8045610d02c8f8">get_ram_available_memory_from_os_kb</a> ()</td></tr>
 <tr class="memdesc:aa2bb7c749a362127cf8045610d02c8f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the amount of physical RAM currently available on the system.  <br /></td></tr>
 <tr class="separator:aa2bb7c749a362127cf8045610d02c8f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -410,8 +410,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a0b5dbc54600aedc0d5462d47e5a8c60d" name="a0b5dbc54600aedc0d5462d47e5a8c60d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0b5dbc54600aedc0d5462d47e5a8c60d">&#9670;&#160;</a></span>run_forward_all_mc_batches()</h2>
+<a id="aa0367e2eb7237c136e5a750b17ce309d" name="aa0367e2eb7237c136e5a750b17ce309d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0367e2eb7237c136e5a750b17ce309d">&#9670;&#160;</a></span>run_forward_all_mc_batches()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -455,7 +455,7 @@ template&lt;typename SolverType , typename HostDeepCopy &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">HostDeepCopy &amp;&amp;&#160;</td>
-          <td class="paramname"><em>host_deep_copy</em>&#160;</td>
+          <td class="paramname"><em>custom_host_deep_copy</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -492,7 +492,7 @@ template&lt;typename SolverType , typename HostDeepCopy &gt; </div>
     <tr><td class="paramname">Solver</td><td>Reference to the specialized temporal integration solver. </td></tr>
     <tr><td class="paramname">OWriter</td><td>Reference to the output file persistence and logging manager. </td></tr>
     <tr><td class="paramname">MCTracker</td><td>Reference to the console execution progress bar and ETA tracker. </td></tr>
-    <tr><td class="paramname">host_deep_copy</td><td>The injected lambda or callable functor containing batch-specific host copy logic.</td></tr>
+    <tr><td class="paramname">custom_host_deep_copy</td><td>The injected lambda or callable functor containing batch-specific host copy logic.</td></tr>
   </table>
   </dd>
 </dl>
@@ -527,7 +527,7 @@ template&lt;typename SolverType , typename HostDeepCopy &gt; </div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="namespacequantkos_1_1Engine_a0b5dbc54600aedc0d5462d47e5a8c60d_cgraph.png" border="0" usemap="#anamespacequantkos_1_1Engine_a0b5dbc54600aedc0d5462d47e5a8c60d_cgraph" alt=""/></div>
+<div class="center"><img src="namespacequantkos_1_1Engine_aa0367e2eb7237c136e5a750b17ce309d_cgraph.png" border="0" usemap="#anamespacequantkos_1_1Engine_aa0367e2eb7237c136e5a750b17ce309d_cgraph" alt=""/></div>
 </div>
 
 </div>

@@ -7,7 +7,7 @@ digraph "quantkos::Engine::PathsMCBatchMem::n_sims_left_over_after_full_batches"
   rankdir="RL";
   Node1 [id="Node000001",label="quantkos::Engine::PathsMCBatch\lMem::n_sims_left_over_after\l_full_batches",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Returns the path remainder count that must be scheduled in a final, smaller partial batch."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="quantkos::Engine::run\l_forward_all_mc_batches",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Engine.html#a0b5dbc54600aedc0d5462d47e5a8c60d",tooltip="HEAVY-LIFT HELPER FUNCTION FOR FORWARD PHASE. Executes and coordinates the forward Monte Carlo simula..."];
+  Node2 [id="Node000002",label="quantkos::Engine::run\l_forward_all_mc_batches",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Engine.html#aa0367e2eb7237c136e5a750b17ce309d",tooltip="HEAVY-LIFT HELPER FUNCTION FOR FORWARD PHASE. Executes and coordinates the forward Monte Carlo simula..."];
   Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node3 [id="Node000003",label="quantkos::Engine::PathsMCBatch\lMem::total_batch_loops",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a4fbdc5d0e694f4ee33e650fdfc9e1636",tooltip="Returns the total count of batch iterations required to complete the entire simulation run."];
   Node3 -> Node4 [id="edge3_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];

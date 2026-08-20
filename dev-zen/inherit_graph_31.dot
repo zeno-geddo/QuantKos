@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Engine::Payoff\l\< KI::OptRight::Call \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1Payoff_3_01KI_1_1OptRight_1_1Call_01_4.html",tooltip="Compile-time specialization evaluating standard Call option contract payoffs."];
+  Node0 [id="Node000000",label="quantkos::Engine::PathsMCBatchMem",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html",tooltip="Manages hardware memory allocation for batch-processed Monte Carlo simulations."];
 }

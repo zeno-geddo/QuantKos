@@ -102,17 +102,20 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html">MCOpPrices</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage container for final simulation metrics and distribution percentiles.  <a href="structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1OptionPricer_1_1PayoffsBatchStats.html">PayoffsBatchStats</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage container for first reduction loop in batch accumulation.  <a href="structquantkos_1_1Engine_1_1OptionPricer_1_1PayoffsBatchStats.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7e87e4b18404365c761a21fbfbf085ca" id="r_a7e87e4b18404365c761a21fbfbf085ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a7e87e4b18404365c761a21fbfbf085ca">OptionPricer</a> (const <a class="el" href="structquantkos_1_1Config_1_1UInputs.html">KC::UInputs</a> &amp;conf)</td></tr>
 <tr class="memdesc:a7e87e4b18404365c761a21fbfbf085ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the pricer and reserves heap memory for path payloads on Host CPU.  <br /></td></tr>
 <tr class="separator:a7e87e4b18404365c761a21fbfbf085ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d9b3a1926b0a176b9bca97bb722e205" id="r_a8d9b3a1926b0a176b9bca97bb722e205"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a8d9b3a1926b0a176b9bca97bb722e205">accumulate_batch_payoffs</a> (const <a class="el" href="namespacequantkos_1_1Engine.html#a6c11eb0211a3d0518b0f888e6269a8da">HostBatchPayoffView</a> &amp;h_payoffs, const int curr_batch_size)</td></tr>
-<tr class="memdesc:a8d9b3a1926b0a176b9bca97bb722e205"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collects batch-specific path results from the host memory mirror views into a single heap vector for the payoffs of the entire MonteCarlo.  <br /></td></tr>
-<tr class="separator:a8d9b3a1926b0a176b9bca97bb722e205"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a311c3a9644f625715c922339721653d2" id="r_a311c3a9644f625715c922339721653d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a311c3a9644f625715c922339721653d2">accumulate_batch_payoffs</a> (const <a class="el" href="namespacequantkos_1_1Engine.html#a9432912504b19aa6138ba67a998cd5bd">DevBatchPayoffView</a> &amp;d_payoffs, const int curr_batch_size)</td></tr>
+<tr class="memdesc:a311c3a9644f625715c922339721653d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collects batch-specific path results from the host memory mirror views into a single heap vector for the payoffs of the entire MonteCarlo.  <br /></td></tr>
+<tr class="separator:a311c3a9644f625715c922339721653d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a958636408d616396b60348837c9cc186" id="r_a958636408d616396b60348837c9cc186"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a958636408d616396b60348837c9cc186">evaluate_option_price</a> ()</td></tr>
-<tr class="memdesc:a958636408d616396b60348837c9cc186"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes final option statistics and performs empirical quantiles.  <br /></td></tr>
+<tr class="memdesc:a958636408d616396b60348837c9cc186"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes final option and performs empirical quantiles risk neutral discounted payoff distribution if needed.  <br /></td></tr>
 <tr class="separator:a958636408d616396b60348837c9cc186"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac684f4c688a98b086c60f3d9633ad89a" id="r_ac684f4c688a98b086c60f3d9633ad89a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#ac684f4c688a98b086c60f3d9633ad89a">print_info_option_price</a> () const</td></tr>
 <tr class="memdesc:ac684f4c688a98b086c60f3d9633ad89a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outputs a comprehensive simulation summary report (containing option prices etc.) to the standard console.  <br /></td></tr>
@@ -267,8 +270,8 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a8d9b3a1926b0a176b9bca97bb722e205" name="a8d9b3a1926b0a176b9bca97bb722e205"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d9b3a1926b0a176b9bca97bb722e205">&#9670;&#160;</a></span>accumulate_batch_payoffs()</h2>
+<a id="a311c3a9644f625715c922339721653d2" name="a311c3a9644f625715c922339721653d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a311c3a9644f625715c922339721653d2">&#9670;&#160;</a></span>accumulate_batch_payoffs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -279,8 +282,8 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void quantkos::Engine::OptionPricer::accumulate_batch_payoffs </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacequantkos_1_1Engine.html#a6c11eb0211a3d0518b0f888e6269a8da">HostBatchPayoffView</a> &amp;&#160;</td>
-          <td class="paramname"><em>h_payoffs</em>, </td>
+          <td class="paramtype">const <a class="el" href="namespacequantkos_1_1Engine.html#a9432912504b19aa6138ba67a998cd5bd">DevBatchPayoffView</a> &amp;&#160;</td>
+          <td class="paramname"><em>d_payoffs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -314,10 +317,23 @@ Public Attributes</h2></td></tr>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>This is inefficient, should better manage the memory </dd></dl>
 </li>
 </ul>
+<p>Accumulate mean and variance (to be then renormalized since using chang's algorithm) of the payoffs. Also accumulates the payoffs to host if they need to be sorted later.</p><ul>
+<li><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">d_payoffs</td><td>Device view holding the current batch payoffs. </td></tr>
+    <tr><td class="paramname">curr_batch_size</td><td>The active number of paths processed in this batch loop. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>To be executed at the end of each batch of the montecarlo. </dd>
+<dd>
+The variance is computed using Chang's algorithm, while the mean as a weighted average to prevent the case where you have 2 or 3 batches only with nearly equal means (Safe from cancellation, and 64-bit double prevents swamping for typical N). More on Chang's algorithm on : <a href="https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance">https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance</a> </dd></dl>
+</li>
+</ul>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classquantkos_1_1Engine_1_1OptionPricer_a8d9b3a1926b0a176b9bca97bb722e205_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1OptionPricer_a8d9b3a1926b0a176b9bca97bb722e205_icgraph" alt=""/></div>
+<div class="center"><img src="classquantkos_1_1Engine_1_1OptionPricer_a311c3a9644f625715c922339721653d2_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1OptionPricer_a311c3a9644f625715c922339721653d2_icgraph" alt=""/></div>
 </div>
 
 </div>
@@ -345,7 +361,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Computes final option statistics and performs empirical quantiles. </p>
+<p>Computes final option and performs empirical quantiles risk neutral discounted payoff distribution if needed. </p>
 <ul>
 <li>Calculates unbiased sample statistics, determines the probability of ending in-the-money, and applies the continuous risk-free discount factor:</li>
 <li>$$D = e^{-r \cdot T}$$</li>
@@ -353,7 +369,7 @@ Here is the caller graph for this function:</div>
 </li>
 <li><dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>If called before any path payoffs have been accumulated. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>If called with an invalid number of paths. </td></tr>
   </table>
   </dd>
 </dl>
@@ -488,7 +504,7 @@ Here is the caller graph for this function:</div>
 <p>Outputs a comprehensive simulation summary report (containing option prices etc.) to the standard console. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>If executed before <a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a958636408d616396b60348837c9cc186" title="Computes final option statistics and performs empirical quantiles.">evaluate_option_price()</a> completes successfully. </td></tr>
+    <tr><td class="paramname">std::runtime_error</td><td>If executed before <a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a958636408d616396b60348837c9cc186" title="Computes final option and performs empirical quantiles risk neutral discounted payoff distribution if...">evaluate_option_price()</a> completes successfully. </td></tr>
   </table>
   </dd>
 </dl>

@@ -117,12 +117,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aba1d2c29a500155071b4de053d8c0b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor.  <br /></td></tr>
 <tr class="separator:aba1d2c29a500155071b4de053d8c0b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Synchronization Routines</div></td></tr>
-<tr class="memitem:ab2ed0432d6d86cbf711f52348e453cb4" id="r_ab2ed0432d6d86cbf711f52348e453cb4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#ab2ed0432d6d86cbf711f52348e453cb4">deep_copy_to_host</a> () const</td></tr>
-<tr class="memdesc:ab2ed0432d6d86cbf711f52348e453cb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies current batch data from the device to the host.  <br /></td></tr>
-<tr class="separator:ab2ed0432d6d86cbf711f52348e453cb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e23b4968c0babf7fcbc90ac44b09f48" id="r_a0e23b4968c0babf7fcbc90ac44b09f48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a0e23b4968c0babf7fcbc90ac44b09f48">deep_copy_to_device</a> () const</td></tr>
-<tr class="memdesc:a0e23b4968c0babf7fcbc90ac44b09f48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies modified batch data from the host back to the device.  <br /></td></tr>
-<tr class="separator:a0e23b4968c0babf7fcbc90ac44b09f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26f18c8b39e7d9d209a6b0dbe0533423" id="r_a26f18c8b39e7d9d209a6b0dbe0533423"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a26f18c8b39e7d9d209a6b0dbe0533423">deep_copy_paths_to_host_if_needed</a> () const</td></tr>
+<tr class="memdesc:a26f18c8b39e7d9d209a6b0dbe0533423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies current batch path data from the device to the host.  <br /></td></tr>
+<tr class="separator:a26f18c8b39e7d9d209a6b0dbe0533423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a512547fbd7860eb2da6397824f9dcd80" id="r_a512547fbd7860eb2da6397824f9dcd80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a512547fbd7860eb2da6397824f9dcd80">deep_copy_paths_to_device_if_needed</a> () const</td></tr>
+<tr class="memdesc:a512547fbd7860eb2da6397824f9dcd80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies modified batch path data from the host back to the device.  <br /></td></tr>
+<tr class="separator:a512547fbd7860eb2da6397824f9dcd80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Memory Interrogation Utilities</div></td></tr>
 <tr class="memitem:a980732f19677184c01640abe97f1c1d7" id="r_a980732f19677184c01640abe97f1c1d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a980732f19677184c01640abe97f1c1d7">are_paths_allocated</a> () const</td></tr>
 <tr class="memdesc:a980732f19677184c01640abe97f1c1d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tells if the paths batch are allocated of not (they are not always need, so when not needed are not allocated)  <br /></td></tr>
@@ -410,8 +410,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a0e23b4968c0babf7fcbc90ac44b09f48" name="a0e23b4968c0babf7fcbc90ac44b09f48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0e23b4968c0babf7fcbc90ac44b09f48">&#9670;&#160;</a></span>deep_copy_to_device()</h2>
+<a id="a512547fbd7860eb2da6397824f9dcd80" name="a512547fbd7860eb2da6397824f9dcd80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a512547fbd7860eb2da6397824f9dcd80">&#9670;&#160;</a></span>deep_copy_paths_to_device_if_needed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -420,7 +420,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void quantkos::Engine::PathsMCBatchMem::deep_copy_to_device </td>
+          <td class="memname">void quantkos::Engine::PathsMCBatchMem::deep_copy_paths_to_device_if_needed </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -433,13 +433,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Copies modified batch data from the host back to the device. </p>
+<p>Copies modified batch path data from the host back to the device. </p>
 <dl class="section note"><dt>Note</dt><dd>The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase. </dd></dl>
 
 </div>
 </div>
-<a id="ab2ed0432d6d86cbf711f52348e453cb4" name="ab2ed0432d6d86cbf711f52348e453cb4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2ed0432d6d86cbf711f52348e453cb4">&#9670;&#160;</a></span>deep_copy_to_host()</h2>
+<a id="a26f18c8b39e7d9d209a6b0dbe0533423" name="a26f18c8b39e7d9d209a6b0dbe0533423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26f18c8b39e7d9d209a6b0dbe0533423">&#9670;&#160;</a></span>deep_copy_paths_to_host_if_needed()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -448,7 +448,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void quantkos::Engine::PathsMCBatchMem::deep_copy_to_host </td>
+          <td class="memname">void quantkos::Engine::PathsMCBatchMem::deep_copy_paths_to_host_if_needed </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -461,12 +461,12 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Copies current batch data from the device to the host. </p>
+<p>Copies current batch path data from the device to the host. </p>
 <dl class="section note"><dt>Note</dt><dd>The paths batch view is be copied only if outputs must be saved or if they are required for a backward phase. </dd></dl>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classquantkos_1_1Engine_1_1PathsMCBatchMem_ab2ed0432d6d86cbf711f52348e453cb4_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1PathsMCBatchMem_ab2ed0432d6d86cbf711f52348e453cb4_icgraph" alt=""/></div>
+<div class="center"><img src="classquantkos_1_1Engine_1_1PathsMCBatchMem_a26f18c8b39e7d9d209a6b0dbe0533423_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1PathsMCBatchMem_a26f18c8b39e7d9d209a6b0dbe0533423_icgraph" alt=""/></div>
 </div>
 
 </div>

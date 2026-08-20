@@ -7,5 +7,5 @@ digraph "quantkos::Engine::BackwardLSMMemory::copy_current_mc_batch_to_master_mc
   rankdir="LR";
   Node1 [id="Node000001",label="quantkos::Engine::Backward\lLSMMemory::copy_current\l_mc_batch_to_master_mc_matrix",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Transfers a completed path batch from the GPU to the Master Matrix on the Host."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="quantkos::Engine::PathsMCBatch\lMem::deep_copy_to_host",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#ab2ed0432d6d86cbf711f52348e453cb4",tooltip="Copies current batch data from the device to the host."];
+  Node2 [id="Node000002",label="quantkos::Engine::PathsMCBatch\lMem::deep_copy_paths_to_host\l_if_needed",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a26f18c8b39e7d9d209a6b0dbe0533423",tooltip="Copies current batch path data from the device to the host."];
 }
