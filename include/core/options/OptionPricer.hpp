@@ -78,7 +78,7 @@ namespace quantkos::Engine {
             size_t itm = 0;
 
             // Tell Kokkos how to combine the results of two different threads
-            KOKKOS_INLINE_FUNCTION void operator+=(const PayoffsBatchStats &src) volatile {
+            KOKKOS_INLINE_FUNCTION void operator+=(const PayoffsBatchStats &src) {
                 sum += src.sum;
                 itm += src.itm;
             }
@@ -111,24 +111,6 @@ namespace quantkos::Engine {
         ~OptionPricer() = default; ///< Default destructor.
         ///@}
 
-        // To be called inside the batch loop
-        /**
-         * @brief Collects batch-specific path results from the host memory mirror views into a single heap vector for the payoffs of the entire MonteCarlo.
-         * * @param h_payoffs Host mirror view holding the current batch payoffs.
-         * @param curr_batch_size The active number of paths processed in this batch loop.
-         * @note To be executed inside your main Monte Carlo batch iterations loop.
-         *@todo This is inefficient, should better manage the memory
-        */
-        //void accumulate_batch_payoffs_old(const HostBatchPayoffView &h_payoffs,
-        //                                 const int curr_batch_size) {
-        //for (int i = 0; i < curr_batch_size; ++i) {
-        //    const KT::Real curr_payoff = h_payoffs(i); // Get payoff value from device
-        //    all_payoffs(current_path_idx++) = curr_payoff; // Store payoff to host kokkos view
-        //   const auto payoff = static_cast<double>(curr_payoff); // Cast to double befor multipying
-        //  total_payoff_sum += payoff;
-        // total_squared_payoff_sum += (payoff * payoff); // Safely multiply payoff in double precision
-        //}
-        //}
 
         /**
          * @brief Accumulate mean and variance (to be then renormalized since using chang's algorithm) of the payoffs.
@@ -260,67 +242,6 @@ namespace quantkos::Engine {
             metrics.is_computed = true;
         }
 
-
-        // /**
-        //  * @brief Computes final option and performs empirical quantiles risk neutral discounted payoff distribution if needed.
-        //  * * Calculates unbiased sample statistics, determines the probability of ending
-        //  * in-the-money, and applies the continuous risk-free discount factor:
-        //  * * $$D = e^{-r \cdot T}$$
-        //  * * @note For American options processed via backward induction (LSM), discounting is bypassed
-        //  * here because the temporal discounting operation is handled step-by-step during the backward induction loop.
-        //  * * @throw std::runtime_error If called before any path payoffs have been accumulated.
-        //  */
-        // void evaluate_option_price_old() {
-        //     const auto N = static_cast<double>(config.mc.N_Paths);
-        //     if (all_payoffs.empty() || N <= 0) {
-        //         throw std::runtime_error("Cannot compute metrics: No paths accumulated.");
-        //     }
-        //
-        //     const auto start_time = std::chrono::steady_clock::now();
-        //
-        //     // Compute discount factor (do not apply to backwards options since already applied)
-        //     double discount_factor = KT::real_one;
-        //     if (config.options.opt_type != KI::OptType::American) {
-        //         const auto r = static_cast<double>(config.market.r);
-        //         const auto t = static_cast<double>(config.time.t_end);
-        //         discount_factor = std::exp(-r * t); // Safely compute in double precision
-        //     }
-        //
-        //     // Compute stats
-        //     const double sample_mean = total_payoff_sum / N;
-        //
-        //     size_t itm_count = 0;
-        //     double sum_sq_diff = 0.0;
-        //     for (size_t i = 0; i < static_cast<size_t>(N); ++i) {
-        //         const KT::Real curr_payoff = all_payoffs(i);
-        //         const double diff = static_cast<double>(curr_payoff) - sample_mean;
-        //         sum_sq_diff += diff * diff;
-        //         if (curr_payoff > eps_payoff) itm_count++; // Count paths that survived/won
-        //     }
-        //
-        //     const double safe_variance = sum_sq_diff / (N - 1.0); // Unbiased sample variance
-        //     metrics.prob_itm = static_cast<double>(itm_count) / N;
-        //
-        //     // Apply Discounting ans scaling to get the Option Price etc.
-        //     const double effective_scale = discount_factor * get_scaling_factor();
-        //     metrics.option_price = sample_mean * effective_scale;
-        //     metrics.standard_error = std::sqrt(safe_variance / N) * effective_scale;
-        //
-        //     // Analyze shape of option price distribution
-        //     if (config.mc.analyze_risk_neutral_payoff_distribution) {
-        //         analyze_risk_neutral_discounted_payoff_distribution(effective_scale, N);
-        //     }
-
-
-        //   // Mark as successfully computed
-        //   metrics.is_computed = true;
-
-        //    // Store time
-        //    const auto end_time = std::chrono::steady_clock::now();
-        //    const std::chrono::duration<double> elapsed = end_time - start_time;
-        ////    computation_time = elapsed.count();
-        //}
-
         /**
          * @brief Outputs a comprehensive simulation summary report (containing option prices etc.) to the standard console.
          * @throw std::runtime_error If executed before evaluate_option_price() completes successfully.
@@ -380,15 +301,13 @@ namespace quantkos::Engine {
     private:
         const KC::UInputs &config; ///< Reference to the user input configuration.
         size_t current_path_idx = 0; ///< Track the payoff is being added to all payoffs
-        //double total_payoff_sum = 0.; ///< Cumulative summary of all processed payoffs values.
-        //double total_squared_payoff_sum = 0.; ///< Cumulative summary of squared payoffs values (for stats).
         size_t n_payoffs_processed = 0; ///< Track the number of payoffs processed.
         size_t itm_count = 0; ///< Count of the ITM paths.
         double payoff_mean = 0.; ///< Global payoffs mean.
         double payoff_M2_Chang = 0.;
-        ///< Global M2=sum of diff squared, where diff=payoff_i * mean payoff (updated using Chang's approach).
+        ///< Global M2 updated using Chang's approach.
         double sorting_time = 0.; ///< Internal profiling variable to tracking time spent sorting the payoffs.
-        const KT::Real eps_payoff = KT::is_real_using_single_precision() ? 1e-6f : 1e-12;
+        const KT::Real eps_payoff = KT::is_real_using_single_precision() ? 1e-6f : 1e-12; ///< eps to see if a path has itm
         MCOpPrices metrics; ///< Local state storage wrapper instance.
 
         /**

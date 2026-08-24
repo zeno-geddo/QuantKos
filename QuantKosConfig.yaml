@@ -9,8 +9,8 @@ Market:
   q: 0.0        # Continuous dividend yield
 
 Options:
-  OptionType:  Asian #American
-  OptionRight: Put
+  OptionType:  European #Asian #American
+  OptionRight: Put #Call
   StrikePrice: 10.
 
 Model:
@@ -34,7 +34,11 @@ MC:
   RNG_Seed: 88471920573105
   Max_VRAM_MB: 256 #512 #2048 # Max Available VRAM (Default 256 MB)
   Max_CPU_RAM_MB: 8000 #8000 Max Available RAM
-  analyze_risk_neutral_payoff_distribution: true # Analyze risk-neutral discounted payoff distribution
+  compute_delta_et_gamma : true # If true, compute delta, the sensitivity to underlying spot price and gamma, Rate of change of Delta.
+  compute_vega : true # If true, compute vega, i.e. the sensitivity to volatility
+  compute_rho : true # If true, compute rho, i.e. the sensitivity to interest rates
+  compute_theta : true # If true, compute theta, i.e. the Sensitivity to final time
+  analyze_risk_neutral_payoff_distribution: false # # If true, Analyze risk-neutral discounted payoff distribution
 
 Output:
   out_dir: "" #"./install/outputs"

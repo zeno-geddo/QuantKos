@@ -57,27 +57,27 @@ namespace quantkos::Config {
         /**
          * @brief Validates that the market parameters lie within physically
          *        meaningful and numerically stable ranges.
-         * @throw std::runtime_error If any parameter violates stability constraints.
+         * @throw std::invalid_argument If any parameter violates stability constraints.
          */
         void validate() const {
             if (S0 <= 0.0)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Market, KK::MarketParams::Price, "must be positive."));
             if (v0 < 0.0)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Market, KK::MarketParams::Variance, "must be positive."));
 
             if (q < 0.0)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Market, KK::MarketParams::q, "Dividend yield (q) cannot be negative."));
 
             if (std::abs(r) > 0.5)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Market, KK::MarketParams::r,
                                    "Risk-free rate (r) is unphysical (keep between -50% and +50%)."));
 
             if (q > 0.8)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Market, KK::MarketParams::q,
                                    "Dividend yield (q) is unphysical (keep under 80%)."));
         }
@@ -113,24 +113,24 @@ namespace quantkos::Config {
         /**
         * @brief Validates that the options parameters lie within physically
         *        meaningful ranges.
-        * @throw std::runtime_error If any parameter violates stability constraints.
+        * @throw std::invalid_argument If any parameter violates stability constraints.
         */
         void validate(const Real Spot_price) const {
             // Check if Strike price make sense (compared to the spot price)
             if (StrikePrice <= 0.0)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Options, KK::OptionsParams::StrikePrice, "must be positive."));
 
             const Real min_meaningful_strike = Spot_price * static_cast<Real>(0.0001);
             if (StrikePrice < min_meaningful_strike) {
-                throw std::runtime_error("Config Error: Strike price (K) is too close to zero. "
+                throw std::invalid_argument("Config Error: Strike price (K) is too close to zero. "
                     "Must be at least 1000 times smaller than the initial asset price (S0) to prevent numerical problems.");
             }
 
 
             const Real max_meaningful_strike = Spot_price * static_cast<Real>(10000);
             if (StrikePrice > max_meaningful_strike) {
-                throw std::runtime_error("Config Error: Strike price (K) is absurdly high (exceeds 10000x of S0). "
+                throw std::invalid_argument("Config Error: Strike price (K) is absurdly high (exceeds 10000x of S0). "
                     "This will likely result in zero-variance path generation and statistical breakdown.");
             }
         }
@@ -184,13 +184,15 @@ namespace quantkos::Config {
          */
         struct Bates : public Heston {
             Real lambda_J = 0.1; ///< Average jump intensity per unit time. [1/years]
-            Real mu_J = -0.1; ///< Mean of the jump size distribution in log-space (Expected log-return of a jump). It is dimensionless, the jumps act multiplicatively on the stock price. Example: $\mu_J = -0.1 \implies \text{median price multiplier } e^{-0.1} \approx 0.9048$. When a jump hits, the asset price drops on average by $\approx 9.52\%$.
-            Real sigma_J = 0.15; ///< Standard deviation of the jump size in log-space (Standard deviation of jump log-return). Dimensionless. Example: $\sigma_J = 0.15$ means a $15\%$ volatility spread around the mean jump size in log-space.
+            Real mu_J = -0.1;
+            ///< Mean of the jump size distribution in log-space (Expected log-return of a jump). It is dimensionless, the jumps act multiplicatively on the stock price. Example: $\mu_J = -0.1 \implies \text{median price multiplier } e^{-0.1} \approx 0.9048$. When a jump hits, the asset price drops on average by $\approx 9.52\%$.
+            Real sigma_J = 0.15;
+            ///< Standard deviation of the jump size in log-space (Standard deviation of jump log-return). Dimensionless. Example: $\sigma_J = 0.15$ means a $15\%$ volatility spread around the mean jump size in log-space.
         } bates;
 
         /**
          * @brief Performs physical constraints validation on the selected model.
-        * @throw std::runtime_error If model-specific physical bounds are violated.
+        * @throw std::invalid_argument If model-specific physical bounds are violated.
         */
         void validate() const {
             if (id_model == KI::MathModel::Heston) {
@@ -205,6 +207,7 @@ namespace quantkos::Config {
      *
      * @param market The market context (r, q) required for accurate SDE display.
      * @param indent String indentation for log formatting.
+     * @throw std::invalid_argument if model selected is not valid
      */
         void print(const MarketConfig &market, std::string_view indent = "") const {
             // Assemble the equations
@@ -265,23 +268,22 @@ namespace quantkos::Config {
                 }
             } else {
                 //const std::string msg = "[Config Error] Model selected ('" + id_model + "') is not a valid model !";
-                throw std::runtime_error(config_err_msg(KK::Model, KK::Model,
-                                                        "Model selected is not a valid model !"));
+                throw std::invalid_argument(config_err_msg(KK::Model, KK::Model,
+                                                           "Model selected is not a valid model !"));
             }
         }
 
     private:
-
         /** @brief Validates Heston-specific stochastic constraints. */
         void validate_heston_params(const Heston &h) const {
             if (h.k < 0.0)
-                throw std::runtime_error("[Model Config] κ must be positive.");
+                throw std::invalid_argument("[Model Config] κ must be positive.");
             if (h.theta < 0.0)
-                throw std::runtime_error("[Model Config] θ must be positive.");
+                throw std::invalid_argument("[Model Config] θ must be positive.");
             if (h.sigma < 0.0)
-                throw std::runtime_error("[Model Config] σ must be positive.");
+                throw std::invalid_argument("[Model Config] σ must be positive.");
             if (h.rho < -1.0 || h.rho > 1.0)
-                throw std::runtime_error("[Model Config] ρ must fall within [-1.0, 1.0].");
+                throw std::invalid_argument("[Model Config] ρ must fall within [-1.0, 1.0].");
         }
 
         /** @brief Validates jump-diffusion parameters, including Heston base. */
@@ -291,10 +293,10 @@ namespace quantkos::Config {
 
             // Validate Jump Bounds
             if (b.lambda_J < 0.0) {
-                throw std::runtime_error("[Model Config] Bates: Jump intensity (λ) cannot be negative.");
+                throw std::invalid_argument("[Model Config] Bates: Jump intensity (λ) cannot be negative.");
             }
             if (b.sigma_J < 0.0) {
-                throw std::runtime_error("[Model Config] Bates: Jump volatility (σJ) must be positive.");
+                throw std::invalid_argument("[Model Config] Bates: Jump volatility (σJ) must be positive.");
             }
         }
     };
@@ -336,18 +338,18 @@ namespace quantkos::Config {
         /**
         * @brief Validates that the time stepping parameters lie within physically
         *        meaningful ranges. If the input time step is not valid, it adjusts it giving a warning.
-        * @throw std::runtime_error If any parameter violates stability constraints.
+        * @throw std::invalid_argument If any parameter violates stability constraints.
         */
         void validate() {
             // Check inputs
             if (t_end <= 0.0)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Time, KK::TimeParams::T_End, "must be positive."));
             if (inp_dt <= 0.0)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Time, KK::TimeParams::DT, "must be positive."));
             if (inp_dt > t_end)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::Time, KK::TimeParams::DT, "must be smaller that total time."));
 
             // 1. Calculate the number of steps by rounding up (ceil)
@@ -370,7 +372,7 @@ namespace quantkos::Config {
          * @brief Prints the time stepping configuration to standard output.
          * @param indent String prefix for printing alignment.
          */
-        void print(std::string_view indent = "") const {
+        void print(const std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Time << "]\n"
                     << indent << "    End Time (" << KK::TimeParams::T_End << ")                     :   " << t_end <<
                     "\n"
@@ -389,45 +391,114 @@ namespace quantkos::Config {
      * and the stochastic seed for path generation.
      */
     struct MCConfig {
-        bool normalize_prices = true; ///< Automatically scales prices (monetary parameters) by a factor N=S0 (so that S0=1) for numerical stability if set to true. If false it does nothing.
+        bool normalize_prices = true;
+        ///< Automatically scales prices (monetary parameters) by a factor N=S0 (so that S0=1) for numerical stability if set to true. If false it does nothing.
         int N_Paths = 1000; ///< Total number of SDE realizations.
         int batch_size = 0;
         ///< Number of paths per kernel launch. (Set to 0 for automatic tuning, -1 for tot numb simulations.)
         uint64_t rng_seed = 184467440737095ULL; ///< Initial seed for the independent random number generation.
         long long Max_VRAM_MB = 256; ///< Limit on GPU VRAM allocation.
         long long Max_CPU_RAM_MB = 4000; ///< Limit on CPU host memory allocation.
-        bool analyze_risk_neutral_payoff_distribution = false; ///< Analyze the distribution of the risk-neutral discounted payoffs (The payoffs are sorted and the percentiles are computed and discounting is applied)
+        bool analyze_risk_neutral_payoff_distribution = false;
+        ///< Analyze the distribution of the risk-neutral discounted payoffs (The payoffs are sorted and the percentiles are computed and discounting is applied)
+        // Greeks
+        bool compute_delta_et_gamma = false;
+        ///< If true, compute delta, the sensitivity to underlying spot price and gamma, Rate of change of Delta. Computed using Central Difference on Spot price.
+        bool compute_vega = false;
+        ///< If true, compute vega, i.e. the sensitivity to volatility. Computed using Central Difference on Initial Volatility.
+        bool compute_rho = false;
+        ///< If true, compute rho, i.e. the sensitivity to interest rates. Computed using Central Difference on Risk-Free Rate.
+        bool compute_theta = false; ///< If true, compute theta, i.e. the Sensitivity to final time
+        double spot_price_relative_bump_size = 0.001;
+        ///< Relative bump size for Delta and Gamma (Spot Price). Default is 0.001 (0.1%). Must be strictly positive and <= 0.05.
+        double volatility_absolute_bump_size = 0.001;
+        ///< Absolute bump size for Vega (Initial Volatility).  Default is 0.001. Must be strictly positive and <= 0.10.
+        double risk_free_rate_absolute_bump_size = 0.0001;
+        ///< Absolute bump size for Rho (Risk-Free Interest Rate). Default is 0.0001. Must be strictly positive and <= 0.05.
+        /**
+       * @brief Absolute bump size for Theta (Time to Maturity).
+       * @details Applied as a fixed reduction to the continuous time to maturity ($T$):
+       * $h = \text{time\_absolute\_bump\_size}$. The number of simulation steps ($N$)
+       * is kept strictly constant, meaning the solver smoothly shrinks the grid step
+       * $dt_{new} = (T - h) / N$. This preserves Common Random Numbers (CRN) and
+       * avoids memory reallocation.
+       * @note Default is 1/365.0 (one day). Must be strictly positive.
+       */
+        double time_absolute_bump_size = 1.0 / 365.0;
+
 
         /**
        * @brief Validates hardware limits and simulation parameters.
-       * @throw std::runtime_error If inputs are negative, zero-valued, or violate memory bounds.
+       * @throw std::invalid_argument If inputs are out of range, or violate memory bounds.
        */
         void validate() const {
             if (N_Paths < 1)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::MC, KK::MCParams::N_Realizations, "Must be a positive integer."));
             if (batch_size < -1)
-                throw std::runtime_error(config_err_msg(KK::MC, KK::MCParams::Batch_Size,
-                                                        "Must be a positive integer if you want to impose it, -1 if you want it equal to the max number of paths, "
-                                                        "and 0 if you want to let the machine handle this."));
+                throw std::invalid_argument(config_err_msg(KK::MC, KK::MCParams::Batch_Size,
+                                                           "Must be a positive integer if you want to impose it, -1 if you want it equal to the max number of paths, "
+                                                           "and 0 if you want to let the machine handle this."));
             if (batch_size > N_Paths)
-                throw std::runtime_error(config_err_msg(
+                throw std::invalid_argument(config_err_msg(
                     KK::MC, KK::MCParams::Batch_Size,
                     "The batch size must be smaller that the notal number of realizations."));
             if (rng_seed == 0) {
-                throw std::runtime_error(config_err_msg(KK::MC, KK::MCParams::RNG_Seed,
-                                                        "The random number seed cannot be 0."));
+                throw std::invalid_argument(config_err_msg(KK::MC, KK::MCParams::RNG_Seed,
+                                                           "The random number seed cannot be 0."));
             }
             if (rng_seed >= 18446744073709551615ULL) {
                 config_err_msg(KK::MC, KK::MCParams::RNG_Seed,
                                "[Warning] Seed is at maximum uint64 limit. Did you pass a negative number?");
             }
             if (Max_VRAM_MB <= 0)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::MC, KK::MCParams::Max_VRAM_MB, "must be a positive integer."));
             if (Max_CPU_RAM_MB <= 0)
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     config_err_msg(KK::MC, KK::MCParams::Max_CPU_RAM_MB, "must be a positive integer."));
+
+            validate_bump_sizes_for_greeks_computations();
+        }
+
+        /**
+     * @brief Validates that Greek bump sizes are mathematically safe.
+     * @details Prevents division-by-zero (if h=0) and catastrophic truncation
+     * errors caused by excessively large finite difference steps.
+     * @throws std::invalid_argument If any bump size falls outside the mathematically stable bounds.
+     */
+        void validate_bump_sizes_for_greeks_computations() const {
+            // 1. Spot Bump Check (Relative)
+            if (spot_price_relative_bump_size <= 0.0 || spot_price_relative_bump_size > 0.05) {
+                throw std::invalid_argument(
+                    config_err_msg(KK::MC,
+                                   KK::MCParams::spot_price_relative_bump_size,
+                                   "must be strictly positive and <= 5% (0.05)."));
+            }
+
+            // 2. Volatility Bump Check (Absolute)
+            if (volatility_absolute_bump_size <= 0.0 || volatility_absolute_bump_size > 0.10) {
+                throw std::invalid_argument(
+                    config_err_msg(KK::MC,
+                                   KK::MCParams::volatility_absolute_bump_size,
+                                   "must be strictly positive and <= 0.10."));
+            }
+
+            // 3. Interest Rate Bump Check (Absolute)
+            if (risk_free_rate_absolute_bump_size <= 0.0 || risk_free_rate_absolute_bump_size > 0.05) {
+                throw std::invalid_argument(
+                    config_err_msg(KK::MC,
+                                   KK::MCParams::volatility_absolute_bump_size,
+                                   "must be strictly positive and <= 0.05."));
+            }
+
+            // 4. Time Bump Check (Absolute)
+            if (time_absolute_bump_size <= 0.0 || time_absolute_bump_size > 1.0) {
+                throw std::invalid_argument(
+                config_err_msg(KK::MC,
+                               KK::MCParams::time_absolute_bump_size,
+                               "must be strictly positive and <= 1.0 year."));
+            }
         }
 
         /** @brief Outputs MC configuration summary to standard console. */
@@ -437,9 +508,34 @@ namespace quantkos::Config {
                     << indent << "    Number of Realizations         :    " << N_Paths << "\n"
                     << indent << "    Batch Size required            :    " << batch_size << "\n"
                     << indent << "    Seed Random Number Generator   :    " << rng_seed << "\n"
-                    << indent << "    User VRAM Limit (MB)           :    " << Max_VRAM_MB << "\n"
-                    << indent << "    User CPU RAM Limit (MB)        :    " << Max_CPU_RAM_MB << "\n"
-                    << indent << "    Analyze risk-neutral discounted payoffs distribution   :    " << analyze_risk_neutral_payoff_distribution << "\n";
+                    << indent << "    User CPU RAM Limit (MB)        :     " << Max_CPU_RAM_MB << "\n"
+                    << indent << "    User GPU VRAM Limit (MB)       :    " << Max_VRAM_MB << "\n"
+                    << indent << "    Analyze risk-neutral discounted payoffs distribution   :    " <<
+                    analyze_risk_neutral_payoff_distribution << "\n";
+
+            // Print greeks info
+            // 2. Delta & Gamma
+            std::cout << indent << "    Evaluate Delta and Gamma       :    " << compute_delta_et_gamma << "\n";
+            if (compute_delta_et_gamma) {
+                std::cout << indent << "      -> Bump Size (Rel)      :    " << spot_price_relative_bump_size << "\n";
+            }
+            // 3. Vega
+            std::cout << indent << "    Evaluate Vega                  :    " << compute_vega << "\n";
+            if (compute_vega) {
+                std::cout << indent << "      -> Bump Size (Abs)       :    " << volatility_absolute_bump_size <<
+                        "\n";
+            }
+            // 4. Rho
+            std::cout << indent << "    Evaluate Rho                   :    " << compute_rho << "\n";
+            if (compute_rho) {
+                std::cout << indent << "      -> Bump Size (Abs)      :    " << risk_free_rate_absolute_bump_size <<
+                        "\n";
+            }
+            // 5. Theta
+            std::cout << indent << "    Evaluate Theta                 :    " << compute_theta << "\n";
+            if (compute_theta) {
+                std::cout << indent << "      -> Bump Size (Abs)      :    dt\n";
+            }
         }
     };
 
@@ -466,7 +562,7 @@ namespace quantkos::Config {
 
         /**
      * @brief Creates the output directory structure if it does not exist.
-     * @throw std::runtime_error If filesystem permissions prevent directory creation.
+     * @throw std::invalid_argument If filesystem permissions prevent directory creation.
      */
         void validate() const {
             // Check if a file path is empty
@@ -482,7 +578,7 @@ namespace quantkos::Config {
                     std::filesystem::create_directories(out_dir);
                 } catch (const std::filesystem::filesystem_error &e) {
                     // If OS denies creation (No permissions, invalid disk path, etc.), crash instantly!
-                    throw std::runtime_error(
+                    throw std::invalid_argument(
                         "[Configuration Error] The assigned output directory '" + out_dir +
                         "' could not be prepared or accessed.\nDetails: " + e.what()
                     );
@@ -541,7 +637,7 @@ namespace quantkos::Config {
                 options.BarrierPrice /= price_scale_factor;
 
                 std::cout << "  [ Config ] Monetary parameters scaled. "
-                          << "Scale Factor = N = "<< price_scale_factor << "  (S0_n = S0/N = 1)\n";
+                        << "Scale Factor = N = " << price_scale_factor << "  (S0_n = S0/N = 1)\n";
             }
         }
 
@@ -582,10 +678,22 @@ namespace quantkos::Config {
 
         /** @brief Safely get scaling factor
         */
-         [[nodiscard]] double get_price_scaling_factor() const {
+        [[nodiscard]] double get_price_scaling_factor() const {
             return price_scale_factor;
         }
+
+        /** @brief Tells if at least one of the greeks must be computed
+        */
+        [[nodiscard]] bool must_compute_greeks() const {
+            if (mc.compute_delta_et_gamma || mc.compute_vega || mc.compute_rho || mc.compute_theta) {
+                return true;
+            }
+
+            return false;
+        }
+
     private:
-        double price_scale_factor = 1.0; //Stores the scaling factor used by the engine to normalinze the monetary parameters (S0, K, Barrier, etc). Default is 1.0 (no scaling).
+        double price_scale_factor = 1.0;
+        ///< Stores the scaling factor used by the engine to normalize the monetary parameters (S0, K, Barrier, etc). Default is 1.0 (no scaling).
     };
 }

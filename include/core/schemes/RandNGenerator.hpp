@@ -56,7 +56,8 @@ namespace quantkos::Engine {
             // Each slot is initialized with a slightly scrambled version of your seed.
             const uint64_t initial_seed = config.mc.rng_seed;
             global_rng_pool = GlobalRNGPool(initial_seed);
-            std::cout << "  [RNGenerator] Global Random Number Pool initialized correctly." << std::endl;
+            std::cout << "  [RNGenerator] Global Random Number Pool initialized correctly with seed : "
+            << initial_seed << "\n";
         }
 
         /// @name Lifecycle Safeguards (Single Source of Truth)
@@ -168,7 +169,6 @@ namespace quantkos::Engine {
     };
 
 
-
     /**
      * @brief Generates a uniform random number in (0, 1] natively matching the active precision (defined at compile time).
      * @tparam LocalRNGType The Kokkos thread-local generator state type.
@@ -185,10 +185,10 @@ namespace quantkos::Engine {
     /**
     * @brief Container for two random variables to be used in the sde
     */
-        struct RVPair {
-            KT::Real Z1;
-            KT::Real Z2;
-        };
+    struct RVPair {
+        KT::Real Z1;
+        KT::Real Z2;
+    };
 
     /**
     * @brief Generates two independent Normal Random Variables
@@ -201,11 +201,10 @@ namespace quantkos::Engine {
     */
     template<typename LocalRNGType, bool skip_second = false>
     struct NormalPair {
-
         /** @brief Call operator generating the normal variable pair at the precision specified at compile time
         */
         KOKKOS_INLINE_FUNCTION RVPair operator()(LocalRNGType &local_rg) const {
-            auto pair = RVPair{.Z1= KT::real_zero, .Z2 = KT::real_zero};
+            auto pair = RVPair{.Z1 = KT::real_zero, .Z2 = KT::real_zero};
 
             KOKKOS_IF_ON_DEVICE((
                 // GPU Box-Muller Code
@@ -216,8 +215,8 @@ namespace quantkos::Engine {
                 pair.Z1 = R * Kokkos::cos(theta);
                 // Compute second rv only if needed
                 if constexpr (!skip_second) {
-                    pair.Z2 = R * Kokkos::sin(theta);
-            }
+                pair.Z2 = R * Kokkos::sin(theta);
+                }
             ))
 
             KOKKOS_IF_ON_HOST((
@@ -233,7 +232,7 @@ namespace quantkos::Engine {
                 pair.Z1 = u * multiplier;
                 // Compute second rv only if needed
                 if constexpr (!skip_second) {
-                    pair.Z2 = v * multiplier;
+                pair.Z2 = v * multiplier;
                 }
 
             ))

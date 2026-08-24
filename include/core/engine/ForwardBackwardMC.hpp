@@ -63,6 +63,7 @@ namespace quantkos::Engine {
      * * @tparam ModelPolicy Compile-time stochastic process selection (e.g., Heston, Bates; etc.).
      * @tparam SchemePolicy Compile-time SDE integration algorithm (e.g., Euler, Milstein, AndersonQE, etc.).
      * @tparam OptRight Compile-time option exercise right (Call or Put).
+     * @note If required, the greeks are also computed.
      */
     template<KI::MathModel ModelPolicy, KI::NumScheme SchemePolicy, KI::OptRight OptRight>
     class ForwardBackwardMCRunner {
@@ -99,37 +100,62 @@ namespace quantkos::Engine {
          * backward induction, and computes final expected values and statistical bands.
          * * @note The solver is forced to act like a European option during Phase 1 because paths are
          * simply generated forward without path-dependent early exercise logic during this stage.
-         * * @return Immutable snapshot container of Monte Carlo outputs (`MCResults`).
+         * @note If required, the greeks are also computed.
+         * * @return Snapshot container of Monte Carlo outputs (`MCResults`).
          */
-        MCResults get_option_price() const {
-            // Initialize Helper Classes
-            // IMPORTANT: We force the forward solver to act like a European option (simply evaluate the forward paths).
-            BackwardLSMMemory Mem(config);
-            RNGManager RNGen(config);
-            MSolver<ModelPolicy, SchemePolicy, KI::OptType::European, OptRight> Solver(config);
-            OptionPricer OPricer(config);
-            KIO::OutputManager OWriter(config);
-            ForwardMCProgressTracker MCTracker(config, Mem.BatchMem);
+        MCResults run() const {
+            // Wrap the specific Forward-Backward LSM logic into a lambda
+            auto lsm_pricing_strategy = [](const KC::UInputs &loc_config, BackwardLSMMemory &Mem) {
+                return compute_option_price(loc_config, Mem);
+            };
 
-            // PHASE 1: Forward Batch Generation
-            MCTracker.print_pre_execution_diagnostic();
-            OWriter.print_paths_info_planned_outputs();
-            run_forward_phase(Mem, RNGen, Solver, OWriter, MCTracker);
-
-            // PHASE 2: Backward Induction (Longstaff-Schwartz regression)
-            run_backward_phase(Mem);
-
-            // 4. PHASE 3: Compute Final Option Price
-            // Feed the optimized backward cashflows into the standard pricer
-            OPricer.accumulate_batch_payoffs(Mem.d_best_future_outcomes, config.mc.N_Paths);
-            OPricer.evaluate_option_price();
-            OPricer.print_info_option_price();
-
-            return MCResults{config, OPricer.get_option_price_data()};
+            // Inject the strategy and the memory type into the generic orchestrator
+            return execute_mc_framework<BackwardLSMMemory>(config, lsm_pricing_strategy);
         }
 
     private:
-        KC::UInputs config; ///< Copy of the master config. By copying the configuration the original values cannot be modified.
+        KC::UInputs config;
+        ///< Copy of the master config. By copying the configuration the original values cannot be modified.
+
+
+        // ====================================================================
+        // MAIN PRICING LOGIC
+        // ====================================================================
+        /**
+         * @brief Executes a single full Forward-Backward pricing pass.
+         */
+        static OptionPricer::MCOpPrices compute_option_price(const KC::UInputs &loc_config,
+                                                             BackwardLSMMemory &Mem) {
+            // 1. Initialize Helper Classes (RNGManager guarantees CRN using loc_config seed)
+            // IMPORTANT: We force the forward solver to act like a European option (simply evaluate the forward paths).
+            RNGManager RNGen(loc_config);
+            MSolver<ModelPolicy, SchemePolicy, KI::OptType::European, OptRight> Solver(loc_config);
+            OptionPricer OPricer(loc_config);
+            KIO::OutputManager OWriter(loc_config);
+            ForwardMCProgressTracker MCTracker(loc_config, Mem.BatchMem);
+
+            // 2. Print Pre-Execution Diagnostics if needed
+            MCTracker.print_pre_execution_diagnostic();
+            OWriter.print_paths_info_planned_outputs();
+
+
+            // PHASE 1: Forward Batch Generation
+            run_forward_phase(Mem, RNGen, Solver, OWriter, MCTracker); //, called_to_compute_greeks);
+
+            // PHASE 2: Backward Induction (Longstaff-Schwartz regression)
+            // CRITICAL: Pass loc_config down so Rho uses the bumped interest rate!
+            run_backward_phase(Mem, loc_config); //, called_to_compute_greeks);
+
+            // PHASE 3: Compute Final Option Price
+            // Feed the optimized backward cashflows into the standard pricer
+            OPricer.accumulate_batch_payoffs(Mem.d_best_future_outcomes, loc_config.mc.N_Paths);
+            OPricer.evaluate_option_price();
+
+            OPricer.print_info_option_price();
+
+            return OPricer.get_option_price_data();
+        }
+
 
         // ====================================================================
         // PHASE 1: GENERATE PATHS (Write to CPU RAM temp daata)
@@ -144,11 +170,11 @@ namespace quantkos::Engine {
          * @notes Bundles the Host-Device deep-copy logic in a localized callback lambda to decouple
          * SDE solver step-evolutions from the memory mapping strategy.
          */
-        void run_forward_phase(BackwardLSMMemory &Mem,
-                               const RNGManager &RNGen,
-                               const MSolver<ModelPolicy, SchemePolicy, KI::OptType::European, OptRight> &Solver,
-                               KIO::OutputManager &OWriter,
-                               ForwardMCProgressTracker &MCTracker) const {
+        static void run_forward_phase(BackwardLSMMemory &Mem,
+                                      const RNGManager &RNGen,
+                                      const MSolver<ModelPolicy, SchemePolicy, KI::OptType::European, OptRight> &Solver,
+                                      KIO::OutputManager &OWriter,
+                                      ForwardMCProgressTracker &MCTracker) {
             std::cout << "  >>> Starting Phase 1: Forward Path Generation...\n";
 
             // Pass a lambda function that copies the simulated GPU batch directly
@@ -175,15 +201,17 @@ namespace quantkos::Engine {
          * flows are updated in parallel on the GPU.
          * * @param Mem Backward memory orchestrator containing streaming views and regression buffers.
          */
-        void run_backward_phase(BackwardLSMMemory &Mem) const {
-            const int nT = config.time.N_time_steps;
-            const KT::Real strike_price = config.options.StrikePrice;
-            const KT::Real discount_factor = Kokkos::exp(-config.market.r * config.time.dt);
+        static void run_backward_phase(BackwardLSMMemory &Mem,
+                                       const KC::UInputs &loc_config // Reads from spoofed config!
+        ) {
+            const int nT = loc_config.time.N_time_steps;
+            const KT::Real strike_price = loc_config.options.StrikePrice;
+            const KT::Real discount_factor = Kokkos::exp(-loc_config.market.r * loc_config.time.dt);
 
             using EngineLSM = LSM::LSMEngine<OptRight>;
 
             std::cout << "  >>> Starting Phase 2: Backward Induction (PCIe Streaming)...\n";
-            BackwardLSMProgressTracker BTracker(config);
+            BackwardLSMProgressTracker BTracker(loc_config);
             BTracker.start_tracking();
 
             // Initialization (t = T-1)
@@ -216,8 +244,8 @@ namespace quantkos::Engine {
             // 3. FINALIZATION (t = 0)
             EngineLSM::apply_final_discount(Mem.d_best_future_outcomes, discount_factor);
 
-            // Pull final results back to CPU
-            Mem.bring_device_cash_flows_to_host();
+            // Pull final results back to CPU (Not needed)
+            // Mem.bring_device_cash_flows_to_host();
 
             // Stop tracking the backward phase (safe since no prints in between)
             BTracker.finalize_tracking();

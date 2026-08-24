@@ -34,7 +34,7 @@ namespace quantkos::Config {
     }
 
     UInputs Parser::parse(const std::string &file) {
-        std::cout << "\n>>> Start Parsing User Inputs...\n" << std::endl;
+        std::cout << "\n>>> Start Parsing User Inputs...\n\n";
 
         // ---------------------------------------------------------
         // 1. Sanity Check
@@ -175,6 +175,7 @@ namespace quantkos::Config {
         // ---------------------------------------------------------
         if (root[str(KK::MC)]) {
             const auto &node = root[str(KK::MC)];
+            // Normalization
             if (node[str(KK::MCParams::normalize_prices)])
                 try {
                     conf.mc.normalize_prices = node[str(KK::MCParams::normalize_prices)].as<bool>();
@@ -185,19 +186,40 @@ namespace quantkos::Config {
                         "must be a boolean value (true/false, yes/no, 1/0)."
                     ));
                 }
+            // MC details
             if (node[str(KK::MCParams::N_Realizations)])
                 conf.mc.N_Paths = node[str(KK::MCParams::N_Realizations)].as<int>();
             if (node[str(KK::MCParams::Batch_Size)])
                 conf.mc.batch_size = node[str(KK::MCParams::Batch_Size)].as<int>();
             if (node[str(KK::MCParams::RNG_Seed)])
                 conf.mc.rng_seed = node[str(KK::MCParams::RNG_Seed)].as<u_int64_t>();
+            // Memory constraints
             if (node[str(KK::MCParams::Max_VRAM_MB)])
                 conf.mc.Max_VRAM_MB = node[str(KK::MCParams::Max_VRAM_MB)].as<long long>();
             if (node[str(KK::MCParams::Max_CPU_RAM_MB)])
                 conf.mc.Max_CPU_RAM_MB = node[str(KK::MCParams::Max_CPU_RAM_MB)].as<long long>();
+            // Payoffs
             if (node[str(KK::MCParams::analyze_risk_neutral_payoff_distribution)])
                 conf.mc.analyze_risk_neutral_payoff_distribution = node[str(
                     KK::MCParams::analyze_risk_neutral_payoff_distribution)].as<bool>();
+            // Greeks
+            if (node[str(KK::MCParams::compute_delta_et_gamma)])
+                conf.mc.compute_delta_et_gamma = node[str(KK::MCParams::compute_delta_et_gamma)].as<bool>();
+            if (node[str(KK::MCParams::spot_price_relative_bump_size)])
+                conf.mc.spot_price_relative_bump_size = node[str(KK::MCParams::spot_price_relative_bump_size)].as<double>();
+            if (node[str(KK::MCParams::compute_vega)])
+                conf.mc.compute_vega = node[str(KK::MCParams::compute_vega)].as<bool>();
+            if (node[str(KK::MCParams::volatility_absolute_bump_size)])
+                conf.mc.volatility_absolute_bump_size = node[str(KK::MCParams::volatility_absolute_bump_size)].as<double>();
+            if (node[str(KK::MCParams::compute_rho)])
+                conf.mc.compute_rho = node[str(KK::MCParams::compute_rho)].as<bool>();
+            if (node[str(KK::MCParams::risk_free_rate_absolute_bump_size)])
+                conf.mc.risk_free_rate_absolute_bump_size = node[str(KK::MCParams::risk_free_rate_absolute_bump_size)].as<double>();
+            if (node[str(KK::MCParams::compute_theta)])
+                conf.mc.compute_theta = node[str(KK::MCParams::compute_theta)].as<bool>();
+            if (node[str(KK::MCParams::time_absolute_bump_size)])
+                conf.mc.time_absolute_bump_size = node[str(KK::MCParams::time_absolute_bump_size)].as<double>();
+
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::MC) + "' missing.");
         }

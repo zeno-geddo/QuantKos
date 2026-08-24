@@ -130,7 +130,17 @@ namespace quantkos::Keys {
         static constexpr std::string_view RNG_Seed = "RNG_Seed"; ///< Key Initial seed for RNG.
         static constexpr std::string_view Max_VRAM_MB = "Max_VRAM_MB"; ///< Key for limit on GPU VRAM allocation.
         static constexpr std::string_view Max_CPU_RAM_MB = "Max_CPU_RAM_MB"; ///< Limit on CPU host memory allocation.
+        // Payoffs
         static constexpr std::string_view analyze_risk_neutral_payoff_distribution = "analyze_risk_neutral_payoff_distribution"; ///< Key to analyze the distribution of the risk-neutral discounted payoffs
+        // Greeks
+        static constexpr std::string_view compute_delta_et_gamma = "compute_delta_et_gamma"; ///< Key for computing delta and gamma (greeks).
+        static constexpr std::string_view compute_vega = "compute_vega"; ///< Key for computing vega (greeks).
+        static constexpr std::string_view compute_rho = "compute_rho"; ///< Key for computing rho (greeks).
+        static constexpr std::string_view compute_theta = "compute_theta"; ///< Key for computing theta (greeks).
+        static constexpr std::string_view spot_price_relative_bump_size = "spot_price_relative_bump_size"; ///< Key to set delta and gamma bump size (greeks).
+        static constexpr std::string_view volatility_absolute_bump_size = "volatility_absolute_bump_size"; ///< Key to set vega bump size (greeks).
+        static constexpr std::string_view risk_free_rate_absolute_bump_size = "risk_free_rate_absolute_bump_size"; ///< Key to set rho bump size (greeks).
+        static constexpr std::string_view time_absolute_bump_size = "time_absolute_bump_size"; ///< Key to set theta bump size (greeks).
     }
 
     // ------------------------------------------------------------------------
