@@ -10,8 +10,4 @@ digraph "quantkos::Types::is_fast_math_enabled"
   Node2 [id="Node000002",label="quantkos::Types::get\l_fast_math_string",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Types.html#a27d42fd587b52884eee0727254e085be",tooltip="Returns a human-readable string for Fast Math state."];
   Node2 -> Node3 [id="edge2_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node3 [id="Node000003",label="quantkos::Engine::Forward\lMCProgressTracker::print\l_pre_execution_diagnostic",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html#a57df6da9144fc09429fa458d04016f6e",tooltip="Formats and outputs an exhaustive audit of execution parameters and hardware memory footprints."];
-  Node3 -> Node4 [id="edge3_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node4 [id="Node000004",label="quantkos::Engine::Forward\lBackwardMCRunner::get_option_price",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html#aa62cc60ac6c779dce034339348771a6d",tooltip="Entry point to run the American pricing engine."];
-  Node3 -> Node5 [id="edge4_Node000003_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node5 [id="Node000005",label="quantkos::Engine::Forward\lMCRunner::get_option_prices",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCRunner.html#ac86a1154cda2f65879a791fbceef6627",tooltip="High-level orchestration method that runs the forward Monte Carlo engine."];
 }

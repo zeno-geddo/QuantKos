@@ -108,6 +108,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a09d57159f21750dce00d5fa2f511e512" id="r_a09d57159f21750dce00d5fa2f511e512"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html">OptionPricer::MCOpPrices</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html#a09d57159f21750dce00d5fa2f511e512">OptionPrice</a></td></tr>
 <tr class="memdesc:a09d57159f21750dce00d5fa2f511e512"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep copy of the pricing statistics, standard errors, and confidence intervals.  <br /></td></tr>
 <tr class="separator:a09d57159f21750dce00d5fa2f511e512"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0de875d39dd9d4203919afbbfe149635" id="r_a0de875d39dd9d4203919afbbfe149635"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structquantkos_1_1Engine_1_1MCGreeks.html">MCGreeks</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html#a0de875d39dd9d4203919afbbfe149635">Greeks</a></td></tr>
+<tr class="memdesc:a0de875d39dd9d4203919afbbfe149635"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deep copy of the computed Greeks.  <br /></td></tr>
+<tr class="separator:a0de875d39dd9d4203919afbbfe149635"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Immutable snapshot container for Monte Carlo simulation outputs. </p>
@@ -115,6 +118,22 @@ Public Attributes</h2></td></tr>
 <li>This structure aggregates the final option pricing metrics alongside a complete, deep copy of the user configuration. Copying the configurations and results guarantees memory safety and prevents lifecycle conflicts if the simulation scope terminates while asynchronous downstream analysis or logging services are still reading the data. </li>
 </ul>
 </div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a0de875d39dd9d4203919afbbfe149635" name="a0de875d39dd9d4203919afbbfe149635"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0de875d39dd9d4203919afbbfe149635">&#9670;&#160;</a></span>Greeks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structquantkos_1_1Engine_1_1MCGreeks.html">MCGreeks</a> quantkos::Engine::MCResults::Greeks</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deep copy of the computed Greeks. </p>
+
+</div>
+</div>
 <a id="ad7da59bfc13b8b7906a635a3ff78079d" name="ad7da59bfc13b8b7906a635a3ff78079d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad7da59bfc13b8b7906a635a3ff78079d">&#9670;&#160;</a></span>MCConfig</h2>
 

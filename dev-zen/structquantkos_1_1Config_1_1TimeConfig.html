@@ -101,9 +101,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2ddaae592649fa85ec4426299a1bfb0a" id="r_a2ddaae592649fa85ec4426299a1bfb0a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Config_1_1TimeConfig.html#a2ddaae592649fa85ec4426299a1bfb0a">validate</a> ()</td></tr>
 <tr class="memdesc:a2ddaae592649fa85ec4426299a1bfb0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates that the time stepping parameters lie within physically meaningful ranges. If the input time step is not valid, it adjusts it giving a warning.  <br /></td></tr>
 <tr class="separator:a2ddaae592649fa85ec4426299a1bfb0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a354dc9090ee541787a742195f4fc16cc" id="r_a354dc9090ee541787a742195f4fc16cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Config_1_1TimeConfig.html#a354dc9090ee541787a742195f4fc16cc">print</a> (std::string_view indent=&quot;&quot;) const</td></tr>
-<tr class="memdesc:a354dc9090ee541787a742195f4fc16cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the time stepping configuration to standard output.  <br /></td></tr>
-<tr class="separator:a354dc9090ee541787a742195f4fc16cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d115c58e7199949cfbe270e1b65f13e" id="r_a4d115c58e7199949cfbe270e1b65f13e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Config_1_1TimeConfig.html#a4d115c58e7199949cfbe270e1b65f13e">print</a> (const std::string_view indent=&quot;&quot;) const</td></tr>
+<tr class="memdesc:a4d115c58e7199949cfbe270e1b65f13e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the time stepping configuration to standard output.  <br /></td></tr>
+<tr class="separator:a4d115c58e7199949cfbe270e1b65f13e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -124,8 +124,8 @@ Public Attributes</h2></td></tr>
 <div class="textblock"><p>Time stepping configuration. </p>
 <p>Defines the final time as well as the time step and the number of times steps for the discretization. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a354dc9090ee541787a742195f4fc16cc" name="a354dc9090ee541787a742195f4fc16cc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a354dc9090ee541787a742195f4fc16cc">&#9670;&#160;</a></span>print()</h2>
+<a id="a4d115c58e7199949cfbe270e1b65f13e" name="a4d115c58e7199949cfbe270e1b65f13e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d115c58e7199949cfbe270e1b65f13e">&#9670;&#160;</a></span>print()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -136,7 +136,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void quantkos::Config::TimeConfig::print </td>
           <td>(</td>
-          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramtype">const std::string_view&#160;</td>
           <td class="paramname"><em>indent</em> = <code>&quot;&quot;</code></td><td>)</td>
           <td> const</td>
         </tr>
@@ -158,7 +158,7 @@ Public Attributes</h2></td></tr>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="structquantkos_1_1Config_1_1TimeConfig_a354dc9090ee541787a742195f4fc16cc_icgraph.png" border="0" usemap="#astructquantkos_1_1Config_1_1TimeConfig_a354dc9090ee541787a742195f4fc16cc_icgraph" alt=""/></div>
+<div class="center"><img src="structquantkos_1_1Config_1_1TimeConfig_a4d115c58e7199949cfbe270e1b65f13e_icgraph.png" border="0" usemap="#astructquantkos_1_1Config_1_1TimeConfig_a4d115c58e7199949cfbe270e1b65f13e_icgraph" alt=""/></div>
 </div>
 
 </div>
@@ -189,7 +189,7 @@ Here is the caller graph for this function:</div>
 <p>Validates that the time stepping parameters lie within physically meaningful ranges. If the input time step is not valid, it adjusts it giving a warning. </p>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
-    <tr><td class="paramname">std::runtime_error</td><td>If any parameter violates stability constraints. </td></tr>
+    <tr><td class="paramname">std::invalid_argument</td><td>If any parameter violates stability constraints. </td></tr>
   </table>
   </dd>
 </dl>

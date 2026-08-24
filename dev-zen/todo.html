@@ -85,7 +85,7 @@ $(function() {
 <div class="textblock"><dl class="reflist">
 <dt>Member <a class="el" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>  (int argc, char *argv[])</dt>
 <dd><p class="startdd"><a class="anchor" id="_todo000002"></a>Check if it is worth adding std::ios_base::sync_with_stdio(false); and std::cin.tie(NULL); to reduce terminal I/O latency. </p>
-<p class="enddd"><a class="anchor" id="_todo000015"></a>Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.  </p>
+<p class="enddd"><a class="anchor" id="_todo000014"></a>Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.  </p>
 </dd>
 <dt>File <a class="el" href="main_8cpp.html">main.cpp</a>  </dt>
 <dd><a class="anchor" id="_todo000001"></a>Should add a description to the other files as well.  </dd>
@@ -98,7 +98,7 @@ $(function() {
 <dd><a class="anchor" id="_todo000006"></a>Better quantify the memory used by all the views  </dd>
 <dt>Member <a class="el" href="classquantkos_1_1Engine_1_1BackwardLSMMemory.html#a123cbfed3e40a4cda17068ebb6259e53">quantkos::Engine::BackwardLSMMemory::copy_current_mc_batch_to_master_mc_matrix</a>  (const int batch_idx, const int current_batch_size)</dt>
 <dd><a class="anchor" id="_todo000007"></a>COPY FROM HOST BATCH AND MASTER HOST MATRIX, THAN WHEN RUNNING ON GPU HAVE DIFFERENT LAYOUT, TAKE AS MUCH TIME AS COPYING THE BATCH FROM DEVICE TO HOST. MUST BE FOUND A BETTER WAY TO DO THAT.  </dd>
-<dt>Member <a class="el" href="classquantkos_1_1Engine_1_1ForwardMCRunner.html#ac86a1154cda2f65879a791fbceef6627">quantkos::Engine::ForwardMCRunner&lt; ModelPolicy, SchemePolicy, OptType, OptRight &gt;::get_option_prices</a>  () const</dt>
+<dt>Member <a class="el" href="classquantkos_1_1Engine_1_1ForwardMCRunner.html#a706e88b950a024ee56547c8bac752aed">quantkos::Engine::ForwardMCRunner&lt; ModelPolicy, SchemePolicy, OptType, OptRight &gt;::run</a>  () const</dt>
 <dd><a class="anchor" id="_todo000005"></a>If calling this in a calibration loop, should add the possibility to reuse the helper classes to avoid repeating initialization overheads.  </dd>
 <dt>Namespace <a class="el" href="namespacequantkos_1_1Engine_1_1LSM.html">quantkos::Engine::LSM</a>  </dt>
 <dd><a class="anchor" id="_todo000008"></a>Should implement the control variate technique to improve the precision, see Pag. 208, eq. 7, the the book : Fabrice D. Rouah's <em>The Heston Model and its Extensions in Matlab and C#</em>.  </dd>
@@ -107,20 +107,18 @@ $(function() {
 <dt>Class <a class="el" href="classquantkos_1_1Engine_1_1MCDispatcher.html">quantkos::Engine::MCDispatcher</a>  </dt>
 <dd><a class="anchor" id="_todo000004"></a>Should improve the dispatching procedure to reduce the compilation time, especially if many other models will be added.  </dd>
 <dt>Class <a class="el" href="classquantkos_1_1Engine_1_1MSolver.html">quantkos::Engine::MSolver&lt; ModelPolicy, SchemePolicy, OptType, OptRight &gt;</a>  </dt>
-<dd><a class="anchor" id="_todo000011"></a>Should implement non-markovian models. This could be modified to work also with a non marlovian integration kernel.  </dd>
-<dt>Member <a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a311c3a9644f625715c922339721653d2">quantkos::Engine::OptionPricer::accumulate_batch_payoffs</a>  (const DevBatchPayoffView &amp;d_payoffs, const int curr_batch_size)</dt>
-<dd><a class="anchor" id="_todo000010"></a>This is inefficient, should better manage the memory  </dd>
+<dd><a class="anchor" id="_todo000010"></a>Should implement non-markovian models. This could be modified to work also with a non marlovian integration kernel.  </dd>
 <dt>Namespace <a class="el" href="namespacequantkos_1_1IO.html">quantkos::IO</a>  </dt>
-<dd><p class="startdd"><a class="anchor" id="_todo000013"></a>Implement <code>CSVWriter</code> class to handle streaming storage to CSV files for rapid inspections. </p>
+<dd><p class="startdd"><a class="anchor" id="_todo000012"></a>Implement <code>CSVWriter</code> class to handle streaming storage to CSV files for rapid inspections. </p>
 <p class="interdd"></p>
 <p class="interdd">Implement <code>DatabaseWriter</code> class to handle streaming storage directly into SQL-based repositories. </p>
 <p class="interdd"></p>
 <p class="enddd">Add compression support (Zlib/LZ4) for binary path serialization to minimize disk footprint.  </p>
 </dd>
 <dt>Member <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#ad9274708d72b4d2d3018680985e2064c">quantkos::Tests::RNG::run_test_gaussian</a>  ()</dt>
-<dd><a class="anchor" id="_todo000014"></a>Fix the warning generated when using GPUs.  </dd>
+<dd><a class="anchor" id="_todo000013"></a>Fix the warning generated when using GPUs.  </dd>
 <dt>Member <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">quantkos::Types::Real</a>  </dt>
-<dd><a class="anchor" id="_todo000012"></a>Improve the way single precision is handled </dd>
+<dd><a class="anchor" id="_todo000011"></a>Improve the way single precision is handled </dd>
 </dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

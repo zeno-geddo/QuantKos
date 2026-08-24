@@ -126,6 +126,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1MCDispatcher.html">MCDispatcher</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orchestrates the runtime-to-compile-time dispatching loop for Monte Carlo execution.  <a href="classquantkos_1_1Engine_1_1MCDispatcher.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1MCGreeks.html">MCGreeks</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container holding the final risk-neutral Greeks.  <a href="structquantkos_1_1Engine_1_1MCGreeks.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html">MCResults</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable snapshot container for Monte Carlo simulation outputs.  <a href="structquantkos_1_1Engine_1_1MCResults.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -202,6 +205,10 @@ Functions</h2></td></tr>
 <tr class="memitem:aa0367e2eb7237c136e5a750b17ce309d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#aa0367e2eb7237c136e5a750b17ce309d">run_forward_all_mc_batches</a> (<a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html">PathsMCBatchMem</a> &amp;BatchMem, const <a class="el" href="classquantkos_1_1Engine_1_1RNGManager.html">RNGManager</a> &amp;RNGen, const SolverType &amp;Solver, <a class="el" href="classquantkos_1_1IO_1_1OutputManager.html">KIO::OutputManager</a> &amp;OWriter, <a class="el" href="classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html">ForwardMCProgressTracker</a> &amp;MCTracker, HostDeepCopy &amp;&amp;custom_host_deep_copy)</td></tr>
 <tr class="memdesc:aa0367e2eb7237c136e5a750b17ce309d"><td class="mdescLeft">&#160;</td><td class="mdescRight">HEAVY-LIFT HELPER FUNCTION FOR FORWARD PHASE. Executes and coordinates the forward Monte Carlo simulation across all path batches.  <br /></td></tr>
 <tr class="separator:aa0367e2eb7237c136e5a750b17ce309d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f7b4e83c5e9c59afa0371c1135b9ec7" id="r_a7f7b4e83c5e9c59afa0371c1135b9ec7"><td class="memTemplParams" colspan="2">template&lt;typename MemoryType , typename PricingCallable &gt; </td></tr>
+<tr class="memitem:a7f7b4e83c5e9c59afa0371c1135b9ec7"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html">MCResults</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#a7f7b4e83c5e9c59afa0371c1135b9ec7">execute_mc_framework</a> (const <a class="el" href="structquantkos_1_1Config_1_1UInputs.html">KC::UInputs</a> &amp;config, PricingCallable &amp;&amp;pricing_function)</td></tr>
+<tr class="memdesc:a7f7b4e83c5e9c59afa0371c1135b9ec7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Universal Monte Carlo orchestrator for base pricing and finite-difference Greeks computation.  <br /></td></tr>
+<tr class="separator:a7f7b4e83c5e9c59afa0371c1135b9ec7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2bb7c749a362127cf8045610d02c8f8" id="r_aa2bb7c749a362127cf8045610d02c8f8"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Engine.html#aa2bb7c749a362127cf8045610d02c8f8">get_ram_available_memory_from_os_kb</a> ()</td></tr>
 <tr class="memdesc:aa2bb7c749a362127cf8045610d02c8f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the amount of physical RAM currently available on the system.  <br /></td></tr>
 <tr class="separator:aa2bb7c749a362127cf8045610d02c8f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -298,6 +305,72 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a7f7b4e83c5e9c59afa0371c1135b9ec7" name="a7f7b4e83c5e9c59afa0371c1135b9ec7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f7b4e83c5e9c59afa0371c1135b9ec7">&#9670;&#160;</a></span>execute_mc_framework()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename MemoryType , typename PricingCallable &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html">MCResults</a> quantkos::Engine::execute_mc_framework </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structquantkos_1_1Config_1_1UInputs.html">KC::UInputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">PricingCallable &amp;&amp;&#160;</td>
+          <td class="paramname"><em>pricing_function</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Universal Monte Carlo orchestrator for base pricing and finite-difference Greeks computation. </p>
+<p>This template function acts as the central execution backbone for all Monte Carlo engines (both Forward-Only and Forward-Backward/LSM). It decouples the high-level orchestration of Greek bumps and memory management from the low-level numerical pricing logic.</p>
+<p>The execution pipeline is strictly divided into three phases:</p><ul>
+<li><b>Phase 1: Zero-Allocation Memory Setup</b> Allocates the heavy GPU/CPU memory matrix (<code>MemoryType</code>) exactly once. This completely eliminates memory thrashing (OS-level re-allocations) during the multiple simulation passes required for the Greeks.</li>
+<li><b>Phase 2: Base Pricing Step</b> Executes the injected <code>pricing_function</code> using the master configuration. This step handles all standard I/O (e.g., saving paths to disk if required etc.) and distribution analysis.</li>
+<li><b>Phase 3: Greek Computation (CRN &amp; Central Differences)</b> If Greeks are requested, the engine generates a stripped-down <code>base_greek_cfg</code> that systematically mutes unrequired I/O operations and array sorting. It then performs central-difference bumps ($S_0$, $v_0$, $r$) and feeds them back into the pricing function. Because the spoofed configurations retain the original random seed, the underlying engine naturally executes using Common Random Numbers (CRN), guaranteeing stable derivative approximations.</li>
+</ul>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">MemoryType</td><td>The specialized heavy memory manager class (e.g., <code><a class="el" href="classquantkos_1_1Engine_1_1PathsMCBatchMem.html" title="Manages hardware memory allocation for batch-processed Monte Carlo simulations.">PathsMCBatchMem</a></code> for European/Path-Dependent options, or <code><a class="el" href="classquantkos_1_1Engine_1_1BackwardLSMMemory.html" title="Manages memory for American option pricing when using the Longstaff-Schwartz algorithm.">BackwardLSMMemory</a></code> for American <a class="el" href="namespacequantkos_1_1Engine_1_1LSM.html" title="Namespace containing the core components for the Longstaff-Schwartz American pricing engine.">LSM</a>). </td></tr>
+    <tr><td class="paramname">PricingCallable</td><td>A lambda or functor containing the specific simulation logic. Must match the signature: <code><a class="el" href="structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html" title="Storage container for final simulation metrics and distribution percentiles.">OptionPricer::MCOpPrices</a>(const KC::UInputs&amp; cfg, MemoryType&amp; Mem)</code>.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">config</td><td>The master user configuration containing market parameters, simulation settings, and flags indicating which Greeks to compute. </td></tr>
+    <tr><td class="paramname">pricing_function</td><td>The injected executable strategy that performs a single Monte Carlo pass.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html" title="Immutable snapshot container for Monte Carlo simulation outputs.">MCResults</a> A snapshot struct containing a copy of the input config, the base option price (with statistical errors), and the computed Greeks. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Engine_a7f7b4e83c5e9c59afa0371c1135b9ec7_cgraph.png" border="0" usemap="#anamespacequantkos_1_1Engine_a7f7b4e83c5e9c59afa0371c1135b9ec7_cgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
 <a id="a30fcd6d42fabdcbd26ef93423671b81a" name="a30fcd6d42fabdcbd26ef93423671b81a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a30fcd6d42fabdcbd26ef93423671b81a">&#9670;&#160;</a></span>get_available_memory_from_os_mb()</h2>
 

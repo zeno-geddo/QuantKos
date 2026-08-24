@@ -29,4 +29,6 @@ digraph "quantkos::Engine::MCResults"
   Node11 [id="Node000011",label="quantkos::Config::Output\lConfig",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1OutputConfig.html",tooltip="Configuration for file system I/O and logging."];
   Node12 -> Node1 [id="edge12_Node000001_Node000012",dir="back",color="darkorchid3",style="dashed",tooltip=" ",label=" OptionPrice",fontcolor="grey" ];
   Node12 [id="Node000012",label="quantkos::Engine::Option\lPricer::MCOpPrices",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html",tooltip="Storage container for final simulation metrics and distribution percentiles."];
+  Node13 -> Node1 [id="edge13_Node000001_Node000013",dir="back",color="darkorchid3",style="dashed",tooltip=" ",label=" Greeks",fontcolor="grey" ];
+  Node13 [id="Node000013",label="quantkos::Engine::MCGreeks",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1MCGreeks.html",tooltip="Container holding the final risk-neutral Greeks."];
 }

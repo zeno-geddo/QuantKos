@@ -42,4 +42,7 @@ digraph "quantkos::Config::config_err_msg"
   Node1 -> Node16 [id="edge20_Node000001_Node000016",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node16 [id="Node000016",label="quantkos::Config::Options\lConfig::validate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1OptionsConfig.html#acac0df8101094c3986c193be232052f9",tooltip="Validates that the options parameters lie within physically meaningful ranges."];
   Node16 -> Node13 [id="edge21_Node000016_Node000013",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node17 [id="edge22_Node000001_Node000017",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node17 [id="Node000017",label="quantkos::Config::MCConfig\l::validate_bump_sizes_for\l_greeks_computations",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1MCConfig.html#aba0024d54863bce87cef9b402f183634",tooltip="Validates that Greek bump sizes are mathematically safe."];
+  Node17 -> Node15 [id="edge23_Node000017_Node000015",dir="back",color="steelblue1",style="solid",tooltip=" "];
 }

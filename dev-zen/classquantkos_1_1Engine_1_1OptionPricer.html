@@ -112,7 +112,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7e87e4b18404365c761a21fbfbf085ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the pricer and reserves heap memory for path payloads on Host CPU.  <br /></td></tr>
 <tr class="separator:a7e87e4b18404365c761a21fbfbf085ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a311c3a9644f625715c922339721653d2" id="r_a311c3a9644f625715c922339721653d2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a311c3a9644f625715c922339721653d2">accumulate_batch_payoffs</a> (const <a class="el" href="namespacequantkos_1_1Engine.html#a9432912504b19aa6138ba67a998cd5bd">DevBatchPayoffView</a> &amp;d_payoffs, const int curr_batch_size)</td></tr>
-<tr class="memdesc:a311c3a9644f625715c922339721653d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collects batch-specific path results from the host memory mirror views into a single heap vector for the payoffs of the entire MonteCarlo.  <br /></td></tr>
+<tr class="memdesc:a311c3a9644f625715c922339721653d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accumulate mean and variance (to be then renormalized since using chang's algorithm) of the payoffs. Also accumulates the payoffs to host if they need to be sorted later.  <br /></td></tr>
 <tr class="separator:a311c3a9644f625715c922339721653d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a958636408d616396b60348837c9cc186" id="r_a958636408d616396b60348837c9cc186"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1OptionPricer.html#a958636408d616396b60348837c9cc186">evaluate_option_price</a> ()</td></tr>
 <tr class="memdesc:a958636408d616396b60348837c9cc186"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes final option and performs empirical quantiles risk neutral discounted payoff distribution if needed.  <br /></td></tr>
@@ -304,20 +304,8 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Collects batch-specific path results from the host memory mirror views into a single heap vector for the payoffs of the entire MonteCarlo. </p>
+<p>Accumulate mean and variance (to be then renormalized since using chang's algorithm) of the payoffs. Also accumulates the payoffs to host if they need to be sorted later. </p>
 <ul>
-<li><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">h_payoffs</td><td>Host mirror view holding the current batch payoffs. </td></tr>
-    <tr><td class="paramname">curr_batch_size</td><td>The active number of paths processed in this batch loop. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>To be executed inside your main Monte Carlo batch iterations loop. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>This is inefficient, should better manage the memory </dd></dl>
-</li>
-</ul>
-<p>Accumulate mean and variance (to be then renormalized since using chang's algorithm) of the payoffs. Also accumulates the payoffs to host if they need to be sorted later.</p><ul>
 <li><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">d_payoffs</td><td>Device view holding the current batch payoffs. </td></tr>
@@ -330,11 +318,6 @@ Public Attributes</h2></td></tr>
 The variance is computed using Chang's algorithm, while the mean as a weighted average to prevent the case where you have 2 or 3 batches only with nearly equal means (Safe from cancellation, and 64-bit double prevents swamping for typical N). More on Chang's algorithm on : <a href="https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance">https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance</a> </dd></dl>
 </li>
 </ul>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classquantkos_1_1Engine_1_1OptionPricer_a311c3a9644f625715c922339721653d2_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1OptionPricer_a311c3a9644f625715c922339721653d2_icgraph" alt=""/></div>
-</div>
 
 </div>
 </div>
@@ -375,11 +358,6 @@ Here is the caller graph for this function:</div>
 </dl>
 </li>
 </ul>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classquantkos_1_1Engine_1_1OptionPricer_a958636408d616396b60348837c9cc186_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1OptionPricer_a958636408d616396b60348837c9cc186_icgraph" alt=""/></div>
-</div>
 
 </div>
 </div>
@@ -414,11 +392,6 @@ Here is the caller graph for this function:</div>
   </table>
   </dd>
 </dl>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classquantkos_1_1Engine_1_1OptionPricer_a9dedfb81e1716c9e40420a6d569ce1fe_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1OptionPricer_a9dedfb81e1716c9e40420a6d569ce1fe_icgraph" alt=""/></div>
-</div>
 
 </div>
 </div>
@@ -508,11 +481,6 @@ Here is the caller graph for this function:</div>
   </table>
   </dd>
 </dl>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classquantkos_1_1Engine_1_1OptionPricer_ac684f4c688a98b086c60f3d9633ad89a_icgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1OptionPricer_ac684f4c688a98b086c60f3d9633ad89a_icgraph" alt=""/></div>
-</div>
 
 </div>
 </div>

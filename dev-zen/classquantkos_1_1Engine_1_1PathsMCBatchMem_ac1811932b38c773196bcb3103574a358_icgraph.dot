@@ -10,17 +10,13 @@ digraph "quantkos::Engine::PathsMCBatchMem::n_full_batches"
   Node2 [id="Node000002",label="quantkos::Engine::PathsMCBatch\lMem::get_curr_batch_size",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a270a44dbc313c0a9c7f5193416eb22ee",tooltip="Resolves the exact path count for a target batch index, safely adjusting for smaller leftover batches..."];
   Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node3 [id="Node000003",label="quantkos::Engine::Forward\lMCProgressTracker::print\l_pre_execution_diagnostic",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html#a57df6da9144fc09429fa458d04016f6e",tooltip="Formats and outputs an exhaustive audit of execution parameters and hardware memory footprints."];
-  Node3 -> Node4 [id="edge3_Node000003_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node4 [id="Node000004",label="quantkos::Engine::Forward\lBackwardMCRunner::get_option_price",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html#aa62cc60ac6c779dce034339348771a6d",tooltip="Entry point to run the American pricing engine."];
-  Node3 -> Node5 [id="edge4_Node000003_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node5 [id="Node000005",label="quantkos::Engine::Forward\lMCRunner::get_option_prices",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCRunner.html#ac86a1154cda2f65879a791fbceef6627",tooltip="High-level orchestration method that runs the forward Monte Carlo engine."];
-  Node1 -> Node6 [id="edge5_Node000001_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node6 [id="Node000006",label="quantkos::Engine::run\l_forward_all_mc_batches",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Engine.html#aa0367e2eb7237c136e5a750b17ce309d",tooltip="HEAVY-LIFT HELPER FUNCTION FOR FORWARD PHASE. Executes and coordinates the forward Monte Carlo simula..."];
-  Node1 -> Node7 [id="edge6_Node000001_Node000007",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node7 [id="Node000007",label="quantkos::Engine::PathsMCBatch\lMem::total_batch_loops",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a4fbdc5d0e694f4ee33e650fdfc9e1636",tooltip="Returns the total count of batch iterations required to complete the entire simulation run."];
-  Node7 -> Node8 [id="edge7_Node000007_Node000008",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node8 [id="Node000008",label="quantkos::Engine::Forward\lMCProgressTracker::finalize\l_tracking",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html#a28daf74107f48ecdc00d7886e92714b0",tooltip="Concludes the progress tracking session."];
-  Node8 -> Node6 [id="edge8_Node000008_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node7 -> Node3 [id="edge9_Node000007_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node7 -> Node6 [id="edge10_Node000007_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node4 [id="edge3_Node000001_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="quantkos::Engine::run\l_forward_all_mc_batches",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Engine.html#aa0367e2eb7237c136e5a750b17ce309d",tooltip="HEAVY-LIFT HELPER FUNCTION FOR FORWARD PHASE. Executes and coordinates the forward Monte Carlo simula..."];
+  Node1 -> Node5 [id="edge4_Node000001_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="quantkos::Engine::PathsMCBatch\lMem::total_batch_loops",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a4fbdc5d0e694f4ee33e650fdfc9e1636",tooltip="Returns the total count of batch iterations required to complete the entire simulation run."];
+  Node5 -> Node6 [id="edge5_Node000005_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="quantkos::Engine::Forward\lMCProgressTracker::finalize\l_tracking",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html#a28daf74107f48ecdc00d7886e92714b0",tooltip="Concludes the progress tracking session."];
+  Node6 -> Node4 [id="edge6_Node000006_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 -> Node3 [id="edge7_Node000005_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 -> Node4 [id="edge8_Node000005_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
 }

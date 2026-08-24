@@ -100,9 +100,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9a8429cb42ca0fb64781c72deeb772a7" id="r_a9a8429cb42ca0fb64781c72deeb772a7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html#a9a8429cb42ca0fb64781c72deeb772a7">ForwardBackwardMCRunner</a> (<a class="el" href="structquantkos_1_1Config_1_1UInputs.html">KC::UInputs</a> conf)</td></tr>
 <tr class="memdesc:a9a8429cb42ca0fb64781c72deeb772a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a forward-backward runner instance bound to the master user configuration.  <br /></td></tr>
 <tr class="separator:a9a8429cb42ca0fb64781c72deeb772a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa62cc60ac6c779dce034339348771a6d" id="r_aa62cc60ac6c779dce034339348771a6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html">MCResults</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html#aa62cc60ac6c779dce034339348771a6d">get_option_price</a> () const</td></tr>
-<tr class="memdesc:aa62cc60ac6c779dce034339348771a6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Entry point to run the American pricing engine.  <br /></td></tr>
-<tr class="separator:aa62cc60ac6c779dce034339348771a6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28c6236df9772fb94b1a105a48cbcf43" id="r_a28c6236df9772fb94b1a105a48cbcf43"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html">MCResults</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html#a28c6236df9772fb94b1a105a48cbcf43">run</a> () const</td></tr>
+<tr class="memdesc:a28c6236df9772fb94b1a105a48cbcf43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Entry point to run the American pricing engine.  <br /></td></tr>
+<tr class="separator:a28c6236df9772fb94b1a105a48cbcf43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Lifecycle Protocols</div></td></tr>
 <tr class="memitem:a35cdcab8723371e8eaf4cb514077febb" id="r_a35cdcab8723371e8eaf4cb514077febb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html#a35cdcab8723371e8eaf4cb514077febb">ForwardBackwardMCRunner</a> (const <a class="el" href="classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html">ForwardBackwardMCRunner</a> &amp;)=delete</td></tr>
 <tr class="memdesc:a35cdcab8723371e8eaf4cb514077febb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prohibits copy construction.  <br /></td></tr>
@@ -144,6 +144,7 @@ class quantkos::Engine::ForwardBackwardMCRunner&lt; ModelPolicy, SchemePolicy, O
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>If required, the greeks are also computed. </dd></dl>
 </li>
 </ul>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -278,47 +279,6 @@ template&lt;<a class="el" href="namespacequantkos_1_1Implemented.html#a97f1bf0cc
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa62cc60ac6c779dce034339348771a6d" name="aa62cc60ac6c779dce034339348771a6d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa62cc60ac6c779dce034339348771a6d">&#9670;&#160;</a></span>get_option_price()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;<a class="el" href="namespacequantkos_1_1Implemented.html#a97f1bf0cc5d401b8a2450fe1b2da7aa6">KI::MathModel</a> ModelPolicy, <a class="el" href="namespacequantkos_1_1Implemented.html#a4891217b10509468c9ada24f07f0f374">KI::NumScheme</a> SchemePolicy, <a class="el" href="namespacequantkos_1_1Implemented.html#a114c027448b76520d405547c3a2fddd3">KI::OptRight</a> OptRight&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html">MCResults</a> <a class="el" href="classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html">quantkos::Engine::ForwardBackwardMCRunner</a>&lt; ModelPolicy, SchemePolicy, OptRight &gt;::get_option_price </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Entry point to run the American pricing engine. </p>
-<ul>
-<li>Manages lifecycle resources, executes the forward path generation phase, coordinates backward induction, and computes final expected values and statistical bands.</li>
-<li><dl class="section note"><dt>Note</dt><dd>The solver is forced to act like a European option during Phase 1 because paths are simply generated forward without path-dependent early exercise logic during this stage.</dd></dl>
-</li>
-<li><dl class="section return"><dt>Returns</dt><dd>Immutable snapshot container of Monte Carlo outputs (<code><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html" title="Immutable snapshot container for Monte Carlo simulation outputs.">MCResults</a></code>). </dd></dl>
-</li>
-</ul>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classquantkos_1_1Engine_1_1ForwardBackwardMCRunner_aa62cc60ac6c779dce034339348771a6d_cgraph.png" border="0" usemap="#aclassquantkos_1_1Engine_1_1ForwardBackwardMCRunner_aa62cc60ac6c779dce034339348771a6d_cgraph" alt=""/></div>
-</div>
-
-</div>
-</div>
 <a id="ae9acb17889833e306f40268b94a0fed3" name="ae9acb17889833e306f40268b94a0fed3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae9acb17889833e306f40268b94a0fed3">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
 
@@ -376,6 +336,44 @@ template&lt;<a class="el" href="namespacequantkos_1_1Implemented.html#a97f1bf0cc
 </div><div class="memdoc">
 
 <p>Prohibits move assignment. </p>
+
+</div>
+</div>
+<a id="a28c6236df9772fb94b1a105a48cbcf43" name="a28c6236df9772fb94b1a105a48cbcf43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28c6236df9772fb94b1a105a48cbcf43">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="namespacequantkos_1_1Implemented.html#a97f1bf0cc5d401b8a2450fe1b2da7aa6">KI::MathModel</a> ModelPolicy, <a class="el" href="namespacequantkos_1_1Implemented.html#a4891217b10509468c9ada24f07f0f374">KI::NumScheme</a> SchemePolicy, <a class="el" href="namespacequantkos_1_1Implemented.html#a114c027448b76520d405547c3a2fddd3">KI::OptRight</a> OptRight&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html">MCResults</a> <a class="el" href="classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html">quantkos::Engine::ForwardBackwardMCRunner</a>&lt; ModelPolicy, SchemePolicy, OptRight &gt;::run </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Entry point to run the American pricing engine. </p>
+<ul>
+<li>Manages lifecycle resources, executes the forward path generation phase, coordinates backward induction, and computes final expected values and statistical bands.</li>
+<li><dl class="section note"><dt>Note</dt><dd>The solver is forced to act like a European option during Phase 1 because paths are simply generated forward without path-dependent early exercise logic during this stage. </dd>
+<dd>
+If required, the greeks are also computed.</dd></dl>
+</li>
+<li><dl class="section return"><dt>Returns</dt><dd>Snapshot container of Monte Carlo outputs (<code><a class="el" href="structquantkos_1_1Engine_1_1MCResults.html" title="Immutable snapshot container for Monte Carlo simulation outputs.">MCResults</a></code>). </dd></dl>
+</li>
+</ul>
 
 </div>
 </div>
