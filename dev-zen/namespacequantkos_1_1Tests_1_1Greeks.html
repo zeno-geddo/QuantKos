@@ -97,9 +97,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aa0236c1b50541c68d72c56ba853419bf" id="r_aa0236c1b50541c68d72c56ba853419bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Config_1_1UInputs.html">KC::UInputs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html#aa0236c1b50541c68d72c56ba853419bf">getDefaultConfigGreekParity</a> ()</td></tr>
 <tr class="memdesc:aa0236c1b50541c68d72c56ba853419bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a baseline European option configuration under <a class="el" href="namespacequantkos_1_1Tests_1_1Heston.html" title="Integration tests comparing numerical simulation results with Heston exact analytical solutions.">Heston</a> dynamics.  <br /></td></tr>
 <tr class="separator:aa0236c1b50541c68d72c56ba853419bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a397125c0b37b4bca5c24c4932bca7911" id="r_a397125c0b37b4bca5c24c4932bca7911"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html#a397125c0b37b4bca5c24c4932bca7911">compute_greek_tol</a> (const double base_option_price_se, const double greek_scale, const double relative_tolerance=0.01, const double absolute_floor=1e-4)</td></tr>
-<tr class="memdesc:a397125c0b37b4bca5c24c4932bca7911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Practical tolerance for structural Monte Carlo Greek parity tests.  <br /></td></tr>
-<tr class="separator:a397125c0b37b4bca5c24c4932bca7911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a238c3ae7fa4fad2ddfc6f2fc58dd3917" id="r_a238c3ae7fa4fad2ddfc6f2fc58dd3917"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a> (const double base_option_price_se, const double greek_scale, const double base_option_price_se_multiplier=3.0, const double relative_tolerance=0.01, const double absolute_floor=1e-4)</td></tr>
+<tr class="memdesc:a238c3ae7fa4fad2ddfc6f2fc58dd3917"><td class="mdescLeft">&#160;</td><td class="mdescRight">Practical tolerance for structural Monte Carlo Greek parity tests.  <br /></td></tr>
+<tr class="separator:a238c3ae7fa4fad2ddfc6f2fc58dd3917"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9359f8d5aa4ee54f3b8497064aadaebd" id="r_a9359f8d5aa4ee54f3b8497064aadaebd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a> (const std::string &amp;name, const double num, const double expected, const double tol, const std::string_view &amp;indent)</td></tr>
 <tr class="memdesc:a9359f8d5aa4ee54f3b8497064aadaebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to see if the pull call parity has been respected.  <br /></td></tr>
 <tr class="separator:a9359f8d5aa4ee54f3b8497064aadaebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -182,8 +182,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a397125c0b37b4bca5c24c4932bca7911" name="a397125c0b37b4bca5c24c4932bca7911"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a397125c0b37b4bca5c24c4932bca7911">&#9670;&#160;</a></span>compute_greek_tol()</h2>
+<a id="a238c3ae7fa4fad2ddfc6f2fc58dd3917" name="a238c3ae7fa4fad2ddfc6f2fc58dd3917"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a238c3ae7fa4fad2ddfc6f2fc58dd3917">&#9670;&#160;</a></span>compute_greek_tol()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -202,6 +202,12 @@ Here is the caller graph for this function:</div>
           <td></td>
           <td class="paramtype">const double&#160;</td>
           <td class="paramname"><em>greek_scale</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>base_option_price_se_multiplier</em> = <code>3.0</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -243,7 +249,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="namespacequantkos_1_1Tests_1_1Greeks_a397125c0b37b4bca5c24c4932bca7911_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Greeks_a397125c0b37b4bca5c24c4932bca7911_icgraph" alt=""/></div>
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1Greeks_a238c3ae7fa4fad2ddfc6f2fc58dd3917_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Greeks_a238c3ae7fa4fad2ddfc6f2fc58dd3917_icgraph" alt=""/></div>
 </div>
 
 </div>
@@ -309,6 +315,7 @@ Here is the caller graph for this function:</div>
 <li>Delta Parity : $\Delta_C - \Delta_P = 1$</li>
 <li>Gamma Parity : $\Gamma_C = \Gamma_P$</li>
 <li>Vega Parity : $\mathcal{V}_C = \mathcal{V}_P$</li>
+<li>Vomma Parity : \text{Vomma}_C = \text{Vomma}_P</li>
 <li>Rho Parity : $\rho_C - \rho_P = K \cdot T \cdot e^{-rT}$</li>
 <li>Theta Parity : $\Theta_C - \Theta_P = -r \cdot K \cdot e^{-rT}$ where K is the strike price.</li>
 </ol>

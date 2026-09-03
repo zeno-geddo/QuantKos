@@ -10,4 +10,6 @@ digraph "quantkos::Engine::execute_mc_framework"
   Node2 [id="Node000002",label="quantkos::Config::UInputs\l::get_price_scaling_factor",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1UInputs.html#a863044a0795fbe28b65da9b318c73636",tooltip="Safely get scaling factor."];
   Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
   Node3 [id="Node000003",label="quantkos::Config::UInputs\l::must_compute_greeks",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1UInputs.html#a45af5c8be8de9ff8330ed895f3e84240",tooltip="Tells if at least one of the greeks must be computed."];
+  Node3 -> Node4 [id="edge3_Node000003_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="quantkos::Config::MCConfig\l::must_compute_greeks",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1MCConfig.html#a68cbee5946aafa0a6f82bf944f0420ef",tooltip="Tells if at least one of the greeks must be computed."];
 }

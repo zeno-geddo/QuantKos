@@ -41,14 +41,16 @@ digraph "quantkos::Tests::LSM::run_test"
   Node13 -> Node17 [id="edge18_Node000013_Node000017",color="steelblue1",style="solid",tooltip=" "];
   Node17 [id="Node000017",label="quantkos::Config::NumScheme\lConfig::validate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1NumSchemeConfig.html#ad96091eb0569f4a7672902386e71239a",tooltip=" "];
   Node13 -> Node18 [id="edge19_Node000013_Node000018",color="steelblue1",style="solid",tooltip=" "];
-  Node18 [id="Node000018",label="quantkos::Config::MCConfig\l::validate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1MCConfig.html#a093350c12e72fba61f9a95d8f83df146",tooltip="Validates hardware limits and simulation parameters."];
-  Node18 -> Node6 [id="edge20_Node000018_Node000006",color="steelblue1",style="solid",tooltip=" "];
-  Node18 -> Node19 [id="edge21_Node000018_Node000019",color="steelblue1",style="solid",tooltip=" "];
-  Node19 [id="Node000019",label="quantkos::Config::MCConfig\l::validate_bump_sizes_for\l_greeks_computations",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1MCConfig.html#aba0024d54863bce87cef9b402f183634",tooltip="Validates that Greek bump sizes are mathematically safe."];
-  Node19 -> Node6 [id="edge22_Node000019_Node000006",color="steelblue1",style="solid",tooltip=" "];
-  Node13 -> Node20 [id="edge23_Node000013_Node000020",color="steelblue1",style="solid",tooltip=" "];
-  Node20 [id="Node000020",label="quantkos::Config::Output\lConfig::validate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1OutputConfig.html#a190f8299a619f2b91af13047129de844",tooltip="Creates the output directory structure if it does not exist."];
-  Node13 -> Node21 [id="edge24_Node000013_Node000021",color="steelblue1",style="solid",tooltip=" "];
-  Node21 [id="Node000021",label="quantkos::Config::Options\lConfig::validate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1OptionsConfig.html#acac0df8101094c3986c193be232052f9",tooltip="Validates that the options parameters lie within physically meaningful ranges."];
-  Node21 -> Node6 [id="edge25_Node000021_Node000006",color="steelblue1",style="solid",tooltip=" "];
+  Node18 [id="Node000018",label="quantkos::Config::Output\lConfig::validate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1OutputConfig.html#a190f8299a619f2b91af13047129de844",tooltip="Creates the output directory structure if it does not exist."];
+  Node13 -> Node19 [id="edge20_Node000013_Node000019",color="steelblue1",style="solid",tooltip=" "];
+  Node19 [id="Node000019",label="quantkos::Config::MCConfig\l::validate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1MCConfig.html#a2277b1a0f8d2b0e94b1fc834ecf0e49a",tooltip="Validates hardware limits and simulation parameters."];
+  Node19 -> Node6 [id="edge21_Node000019_Node000006",color="steelblue1",style="solid",tooltip=" "];
+  Node19 -> Node20 [id="edge22_Node000019_Node000020",color="steelblue1",style="solid",tooltip=" "];
+  Node20 [id="Node000020",label="quantkos::Config::MCConfig\l::must_compute_greeks",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1MCConfig.html#a68cbee5946aafa0a6f82bf944f0420ef",tooltip="Tells if at least one of the greeks must be computed."];
+  Node19 -> Node21 [id="edge23_Node000019_Node000021",color="steelblue1",style="solid",tooltip=" "];
+  Node21 [id="Node000021",label="quantkos::Config::MCConfig\l::validate_bump_sizes_for\l_greeks_computations",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1MCConfig.html#a9ff02e9183a1312ceac38daa12941958",tooltip="Validates that Greek bump sizes are mathematically safe."];
+  Node21 -> Node6 [id="edge24_Node000021_Node000006",color="steelblue1",style="solid",tooltip=" "];
+  Node13 -> Node22 [id="edge25_Node000013_Node000022",color="steelblue1",style="solid",tooltip=" "];
+  Node22 [id="Node000022",label="quantkos::Config::Options\lConfig::validate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1OptionsConfig.html#acac0df8101094c3986c193be232052f9",tooltip="Validates that the options parameters lie within physically meaningful ranges."];
+  Node22 -> Node6 [id="edge26_Node000022_Node000006",color="steelblue1",style="solid",tooltip=" "];
 }

@@ -34,7 +34,7 @@ var searchData=
   ['missed_31',['missed',['../namespaceCMakeLists.html#adaea7cad1c3db27460f01ed215edd7a4',1,'CMakeLists']]],
   ['mode_20configurations_32',['6. Debug Mode Configurations',['../namespaceCMakeLists.html#debug_sec',1,'']]],
   ['model_33',['model',['../md_MATH__GUIDE.html#autotoc_md48',1,'I. Heston Stochastic Volatility Model'],['../md_MATH__GUIDE.html#autotoc_md50',1,'II. Bates Stochastic Volatility Jump-Diffusion Model'],['../md_USER__INPUT__GUIDE.html#autotoc_md107',1,'Model'],['../structquantkos_1_1Config_1_1UInputs.html#a13c42fffe825e2a19e556cdda1d318e4',1,'quantkos::Config::UInputs::model']]],
-  ['models_34',['models',['../index.html#autotoc_md73',1,'Stochastic Models'],['../md_MATH__GUIDE.html#autotoc_md46',1,'Stochastic Models']]],
+  ['models_34',['models',['../md_MATH__GUIDE.html#autotoc_md46',1,'Stochastic Models'],['../index.html#autotoc_md73',1,'Stochastic Models']]],
   ['monte_20carlo_35',['Monte Carlo',['../md_USER__INPUT__GUIDE.html#autotoc_md112',1,'']]],
   ['monte_20carlo_20engine_36',['Monte Carlo Engine',['../index.html#autotoc_md76',1,'']]],
   ['monte_20carlo_20option_20pricing_20engine_37',['QuantKos: Performance-Portable Monte Carlo Option Pricing Engine',['../index.html',1,'']]],
@@ -44,5 +44,5 @@ var searchData=
   ['mu_5fj_41',['mu_j',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Bates_00_01SchemePolicy_01_4.html#adf7334afe6ee175d838ddb3b6cd64905',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Bates, SchemePolicy &gt;::mu_J'],['../structquantkos_1_1Config_1_1MathModelConfig_1_1Bates.html#a8752b7631b545df938068551977741b0',1,'quantkos::Config::MathModelConfig::Bates::mu_J']]],
   ['multi_20core_20cpu_20openmp_20release_42',['Option B: Multi-Core CPU (OpenMP / Release)',['../md_COMPILATION__GUIDE.html#autotoc_md19',1,'']]],
   ['multiple_20cpu_20cores_20openmp_20builds_43',['Running on Multiple CPU Cores (OpenMP builds)',['../md_COMPILATION__GUIDE.html#autotoc_md39',1,'']]],
-  ['must_5fcompute_5fgreeks_44',['must_compute_greeks',['../structquantkos_1_1Config_1_1UInputs.html#a45af5c8be8de9ff8330ed895f3e84240',1,'quantkos::Config::UInputs']]]
+  ['must_5fcompute_5fgreeks_44',['must_compute_greeks',['../structquantkos_1_1Config_1_1UInputs.html#a45af5c8be8de9ff8330ed895f3e84240',1,'quantkos::Config::UInputs::must_compute_greeks()'],['../structquantkos_1_1Config_1_1MCConfig.html#a68cbee5946aafa0a6f82bf944f0420ef',1,'quantkos::Config::MCConfig::must_compute_greeks()']]]
 ];
