@@ -258,6 +258,10 @@ namespace quantkos::Config {
                 if (2.0 * base_params.k * base_params.theta <= base_params.sigma * base_params.sigma) {
                     std::cout << indent <<
                             "      Feller condition (2κθ > σ²) is violated. Variance paths may touch zero.\n";
+                } else {
+                    std::cout << indent <<
+                            "      Feller condition (2κθ > σ²) respected.\n";
+
                 }
 
                 if (id_model == KI::MathModel::Bates) {
@@ -411,8 +415,8 @@ namespace quantkos::Config {
         bool compute_theta = false; ///< If true, compute theta, i.e. the Sensitivity to final time
         double spot_price_relative_bump_size = 0.001;
         ///< Relative bump size for Delta and Gamma (Spot Price). Default is 0.001 (0.1%). Must be strictly positive and <= 0.05.
-        double volatility_absolute_bump_size = 0.001;
-        ///< Absolute bump size for Vega (Initial Volatility).  Default is 0.001. Must be strictly positive and <= 0.10.
+        double volatility_absolute_bump_size = 0.01;
+        ///< Absolute bump size for Vega (Initial Volatility, bump on sqrt(v0)).  Default is 0.01. Must be strictly positive and <= 0.10.
         double risk_free_rate_absolute_bump_size = 0.0001;
         ///< Absolute bump size for Rho (Risk-Free Interest Rate). Default is 0.0001. Must be strictly positive and <= 0.05.
         /**
@@ -517,24 +521,24 @@ namespace quantkos::Config {
             // 2. Delta & Gamma
             std::cout << indent << "    Evaluate Delta and Gamma       :    " << compute_delta_et_gamma << "\n";
             if (compute_delta_et_gamma) {
-                std::cout << indent << "      -> Bump Size (Rel)      :    " << spot_price_relative_bump_size << "\n";
+                std::cout << indent << "      -> S0 Bump Size (Rel)      :    " << spot_price_relative_bump_size << "\n";
             }
             // 3. Vega
             std::cout << indent << "    Evaluate Vega                  :    " << compute_vega << "\n";
             if (compute_vega) {
-                std::cout << indent << "      -> Bump Size (Abs)       :    " << volatility_absolute_bump_size <<
+                std::cout << indent << "      -> Vol0 Bump Size (Abs)       :    " << volatility_absolute_bump_size <<
                         "\n";
             }
             // 4. Rho
             std::cout << indent << "    Evaluate Rho                   :    " << compute_rho << "\n";
             if (compute_rho) {
-                std::cout << indent << "      -> Bump Size (Abs)      :    " << risk_free_rate_absolute_bump_size <<
+                std::cout << indent << "      -> r Bump Size (Abs)      :    " << risk_free_rate_absolute_bump_size <<
                         "\n";
             }
             // 5. Theta
             std::cout << indent << "    Evaluate Theta                 :    " << compute_theta << "\n";
             if (compute_theta) {
-                std::cout << indent << "      -> Bump Size (Abs)      :    dt\n";
+                std::cout << indent << "      -> T Bump Size (Abs)      :    " << time_absolute_bump_size<<"\n";
             }
         }
     };

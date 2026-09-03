@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <iomanip>
-#include <vector>
 #include <cmath>
 #include <stdexcept>
 #include <Kokkos_Sort.hpp>

@@ -502,14 +502,20 @@ namespace quantkos::Engine {
         MCGreeks greeks{};
         if (config.must_compute_greeks()) {
             KC::UInputs base_greek_cfg = config; // Create a copy where spoofing params common to all greeks
-            base_greek_cfg.mc.analyze_risk_neutral_payoff_distribution = false;// payoffs never stored and sorted
+            base_greek_cfg.mc.analyze_risk_neutral_payoff_distribution = false; // payoffs never stored and sorted
             base_greek_cfg.output.filename_paths_out = ""; // So that paths for the greeks are never saved
             // should introduce and rewrite a flag that tell if to print or not, and during the greeks should be low verbosity
 
             if (base_greek_cfg.mc.compute_delta_et_gamma) {
                 std::cout << "\n\n  >>> Computing Delta & Gamma...\n";
+                // Get initial price and price bump considering that it could have been normalized
                 const auto S0 = base_greek_cfg.market.S0;
                 const auto h_S = S0 * base_greek_cfg.mc.spot_price_relative_bump_size;
+                auto h_S_real_scale = h_S;
+                if (base_greek_cfg.mc.normalize_prices) {
+                    const auto S0_real_scale = base_greek_cfg.get_price_scaling_factor();
+                    h_S_real_scale = S0_real_scale * base_greek_cfg.mc.spot_price_relative_bump_size;
+                }
 
                 KC::UInputs cfg_up = base_greek_cfg;
                 cfg_up.market.S0 = S0 + h_S;
@@ -519,24 +525,33 @@ namespace quantkos::Engine {
                 cfg_down.market.S0 = S0 - h_S;
                 double p_down = pricing_function(cfg_down, Mem).option_price;
 
-                greeks.delta = (p_up - p_down) / (2.0 * h_S);
-                greeks.gamma = (p_up - 2.0 * ref_option_price_data.option_price + p_down) / (h_S * h_S);
+                // NOTE : Divide by the bump in the real scale to match the scale of the real output prices
+                greeks.delta = (p_up - p_down) / (2.0 * h_S_real_scale);
+                greeks.gamma = (p_up - 2.0 * ref_option_price_data.option_price + p_down) /
+                               (h_S_real_scale * h_S_real_scale);
             }
 
             if (base_greek_cfg.mc.compute_vega) {
+                // Approach 1
                 std::cout << "\n\n  >>> Computing Vega...\n";
-                const double v0 = base_greek_cfg.market.v0;
-                const double h_v = base_greek_cfg.mc.volatility_absolute_bump_size;
+                const double var0 = base_greek_cfg.market.v0;
+                const double vol0 = std::sqrt(var0);
+                const double h_vol = base_greek_cfg.mc.volatility_absolute_bump_size;
 
                 KC::UInputs cfg_up = base_greek_cfg;
-                cfg_up.market.v0 = v0 + h_v;
+                const double vol_up = vol0 + h_vol;
+                const double var_up = vol_up * vol_up;
+                cfg_up.market.v0 = var_up; // variance instead of volatility required
                 double p_up = pricing_function(cfg_up, Mem).option_price;
 
                 KC::UInputs cfg_down = base_greek_cfg;
-                cfg_down.market.v0 = v0 - h_v;
+                const double vol_down = vol0 - h_vol;
+                const double var_down = vol_down * vol_down;
+                cfg_down.market.v0 = var_down; // variance instead of volatility required
                 double p_down = pricing_function(cfg_down, Mem).option_price;
 
-                greeks.vega = (p_up - p_down) / (2.0 * h_v);
+                greeks.vega = (p_up - p_down) / (2.0 * h_vol);
+
             }
 
             if (base_greek_cfg.mc.compute_rho) {
@@ -566,8 +581,8 @@ namespace quantkos::Engine {
 
                     // Continuous Maturity Shift: Shrink T, but keep N_time_steps the same
                     // NOTE: To price the option from the perspective of tomorrow using a simulation that starts at $0$,
-                    // you must set the total simulation horizon ($t_{\text{end}}$) to the remaining time: $T - h_T$.
-                    // In other words, you are standing at higher unit time (e.g. tomorrow), so, because 1 unit time has elapsed,
+                    // we set the total simulation horizon ($t_{\text{end}}$) to the remaining time: $T - h_T$.
+                    // In other words, we are standing at higher unit time (e.g. tomorrow), so, because 1 unit time has elapsed,
                     // the time remaining until maturity is now T−ht
                     cfg_down.time.t_end = T - h_T;
 
@@ -580,7 +595,8 @@ namespace quantkos::Engine {
                     // Annualized Theta: (Price with perspective of tomorrow - Price with perspective of today) / time elapsed
                     greeks.theta = (p_down - ref_option_price_data.option_price) / h_T;
                 } else {
-                    std::cout << "   [Warning] Option too close to expiry to compute finite-difference Theta. Theta set to zero.\n";
+                    std::cout <<
+                            "   [Warning] Option too close to expiry to compute finite-difference Theta. Theta set to zero.\n";
                     greeks.theta = 0.0;
                 }
             }

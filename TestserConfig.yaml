@@ -9,4 +9,5 @@ run_tests:
   - IOBin
   - NoNoise
   - RNG
+  - EUGreeksPutCallParity
 

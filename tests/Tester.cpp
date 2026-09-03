@@ -94,6 +94,9 @@ int main(int argc, char *argv[]) {
         tester.register_test("AmericanOption",
                              "American Option LSM",
                              KTE::LSM::run_test);
+        tester.register_test("EUGreeksPutCallParity",
+                             "Check that EU option Greeks obey put-call parity",
+                             KTE::Greeks::run_test);
 
         // 4. Run active tests (Automatically filters using argv[1] if a valid YAML configuration is parsed)
         failed_tests = tester.run_tests(argc, argv);

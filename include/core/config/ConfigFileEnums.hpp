@@ -93,4 +93,17 @@ namespace quantkos::Implemented {
         LaguerreP03, ///< Order 3 Laguerre polynomial.
         LaguerreP04, ///< Order 4 Laguerre polynomial.
     };
+
+    /** @brief Supported Greeks. */
+    enum class Greeks {
+        Delta, ///< The sensitivity to underlying spot price and gamma, Rate of change of Delta. Computed using Central Difference on Spot price.
+        Gamma,
+        Vega, ///< The sensitivity to volatility. Computed using Central Difference on Initial Volatility.
+        Rho, ///< The sensitivity to interest rates. Computed using Central Difference on Risk-Free Rate.
+        Theta, ///< The Sensitivity to final time.
+        //Vanna,
+        //Volga,
+        //Speed
+
+    };
 }

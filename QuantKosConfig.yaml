@@ -9,8 +9,8 @@ Market:
   q: 0.0        # Continuous dividend yield
 
 Options:
-  OptionType:  European #Asian #American
-  OptionRight: Put #Call
+  OptionType:  Asian #American
+  OptionRight:  Call #Put
   StrikePrice: 10.
 
 Model:
