@@ -146,8 +146,8 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:abe673074dbac0d6da0b98e585d26b254" id="r_abe673074dbac0d6da0b98e585d26b254"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#abe673074dbac0d6da0b98e585d26b254">spot_price_relative_bump_size</a> = 0.001</td></tr>
 <tr class="memdesc:abe673074dbac0d6da0b98e585d26b254"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relative bump size for Delta and Gamma (Spot Price). Default is 0.001 (0.1%). Must be strictly positive and &lt;= 0.05.  <br /></td></tr>
 <tr class="separator:abe673074dbac0d6da0b98e585d26b254"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3a2d4f66f724513e0eaa07cebcfc159e" id="r_a3a2d4f66f724513e0eaa07cebcfc159e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#abe673074dbac0d6da0b98e585d26b254">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#a3a2d4f66f724513e0eaa07cebcfc159e">volatility_absolute_bump_size</a> = 0.001</td></tr>
-<tr class="memdesc:a3a2d4f66f724513e0eaa07cebcfc159e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute bump size for Vega (Initial Volatility). Default is 0.001. Must be strictly positive and &lt;= 0.10.  <br /></td></tr>
+<tr class="memitem:a3a2d4f66f724513e0eaa07cebcfc159e" id="r_a3a2d4f66f724513e0eaa07cebcfc159e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#abe673074dbac0d6da0b98e585d26b254">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#a3a2d4f66f724513e0eaa07cebcfc159e">volatility_absolute_bump_size</a> = 0.01</td></tr>
+<tr class="memdesc:a3a2d4f66f724513e0eaa07cebcfc159e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute bump size for Vega (Initial Volatility, bump on <a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#abe673074dbac0d6da0b98e585d26b254" title="Relative bump size for Delta and Gamma (Spot Price). Default is 0.001 (0.1%). Must be strictly positi...">sqrt(v0)</a>). Default is 0.01. Must be strictly positive and &lt;= 0.10.  <br /></td></tr>
 <tr class="separator:a3a2d4f66f724513e0eaa07cebcfc159e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cd9e5e1fc0a14d8223878b7c9c46521" id="r_a5cd9e5e1fc0a14d8223878b7c9c46521"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#abe673074dbac0d6da0b98e585d26b254">double</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#a5cd9e5e1fc0a14d8223878b7c9c46521">risk_free_rate_absolute_bump_size</a> = 0.0001</td></tr>
 <tr class="memdesc:a5cd9e5e1fc0a14d8223878b7c9c46521"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute bump size for Rho (Risk-Free Interest Rate). Default is 0.0001. Must be strictly positive and &lt;= 0.05.  <br /></td></tr>
@@ -512,12 +512,12 @@ Here is the caller graph for this function:</div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#abe673074dbac0d6da0b98e585d26b254">double</a> quantkos::Config::MCConfig::volatility_absolute_bump_size = 0.001</td>
+          <td class="memname"><a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#abe673074dbac0d6da0b98e585d26b254">double</a> quantkos::Config::MCConfig::volatility_absolute_bump_size = 0.01</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Absolute bump size for Vega (Initial Volatility). Default is 0.001. Must be strictly positive and &lt;= 0.10. </p>
+<p>Absolute bump size for Vega (Initial Volatility, bump on <a class="el" href="structquantkos_1_1Config_1_1MCConfig.html#abe673074dbac0d6da0b98e585d26b254" title="Relative bump size for Delta and Gamma (Spot Price). Default is 0.001 (0.1%). Must be strictly positi...">sqrt(v0)</a>). Default is 0.01. Must be strictly positive and &lt;= 0.10. </p>
 
 </div>
 </div>

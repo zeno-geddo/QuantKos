@@ -33,4 +33,7 @@ digraph "include/core/options/LSMAmerican.hpp"
   Node12 [id="Node000012",label="include/tests/Options\l/HestonTest.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$HestonTest_8hpp.html",tooltip=" "];
   Node12 -> Node6 [id="edge16_Node000012_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node7 -> Node5 [id="edge17_Node000007_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node7 -> Node13 [id="edge18_Node000007_Node000013",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node13 [id="Node000013",label="include/tests/Options\l/PutCallParityTest.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$PutCallParityTest_8hpp.html",tooltip=" "];
+  Node13 -> Node6 [id="edge19_Node000013_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
 }

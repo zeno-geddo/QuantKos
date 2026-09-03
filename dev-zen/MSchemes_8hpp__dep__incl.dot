@@ -35,7 +35,10 @@ digraph "include/core/schemes/markovian/MSchemes.hpp"
   Node13 [id="Node000013",label="include/tests/Options\l/HestonTest.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$HestonTest_8hpp.html",tooltip=" "];
   Node13 -> Node7 [id="edge17_Node000013_Node000007",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node8 -> Node6 [id="edge18_Node000008_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 -> Node14 [id="edge19_Node000002_Node000014",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node14 [id="Node000014",label="include/core/engine\l/ForwardMC.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$ForwardMC_8hpp.html",tooltip=" "];
-  Node14 -> Node4 [id="edge20_Node000014_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node8 -> Node14 [id="edge19_Node000008_Node000014",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node14 [id="Node000014",label="include/tests/Options\l/PutCallParityTest.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$PutCallParityTest_8hpp.html",tooltip=" "];
+  Node14 -> Node7 [id="edge20_Node000014_Node000007",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 -> Node15 [id="edge21_Node000002_Node000015",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node15 [id="Node000015",label="include/core/engine\l/ForwardMC.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$ForwardMC_8hpp.html",tooltip=" "];
+  Node15 -> Node4 [id="edge22_Node000015_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
 }

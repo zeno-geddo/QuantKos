@@ -26,4 +26,6 @@ digraph "quantkos::Config::MCConfig::validate_bump_sizes_for_greeks_computations
   Node10 [id="Node000010",label="quantkos::Tests::Heston\l::run_test",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1Heston.html#ac83c9c8e51fbd7563ee9d5cebfae3b3e",tooltip="Runs the weak convergence test comparing numerical option prices to the Heston exact analytical price..."];
   Node5 -> Node11 [id="edge10_Node000005_Node000011",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node11 [id="Node000011",label="quantkos::Tests::LSM\l::run_test",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1LSM.html#af8142e2cbf2957687b7124902e15fc42",tooltip=" "];
+  Node5 -> Node12 [id="edge11_Node000005_Node000012",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node12 [id="Node000012",label="quantkos::Tests::Greeks\l::run_test",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1Greeks.html#a75b4ea46847d109d3e83a344be19bba0",tooltip="Performs the Structural Put-Call Parity test for Monte Carlo Greeks."];
 }

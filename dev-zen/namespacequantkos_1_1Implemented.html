@@ -153,6 +153,17 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a6ac05326467c4a596e2194d580231d8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported basis for Longstaff-Schwarz Algorithm (for American Options).  <a href="namespacequantkos_1_1Implemented.html#a6ac05326467c4a596e2194d580231d8f">More...</a><br /></td></tr>
 <tr class="separator:a6ac05326467c4a596e2194d580231d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4774a249a855ffe58b9f6daca66361a7" id="r_a4774a249a855ffe58b9f6daca66361a7"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7">Greeks</a> { <br />
+&#160;&#160;<a class="el" href="namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7adb1f4ab5845def61a83d5df13e0c2397">Delta</a>
+, <a class="el" href="namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7ad9cdb0f6e0d556347c10a8695545a4b5">Gamma</a>
+, <a class="el" href="namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7abb8efcd4ab24730b7cd34e88ac390878">Vega</a>
+, <a class="el" href="namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7a7216bcf464203aec4864fbeea158a0db">Rho</a>
+, <br />
+&#160;&#160;<a class="el" href="namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7ad21c855a168b8f09d1ebb1bc596be927">Theta</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a4774a249a855ffe58b9f6daca66361a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported Greeks.  <a href="namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7">More...</a><br /></td></tr>
+<tr class="separator:a4774a249a855ffe58b9f6daca66361a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -178,6 +189,41 @@ Functions</h2></td></tr>
 </ul>
 <p>File (YAML) → Parser → Current Validator → <a class="el" href="namespacequantkos_1_1Config.html" title="Namespace aggregating all structures containing parameters required to initialize and run a simulatio...">Config</a> → Solver </p>
 </div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a4774a249a855ffe58b9f6daca66361a7" name="a4774a249a855ffe58b9f6daca66361a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4774a249a855ffe58b9f6daca66361a7">&#9670;&#160;</a></span>Greeks</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7">quantkos::Implemented::Greeks</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Supported Greeks. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a4774a249a855ffe58b9f6daca66361a7adb1f4ab5845def61a83d5df13e0c2397" name="a4774a249a855ffe58b9f6daca66361a7adb1f4ab5845def61a83d5df13e0c2397"></a>Delta&#160;</td><td class="fielddoc"><p>The sensitivity to underlying spot price and gamma, Rate of change of Delta. Computed using Central Difference on Spot price. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4774a249a855ffe58b9f6daca66361a7ad9cdb0f6e0d556347c10a8695545a4b5" name="a4774a249a855ffe58b9f6daca66361a7ad9cdb0f6e0d556347c10a8695545a4b5"></a>Gamma&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a4774a249a855ffe58b9f6daca66361a7abb8efcd4ab24730b7cd34e88ac390878" name="a4774a249a855ffe58b9f6daca66361a7abb8efcd4ab24730b7cd34e88ac390878"></a>Vega&#160;</td><td class="fielddoc"><p>The sensitivity to volatility. Computed using Central Difference on Initial Volatility. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4774a249a855ffe58b9f6daca66361a7a7216bcf464203aec4864fbeea158a0db" name="a4774a249a855ffe58b9f6daca66361a7a7216bcf464203aec4864fbeea158a0db"></a>Rho&#160;</td><td class="fielddoc"><p>The sensitivity to interest rates. Computed using Central Difference on Risk-Free Rate. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a4774a249a855ffe58b9f6daca66361a7ad21c855a168b8f09d1ebb1bc596be927" name="a4774a249a855ffe58b9f6daca66361a7ad21c855a168b8f09d1ebb1bc596be927"></a>Theta&#160;</td><td class="fielddoc"><p>The Sensitivity to final time. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="a43dc2bec891c242962d31c2e50db07f1" name="a43dc2bec891c242962d31c2e50db07f1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a43dc2bec891c242962d31c2e50db07f1">&#9670;&#160;</a></span>IOFormat</h2>
 

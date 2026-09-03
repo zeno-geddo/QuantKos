@@ -10,7 +10,7 @@ var searchData=
   ['deep_5fcopy_5fpaths_5fto_5fhost_5fif_5fneeded_7',['deep_copy_paths_to_host_if_needed',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a26f18c8b39e7d9d209a6b0dbe0533423',1,'quantkos::Engine::PathsMCBatchMem']]],
   ['default_20static_20analysis_20warnings_8',['4. Default Static Analysis Warnings',['../namespaceCMakeLists.html#warning_sec',1,'']]],
   ['definition_9',['(Main Executable Definition)',['..//home/runner/work/QuantKos/QuantKos/app/CMakeLists.txt#exec_sec',1,'']]],
-  ['delta_10',['delta',['../structquantkos_1_1Engine_1_1MCGreeks.html#ab3e68b5cf9aeba46905b9e01c621bbfb',1,'quantkos::Engine::MCGreeks']]],
+  ['delta_10',['delta',['../structquantkos_1_1Engine_1_1MCGreeks.html#ab3e68b5cf9aeba46905b9e01c621bbfb',1,'quantkos::Engine::MCGreeks::delta'],['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7adb1f4ab5845def61a83d5df13e0c2397',1,'quantkos::Implemented::Delta']]],
   ['dependencies_11',['C. Dependencies',['../md_COMPILATION__GUIDE.html#autotoc_md5',1,'']]],
   ['dependent_12',['B. Hardware Toolchains (Target-Dependent)',['../md_COMPILATION__GUIDE.html#autotoc_md4',1,'']]],
   ['dependent_20target_20linking_13',['(Dependent Target Linking)',['../namespaceCMakeLists.html#link_sec',1,'']]],
@@ -37,7 +37,7 @@ var searchData=
   ['down_20and_20out_34',['Down-and-Out',['../md_MATH__GUIDE.html#autotoc_md58',1,'']]],
   ['download_20build_20and_20install_20yaml_20cpp_35',['Step 4 (Recommended): Download, Build and Install yaml-cpp',['../md_COMPILATION__GUIDE.html#autotoc_md25',1,'']]],
   ['download_20quantkos_36',['Step 1: Download QuantKos',['../md_COMPILATION__GUIDE.html#autotoc_md30',1,'']]],
-  ['dt_37',['dt',['../structquantkos_1_1IO_1_1Binary_1_1BinHeader.html#adcaf98cd9a43b44a984c7ea14c513252',1,'quantkos::IO::Binary::BinHeader::dt'],['../structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html#a8b9884bfa7435968495f303ba50f9679',1,'quantkos::Tests::Utils::OptionPriceErr::dt'],['../structquantkos_1_1Config_1_1TimeConfig.html#a21d7598e7e9a36b67f4ac041703d8e86',1,'quantkos::Config::TimeConfig::dt']]],
+  ['dt_37',['dt',['../structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html#a8b9884bfa7435968495f303ba50f9679',1,'quantkos::Tests::Utils::OptionPriceErr::dt'],['../structquantkos_1_1Config_1_1TimeConfig.html#a21d7598e7e9a36b67f4ac041703d8e86',1,'quantkos::Config::TimeConfig::dt'],['../structquantkos_1_1IO_1_1Binary_1_1BinHeader.html#adcaf98cd9a43b44a984c7ea14c513252',1,'quantkos::IO::Binary::BinHeader::dt']]],
   ['dummy_5fpath_5fview_38',['dummy_path_view',['../structquantkos_1_1Tests_1_1RNG_1_1CustomGaussianRNGTestKernel.html#a5b41d80f7b18e165f38099192bd8e2df',1,'quantkos::Tests::RNG::CustomGaussianRNGTestKernel::dummy_path_view'],['../structquantkos_1_1Tests_1_1RNG_1_1KokkosDefGaussianRNGTestKernel.html#a65abbce78b2cd0dbd7d5dec93c8a7ef1',1,'quantkos::Tests::RNG::KokkosDefGaussianRNGTestKernel::dummy_path_view']]],
   ['dummycustomgaussiansdescheme_39',['DummyCustomGaussianSDEScheme',['../structquantkos_1_1Tests_1_1RNG_1_1DummyCustomGaussianSDEScheme.html',1,'quantkos::Tests::RNG']]],
   ['dummykokkosdefgaussiansdescheme_40',['DummyKokkosDefGaussianSDEScheme',['../structquantkos_1_1Tests_1_1RNG_1_1DummyKokkosDefGaussianSDEScheme.html',1,'quantkos::Tests::RNG']]]

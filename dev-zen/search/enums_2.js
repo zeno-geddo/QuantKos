@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mathmodel_0',['MathModel',['../namespacequantkos_1_1Implemented.html#a97f1bf0cc5d401b8a2450fe1b2da7aa6',1,'quantkos::Implemented']]]
+  ['lsregressionbasis_0',['LSRegressionBasis',['../namespacequantkos_1_1Implemented.html#a6ac05326467c4a596e2194d580231d8f',1,'quantkos::Implemented']]]
 ];

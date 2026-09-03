@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['put_0',['Put',['../namespacequantkos_1_1Implemented.html#a114c027448b76520d405547c3a2fddd3ad0bf1810982e9728fcf3ac444a015373',1,'quantkos::Implemented']]]
+  ['implicitmilstein_0',['ImplicitMilstein',['../namespacequantkos_1_1Implemented.html#a4891217b10509468c9ada24f07f0f374af4e704e49d06e827d69f8fcb5b4c3451',1,'quantkos::Implemented']]]
 ];

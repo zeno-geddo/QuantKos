@@ -7,5 +7,7 @@ digraph "quantkos::Config::UInputs::get_price_scaling_factor"
   rankdir="RL";
   Node1 [id="Node000001",label="quantkos::Config::UInputs\l::get_price_scaling_factor",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Safely get scaling factor."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="quantkos::IO::Binary\l::BinWriter::print_planned\l_outputs_summary",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1IO_1_1Binary_1_1BinWriter.html#a800c48ca1967d151fc997a204c3d885f",tooltip="Prints a clean summary layout of the binary file structure to the standard console."];
+  Node2 [id="Node000002",label="quantkos::Engine::execute\l_mc_framework",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Engine.html#a7f7b4e83c5e9c59afa0371c1135b9ec7",tooltip="Universal Monte Carlo orchestrator for base pricing and finite-difference Greeks computation."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="quantkos::IO::Binary\l::BinWriter::print_planned\l_outputs_summary",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1IO_1_1Binary_1_1BinWriter.html#a800c48ca1967d151fc997a204c3d885f",tooltip="Prints a clean summary layout of the binary file structure to the standard console."];
 }

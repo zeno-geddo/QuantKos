@@ -7,5 +7,7 @@ digraph "quantkos::Engine::execute_mc_framework"
   rankdir="LR";
   Node1 [id="Node000001",label="quantkos::Engine::execute\l_mc_framework",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Universal Monte Carlo orchestrator for base pricing and finite-difference Greeks computation."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="quantkos::Config::UInputs\l::must_compute_greeks",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1UInputs.html#a45af5c8be8de9ff8330ed895f3e84240",tooltip="Tells if at least one of the greeks must be computed."];
+  Node2 [id="Node000002",label="quantkos::Config::UInputs\l::get_price_scaling_factor",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1UInputs.html#a863044a0795fbe28b65da9b318c73636",tooltip="Safely get scaling factor."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="quantkos::Config::UInputs\l::must_compute_greeks",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Config_1_1UInputs.html#a45af5c8be8de9ff8330ed895f3e84240",tooltip="Tells if at least one of the greeks must be computed."];
 }

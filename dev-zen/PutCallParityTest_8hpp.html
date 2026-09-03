@@ -83,16 +83,56 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">PutCallParityTest.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><div class="dynheader">
+<div class="textblock"><code>#include &quot;<a class="el" href="Config_8hpp_source.html">../../core/config/Config.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="TestsUtils_8hpp_source.html">TestsUtils.hpp</a>&quot;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for PutCallParityTest.hpp:</div>
+<div class="dyncontent">
+<div class="center"><img src="PutCallParityTest_8hpp__incl.png" border="0" usemap="#ainclude_2tests_2Options_2PutCallParityTest_8hpp" alt=""/></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="PutCallParityTest_8hpp__dep__incl.png" border="0" usemap="#ainclude_2tests_2Options_2PutCallParityTest_8hppdep" alt=""/></div>
 </div>
 </div>
 <p><a href="PutCallParityTest_8hpp_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacequantkos" id="r_namespacequantkos"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos.html">quantkos</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacequantkos_1_1Tests" id="r_namespacequantkos_1_1Tests"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests.html">quantkos::Tests</a></td></tr>
+<tr class="memdesc:namespacequantkos_1_1Tests"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provides a lightweight testing framework for registering and executing test suites. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacequantkos_1_1Tests_1_1Greeks" id="r_namespacequantkos_1_1Tests_1_1Greeks"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html">quantkos::Tests::Greeks</a></td></tr>
+<tr class="memdesc:namespacequantkos_1_1Tests_1_1Greeks"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integration tests for validating Monte Carlo finite-difference <a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html" title="Integration tests for validating Monte Carlo finite-difference Greeks.">Greeks</a>. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aa0236c1b50541c68d72c56ba853419bf" id="r_aa0236c1b50541c68d72c56ba853419bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Config_1_1UInputs.html">KC::UInputs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html#aa0236c1b50541c68d72c56ba853419bf">quantkos::Tests::Greeks::getDefaultConfigGreekParity</a> ()</td></tr>
+<tr class="memdesc:aa0236c1b50541c68d72c56ba853419bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a baseline European option configuration under <a class="el" href="namespacequantkos_1_1Tests_1_1Heston.html" title="Integration tests comparing numerical simulation results with Heston exact analytical solutions.">Heston</a> dynamics.  <br /></td></tr>
+<tr class="separator:aa0236c1b50541c68d72c56ba853419bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a397125c0b37b4bca5c24c4932bca7911" id="r_a397125c0b37b4bca5c24c4932bca7911"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html#a397125c0b37b4bca5c24c4932bca7911">quantkos::Tests::Greeks::compute_greek_tol</a> (const double base_option_price_se, const double greek_scale, const double relative_tolerance=0.01, const double absolute_floor=1e-4)</td></tr>
+<tr class="memdesc:a397125c0b37b4bca5c24c4932bca7911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Practical tolerance for structural Monte Carlo Greek parity tests.  <br /></td></tr>
+<tr class="separator:a397125c0b37b4bca5c24c4932bca7911"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9359f8d5aa4ee54f3b8497064aadaebd" id="r_a9359f8d5aa4ee54f3b8497064aadaebd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">quantkos::Tests::Greeks::check_parity</a> (const std::string &amp;name, const double num, const double expected, const double tol, const std::string_view &amp;indent)</td></tr>
+<tr class="memdesc:a9359f8d5aa4ee54f3b8497064aadaebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper function to see if the pull call parity has been respected.  <br /></td></tr>
+<tr class="separator:a9359f8d5aa4ee54f3b8497064aadaebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75b4ea46847d109d3e83a344be19bba0" id="r_a75b4ea46847d109d3e83a344be19bba0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html#a75b4ea46847d109d3e83a344be19bba0">quantkos::Tests::Greeks::run_test</a> ()</td></tr>
+<tr class="memdesc:a75b4ea46847d109d3e83a344be19bba0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs the Structural Put-Call Parity test for Monte Carlo <a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html" title="Integration tests for validating Monte Carlo finite-difference Greeks.">Greeks</a>.  <br /></td></tr>
+<tr class="separator:a75b4ea46847d109d3e83a344be19bba0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

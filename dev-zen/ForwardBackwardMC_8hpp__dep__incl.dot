@@ -31,4 +31,7 @@ digraph "include/core/engine/ForwardBackwardMC.hpp"
   Node11 [id="Node000011",label="include/tests/Options\l/HestonTest.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$HestonTest_8hpp.html",tooltip=" "];
   Node11 -> Node5 [id="edge15_Node000011_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node6 -> Node4 [id="edge16_Node000006_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node6 -> Node12 [id="edge17_Node000006_Node000012",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node12 [id="Node000012",label="include/tests/Options\l/PutCallParityTest.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$PutCallParityTest_8hpp.html",tooltip=" "];
+  Node12 -> Node5 [id="edge18_Node000012_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
 }

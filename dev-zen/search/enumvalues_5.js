@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['implicitmilstein_0',['ImplicitMilstein',['../namespacequantkos_1_1Implemented.html#a4891217b10509468c9ada24f07f0f374af4e704e49d06e827d69f8fcb5b4c3451',1,'quantkos::Implemented']]]
+  ['gamma_0',['Gamma',['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7ad9cdb0f6e0d556347c10a8695545a4b5',1,'quantkos::Implemented']]]
 ];

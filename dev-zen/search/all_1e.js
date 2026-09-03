@@ -7,7 +7,7 @@ var searchData=
   ['validation_20suite_4',['🧪 Validation Suite',['../index.html#autotoc_md93',1,'']]],
   ['vector_5',['Vector',['../structquantkos_1_1Engine_1_1LSM_1_1Vector.html',1,'quantkos::Engine::LSM']]],
   ['vector_3c_204_20_3e_6',['Vector&lt; 4 &gt;',['../structquantkos_1_1Engine_1_1LSM_1_1Vector.html',1,'quantkos::Engine::LSM']]],
-  ['vega_7',['vega',['../structquantkos_1_1Engine_1_1MCGreeks.html#a06ab507eaa08012ee50a2cb66bade913',1,'quantkos::Engine::MCGreeks']]],
+  ['vega_7',['vega',['../structquantkos_1_1Engine_1_1MCGreeks.html#a06ab507eaa08012ee50a2cb66bade913',1,'quantkos::Engine::MCGreeks::vega'],['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7abb8efcd4ab24730b7cd34e88ac390878',1,'quantkos::Implemented::Vega']]],
   ['version_8',['version',['../structquantkos_1_1IO_1_1Binary_1_1BinHeader.html#aff9aec767e23b1e0c2542a9d2d378ff8',1,'quantkos::IO::Binary::BinHeader']]],
   ['volatility_20jump_20diffusion_20model_9',['II. Bates Stochastic Volatility Jump-Diffusion Model',['../md_MATH__GUIDE.html#autotoc_md50',1,'']]],
   ['volatility_20model_10',['I. Heston Stochastic Volatility Model',['../md_MATH__GUIDE.html#autotoc_md48',1,'']]],
