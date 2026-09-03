@@ -33,6 +33,7 @@ namespace quantkos::Engine {
         double delta = 0.0; // Sensitivity to underlying spot price (S)
         double gamma = 0.0; // Rate of change of Delta (Curvature)
         double vega = 0.0; // Sensitivity to volatility (v0)
+        double vomma = 0.0; // Rate of change of vega (Curvature)
         double rho = 0.0; // Sensitivity to interest rates (r)
         double theta = 0.0; // Sensitivity to final time (T)
         /**
@@ -46,6 +47,7 @@ namespace quantkos::Engine {
             std::cout << indent << " Delta <-> Sensitivity to underlying spot price (S)  : " << delta << "\n";
             std::cout << indent << " Gamma <-> Rate of change of Delta                   : " << gamma << "\n";
             std::cout << indent << " Vega <-> Sensitivity to volatility (v0)             : " << vega << "\n";
+            std::cout << indent << " Vomma <-> SRate of change of Vega                   : " << vomma << "\n";
             std::cout << indent << " Rho <-> Sensitivity to interest rates (r)           : " << rho << "\n";
             std::cout << indent << " Theta <-> Sensitivity to time decay (T)             : " << theta << "\n";
             std::cout << indent << "========================================\n";
@@ -531,7 +533,7 @@ namespace quantkos::Engine {
                                (h_S_real_scale * h_S_real_scale);
             }
 
-            if (base_greek_cfg.mc.compute_vega) {
+            if (base_greek_cfg.mc.compute_vega_et_vomma) {
                 // Approach 1
                 std::cout << "\n\n  >>> Computing Vega...\n";
                 const double var0 = base_greek_cfg.market.v0;
@@ -551,7 +553,7 @@ namespace quantkos::Engine {
                 double p_down = pricing_function(cfg_down, Mem).option_price;
 
                 greeks.vega = (p_up - p_down) / (2.0 * h_vol);
-
+                greeks.vomma = (p_up - 2.0 * ref_option_price_data.option_price + p_down) / (h_vol * h_vol);
             }
 
             if (base_greek_cfg.mc.compute_rho) {

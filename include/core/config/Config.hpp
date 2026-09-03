@@ -408,8 +408,8 @@ namespace quantkos::Config {
         // Greeks
         bool compute_delta_et_gamma = false;
         ///< If true, compute delta, the sensitivity to underlying spot price and gamma, Rate of change of Delta. Computed using Central Difference on Spot price.
-        bool compute_vega = false;
-        ///< If true, compute vega, i.e. the sensitivity to volatility. Computed using Central Difference on Initial Volatility.
+        bool compute_vega_et_vomma = false;
+        ///< If true, compute vega and volga, i.e. the sensitivity to volatility and the convexity of the option price with respect to volatility. Computed using Central Difference on Initial Volatility.
         bool compute_rho = false;
         ///< If true, compute rho, i.e. the sensitivity to interest rates. Computed using Central Difference on Risk-Free Rate.
         bool compute_theta = false; ///< If true, compute theta, i.e. the Sensitivity to final time
@@ -433,9 +433,11 @@ namespace quantkos::Config {
 
         /**
        * @brief Validates hardware limits and simulation parameters.
+       * @param market_config Structure for containing the market parameters
+       *
        * @throw std::invalid_argument If inputs are out of range, or violate memory bounds.
        */
-        void validate() const {
+        void validate(const MarketConfig market_config) const {
             if (N_Paths < 1)
                 throw std::invalid_argument(
                     config_err_msg(KK::MC, KK::MCParams::N_Realizations, "Must be a positive integer."));
@@ -462,16 +464,31 @@ namespace quantkos::Config {
                 throw std::invalid_argument(
                     config_err_msg(KK::MC, KK::MCParams::Max_CPU_RAM_MB, "must be a positive integer."));
 
-            validate_bump_sizes_for_greeks_computations();
+            if (must_compute_greeks()) {
+                validate_bump_sizes_for_greeks_computations(market_config);
+            }
+
         }
+
+        /** @brief Tells if at least one of the greeks must be computed
+        */
+        [[nodiscard]] bool must_compute_greeks() const {
+            if (compute_delta_et_gamma || compute_vega_et_vomma || compute_rho || compute_theta) {
+                return true;
+            }
+
+            return false;
+        }
+
 
         /**
      * @brief Validates that Greek bump sizes are mathematically safe.
      * @details Prevents division-by-zero (if h=0) and catastrophic truncation
      * errors caused by excessively large finite difference steps.
+     * @param market_config Structure for containing the market parameters
      * @throws std::invalid_argument If any bump size falls outside the mathematically stable bounds.
      */
-        void validate_bump_sizes_for_greeks_computations() const {
+        void validate_bump_sizes_for_greeks_computations(const MarketConfig market_config) const {
             // 1. Spot Bump Check (Relative)
             if (spot_price_relative_bump_size <= 0.0 || spot_price_relative_bump_size > 0.05) {
                 throw std::invalid_argument(
@@ -486,6 +503,13 @@ namespace quantkos::Config {
                     config_err_msg(KK::MC,
                                    KK::MCParams::volatility_absolute_bump_size,
                                    "must be strictly positive and <= 0.10."));
+            }
+            if (volatility_absolute_bump_size >= market_config.v0) {
+                throw std::invalid_argument(
+                    config_err_msg(KK::MC,
+                                   KK::MCParams::volatility_absolute_bump_size,
+                                   "must be smaller that the initial volatility v0."));
+
             }
 
             // 3. Interest Rate Bump Check (Absolute)
@@ -524,8 +548,8 @@ namespace quantkos::Config {
                 std::cout << indent << "      -> S0 Bump Size (Rel)      :    " << spot_price_relative_bump_size << "\n";
             }
             // 3. Vega
-            std::cout << indent << "    Evaluate Vega                  :    " << compute_vega << "\n";
-            if (compute_vega) {
+            std::cout << indent << "    Evaluate Vega                  :    " << compute_vega_et_vomma << "\n";
+            if (compute_vega_et_vomma) {
                 std::cout << indent << "      -> Vol0 Bump Size (Abs)       :    " << volatility_absolute_bump_size <<
                         "\n";
             }
@@ -620,7 +644,7 @@ namespace quantkos::Config {
             model.validate();
             scheme.validate();
             time.validate();
-            mc.validate();
+            mc.validate(market);
             output.validate();
 
             std::cout << "  [ Config ] Input configuration validated successfully\n\n";
@@ -689,11 +713,7 @@ namespace quantkos::Config {
         /** @brief Tells if at least one of the greeks must be computed
         */
         [[nodiscard]] bool must_compute_greeks() const {
-            if (mc.compute_delta_et_gamma || mc.compute_vega || mc.compute_rho || mc.compute_theta) {
-                return true;
-            }
-
-            return false;
+            return mc.must_compute_greeks();
         }
 
     private:
