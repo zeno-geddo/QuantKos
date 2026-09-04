@@ -87,6 +87,23 @@ namespace quantkos::Implemented {
         TXT, ///< Human-readable text format for debugging/plotting.
     };
 
+    /** @brief Supported verbosity levels. */
+    enum class VerbosityLevel : int {
+        None     = 0, ///< Nothing is printed.
+        Low      = 1, ///< Input message, results.
+        Medium   = 2, ///< Input message, setup info, loop progression with timing, results.
+        High     = 3, ///< Full diagnostic implemented.
+    };
+
+    // Helper to compare VerbosityLevel with integer thresholds
+    constexpr bool operator>=(VerbosityLevel level, const int val) noexcept {
+        return static_cast<int>(level) >= val;
+    }
+
+    constexpr bool operator>=(VerbosityLevel level, VerbosityLevel target) noexcept {
+        return static_cast<int>(level) >= static_cast<int>(target);
+    }
+
     /** @brief Supported basis for Longstaff-Schwarz Algorithm (for American Options). */
     enum class LSRegressionBasis {
         LaguerreP02, ///< Order 2 Laguerre polynomial.

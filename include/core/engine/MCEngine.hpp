@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <chrono>
+
 #include "../config/Config.hpp"
 #include "../options/OptionPricer.hpp"
 #include "./../memory/PathsMCBatchMem.hpp"
@@ -26,17 +28,78 @@ namespace quantkos::Engine {
     namespace KIO = quantkos::IO;
 
     /**
+     * @brief Container holding breakdown of execution durations in seconds.
+     */
+    struct MCTimer {
+    private:
+        using Clock = std::chrono::steady_clock;
+        using TimePoint = std::chrono::time_point<Clock>;
+
+        TimePoint start_total_time{};
+        TimePoint start_pricing_time{};
+        TimePoint start_greeks_time{};
+
+    public:
+        double s_elapsed_total = 0.0;
+        double s_elapsed_for_pricing = 0.0;
+        double s_elapsed_for_greeks = 0.0;
+
+        // --- State-based timing interface ---
+        void start_total() {
+            start_total_time = std::chrono::steady_clock::now();
+        }
+
+        void stop_total() {
+            const auto now = std::chrono::steady_clock::now();
+            s_elapsed_total = std::chrono::duration<double>(now - start_total_time).count();
+        }
+
+        void start_pricing() {
+            start_pricing_time = std::chrono::steady_clock::now();
+        }
+
+        void stop_pricing() {
+            const auto now = std::chrono::steady_clock::now();
+            s_elapsed_for_pricing = std::chrono::duration<double>(now - start_pricing_time).count();
+        }
+
+        void start_greeks() {
+            start_greeks_time = std::chrono::steady_clock::now();
+        }
+
+        void stop_greeks() {
+            const auto now = std::chrono::steady_clock::now();
+            s_elapsed_for_greeks = std::chrono::duration<double>(now - start_greeks_time).count();
+        }
+
+        /**
+     * @brief Optional helper to print a clean summary table to the console.
+     */
+        void print_summary() const {
+            constexpr std::string_view indent = "  ";
+            std::cout << "\n\n" << indent << "========================================\n";
+            std::cout << indent << "        MC ELAPSED TIME    \n";
+            std::cout << indent << "========================================\n";
+            std::cout << indent << " Total time spent for the computations    : " << s_elapsed_total << "s\n";
+            std::cout << indent << " Time spent evaluating the option price   : " << s_elapsed_for_pricing << "s\n";
+            std::cout << indent << " Time spent evaluating the greeks         : " << s_elapsed_for_greeks << "s\n";
+            std::cout << indent << "========================================\n";
+        }
+    };
+
+    /**
    * @brief Container holding the final risk-neutral Greeks.
    */
     struct MCGreeks {
         // --- First & Second Order Greeks ---
         double delta = 0.0; ///> First-order sensitivity to spot price (S)
         double gamma = 0.0; ///> Second-order sensitivity to spot price (Delta curvature w.r.t S)
-        double vega  = 0.0; ///> First-order sensitivity to volatility (v0)
+        double vega = 0.0; ///> First-order sensitivity to volatility (v0)
         double vomma = 0.0; ///> Second-order sensitivity to volatility (Vega curvature w.r.t vol, also Volga)
         double vanna = 0.0; ///> Cross-sensitivity between spot price and volatility (dDelta/dVol or dVega/dS)
-        double rho   = 0.0; ///> First-order sensitivity to risk-free interest rate (r)
+        double rho = 0.0; ///> First-order sensitivity to risk-free interest rate (r)
         double theta = 0.0; ///> First-order sensitivity to time decay (passage of time t)
+
         /**
      * @brief Optional helper to print a clean summary table to the console.
      */
@@ -68,6 +131,7 @@ namespace quantkos::Engine {
         const OptionPricer::MCOpPrices OptionPrice;
         ///< Deep copy of the pricing statistics, standard errors, and confidence intervals.
         const MCGreeks Greeks; ///< Deep copy of the computed Greeks
+        const MCTimer Timing; ///< Deep copy of elapsed time for computation
     };
 
 
@@ -498,14 +562,23 @@ namespace quantkos::Engine {
         // 1. Allocate Heavy Memory ONCE for the exact type requested
         MemoryType Mem(config);
 
-        // 2. Get the option Price
-        OptionPricer::MCOpPrices ref_option_price_data = pricing_function(config, Mem);
+        // Initialize container to track timing
+        MCTimer Timer;
+        Timer.start_total();
 
+        // 2. Get the option Price
+        Timer.start_pricing();
+        OptionPricer::MCOpPrices ref_option_price_data = pricing_function(config, Mem);
+        Timer.stop_pricing();
 
         // 3. Compute Greeks if needed (Using the generic pricing callable)
         MCGreeks greeks{};
         if (config.must_compute_greeks()) {
-            KC::UInputs base_greek_cfg = config; // Create a copy where spoofing params common to all greeks
+            // Track greeks timing
+            Timer.start_greeks();
+
+            // Create a copy where spoofing params common to all greeks
+            KC::UInputs base_greek_cfg = config;
             base_greek_cfg.mc.analyze_risk_neutral_payoff_distribution = false; // payoffs never stored and sorted
             base_greek_cfg.output.filename_paths_out = ""; // So that paths for the greeks are never saved
             // should introduce and rewrite a flag that tell if to print or not, and during the greeks should be low verbosity
@@ -612,8 +685,10 @@ namespace quantkos::Engine {
                 const double S0 = base_greek_cfg.market.S0;
                 const double h_S = S0 * base_greek_cfg.mc.spot_price_relative_bump_size;
                 auto h_S_real_scale = h_S;
-                if (base_greek_cfg.mc.normalize_prices) { // Handle price normalization for the denominator
-                    h_S_real_scale = base_greek_cfg.get_price_scaling_factor() * base_greek_cfg.mc.spot_price_relative_bump_size;
+                if (base_greek_cfg.mc.normalize_prices) {
+                    // Handle price normalization for the denominator
+                    h_S_real_scale = base_greek_cfg.get_price_scaling_factor() * base_greek_cfg.mc.
+                                     spot_price_relative_bump_size;
                 }
 
                 // Get bumped var0
@@ -654,16 +729,19 @@ namespace quantkos::Engine {
                 greeks.vanna = (p_uu - p_du - p_ud + p_dd) * inv_denom;
             }
 
-
-
+            // Eval time and print results
+            Timer.stop_greeks();
             greeks.print_summary(); // print the summary of the greeks computed
         }
 
         // 4. Return combined results
+        Timer.stop_total();
+        Timer.print_summary();
         return MCResults{
             .MCConfig = config,
             .OptionPrice = ref_option_price_data,
-            .Greeks = greeks
+            .Greeks = greeks,
+            .Timing = Timer
         };
     }
 }

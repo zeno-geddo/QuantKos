@@ -232,6 +232,13 @@ namespace quantkos::Config {
         if (root[str(KK::Output)]) {
             const auto &node = root[str(KK::Output)];
 
+            if (node[str(KK::OutParams::Verbosity)]) {
+                conf.output.verbosity = KI::string_to_enum<KI::VerbosityLevel>(
+                    node[str(KK::OutParams::Verbosity)].as<std::string>(),
+                    str(KK::OutParams::Verbosity)
+                    );
+            }
+
             if (node[str(KK::OutParams::out_dir)])
                 conf.output.out_dir = node[str(KK::OutParams::out_dir)].as<std::string>();
 

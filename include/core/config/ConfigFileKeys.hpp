@@ -151,6 +151,7 @@ namespace quantkos::Keys {
      * @brief Keys for Outputs parameters (expected in the Outputs block).
      */
     namespace OutParams {
+        static constexpr std::string_view Verbosity = "Verbosity"; ///< Key for to specify the verbosity level.
         static constexpr std::string_view out_dir = "out_dir"; ///< Key for Target directory for generated logs and paths.
         static constexpr std::string_view Name_Log_File = "Name_Log_File"; ///< Key for Filename for the simulated path storage.
         static constexpr std::string_view Name_Paths_Out_File = "Name_Paths_Out_File"; ///< Key for Filename for the runtime execution log.

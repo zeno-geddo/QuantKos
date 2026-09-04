@@ -583,6 +583,7 @@ namespace quantkos::Config {
      * Automatically ensures the target directory tree exists on disk upon validation.
      */
     struct OutputConfig {
+        KI::VerbosityLevel verbosity = KI::VerbosityLevel::High; ///< Level of verbosity.
         std::string out_dir = "outputs"; ///< Target directory for generated logs and paths.
         std::string filename_paths_out = "QuantKos.paths"; ///< Filename for the simulated path storage.
         std::string filename_log = "QuantKos.log"; ///< Filename for the runtime execution log.
@@ -590,6 +591,8 @@ namespace quantkos::Config {
 
         void print(const std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Output << "]\n"
+                    << indent << "    Verbosity level          :     " << enum_to_string(verbosity) << "\n"
+                    << indent << "    Output Directory         :     " << out_dir << "\n"
                     << indent << "    Output Directory         :     " << out_dir << "\n"
                     << indent << "    Format Output Files      :     " << enum_to_string(format) << "\n"
                     << indent << "    Name Output File Paths   :     " << filename_paths_out << "\n"
