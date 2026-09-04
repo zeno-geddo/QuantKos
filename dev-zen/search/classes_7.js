@@ -10,5 +10,6 @@ var searchData=
   ['mcgreeks_7',['MCGreeks',['../structquantkos_1_1Engine_1_1MCGreeks.html',1,'quantkos::Engine']]],
   ['mcopprices_8',['MCOpPrices',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html',1,'quantkos::Engine::OptionPricer']]],
   ['mcresults_9',['MCResults',['../structquantkos_1_1Engine_1_1MCResults.html',1,'quantkos::Engine']]],
-  ['msolver_10',['MSolver',['../classquantkos_1_1Engine_1_1MSolver.html',1,'quantkos::Engine']]]
+  ['mctimer_10',['MCTimer',['../structquantkos_1_1Engine_1_1MCTimer.html',1,'quantkos::Engine']]],
+  ['msolver_11',['MSolver',['../classquantkos_1_1Engine_1_1MSolver.html',1,'quantkos::Engine']]]
 ];

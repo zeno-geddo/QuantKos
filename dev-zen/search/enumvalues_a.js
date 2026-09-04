@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['rho_0',['Rho',['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7a7216bcf464203aec4864fbeea158a0db',1,'quantkos::Implemented']]]
+  ['none_0',['None',['../namespacequantkos_1_1Implemented.html#adfc7d33e979552bae57b2016df8414d7a6adf97f83acf6453d4a6a4b1070f3754',1,'quantkos::Implemented']]]
 ];

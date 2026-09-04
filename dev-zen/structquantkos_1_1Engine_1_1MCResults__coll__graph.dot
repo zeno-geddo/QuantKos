@@ -31,4 +31,6 @@ digraph "quantkos::Engine::MCResults"
   Node12 [id="Node000012",label="quantkos::Engine::Option\lPricer::MCOpPrices",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html",tooltip="Storage container for final simulation metrics and distribution percentiles."];
   Node13 -> Node1 [id="edge13_Node000001_Node000013",dir="back",color="darkorchid3",style="dashed",tooltip=" ",label=" Greeks",fontcolor="grey" ];
   Node13 [id="Node000013",label="quantkos::Engine::MCGreeks",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1MCGreeks.html",tooltip="Container holding the final risk-neutral Greeks."];
+  Node14 -> Node1 [id="edge14_Node000001_Node000014",dir="back",color="darkorchid3",style="dashed",tooltip=" ",label=" Timing",fontcolor="grey" ];
+  Node14 [id="Node000014",label="quantkos::Engine::MCTimer",height=0.2,width=0.4,color="gray40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1MCTimer.html",tooltip="Container holding breakdown of execution durations in seconds."];
 }

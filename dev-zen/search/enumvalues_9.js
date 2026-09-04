@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['put_0',['Put',['../namespacequantkos_1_1Implemented.html#a114c027448b76520d405547c3a2fddd3ad0bf1810982e9728fcf3ac444a015373',1,'quantkos::Implemented']]]
+  ['medium_0',['Medium',['../namespacequantkos_1_1Implemented.html#adfc7d33e979552bae57b2016df8414d7a87f8a6ab85c9ced3702b4ea641ad4bb5',1,'quantkos::Implemented']]]
 ];

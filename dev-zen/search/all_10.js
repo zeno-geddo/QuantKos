@@ -16,9 +16,10 @@ var searchData=
   ['heston_5fintegrand_5falbrecher_5fformulation_13',['heston_integrand_albrecher_formulation',['../namespacequantkos_1_1Engine_1_1Analytical_1_1Heston.html#a5df48c1b8b98eabc6293a8af369693d3',1,'quantkos::Engine::Analytical::Heston']]],
   ['hestonexact_2ehpp_14',['HestonExact.hpp',['../HestonExact_8hpp.html',1,'']]],
   ['hestontest_2ehpp_15',['HestonTest.hpp',['../HestonTest_8hpp.html',1,'']]],
-  ['host_5fpaths_5fmemory_5fbytes_16',['host_paths_memory_bytes',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a3a3a49a1754fdf7915f5c392d24d631a',1,'quantkos::Engine::PathsMCBatchMem']]],
-  ['host_5fpayoffs_5fmemory_5fbytes_17',['host_payoffs_memory_bytes',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a5d46dfb412788cb4f420cc4211edac14',1,'quantkos::Engine::PathsMCBatchMem']]],
-  ['hostbatchpathsview_18',['HostBatchPathsView',['../namespacequantkos_1_1Engine.html#abdafb860da072ed3ff90c684a5b9ba74',1,'quantkos::Engine']]],
-  ['hostbatchpayoffview_19',['HostBatchPayoffView',['../namespacequantkos_1_1Engine.html#a6c11eb0211a3d0518b0f888e6269a8da',1,'quantkos::Engine']]],
-  ['hostmasterpathsview_20',['HostMasterPathsView',['../classquantkos_1_1Engine_1_1BackwardLSMMemory.html#a947a4c8ff418225ad7160d366416b4a3',1,'quantkos::Engine::BackwardLSMMemory']]]
+  ['high_16',['High',['../namespacequantkos_1_1Implemented.html#adfc7d33e979552bae57b2016df8414d7a655d20c1ca69519ca647684edbb2db35',1,'quantkos::Implemented']]],
+  ['host_5fpaths_5fmemory_5fbytes_17',['host_paths_memory_bytes',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a3a3a49a1754fdf7915f5c392d24d631a',1,'quantkos::Engine::PathsMCBatchMem']]],
+  ['host_5fpayoffs_5fmemory_5fbytes_18',['host_payoffs_memory_bytes',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a5d46dfb412788cb4f420cc4211edac14',1,'quantkos::Engine::PathsMCBatchMem']]],
+  ['hostbatchpathsview_19',['HostBatchPathsView',['../namespacequantkos_1_1Engine.html#abdafb860da072ed3ff90c684a5b9ba74',1,'quantkos::Engine']]],
+  ['hostbatchpayoffview_20',['HostBatchPayoffView',['../namespacequantkos_1_1Engine.html#a6c11eb0211a3d0518b0f888e6269a8da',1,'quantkos::Engine']]],
+  ['hostmasterpathsview_21',['HostMasterPathsView',['../classquantkos_1_1Engine_1_1BackwardLSMMemory.html#a947a4c8ff418225ad7160d366416b4a3',1,'quantkos::Engine::BackwardLSMMemory']]]
 ];
