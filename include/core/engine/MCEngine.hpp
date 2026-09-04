@@ -30,12 +30,13 @@ namespace quantkos::Engine {
    */
     struct MCGreeks {
         // --- First & Second Order Greeks ---
-        double delta = 0.0; // Sensitivity to underlying spot price (S)
-        double gamma = 0.0; // Rate of change of Delta (Curvature)
-        double vega = 0.0; // Sensitivity to volatility (v0)
-        double vomma = 0.0; // Rate of change of vega (Curvature)
-        double rho = 0.0; // Sensitivity to interest rates (r)
-        double theta = 0.0; // Sensitivity to final time (T)
+        double delta = 0.0; ///> First-order sensitivity to spot price (S)
+        double gamma = 0.0; ///> Second-order sensitivity to spot price (Delta curvature w.r.t S)
+        double vega  = 0.0; ///> First-order sensitivity to volatility (v0)
+        double vomma = 0.0; ///> Second-order sensitivity to volatility (Vega curvature w.r.t vol, also Volga)
+        double vanna = 0.0; ///> Cross-sensitivity between spot price and volatility (dDelta/dVol or dVega/dS)
+        double rho   = 0.0; ///> First-order sensitivity to risk-free interest rate (r)
+        double theta = 0.0; ///> First-order sensitivity to time decay (passage of time t)
         /**
      * @brief Optional helper to print a clean summary table to the console.
      */
@@ -44,12 +45,13 @@ namespace quantkos::Engine {
             std::cout << "\n\n" << indent << "========================================\n";
             std::cout << indent << "        MONTE CARLO GREEKS    \n";
             std::cout << indent << "========================================\n";
-            std::cout << indent << " Delta <-> Sensitivity to underlying spot price (S)  : " << delta << "\n";
-            std::cout << indent << " Gamma <-> Rate of change of Delta                   : " << gamma << "\n";
-            std::cout << indent << " Vega <-> Sensitivity to volatility (v0)             : " << vega << "\n";
-            std::cout << indent << " Vomma <-> SRate of change of Vega                   : " << vomma << "\n";
-            std::cout << indent << " Rho <-> Sensitivity to interest rates (r)           : " << rho << "\n";
-            std::cout << indent << " Theta <-> Sensitivity to time decay (T)             : " << theta << "\n";
+            std::cout << indent << " Delta <-> Sensitivity to underlying spot price (S)    : " << delta << "\n";
+            std::cout << indent << " Gamma <-> Delta curvature                             : " << gamma << "\n";
+            std::cout << indent << " Vega <-> Sensitivity to volatility (v0)               : " << vega << "\n";
+            std::cout << indent << " Vomma <-> Vega curvature                              : " << vomma << "\n";
+            std::cout << indent << " Vanna <-> Cross sensitivity (spot price - volatility) : " << vanna << "\n";
+            std::cout << indent << " Rho <-> Sensitivity to interest rates (r)             : " << rho << "\n";
+            std::cout << indent << " Theta <-> Sensitivity to time decay (T)               : " << theta << "\n";
             std::cout << indent << "========================================\n";
         }
     };
@@ -602,6 +604,57 @@ namespace quantkos::Engine {
                     greeks.theta = 0.0;
                 }
             }
+
+            if (base_greek_cfg.mc.compute_vanna) {
+                std::cout << "\n\n  >>> Computing Vanna...\n";
+
+                // Get bump on S0
+                const double S0 = base_greek_cfg.market.S0;
+                const double h_S = S0 * base_greek_cfg.mc.spot_price_relative_bump_size;
+                auto h_S_real_scale = h_S;
+                if (base_greek_cfg.mc.normalize_prices) { // Handle price normalization for the denominator
+                    h_S_real_scale = base_greek_cfg.get_price_scaling_factor() * base_greek_cfg.mc.spot_price_relative_bump_size;
+                }
+
+                // Get bumped var0
+                const double var0 = base_greek_cfg.market.v0;
+                const double vol0 = std::sqrt(var0);
+                const double h_vol = base_greek_cfg.mc.volatility_absolute_bump_size;
+                const double vol_up = vol0 + h_vol;
+                const double vol_down = vol0 - h_vol;
+                const double var_up = vol_up * vol_up;
+                const double var_down = vol_down * vol_down;
+
+                // 1. Up-Up (Spot Up, Vol Up)
+                KC::UInputs cfg_uu = base_greek_cfg;
+                cfg_uu.market.S0 = S0 + h_S;
+                cfg_uu.market.v0 = var_up;
+                double p_uu = pricing_function(cfg_uu, Mem).option_price;
+
+                // 2. Down-Up (Spot Down, Vol Up)
+                KC::UInputs cfg_du = base_greek_cfg;
+                cfg_du.market.S0 = S0 - h_S;
+                cfg_du.market.v0 = var_up;
+                double p_du = pricing_function(cfg_du, Mem).option_price;
+
+                // 3. Up-Down (Spot Up, Vol Down)
+                KC::UInputs cfg_ud = base_greek_cfg;
+                cfg_ud.market.S0 = S0 + h_S;
+                cfg_ud.market.v0 = var_down;
+                double p_ud = pricing_function(cfg_ud, Mem).option_price;
+
+                // 4. Down-Down (Spot Down, Vol Down)
+                KC::UInputs cfg_dd = base_greek_cfg;
+                cfg_dd.market.S0 = S0 - h_S;
+                cfg_dd.market.v0 = var_down;
+                double p_dd = pricing_function(cfg_dd, Mem).option_price;
+
+                // Vanna 2D Stencil
+                const double inv_denom = 1.0 / (4.0 * h_S_real_scale * h_vol);
+                greeks.vanna = (p_uu - p_du - p_ud + p_dd) * inv_denom;
+            }
+
+
 
             greeks.print_summary(); // print the summary of the greeks computed
         }

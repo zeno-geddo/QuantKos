@@ -261,7 +261,6 @@ namespace quantkos::Config {
                 } else {
                     std::cout << indent <<
                             "      Feller condition (2κθ > σ²) respected.\n";
-
                 }
 
                 if (id_model == KI::MathModel::Bates) {
@@ -410,6 +409,8 @@ namespace quantkos::Config {
         ///< If true, compute delta, the sensitivity to underlying spot price and gamma, Rate of change of Delta. Computed using Central Difference on Spot price.
         bool compute_vega_et_vomma = false;
         ///< If true, compute vega and volga, i.e. the sensitivity to volatility and the convexity of the option price with respect to volatility. Computed using Central Difference on Initial Volatility.
+        bool compute_vanna = false;
+        ///< If true, compute vanna, i.e. cross-sensitivity between spot price and volatility. Computed using FD 2D stencil.
         bool compute_rho = false;
         ///< If true, compute rho, i.e. the sensitivity to interest rates. Computed using Central Difference on Risk-Free Rate.
         bool compute_theta = false; ///< If true, compute theta, i.e. the Sensitivity to final time
@@ -467,7 +468,6 @@ namespace quantkos::Config {
             if (must_compute_greeks()) {
                 validate_bump_sizes_for_greeks_computations(market_config);
             }
-
         }
 
         /** @brief Tells if at least one of the greeks must be computed
@@ -509,7 +509,6 @@ namespace quantkos::Config {
                     config_err_msg(KK::MC,
                                    KK::MCParams::volatility_absolute_bump_size,
                                    "must be smaller that the initial volatility v0."));
-
             }
 
             // 3. Interest Rate Bump Check (Absolute)
@@ -523,14 +522,14 @@ namespace quantkos::Config {
             // 4. Time Bump Check (Absolute)
             if (time_absolute_bump_size <= 0.0 || time_absolute_bump_size > 1.0) {
                 throw std::invalid_argument(
-                config_err_msg(KK::MC,
-                               KK::MCParams::time_absolute_bump_size,
-                               "must be strictly positive and <= 1.0 year."));
+                    config_err_msg(KK::MC,
+                                   KK::MCParams::time_absolute_bump_size,
+                                   "must be strictly positive and <= 1.0 year."));
             }
         }
 
         /** @brief Outputs MC configuration summary to standard console. */
-        void print(std::string_view indent = "") const {
+        void print(const std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::MC << "]\n"
                     << indent << "    Normalize Prices               :    " << normalize_prices << "\n"
                     << indent << "    Number of Realizations         :    " << N_Paths << "\n"
@@ -545,7 +544,8 @@ namespace quantkos::Config {
             // 2. Delta & Gamma
             std::cout << indent << "    Evaluate Delta and Gamma       :    " << compute_delta_et_gamma << "\n";
             if (compute_delta_et_gamma) {
-                std::cout << indent << "      -> S0 Bump Size (Rel)      :    " << spot_price_relative_bump_size << "\n";
+                std::cout << indent << "      -> S0 Bump Size (Rel)      :    " << spot_price_relative_bump_size <<
+                        "\n";
             }
             // 3. Vega
             std::cout << indent << "    Evaluate Vega                  :    " << compute_vega_et_vomma << "\n";
@@ -553,16 +553,24 @@ namespace quantkos::Config {
                 std::cout << indent << "      -> Vol0 Bump Size (Abs)       :    " << volatility_absolute_bump_size <<
                         "\n";
             }
-            // 4. Rho
+            // 4. Vanna
+            std::cout << indent << "    Evaluate Vanna                  :    " << compute_vanna << "\n";
+            if (compute_vanna) {
+                std::cout << indent << "      -> S0 Bump Size (Rel)      :    " << spot_price_relative_bump_size <<
+                       "\n";
+                std::cout << indent << "      -> Vol0 Bump Size (Abs)       :    " << volatility_absolute_bump_size <<
+                        "\n";
+            }
+            // 5. Rho
             std::cout << indent << "    Evaluate Rho                   :    " << compute_rho << "\n";
             if (compute_rho) {
                 std::cout << indent << "      -> r Bump Size (Abs)      :    " << risk_free_rate_absolute_bump_size <<
                         "\n";
             }
-            // 5. Theta
+            // 6. Theta
             std::cout << indent << "    Evaluate Theta                 :    " << compute_theta << "\n";
             if (compute_theta) {
-                std::cout << indent << "      -> T Bump Size (Abs)      :    " << time_absolute_bump_size<<"\n";
+                std::cout << indent << "      -> T Bump Size (Abs)      :    " << time_absolute_bump_size << "\n";
             }
         }
     };
@@ -580,7 +588,7 @@ namespace quantkos::Config {
         std::string filename_log = "QuantKos.log"; ///< Filename for the runtime execution log.
         KI::IOFormat format = KI::IOFormat::TXT; ///< Output Data format (e.g., BIN or TXT).
 
-        void print(std::string_view indent = "") const {
+        void print(const std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Output << "]\n"
                     << indent << "    Output Directory         :     " << out_dir << "\n"
                     << indent << "    Format Output Files      :     " << enum_to_string(format) << "\n"

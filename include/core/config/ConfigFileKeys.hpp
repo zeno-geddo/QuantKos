@@ -135,6 +135,7 @@ namespace quantkos::Keys {
         // Greeks
         static constexpr std::string_view compute_delta_et_gamma = "compute_delta_et_gamma"; ///< Key for computing delta and gamma (greeks).
         static constexpr std::string_view compute_vega_et_vomma = "compute_vega_et_vomma"; ///< Key for computing vega  and vomma (greeks).
+        static constexpr std::string_view compute_vanna = "compute_vanna"; ///< Key for computing vanna (greeks).
         static constexpr std::string_view compute_rho = "compute_rho"; ///< Key for computing rho (greeks).
         static constexpr std::string_view compute_theta = "compute_theta"; ///< Key for computing theta (greeks).
         static constexpr std::string_view spot_price_relative_bump_size = "spot_price_relative_bump_size"; ///< Key to set delta and gamma bump size (greeks).

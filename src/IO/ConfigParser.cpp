@@ -209,6 +209,8 @@ namespace quantkos::Config {
                 conf.mc.spot_price_relative_bump_size = node[str(KK::MCParams::spot_price_relative_bump_size)].as<double>();
             if (node[str(KK::MCParams::compute_vega_et_vomma)])
                 conf.mc.compute_vega_et_vomma = node[str(KK::MCParams::compute_vega_et_vomma)].as<bool>();
+            if (node[str(KK::MCParams::compute_vanna)])
+                conf.mc.compute_vanna = node[str(KK::MCParams::compute_vanna)].as<bool>();
             if (node[str(KK::MCParams::volatility_absolute_bump_size)])
                 conf.mc.volatility_absolute_bump_size = node[str(KK::MCParams::volatility_absolute_bump_size)].as<double>();
             if (node[str(KK::MCParams::compute_rho)])

@@ -58,6 +58,7 @@ namespace quantkos::Tests::Greeks {
         // Enable ALL Greeks
         config.mc.compute_delta_et_gamma = true;
         config.mc.compute_vega_et_vomma = true;
+        config.mc.compute_vanna = true;
         config.mc.compute_rho = true;
         config.mc.compute_theta = true;
 
@@ -157,8 +158,9 @@ namespace quantkos::Tests::Greeks {
      * 2. Gamma Parity : $\Gamma_C = \Gamma_P$
      * 3. Vega Parity  : $\mathcal{V}_C = \mathcal{V}_P$
      * 4. Vomma Parity : \text{Vomma}_C = \text{Vomma}_P
-     * 5. Rho Parity   : $\rho_C - \rho_P = K \cdot T \cdot e^{-rT}$
-     * 6. Theta Parity : $\Theta_C - \Theta_P = -r \cdot K \cdot e^{-rT}$
+     * 5. Vanna Parity : \text{Vanna}_C = \text{Vanna}_P
+     * 6. Rho Parity   : $\rho_C - \rho_P = K \cdot T \cdot e^{-rT}$
+     * 7. Theta Parity : $\Theta_C - \Theta_P = -r \cdot K \cdot e^{-rT}$
      * where K is the strike price.
      *
      * @note Because finite differences on Monte Carlo paths introduce statistical noise,
@@ -204,6 +206,7 @@ namespace quantkos::Tests::Greeks {
         constexpr double expected_gamma_diff = 0.0;
         constexpr double expected_vega_diff = 0.0;
         constexpr double expected_vomma_diff = 0.0;
+        constexpr double expected_vanna_diff = 0.0;
         const double expected_rho_diff = K * T * discount;
         const double expected_theta_diff = -r * K * discount;
 
@@ -215,6 +218,7 @@ namespace quantkos::Tests::Greeks {
         const double num_gamma_diff = C.gamma - P.gamma;
         const double num_vega_diff = C.vega - P.vega;
         const double num_vomma_diff = C.vomma - P.vomma;
+        const double num_vanna_diff = C.vanna - P.vanna;
         const double num_rho_diff = C.rho - P.rho;
         const double num_theta_diff = C.theta - P.theta;
 
@@ -224,6 +228,7 @@ namespace quantkos::Tests::Greeks {
         const double tol_gamma = compute_greek_tol(base_se, 1., 3.3);
         const double tol_vega = compute_greek_tol(base_se, 1., 3.3);
         const double tol_vomma = compute_greek_tol(base_se, 1., 8.);
+        const double tol_vanna = compute_greek_tol(base_se, 1., 3.3);
         const double tol_rho = compute_greek_tol(base_se, std::abs(expected_rho_diff), 3.3);
         const double tol_theta = compute_greek_tol(base_se, std::abs(expected_theta_diff), 5.); // Higher bias for grid shift
 
@@ -233,6 +238,7 @@ namespace quantkos::Tests::Greeks {
             check_parity("Gamma", num_gamma_diff, expected_gamma_diff, tol_gamma, indent),
             check_parity("Vega ", num_vega_diff, expected_vega_diff, tol_vega, indent),
             check_parity("Vomma ", num_vomma_diff, expected_vomma_diff, tol_vomma, indent),
+            check_parity("Vanna ", num_vanna_diff, expected_vanna_diff, tol_vanna, indent),
             check_parity("Rho  ", num_rho_diff, expected_rho_diff, tol_rho, indent),
             check_parity("Theta", num_theta_diff, expected_theta_diff, tol_theta, indent)
         }

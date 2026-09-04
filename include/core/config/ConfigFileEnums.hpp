@@ -102,7 +102,7 @@ namespace quantkos::Implemented {
         Vomma,
         Rho, ///< The sensitivity to interest rates. Computed using Central Difference on Risk-Free Rate.
         Theta, ///< The Sensitivity to final time.
-        //Vanna,
+        Vanna, ///< Cross-sensitivity between spot price and volatility (dDelta/dVol or dVega/dS)
         //Speed
     };
 }
