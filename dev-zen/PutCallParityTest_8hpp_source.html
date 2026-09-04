@@ -143,157 +143,162 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="comment">// Enable ALL Greeks</span></div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        config.mc.compute_delta_et_gamma = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        config.mc.compute_vega_et_vomma = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        config.mc.compute_rho = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        config.mc.compute_theta = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="comment">// Greek Bumps (Standard configurations)</span></div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        config.mc.spot_price_relative_bump_size = 0.001;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        config.mc.volatility_absolute_bump_size = 0.005; <span class="comment">// volatility = sqrt(variance)</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        config.mc.risk_free_rate_absolute_bump_size = 0.0001;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        config.mc.time_absolute_bump_size = 1.0 / 365.0;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="comment">// Time</span></div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        config.time.t_end = 1.0; <span class="comment">// 1 Year</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        config.time.inp_dt = config.time.t_end / 365.0;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="comment">// Option (European exactly obeys standard parity)</span></div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        config.options.opt_type = KI::OptType::European;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        config.options.StrikePrice = 100.0;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="comment">// Market</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        config.market.S0 = 100.0; <span class="comment">// At-The-Money</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        config.market.v0 = 0.04; <span class="comment">// 20% volatility squared</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        config.market.r = 0.05; <span class="comment">// 5% rate</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        config.market.q = 0.0; <span class="comment">// No dividends for simplicity</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="comment">// Heston Params</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        config.model.heston.k = 2.0;</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        config.model.heston.theta = 0.04;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        config.model.heston.sigma = 0.3;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        config.model.heston.rho = -0.7;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> config;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        config.mc.compute_vanna = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        config.mc.compute_rho = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        config.mc.compute_theta = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="comment">// Greek Bumps (Standard configurations)</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        config.mc.spot_price_relative_bump_size = 0.001;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        config.mc.volatility_absolute_bump_size = 0.005; <span class="comment">// volatility = sqrt(variance)</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        config.mc.risk_free_rate_absolute_bump_size = 0.0001;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        config.mc.time_absolute_bump_size = 1.0 / 365.0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="comment">// Time</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        config.time.t_end = 1.0; <span class="comment">// 1 Year</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        config.time.inp_dt = config.time.t_end / 365.0;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="comment">// Option (European exactly obeys standard parity)</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        config.options.opt_type = KI::OptType::European;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        config.options.StrikePrice = 100.0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="comment">// Market</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        config.market.S0 = 100.0; <span class="comment">// At-The-Money</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        config.market.v0 = 0.04; <span class="comment">// 20% volatility squared</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        config.market.r = 0.05; <span class="comment">// 5% rate</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        config.market.q = 0.0; <span class="comment">// No dividends for simplicity</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="comment">// Heston Params</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        config.model.heston.k = 2.0;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        config.model.heston.theta = 0.04;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        config.model.heston.sigma = 0.3;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        config.model.heston.rho = -0.7;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">return</span> config;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    }</div>
 </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="comment">// Define a dedicated Tolerance Calculator</span></div>
-<div class="foldopen" id="foldopen00109" data-start="{" data-end="}">
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">  109</a></span>    <span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> base_option_price_se,</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> greek_scale,</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> base_option_price_se_multiplier = 3.0,</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> relative_tolerance = 0.01,</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> absolute_floor = 1e-4)</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    {</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> scale_tolerance = relative_tolerance * std::max(std::abs(greek_scale), 1.0);</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> mc_tolerance = base_option_price_se_multiplier * base_option_price_se;</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">return</span> std::max({scale_tolerance, mc_tolerance, absolute_floor});</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="comment">// Define a dedicated Tolerance Calculator</span></div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">  110</a></span>    <span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> base_option_price_se,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> greek_scale,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> base_option_price_se_multiplier = 3.0,</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> relative_tolerance = 0.01,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> absolute_floor = 1e-4)</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> scale_tolerance = relative_tolerance * std::max(std::abs(greek_scale), 1.0);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> mc_tolerance = base_option_price_se_multiplier * base_option_price_se;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keywordflow">return</span> std::max({scale_tolerance, mc_tolerance, absolute_floor});</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    }</div>
 </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="comment">// Helper lambda to check and print results</span></div>
-<div class="foldopen" id="foldopen00133" data-start="{" data-end="}">
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">  133</a></span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="keyword">const</span> std::string &amp;name,</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                             <span class="keyword">const</span> <span class="keywordtype">double</span> num,</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                             <span class="keyword">const</span> <span class="keywordtype">double</span> expected,</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                             <span class="keyword">const</span> <span class="keywordtype">double</span> tol,</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                             <span class="keyword">const</span> std::string_view &amp;indent) {</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> error = std::abs(num - expected);</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; name &lt;&lt; <span class="stringliteral">&quot; Parity | Expected: &quot;</span> &lt;&lt; expected</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                &lt;&lt; <span class="stringliteral">&quot; | Computed: &quot;</span> &lt;&lt; num &lt;&lt; <span class="stringliteral">&quot; | Error: &quot;</span> &lt;&lt; error &lt;&lt; <span class="stringliteral">&quot; | Tol: &quot;</span> &lt;&lt; tol &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="keywordflow">if</span> (error &gt; tol) {</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;     [ FAILED ]\n&quot;</span>;</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        }</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;     [ PASSED ]\n&quot;</span>;</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    };</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="comment">// Helper lambda to check and print results</span></div>
+<div class="foldopen" id="foldopen00134" data-start="{" data-end="}">
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">  134</a></span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="keyword">const</span> std::string &amp;name,</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                             <span class="keyword">const</span> <span class="keywordtype">double</span> num,</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                             <span class="keyword">const</span> <span class="keywordtype">double</span> expected,</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                             <span class="keyword">const</span> <span class="keywordtype">double</span> tol,</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                             <span class="keyword">const</span> std::string_view &amp;indent) {</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> error = std::abs(num - expected);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; name &lt;&lt; <span class="stringliteral">&quot; Parity | Expected: &quot;</span> &lt;&lt; expected</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                &lt;&lt; <span class="stringliteral">&quot; | Computed: &quot;</span> &lt;&lt; num &lt;&lt; <span class="stringliteral">&quot; | Error: &quot;</span> &lt;&lt; error &lt;&lt; <span class="stringliteral">&quot; | Tol: &quot;</span> &lt;&lt; tol &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">if</span> (error &gt; tol) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;     [ FAILED ]\n&quot;</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;     [ PASSED ]\n&quot;</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    };</div>
 </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
-<div class="foldopen" id="foldopen00176" data-start="{" data-end="}">
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="namespacequantkos_1_1Tests_1_1Greeks.html#a75b4ea46847d109d3e83a344be19bba0">  176</a></span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a75b4ea46847d109d3e83a344be19bba0">run_test</a>() {</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keyword">constexpr</span> std::string_view indent = <span class="stringliteral">&quot;   &quot;</span>;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keyword">auto</span> config = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#aa0236c1b50541c68d72c56ba853419bf">getDefaultConfigGreekParity</a>();</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        config.validate();</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;\n\n&quot;</span> &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;\n&quot;</span>;</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;[   INFO   ] Initiating Greek Put-Call Parity Test \n&quot;</span>;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="comment">// 1. Run CALL Simulation</span></div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        config.options.opt_right = KI::OptRight::Call;</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&gt;&gt;&gt; Running CALL configuration...\n&quot;</span>;</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keyword">const</span> <span class="keyword">auto</span> call_res = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Utils.html#a7ba58271fae7a001558c83b87d90e476">KTU::run_simulation</a>(config);</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="comment">// 2. Run PUT Simulation</span></div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        config.options.opt_right = KI::OptRight::Put;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&gt;&gt;&gt; Running PUT configuration...\n&quot;</span>;</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keyword">const</span> <span class="keyword">auto</span> put_res = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Utils.html#a7ba58271fae7a001558c83b87d90e476">KTU::run_simulation</a>(config);</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span> &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;--------------------------------------------------------------------\n&quot;</span>;</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&gt;&gt;&gt; Evaluating Greek&#39;s Call-Put Parities ...\n&quot;</span>;</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="comment">// Target Expected Values based on continuous-time finance</span></div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_namespace" href="namespacequantkos_1_1Keys.html">K</a> = config.options.StrikePrice;</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> T = config.time.t_end;</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> r = config.market.r;</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> discount = std::exp(-r * T);</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_delta_diff = 1.0;</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_gamma_diff = 0.0;</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_vega_diff = 0.0;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_vomma_diff = 0.0;</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> expected_rho_diff = <a class="code hl_namespace" href="namespacequantkos_1_1Keys.html">K</a> * T * discount;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> expected_theta_diff = -r * <a class="code hl_namespace" href="namespacequantkos_1_1Keys.html">K</a> * discount;</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="comment">// Computed Values</span></div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;C = call_res.Greeks;</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;P = put_res.Greeks;</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_delta_diff = C.delta - P.delta;</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_gamma_diff = C.gamma - P.gamma;</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_vega_diff = C.vega - P.vega;</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_vomma_diff = C.vomma - P.vomma;</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_rho_diff = C.rho - P.rho;</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_theta_diff = C.theta - P.theta;</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="comment">// Pre-compute practical tolerance for each Greek</span></div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> base_se = call_res.OptionPrice.standard_error; <span class="comment">// Extract base standard error from the option price</span></div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_delta = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 3.3);</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_gamma = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 3.3);</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_vega = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 3.3);</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_vomma = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 8.);</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_rho = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, std::abs(expected_rho_diff), 3.3);</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_theta = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, std::abs(expected_theta_diff), 5.); <span class="comment">// Higher bias for grid shift</span></div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="comment">// Check if the parities are ok</span></div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> all_tests_passed = std::min({</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Delta&quot;</span>, num_delta_diff, expected_delta_diff, tol_delta, indent),</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Gamma&quot;</span>, num_gamma_diff, expected_gamma_diff, tol_gamma, indent),</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Vega &quot;</span>, num_vega_diff, expected_vega_diff, tol_vega, indent),</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Vomma &quot;</span>, num_vomma_diff, expected_vomma_diff, tol_vomma, indent),</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Rho  &quot;</span>, num_rho_diff, expected_rho_diff, tol_rho, indent),</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Theta&quot;</span>, num_theta_diff, expected_theta_diff, tol_theta, indent)</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        }</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        );</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">if</span> (all_tests_passed) {</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span> &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;[ SUCCESS ] All Greek finite-difference engines are structurally sound.\n&quot;</span>;</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span> &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;[ FAILURE ] One or more Greeks violated Put-Call Parity bounds!\n&quot;</span>;</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="foldopen" id="foldopen00178" data-start="{" data-end="}">
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="namespacequantkos_1_1Tests_1_1Greeks.html#a75b4ea46847d109d3e83a344be19bba0">  178</a></span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a75b4ea46847d109d3e83a344be19bba0">run_test</a>() {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keyword">constexpr</span> std::string_view indent = <span class="stringliteral">&quot;   &quot;</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keyword">auto</span> config = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#aa0236c1b50541c68d72c56ba853419bf">getDefaultConfigGreekParity</a>();</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        config.validate();</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;\n\n&quot;</span> &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;\n&quot;</span>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;[   INFO   ] Initiating Greek Put-Call Parity Test \n&quot;</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="comment">// 1. Run CALL Simulation</span></div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        config.options.opt_right = KI::OptRight::Call;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&gt;&gt;&gt; Running CALL configuration...\n&quot;</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keyword">const</span> <span class="keyword">auto</span> call_res = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Utils.html#a7ba58271fae7a001558c83b87d90e476">KTU::run_simulation</a>(config);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="comment">// 2. Run PUT Simulation</span></div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        config.options.opt_right = KI::OptRight::Put;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&gt;&gt;&gt; Running PUT configuration...\n&quot;</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keyword">const</span> <span class="keyword">auto</span> put_res = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Utils.html#a7ba58271fae7a001558c83b87d90e476">KTU::run_simulation</a>(config);</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span> &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;--------------------------------------------------------------------\n&quot;</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&gt;&gt;&gt; Evaluating Greek&#39;s Call-Put Parities ...\n&quot;</span>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="comment">// Target Expected Values based on continuous-time finance</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_namespace" href="namespacequantkos_1_1Keys.html">K</a> = config.options.StrikePrice;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> T = config.time.t_end;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> r = config.market.r;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> discount = std::exp(-r * T);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_delta_diff = 1.0;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_gamma_diff = 0.0;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_vega_diff = 0.0;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_vomma_diff = 0.0;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keyword">constexpr</span> <span class="keywordtype">double</span> expected_vanna_diff = 0.0;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> expected_rho_diff = <a class="code hl_namespace" href="namespacequantkos_1_1Keys.html">K</a> * T * discount;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> expected_theta_diff = -r * <a class="code hl_namespace" href="namespacequantkos_1_1Keys.html">K</a> * discount;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="comment">// Computed Values</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;C = call_res.Greeks;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;P = put_res.Greeks;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_delta_diff = C.delta - P.delta;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_gamma_diff = C.gamma - P.gamma;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_vega_diff = C.vega - P.vega;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_vomma_diff = C.vomma - P.vomma;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_vanna_diff = C.vanna - P.vanna;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_rho_diff = C.rho - P.rho;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> num_theta_diff = C.theta - P.theta;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="comment">// Pre-compute practical tolerance for each Greek</span></div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> base_se = call_res.OptionPrice.standard_error; <span class="comment">// Extract base standard error from the option price</span></div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_delta = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 3.3);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_gamma = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 3.3);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_vega = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 3.3);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_vomma = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 8.);</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_vanna = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, 1., 3.3);</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_rho = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, std::abs(expected_rho_diff), 3.3);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> tol_theta = <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">compute_greek_tol</a>(base_se, std::abs(expected_theta_diff), 5.); <span class="comment">// Higher bias for grid shift</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        <span class="comment">// Check if the parities are ok</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> all_tests_passed = std::min({</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Delta&quot;</span>, num_delta_diff, expected_delta_diff, tol_delta, indent),</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Gamma&quot;</span>, num_gamma_diff, expected_gamma_diff, tol_gamma, indent),</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Vega &quot;</span>, num_vega_diff, expected_vega_diff, tol_vega, indent),</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Vomma &quot;</span>, num_vomma_diff, expected_vomma_diff, tol_vomma, indent),</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Vanna &quot;</span>, num_vanna_diff, expected_vanna_diff, tol_vanna, indent),</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Rho  &quot;</span>, num_rho_diff, expected_rho_diff, tol_rho, indent),</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            <a class="code hl_function" href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">check_parity</a>(<span class="stringliteral">&quot;Theta&quot;</span>, num_theta_diff, expected_theta_diff, tol_theta, indent)</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        );</div>
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;\n&quot;</span>;</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <span class="keywordflow">return</span> all_tests_passed;</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    }</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        <span class="keywordflow">if</span> (all_tests_passed) {</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span> &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;[ SUCCESS ] All Greek finite-difference engines are structurally sound.\n&quot;</span>;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>            std::cerr &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span> &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;[ FAILURE ] One or more Greeks violated Put-Call Parity bounds!\n&quot;</span>;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        }</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        std::cout &lt;&lt; indent &lt;&lt; <span class="stringliteral">&quot;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;\n&quot;</span>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        <span class="keywordflow">return</span> all_tests_passed;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    }</div>
 </div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>}</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>}</div>
 </div>
 <div class="ttc" id="aTestsUtils_8hpp_html"><div class="ttname"><a href="TestsUtils_8hpp.html">TestsUtils.hpp</a></div></div>
 <div class="ttc" id="anamespacequantkos_1_1Config_html"><div class="ttname"><a href="namespacequantkos_1_1Config.html">quantkos::Config</a></div><div class="ttdoc">Namespace aggregating all structures containing parameters required to initialize and run a simulatio...</div><div class="ttdef"><b>Definition</b> Config.hpp:34</div></div>
@@ -302,14 +307,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="anamespacequantkos_1_1Implemented_html"><div class="ttname"><a href="namespacequantkos_1_1Implemented.html">quantkos::Implemented</a></div><div class="ttdoc">Namespace containing utilities for bidirectional mapping between input configuration strings and inte...</div><div class="ttdef"><b>Definition</b> ConfigFileEnums.hpp:20</div></div>
 <div class="ttc" id="anamespacequantkos_1_1Keys_html"><div class="ttname"><a href="namespacequantkos_1_1Keys.html">quantkos::Keys</a></div><div class="ttdoc">Namespace containing string constants for YAML configuration keys. Modifications here must be synchro...</div><div class="ttdef"><b>Definition</b> ConfigFileKeys.hpp:30</div></div>
 <div class="ttc" id="anamespacequantkos_1_1Tests_1_1Greeks_html"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Greeks.html">quantkos::Tests::Greeks</a></div><div class="ttdoc">Integration tests for validating Monte Carlo finite-difference Greeks.</div><div class="ttdef"><b>Definition</b> PutCallParityTest.hpp:27</div></div>
-<div class="ttc" id="anamespacequantkos_1_1Tests_1_1Greeks_html_a238c3ae7fa4fad2ddfc6f2fc58dd3917"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">quantkos::Tests::Greeks::compute_greek_tol</a></div><div class="ttdeci">double compute_greek_tol(const double base_option_price_se, const double greek_scale, const double base_option_price_se_multiplier=3.0, const double relative_tolerance=0.01, const double absolute_floor=1e-4)</div><div class="ttdoc">Practical tolerance for structural Monte Carlo Greek parity tests.</div><div class="ttdef"><b>Definition</b> PutCallParityTest.hpp:109</div></div>
-<div class="ttc" id="anamespacequantkos_1_1Tests_1_1Greeks_html_a75b4ea46847d109d3e83a344be19bba0"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Greeks.html#a75b4ea46847d109d3e83a344be19bba0">quantkos::Tests::Greeks::run_test</a></div><div class="ttdeci">bool run_test()</div><div class="ttdoc">Performs the Structural Put-Call Parity test for Monte Carlo Greeks.</div><div class="ttdef"><b>Definition</b> PutCallParityTest.hpp:176</div></div>
-<div class="ttc" id="anamespacequantkos_1_1Tests_1_1Greeks_html_a9359f8d5aa4ee54f3b8497064aadaebd"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">quantkos::Tests::Greeks::check_parity</a></div><div class="ttdeci">bool check_parity(const std::string &amp;name, const double num, const double expected, const double tol, const std::string_view &amp;indent)</div><div class="ttdoc">Helper function to see if the pull call parity has been respected.</div><div class="ttdef"><b>Definition</b> PutCallParityTest.hpp:133</div></div>
+<div class="ttc" id="anamespacequantkos_1_1Tests_1_1Greeks_html_a238c3ae7fa4fad2ddfc6f2fc58dd3917"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Greeks.html#a238c3ae7fa4fad2ddfc6f2fc58dd3917">quantkos::Tests::Greeks::compute_greek_tol</a></div><div class="ttdeci">double compute_greek_tol(const double base_option_price_se, const double greek_scale, const double base_option_price_se_multiplier=3.0, const double relative_tolerance=0.01, const double absolute_floor=1e-4)</div><div class="ttdoc">Practical tolerance for structural Monte Carlo Greek parity tests.</div><div class="ttdef"><b>Definition</b> PutCallParityTest.hpp:110</div></div>
+<div class="ttc" id="anamespacequantkos_1_1Tests_1_1Greeks_html_a75b4ea46847d109d3e83a344be19bba0"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Greeks.html#a75b4ea46847d109d3e83a344be19bba0">quantkos::Tests::Greeks::run_test</a></div><div class="ttdeci">bool run_test()</div><div class="ttdoc">Performs the Structural Put-Call Parity test for Monte Carlo Greeks.</div><div class="ttdef"><b>Definition</b> PutCallParityTest.hpp:178</div></div>
+<div class="ttc" id="anamespacequantkos_1_1Tests_1_1Greeks_html_a9359f8d5aa4ee54f3b8497064aadaebd"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Greeks.html#a9359f8d5aa4ee54f3b8497064aadaebd">quantkos::Tests::Greeks::check_parity</a></div><div class="ttdeci">bool check_parity(const std::string &amp;name, const double num, const double expected, const double tol, const std::string_view &amp;indent)</div><div class="ttdoc">Helper function to see if the pull call parity has been respected.</div><div class="ttdef"><b>Definition</b> PutCallParityTest.hpp:134</div></div>
 <div class="ttc" id="anamespacequantkos_1_1Tests_1_1Greeks_html_aa0236c1b50541c68d72c56ba853419bf"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Greeks.html#aa0236c1b50541c68d72c56ba853419bf">quantkos::Tests::Greeks::getDefaultConfigGreekParity</a></div><div class="ttdeci">KC::UInputs getDefaultConfigGreekParity()</div><div class="ttdoc">Generates a baseline European option configuration under Heston dynamics.</div><div class="ttdef"><b>Definition</b> PutCallParityTest.hpp:41</div></div>
 <div class="ttc" id="anamespacequantkos_1_1Tests_1_1Utils_html"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Utils.html">quantkos::Tests::Utils</a></div><div class="ttdoc">Common test execution helper functions and statistical analysis tools.</div><div class="ttdef"><b>Definition</b> TestsUtils.hpp:27</div></div>
 <div class="ttc" id="anamespacequantkos_1_1Tests_1_1Utils_html_a7ba58271fae7a001558c83b87d90e476"><div class="ttname"><a href="namespacequantkos_1_1Tests_1_1Utils.html#a7ba58271fae7a001558c83b87d90e476">quantkos::Tests::Utils::run_simulation</a></div><div class="ttdeci">KE::MCResults run_simulation(KC::UInputs config)</div><div class="ttdoc">Stateless entry point that validates configuration states and launches a simulation run.</div><div class="ttdef"><b>Definition</b> TestsUtils.hpp:83</div></div>
 <div class="ttc" id="anamespacequantkos_1_1Types_html"><div class="ttname"><a href="namespacequantkos_1_1Types.html">quantkos::Types</a></div><div class="ttdoc">Namespace containing core mathematical type definitions and compile-time constants.</div><div class="ttdef"><b>Definition</b> Typedefs.hpp:23</div></div>
-<div class="ttc" id="astructquantkos_1_1Config_1_1UInputs_html"><div class="ttname"><a href="structquantkos_1_1Config_1_1UInputs.html">quantkos::Config::UInputs</a></div><div class="ttdoc">Master configuration container for the simulation engine.</div><div class="ttdef"><b>Definition</b> Config.hpp:624</div></div>
+<div class="ttc" id="astructquantkos_1_1Config_1_1UInputs_html"><div class="ttname"><a href="structquantkos_1_1Config_1_1UInputs.html">quantkos::Config::UInputs</a></div><div class="ttdoc">Master configuration container for the simulation engine.</div><div class="ttdef"><b>Definition</b> Config.hpp:632</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
