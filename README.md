@@ -2,10 +2,9 @@
 
 **QuantKos** is a high-performance Monte Carlo option pricing engine written in modern **C++20** and built on top of the **Kokkos** performance portability framework. It provides a single-source implementation capable of targeting serial execution, multi-core CPUs, and modern GPUs while maintaining the same code base.
 
-QuantKos has been designed as both a research and development framework for stochastic option pricing and a production-oriented pricing engine. 
-It cleanly separates stochastic models, numerical integration schemes, payoff evaluation and Monte Carlo orchestration, so that is it possible to easily extend it with new financial models or derivative contracts.
+QuantKos is being developed as a personal research project to explore performance-portable stochastic option pricing. It features a clean modular architecture that separates stochastic models, numerical integration schemes, payoff evaluations, Monte Carlo orchestration ans sensibility analysis, making it easy to extend with new financial models or derivative contracts.
 
-Although QuantKos is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on **Linux**, using **GCC**, **OpenMP**, and **NVIDIA CUDA**.
+**Please Note**: QuantKos is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on **Linux**, using **GCC**, **OpenMP**, and **NVIDIA CUDA**.
 
 ---
 
@@ -64,6 +63,22 @@ The simulation engine includes
 - Reproducible simulations through configurable random seeds
 - Configurable single- or double-precision builds
 
+### Sensitivity Analysis (Greeks)
+
+QuantKos includes built-in capabilities for calculating risk sensitivities and hedge parameters (Greeks) across supported contracts and models:
+
+- **Delta ($\Delta$):** Sensitivity of the option price to changes in the underlying asset price
+- **Vega ($\nu$):** Sensitivity of the option price to changes in volatility (or volatility model parameters)
+- **Theta ($\Theta$):** Sensitivity of the option price to the passage of time (time decay)
+- **Rho ($\rho$):** Sensitivity of the option price to changes in the risk-free interest rate
+
+- **Gamma ($\Gamma$):** Rate of change of Delta with respect to changes in the underlying asset price
+- **Vanna:** Sensitivity of Delta with respect to volatility (or rate of change of Vega with respect to underlying price)
+- **Vomma:** Rate of change of Vega with respect to volatility
+
+Sensitivities are evaluated using finite-difference approximations. For more details, refer to the documentation.
+
+
 ---
 
 ## 📚 Documentation
@@ -93,14 +108,29 @@ git clone https://github.com/zeno-geddo/QuantKos.git
 cd QuantKos
 ```
 
-### Create a build directory
+
+### Interactive Python Builder (Recommended)
+You can quickly configure and build QuantKos interactively using the provided Python command-line interface. From the repository root, simply run:
+```bash
+python builder.py
+```
+This script will guide you through the configuration process—allowing you to easily select hardware backends, math precision, and dependency management strategies—before automatically compiling and installing the project. 
+> **IMPORTANT NOTE:** The interactive builder interface is currently under active development. For advanced GPU configurations, custom architecture flags, or specialized Kokkos builds, it is recommended to use the manual build workflow by following the details in COMPILATION_GUIDE.md.
+
+
+
+
+### Standard CMake Build and Install
+The simplest way to build QuantKos manually is to let CMake automatically download Kokkos and yaml-cpp using FetchContent.
+
+#### Create a build directory
 
 ```bash
 mkdir build
 cd build
 ```
 
-### Configure a Release build
+#### Configure a Release build
 
 #### Serial
 
@@ -137,13 +167,13 @@ cmake .. \
 
 > **IMPORTANT NOTE:** For CUDA builds, custom Kokkos installations, or advanced CMake configuration, see **COMPILATION_GUIDE.md**.
 
-### Build
+#### Build using cmake
 
 ```bash
 cmake --build . -j$(nproc)
 ```
 
-### Install
+#### Install using cmake
 
 ```bash
 cmake --install .
@@ -259,6 +289,7 @@ The automated validation suite currently includes tests for
 - Heston convergence
 - Bates convergence
 - Longstaff-Schwartz American option pricing
+- Call-Put parity tests for EU options, checking that the greeks works as expected.
 
 These tests are useful for validating new installations, verifying code modifications, and comparing different hardware backends.
 
@@ -268,9 +299,8 @@ These tests are useful for validating new installations, verifying code modifica
 
 QuantKos aims to provide
 
-- a clean and extensible C++ architecture for quantitative finance
+- an extensible C++ framework for option pricing
 - performance portability across heterogeneous hardware
-- reproducible scientific simulations
 
 ---
 

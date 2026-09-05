@@ -1,0 +1,63 @@
+#  Copyright (C) 14/07/2026 Zeno GEDDO <zeno.geddo@gmail.com>
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+# ==========================================
+# QuantKos: Benchmark Asian option
+# Params from pag 212, F.Rouah, The Heston Model and its Extensions in Matlab and C#
+# ==========================================
+Market:
+  Price: 8.0    # Initial asset price (S0) (spot price)
+  Variance: 0.0625  # Initial variance (v0)
+  r: 0.1       # Risk-free interest rate
+  q: 0.0        # Continuous dividend yield
+
+Options:
+  OptionType:  Asian
+  OptionRight:  Call
+  StrikePrice: 10.
+
+Model:
+  Heston:
+    k: 5.0        # Mean reversion speed of the variance (kappa)
+    theta: 0.16   # Long-term mean of the variance
+    sigma: 0.9    # Volatility of the variance (vol-of-vol)
+    rho: 0.1     # Correlation between price and variance Brownian motions
+
+Numerics:
+  Scheme: ImplicitMilstein   # Available schemes: Euler, ImplicitMilstein, AndersonQE ...
+
+Time:
+  T_End: 1.      # Time to maturity (in years)
+  Inp_DT: 0.0027397260273972603   # Time step size in years (dt) 1/365
+
+MC:
+  Normalize_prices : true # If true, it normalizes monetary parameters relative to S0 (if false, keeps everything untouched).
+  N_Paths: 5000000 # Number of Monte Carlo realizations/paths
+  Batch_Size: 0 # Number of paths run in parallel before saving (0 means auto-computed based on hardware)
+  RNG_Seed: 88471920573105
+  Max_VRAM_MB: 256 #512 #2048 # Max Available VRAM (Default 256 MB)
+  Max_CPU_RAM_MB: 8000 #8000 Max Available RAM
+  compute_delta_et_gamma : false # If true, compute delta, the sensitivity to underlying spot price and gamma, Rate of change of Delta.
+  compute_vega : false # If true, compute vega, i.e. the sensitivity to volatility
+  compute_rho : false # If true, compute rho, i.e. the sensitivity to interest rates
+  compute_theta : false # If true, compute theta, i.e. the Sensitivity to final time
+  analyze_risk_neutral_payoff_distribution: false # # If true, Analyze risk-neutral discounted payoff distribution
+
+Output:
+  out_dir: "" #"./install/outputs"
+  Name_Paths_Out_File: "" # "temp.paths" # QuantKosPaths.paths
+  Name_Log_File: "" #"QuantKos.log"
+  Format: BIN     # Available formats: TXT, BIN
