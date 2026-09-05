@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Engine::MCResults",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1MCResults.html",tooltip="Immutable snapshot container for Monte Carlo simulation outputs."];
+  Node0 [id="Node000000",label="quantkos::Engine::MCDispatcher",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1MCDispatcher.html",tooltip="Orchestrates the runtime-to-compile-time dispatching loop for Monte Carlo execution."];
 }

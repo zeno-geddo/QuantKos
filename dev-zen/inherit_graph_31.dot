@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Engine::Option\lPricer::MCOpPrices",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html",tooltip="Storage container for final simulation metrics and distribution percentiles."];
+  Node0 [id="Node000000",label="quantkos::Engine::Normal\lPair\< LocalRNGType, skip\l_second \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1NormalPair.html",tooltip="Generates two independent Normal Random Variables Uses branchless Box-Muller on GPU to maximize Warp ..."];
 }

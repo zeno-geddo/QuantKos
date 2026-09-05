@@ -372,7 +372,7 @@ template&lt;<a class="el" href="namespacequantkos_1_1Implemented.html#a97f1bf0cc
 To compute the option price, the global random number pool is created once (not a new one for each batch) since states advance dynamically. Using the same pool for different batches is the correct approach, otherwise you would repeat identical simulations paths in different batches. </dd>
 <dd>
 When computing the greeks, different mc simulations are run with slightly different initial condition to approximate the derivatives. In such cases, each mc simulation is run with the exact same seed so that the differences in the outputs are only due to the variation in the initial conditions. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>If calling this in a calibration loop, should add the possibility to reuse the helper classes to avoid repeating initialization overheads. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>If calling this in a calibration loop, should add the possibility to reuse the helper classes to avoid repeating initialization overheads. </dd></dl>
 </li>
 </ul>
 

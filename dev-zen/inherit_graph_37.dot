@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Engine::Payoff\lTracker\< OptType, OptRight \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1PayoffTracker.html",tooltip="Unified compile-time state accumulator and payoff resolver for path-dependent contracts."];
+  Node0 [id="Node000000",label="quantkos::Engine::Payoff\l\< KI::OptRight::Put \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1Payoff_3_01KI_1_1OptRight_1_1Put_01_4.html",tooltip="Compile-time specialization evaluating standard Put option contract payoffs."];
 }

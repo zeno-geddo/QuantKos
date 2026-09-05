@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['testengine_0',['TestEngine',['../classquantkos_1_1Tests_1_1TestEngine.html',1,'quantkos::Tests']]],
-  ['testsuite_1',['TestSuite',['../structquantkos_1_1Tests_1_1TestSuite.html',1,'quantkos::Tests']]],
-  ['timeconfig_2',['TimeConfig',['../structquantkos_1_1Config_1_1TimeConfig.html',1,'quantkos::Config']]]
+  ['readerblueprint_0',['ReaderBlueprint',['../classquantkos_1_1IO_1_1ReaderBlueprint.html',1,'quantkos::IO']]],
+  ['regressionsums_1',['RegressionSums',['../structquantkos_1_1Engine_1_1LSM_1_1RegressionSums.html',1,'quantkos::Engine::LSM']]],
+  ['rngmanager_2',['RNGManager',['../classquantkos_1_1Engine_1_1RNGManager.html',1,'quantkos::Engine']]],
+  ['rvpair_3',['RVPair',['../structquantkos_1_1Engine_1_1RVPair.html',1,'quantkos::Engine']]]
 ];

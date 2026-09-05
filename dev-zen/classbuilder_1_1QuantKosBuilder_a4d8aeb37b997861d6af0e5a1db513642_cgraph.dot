@@ -1,0 +1,15 @@
+digraph "builder.QuantKosBuilder.build_and_install"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="builder.QuantKosBuilder.build\l_and_install",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Configures, builds, and installs the QuantKos engine for a specific configuration,..."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="builder.QuantKosBuilder.\l_get_cmake_flags",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder.html#a598db384b8fbc604ed7bd3074684272f",tooltip="Generates the required CMake configuration flags for the requested build strategy."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="builder.QuantKosBuilder.\l_run_command",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder.html#a09cdebecd11fad2f7446472f22a4322a",tooltip="Executes a shell command in a specified working directory, streaming output to stdout in real-time,..."];
+  Node1 -> Node4 [id="edge3_Node000001_Node000004",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="builder.QuantKosBuilder.\l_save_log",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder.html#aec9a27b69a75f05106b499acee0c8311",tooltip="Helper method to safely write accumulated build logs to a file."];
+}

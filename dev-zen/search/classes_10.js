@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['writerblueprint_0',['WriterBlueprint',['../classquantkos_1_1IO_1_1WriterBlueprint.html',1,'quantkos::IO']]]
+  ['uinputs_0',['UInputs',['../structquantkos_1_1Config_1_1UInputs.html',1,'quantkos::Config']]]
 ];

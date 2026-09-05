@@ -6,5 +6,6 @@ var searchData=
   ['compute_5ftheta_3',['compute_theta',['../structquantkos_1_1Config_1_1MCConfig.html#ad3486fb8fd0a87250187787572b1fca0',1,'quantkos::Config::MCConfig']]],
   ['compute_5fvanna_4',['compute_vanna',['../structquantkos_1_1Config_1_1MCConfig.html#ab73010a747b59746bc1c499a4315d1d2',1,'quantkos::Config::MCConfig']]],
   ['compute_5fvega_5fet_5fvomma_5',['compute_vega_et_vomma',['../structquantkos_1_1Config_1_1MCConfig.html#a46409c33a38c249373bb2ab73f5db854',1,'quantkos::Config::MCConfig']]],
-  ['count_6',['count',['../structquantkos_1_1Engine_1_1LSM_1_1RegressionSums.html#abd23cc7c3295a148bb3b5673baaa38d9',1,'quantkos::Engine::LSM::RegressionSums']]]
+  ['count_6',['count',['../structquantkos_1_1Engine_1_1LSM_1_1RegressionSums.html#abd23cc7c3295a148bb3b5673baaa38d9',1,'quantkos::Engine::LSM::RegressionSums']]],
+  ['cuda_7',['CUDA',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedBackends.html#a22cf3b5c5418eb01789c1c81b6ab7a2d',1,'builder::QuantKosBuilder::ImplementedBackends']]]
 ];

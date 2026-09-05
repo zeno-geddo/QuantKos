@@ -5,5 +5,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Engine::LSM\l::Vector\< 4 \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1LSM_1_1Vector.html",tooltip=" "];
+  Node0 [id="Node000000",label="quantkos::Engine::LSM\l::Matrix\< NBasis \>",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1LSM_1_1Matrix.html",tooltip="Represents the covariance matrix $M = X^T X$."];
 }

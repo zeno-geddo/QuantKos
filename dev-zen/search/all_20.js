@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['yaml_20cpp_0',['Step 4 (Recommended): Download, Build and Install yaml-cpp',['../md_COMPILATION__GUIDE.html#autotoc_md25',1,'']]],
-  ['your_20compute_20capability_20to_20the_20kokkos_20flag_1',['Step 3.2: Match Your Compute Capability to the Kokkos Flag',['../md_COMPILATION__GUIDE.html#autotoc_md24',1,'']]],
-  ['your_20gpu_20compute_20capability_2',['Step 3.1: Query Your GPU Compute Capability',['../md_COMPILATION__GUIDE.html#autotoc_md22',1,'']]],
-  ['your_20specific_20gpu_20architecture_3',['3. Targeting Your Specific GPU Architecture',['../md_COMPILATION__GUIDE.html#autotoc_md21',1,'']]]
+  ['warnings_0',['4. Default Static Analysis Warnings',['../namespaceCMakeLists.html#warning_sec',1,'']]],
+  ['without_20using_20fetchcontent_1',['Option A: Build without using FetchContent',['../md_COMPILATION__GUIDE.html#autotoc_md32',1,'']]],
+  ['writerblueprint_2',['writerblueprint',['../classquantkos_1_1IO_1_1WriterBlueprint.html',1,'quantkos::IO::WriterBlueprint'],['../classquantkos_1_1IO_1_1WriterBlueprint.html#af81f817dfc1e25d9d4f39442dcfed110',1,'quantkos::IO::WriterBlueprint::WriterBlueprint()=default'],['../classquantkos_1_1IO_1_1WriterBlueprint.html#ab658a845f5b330296c78887f55c46cbe',1,'quantkos::IO::WriterBlueprint::WriterBlueprint(const WriterBlueprint &amp;)=delete'],['../classquantkos_1_1IO_1_1WriterBlueprint.html#ad22044b4e3bd37b06d1ef9ee89ae9b9e',1,'quantkos::IO::WriterBlueprint::WriterBlueprint(WriterBlueprint &amp;&amp;)=delete']]]
 ];

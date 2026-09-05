@@ -5,5 +5,7 @@ digraph "Graphical Class Hierarchy"
   edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
   node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
   rankdir="LR";
-  Node0 [id="Node000000",label="quantkos::Tests::RNG\l::CustomGaussianRNGTestKernel",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Tests_1_1RNG_1_1CustomGaussianRNGTestKernel.html",tooltip="Parallel execution functor testing the Custom NormalPair generation."];
+  Node0 [id="Node000000",label="quantkos::IO::ReaderBlueprint",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1IO_1_1ReaderBlueprint.html",tooltip="Abstract base class (interface) defining the contract for reading path data back into memory."];
+  Node0 -> Node1 [id="edge5_Node000000_Node000001",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 [id="Node000001",label="quantkos::IO::Binary\l::BinReader",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1IO_1_1Binary_1_1BinReader.html",tooltip="High-performance file reader that loads price path data from saved binary files."];
 }

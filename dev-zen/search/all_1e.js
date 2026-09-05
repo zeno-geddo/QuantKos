@@ -1,19 +1,14 @@
 var searchData=
 [
-  ['v_0',['v',['../structquantkos_1_1Engine_1_1SDEState.html#a4feba87e3cecb1ac93cbdfe709c68ea5',1,'quantkos::Engine::SDEState']]],
-  ['v0_1',['v0',['../structquantkos_1_1Config_1_1MarketConfig.html#a2dd6284f106d26f83b450d6c746d26d4',1,'quantkos::Config::MarketConfig::v0'],['../structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html#a790d94271bdbbb7981e8dfdf7b2133e0',1,'quantkos::Engine::MarkovianIntegrationKernel::v0']]],
-  ['validate_2',['validate',['../structquantkos_1_1Config_1_1MarketConfig.html#a54f4278a6948384085118fe28fe7bcb7',1,'quantkos::Config::MarketConfig::validate()'],['../structquantkos_1_1Config_1_1OptionsConfig.html#acac0df8101094c3986c193be232052f9',1,'quantkos::Config::OptionsConfig::validate()'],['../structquantkos_1_1Config_1_1MathModelConfig.html#a8d5e0fb3cb41ea7591ed77f85a7bbf41',1,'quantkos::Config::MathModelConfig::validate()'],['../structquantkos_1_1Config_1_1NumSchemeConfig.html#ad96091eb0569f4a7672902386e71239a',1,'quantkos::Config::NumSchemeConfig::validate()'],['../structquantkos_1_1Config_1_1TimeConfig.html#a2ddaae592649fa85ec4426299a1bfb0a',1,'quantkos::Config::TimeConfig::validate()'],['../structquantkos_1_1Config_1_1MCConfig.html#a2277b1a0f8d2b0e94b1fc834ecf0e49a',1,'quantkos::Config::MCConfig::validate()'],['../structquantkos_1_1Config_1_1OutputConfig.html#a190f8299a619f2b91af13047129de844',1,'quantkos::Config::OutputConfig::validate()'],['../structquantkos_1_1Config_1_1UInputs.html#a47a3789b6fa1fa48d5d4e72ba2175f12',1,'quantkos::Config::UInputs::validate()']]],
-  ['validate_5fbump_5fsizes_5ffor_5fgreeks_5fcomputations_3',['validate_bump_sizes_for_greeks_computations',['../structquantkos_1_1Config_1_1MCConfig.html#a9ff02e9183a1312ceac38daa12941958',1,'quantkos::Config::MCConfig']]],
-  ['validation_20suite_4',['🧪 Validation Suite',['../index.html#autotoc_md93',1,'']]],
-  ['vanna_5',['vanna',['../structquantkos_1_1Engine_1_1MCGreeks.html#aa3e61fe7b378c4e3f402e339d996a0f6',1,'quantkos::Engine::MCGreeks::vanna'],['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7a0f67dfad960a608795474b1971de57f9',1,'quantkos::Implemented::Vanna']]],
-  ['vector_6',['Vector',['../structquantkos_1_1Engine_1_1LSM_1_1Vector.html',1,'quantkos::Engine::LSM']]],
-  ['vector_3c_204_20_3e_7',['Vector&lt; 4 &gt;',['../structquantkos_1_1Engine_1_1LSM_1_1Vector.html',1,'quantkos::Engine::LSM']]],
-  ['vega_8',['vega',['../structquantkos_1_1Engine_1_1MCGreeks.html#a06ab507eaa08012ee50a2cb66bade913',1,'quantkos::Engine::MCGreeks::vega'],['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7abb8efcd4ab24730b7cd34e88ac390878',1,'quantkos::Implemented::Vega']]],
-  ['verbosity_9',['verbosity',['../structquantkos_1_1Config_1_1OutputConfig.html#a2602a711f6b5a616f60110dd3254ff45',1,'quantkos::Config::OutputConfig']]],
-  ['verbositylevel_10',['VerbosityLevel',['../namespacequantkos_1_1Implemented.html#adfc7d33e979552bae57b2016df8414d7',1,'quantkos::Implemented']]],
-  ['version_11',['version',['../structquantkos_1_1IO_1_1Binary_1_1BinHeader.html#aff9aec767e23b1e0c2542a9d2d378ff8',1,'quantkos::IO::Binary::BinHeader']]],
-  ['volatility_20jump_20diffusion_20model_12',['II. Bates Stochastic Volatility Jump-Diffusion Model',['../md_MATH__GUIDE.html#autotoc_md50',1,'']]],
-  ['volatility_20model_13',['I. Heston Stochastic Volatility Model',['../md_MATH__GUIDE.html#autotoc_md48',1,'']]],
-  ['volatility_5fabsolute_5fbump_5fsize_14',['volatility_absolute_bump_size',['../structquantkos_1_1Config_1_1MCConfig.html#a3a2d4f66f724513e0eaa07cebcfc159e',1,'quantkos::Config::MCConfig']]],
-  ['vomma_15',['vomma',['../structquantkos_1_1Engine_1_1MCGreeks.html#a6e342bec39d7dc65fd28e1384aab419b',1,'quantkos::Engine::MCGreeks::vomma'],['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7add321d8eec444dfc38832d5ed3ba712a',1,'quantkos::Implemented::Vomma']]]
+  ['uinputs_0',['UInputs',['../structquantkos_1_1Config_1_1UInputs.html',1,'quantkos::Config']]],
+  ['understanding_20the_20output_3a_1',['Understanding the Output:',['../md_COMPILATION__GUIDE.html#autotoc_md23',1,'']]],
+  ['up_20and_20in_2',['Up-and-In',['../md_MATH__GUIDE.html#autotoc_md59',1,'']]],
+  ['up_20and_20out_3',['Up-and-Out',['../md_MATH__GUIDE.html#autotoc_md57',1,'']]],
+  ['update_5fcashflows_4',['update_cashflows',['../classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html#a867444f0e15de3acfd87e749bb6e06ed',1,'quantkos::Engine::LSM::LSMEngine']]],
+  ['update_5fprogress_5',['update_progress',['../classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html#aaff8991dbd0f324d5a17c5a13077e238',1,'quantkos::Engine::ForwardMCProgressTracker::update_progress()'],['../classquantkos_1_1Engine_1_1BackwardLSMProgressTracker.html#ac71d18429f29c78daacdd50492c9444a',1,'quantkos::Engine::BackwardLSMProgressTracker::update_progress()']]],
+  ['user_20input_20guide_6',['QuantKos: User Input Guide',['../md_USER__INPUT__GUIDE.html',1,'']]],
+  ['user_5finput_5fguide_2emd_7',['USER_INPUT_GUIDE.md',['../USER__INPUT__GUIDE_8md.html',1,'']]],
+  ['using_20cmake_8',['using cmake',['../index.html#autotoc_md89',1,'Build using cmake'],['../index.html#autotoc_md90',1,'Install using cmake']]],
+  ['using_20fetchcontent_9',['using fetchcontent',['../md_COMPILATION__GUIDE.html#autotoc_md32',1,'Option A: Build without using FetchContent'],['../md_COMPILATION__GUIDE.html#autotoc_md33',1,'Option B: Build using FetchContent']]],
+  ['utilities_20documentation_20tools_10',['Step 1 (Required): Install Core Utilities &amp; Documentation Tools',['../md_COMPILATION__GUIDE.html#autotoc_md11',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['⚙️_20simulation_20configuration_0',['⚙️ Simulation Configuration',['../index.html#autotoc_md91',1,'']]]
+  ['▶️_20running_20quantkos_0',['▶️ Running QuantKos',['../index.html#autotoc_md92',1,'']]]
 ];

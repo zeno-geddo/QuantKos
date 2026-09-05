@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['laguerrebasis_0',['LaguerreBasis',['../structquantkos_1_1Engine_1_1LSM_1_1LaguerreBasis.html',1,'quantkos::Engine::LSM']]],
-  ['lsmengine_1',['LSMEngine',['../classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html',1,'quantkos::Engine::LSM']]]
+  ['kokkosdefgaussianrngtestkernel_0',['KokkosDefGaussianRNGTestKernel',['../structquantkos_1_1Tests_1_1RNG_1_1KokkosDefGaussianRNGTestKernel.html',1,'quantkos::Tests::RNG']]]
 ];

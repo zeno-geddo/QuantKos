@@ -83,8 +83,8 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md_README"></a> <b>QuantKos</b> is a high-performance Monte Carlo option pricing engine written in modern <b>C++20</b> and built on top of the <b>Kokkos</b> performance portability framework. It provides a single-source implementation capable of targeting serial execution, multi-core CPUs, and modern GPUs while maintaining the same code base.</p>
-<p>QuantKos has been designed as both a research and development framework for stochastic option pricing and a production-oriented pricing engine. It cleanly separates stochastic models, numerical integration schemes, payoff evaluation and Monte Carlo orchestration, so that is it possible to easily extend it with new financial models or derivative contracts.</p>
-<p>Although QuantKos is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on <b>Linux</b>, using <b>GCC</b>, <b>OpenMP</b>, and <b>NVIDIA CUDA</b>.</p>
+<p>QuantKos is being developed as a personal research project to explore performance-portable stochastic option pricing. It features a clean modular architecture that separates stochastic models, numerical integration schemes, payoff evaluations, Monte Carlo orchestration ans sensibility analysis, making it easy to extend with new financial models or derivative contracts.</p>
+<p><b>Please Note</b>: QuantKos is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on <b>Linux</b>, using <b>GCC</b>, <b>OpenMP</b>, and <b>NVIDIA CUDA</b>.</p>
 <hr  />
 <h1><a class="anchor" id="autotoc_md71"></a>
 ✨ Features</h1>
@@ -139,8 +139,21 @@ Monte Carlo Engine</h2>
 <li>Reproducible simulations through configurable random seeds</li>
 <li>Configurable single- or double-precision builds</li>
 </ul>
+<h2><a class="anchor" id="autotoc_md77"></a>
+Sensitivity Analysis (Greeks)</h2>
+<p>QuantKos includes built-in capabilities for calculating risk sensitivities and hedge parameters (Greeks) across supported contracts and models:</p>
+<ul>
+<li>**Delta ($\Delta$):** Sensitivity of the option price to changes in the underlying asset price</li>
+<li>**Vega ($\nu$):** Sensitivity of the option price to changes in volatility (or volatility model parameters)</li>
+<li>**Theta ($\Theta$):** Sensitivity of the option price to the passage of time (time decay)</li>
+<li>**Rho ($\rho$):** Sensitivity of the option price to changes in the risk-free interest rate</li>
+<li>**Gamma ($\Gamma$):** Rate of change of Delta with respect to changes in the underlying asset price</li>
+<li><b>Vanna:</b> Sensitivity of Delta with respect to volatility (or rate of change of Vega with respect to underlying price)</li>
+<li><b>Vomma:</b> Rate of change of Vega with respect to volatility</li>
+</ul>
+<p>Sensitivities are evaluated using finite-difference approximations. For more details, refer to the documentation.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md78"></a>
+<h1><a class="anchor" id="autotoc_md79"></a>
 📚 Documentation</h1>
 <ul>
 <li>📖 <a href="https://zeno-geddo.github.io/QuantKos/main/">Main Branch Documentation (Stable)</a></li>
@@ -159,20 +172,29 @@ Monte Carlo Engine</h2>
 </table>
 <p>When Doxygen and Graphviz are installed, QuantKos can also generate complete HTML and PDF API documentation during compilation.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md80"></a>
+<h1><a class="anchor" id="autotoc_md81"></a>
 🚀 Quick Start</h1>
 <p>The simplest way to build QuantKos is to let CMake automatically download <b>Kokkos</b> and <b>yaml-cpp</b> using <b>FetchContent</b>.</p>
-<h2><a class="anchor" id="autotoc_md81"></a>
+<h2><a class="anchor" id="autotoc_md82"></a>
 Clone the repository</h2>
 <div class="fragment"><div class="line">git clone https://github.com/zeno-geddo/QuantKos.git</div>
 <div class="line">cd QuantKos</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md82"></a>
-Create a build directory</h2>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md83"></a>
+Interactive Python Builder (Recommended)</h2>
+<p>You can quickly configure and build QuantKos interactively using the provided Python command-line interface. From the repository root, simply run: </p><div class="fragment"><div class="line">python builder.py</div>
+</div><!-- fragment --><p> This script will guide you through the configuration process—allowing you to easily select hardware backends, math precision, and dependency management strategies—before automatically compiling and installing the project. </p><blockquote class="doxtable">
+<p>&zwj;<b>IMPORTANT NOTE:</b> The interactive builder interface is currently under active development. For advanced GPU configurations, custom architecture flags, or specialized Kokkos builds, it is recommended to use the manual build workflow by following the details in <a class="el" href="COMPILATION__GUIDE_8md.html">COMPILATION_GUIDE.md</a>. </p>
+</blockquote>
+<h2><a class="anchor" id="autotoc_md84"></a>
+Standard CMake Build and Install</h2>
+<p>The simplest way to build QuantKos manually is to let CMake automatically download Kokkos and yaml-cpp using FetchContent.</p>
+<h3><a class="anchor" id="autotoc_md85"></a>
+Create a build directory</h3>
 <div class="fragment"><div class="line">mkdir build</div>
 <div class="line">cd build</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md83"></a>
-Configure a Release build</h2>
-<h3><a class="anchor" id="autotoc_md84"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md86"></a>
+Configure a Release build</h3>
+<h3><a class="anchor" id="autotoc_md87"></a>
 Serial</h3>
 <div class="fragment"><div class="line">cmake .. \</div>
 <div class="line">    -DCMAKE_BUILD_TYPE=Release \</div>
@@ -185,7 +207,7 @@ Serial</h3>
 <div class="line">    -DKokkos_ENABLE_OPENMP=OFF \</div>
 <div class="line">    -DKokkos_ENABLE_CUDA=OFF \</div>
 <div class="line">    -DKokkos_ARCH_NATIVE=ON</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md85"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md88"></a>
 OpenMP</h3>
 <div class="fragment"><div class="line">cmake .. \</div>
 <div class="line">    -DCMAKE_BUILD_TYPE=Release \</div>
@@ -202,14 +224,14 @@ OpenMP</h3>
 </div><!-- fragment --><blockquote class="doxtable">
 <p>&zwj;<b>IMPORTANT NOTE:</b> For CUDA builds, custom Kokkos installations, or advanced CMake configuration, see <b><a class="el" href="COMPILATION__GUIDE_8md.html">COMPILATION_GUIDE.md</a></b>. </p>
 </blockquote>
-<h2><a class="anchor" id="autotoc_md86"></a>
-Build</h2>
+<h3><a class="anchor" id="autotoc_md89"></a>
+Build using cmake</h3>
 <div class="fragment"><div class="line">cmake --build . -j$(nproc)</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md87"></a>
-Install</h2>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md90"></a>
+Install using cmake</h3>
 <div class="fragment"><div class="line">cmake --install .</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md89"></a>
+<h1><a class="anchor" id="autotoc_md92"></a>
 ▶️ Running QuantKos</h1>
 <p>Execute the pricing engine by passing a simulation configuration file.</p>
 <div class="fragment"><div class="line">./bin/QuantKos share/QuantKosConfig.yaml</div>
@@ -221,7 +243,7 @@ Install</h2>
 <div class="fragment"><div class="line">./bin/QuantKos share/QuantKosConfig.yaml --kokkos-device-id=0</div>
 </div><!-- fragment --><p>The complete description of all configuration parameters is available in <b><a class="el" href="USER__INPUT__GUIDE_8md.html">USER_INPUT_GUIDE.md</a></b>.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md91"></a>
+<h1><a class="anchor" id="autotoc_md94"></a>
 ⚙️ Simulation Configuration</h1>
 <p>QuantKos uses YAML configuration files.</p>
 <p>A simulation file specifies</p>
@@ -267,7 +289,7 @@ Install</h2>
 <div class="line">  out_dir: outputs</div>
 </div><!-- fragment --><p>The full specification of every parameter is documented in <b><a class="el" href="USER__INPUT__GUIDE_8md.html">USER_INPUT_GUIDE.md</a></b>.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md93"></a>
+<h1><a class="anchor" id="autotoc_md96"></a>
 🧪 Validation Suite</h1>
 <p>QuantKos includes a standalone testing executable that validates the numerical implementation.</p>
 <p>Compile with</p>
@@ -283,29 +305,29 @@ Install</h2>
 <li>Heston convergence</li>
 <li>Bates convergence</li>
 <li>Longstaff-Schwartz American option pricing</li>
+<li>Call-Put parity tests for EU options, checking that the greeks works as expected.</li>
 </ul>
 <p>These tests are useful for validating new installations, verifying code modifications, and comparing different hardware backends.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md95"></a>
+<h1><a class="anchor" id="autotoc_md98"></a>
 🎯 Project Goals</h1>
 <p>QuantKos aims to provide</p>
 <ul>
-<li>a clean and extensible C++ architecture for quantitative finance</li>
+<li>an extensible C++ framework for option pricing</li>
 <li>performance portability across heterogeneous hardware</li>
-<li>reproducible scientific simulations</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md97"></a>
+<h1><a class="anchor" id="autotoc_md100"></a>
 📄 License</h1>
 <p>QuantKos is distributed under the <b>GNU General Public License v3.0</b>.</p>
 <p>See the <code>LICENSE</code> file for details.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md99"></a>
+<h1><a class="anchor" id="autotoc_md102"></a>
 🤝 Contributing</h1>
 <p>Bug reports, feature requests, and pull requests are always welcome.</p>
 <p>If you encounter a portability issue on a hardware platform that is not yet officially tested, please consider opening an issue with your build configuration and compiler information.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md101"></a>
+<h1><a class="anchor" id="autotoc_md104"></a>
 👤 Author</h1>
 <p>QuantKos was designed and developed by <b><a href="https://github.com/zeno-geddo">Zeno Geddo</a></b> as an independent research and software engineering project in quantitative finance.</p>
 <p>The project has been developed out of personal interest in stochastic differential equations, numerical methods, high-performance computing, and performance-portable scientific software.</p>
