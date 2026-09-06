@@ -249,7 +249,7 @@ Static Protected Member Functions</h2></td></tr>
     <tr><td class="paramname">workspace_root_dir</td><td>Path where 'build' and 'installations' directories will be created. </td></tr>
     <tr><td class="paramname">build_tests_also</td><td>If True, compiles also the test suite. </td></tr>
     <tr><td class="paramname">use_fetchcontent</td><td>If True, uses CMake FetchContent to download and build dependencies automatically. If False, links against local pre-installed dependencies. </td></tr>
-    <tr><td class="paramname">kokkos_paths</td><td>A dictionary mapping backends (e.g., 'SERIAL', 'OPENMP', 'CUDA') to their local Kokkos installation paths. </td></tr>
+    <tr><td class="paramname">kokkos_paths</td><td>A dictionary mapping target_backends (e.g., 'SERIAL', 'OPENMP', 'CUDA') to their local Kokkos installation paths. </td></tr>
     <tr><td class="paramname">yaml_cpp_path</td><td>Path to the local yaml-cpp installation directory. </td></tr>
     <tr><td class="paramname">build_type</td><td>CMake build type: 'Release', 'Debug', or 'RelWithDebInfo'. </td></tr>
     <tr><td class="paramname">gpu_arch</td><td>Kokkos GPU target architecture for different manufacturers (e.g., CUDA:'AMPERE86', HIP:'VEGA90A'). </td></tr>

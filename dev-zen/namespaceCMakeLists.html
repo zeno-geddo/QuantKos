@@ -164,7 +164,7 @@ Variables</h2></td></tr>
 <h2><a class="anchor" id="debug_san_subsec"></a>
 Adaptive Debug Sanitizers (PUBLIC Propagation)</h2>
 <p>Conditionally configures compiler and linker instrumentation for sanitizers.</p>
-<p>Host-side sanitizers (ASan/UBSan) are highly beneficial on CPU backends. However, on GPU-accelerated backends (CUDA/HIP/SYCL), ASan's massive virtual shadow memory allocation conflicts with the GPU driver's virtual memory mapping tables, triggering a critical initialization out-of-memory error. To prevent this, the build system queries the active Kokkos hardware configurations and automatically bypasses host sanitization if a GPU-bound accelerator target is active. </p>
+<p>Host-side sanitizers (ASan/UBSan) are highly beneficial on CPU target_backends. However, on GPU-accelerated target_backends (CUDA/HIP/SYCL), ASan's massive virtual shadow memory allocation conflicts with the GPU driver's virtual memory mapping tables, triggering a critical initialization out-of-memory error. To prevent this, the build system queries the active Kokkos hardware configurations and automatically bypasses host sanitization if a GPU-bound accelerator target is active. </p>
 
 </div>
 </div>
