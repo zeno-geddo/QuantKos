@@ -369,7 +369,7 @@ namespace quantkos::Engine {
 
         /** * @brief Computes optimal batch size based on available device VRAM or host RAM.
          * * Applies architectural alignment (multiple of 32) to ensure thread-warp
-         * execution efficiency on GPU backends.
+         * execution efficiency on GPU target_backends.
          */
         [[nodiscard]] int determine_optimal_batch_size() const {
             const double bytes_per_sde_path = config.time.N_time_steps * sizeof(KT::Real);

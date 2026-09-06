@@ -114,7 +114,7 @@ class QuantKosBuilder:
         @param build_tests_also      If True, compiles also the test suite.
         @param use_fetchcontent      If True, uses CMake FetchContent to download and build dependencies automatically.
                                      If False, links against local pre-installed dependencies.
-        @param kokkos_paths          A dictionary mapping backends (e.g., 'SERIAL', 'OPENMP', 'CUDA') to their local Kokkos installation paths.
+        @param kokkos_paths          A dictionary mapping target_backends (e.g., 'SERIAL', 'OPENMP', 'CUDA') to their local Kokkos installation paths.
         @param yaml_cpp_path         Path to the local yaml-cpp installation directory.
         @param build_type            CMake build type: 'Release', 'Debug', or 'RelWithDebInfo'.
         @param gpu_arch              Kokkos GPU target architecture for different manufacturers (e.g., CUDA:'AMPERE86', HIP:'VEGA90A').
@@ -347,9 +347,9 @@ class QuantKosBuilder:
         @brief Prompts the user to select an option from a given Enum class.
         """
         options = [item.name for item in enum_cls]
-        opts_str = ", ".join(options)
+        opts_str = "\n\t- " + "\n\t- ".join(options)
         while True:
-            val = QuantKosBuilder._prompt_input(f"{prompt_text} ({opts_str})", default_name)
+            val = QuantKosBuilder._prompt_input(f"{prompt_text} : {opts_str}\n\t ", default_name)
             for opt in options:
                 if val.lower() == opt.lower():
                     return opt

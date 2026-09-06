@@ -39,7 +39,7 @@
  * * @details This function implements the application lifecycle:
  * 1. Prints a welcome message and system metadata.
  * 2. Checks CLI arguments to see if a `--help` flag or valid configuration path is supplied.
- * 3. Boots up Kokkos to initialize hardware backends (CPU threads or GPU VRAM).
+ * 3. Boots up Kokkos to initialize hardware target_backends (CPU threads or GPU VRAM).
  * 4. Parses the YAML simulation parameters.
  * 5. Launches high-throughput simulation runs on the active compute device.
  * 6. Shuts down the parallel environment safely, avoiding memory leaks.

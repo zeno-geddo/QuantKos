@@ -204,7 +204,7 @@ endif ()
 # Interprocedural Optimization (LTO) Adaptive Safeguard
 # Link-Time Optimization (LTO) -> During the final linking step, the compiler performs a secondary optimization pass looking at the entire project at once
 # -----------------------------------------------------------------------------
-# Query active accelerator backends inside Kokkos
+# Query active accelerator target_backends inside Kokkos
 if (Kokkos_ENABLE_CUDA OR Kokkos_ENABLE_HIP OR Kokkos_ENABLE_SYCL)
     # GPU active: Force LTO OFF to prevent device-code 'fatbinData' linker collisions
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)

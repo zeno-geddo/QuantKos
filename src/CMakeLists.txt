@@ -227,8 +227,8 @@ target_compile_options(QuantKos_core PUBLIC
 
 ## @subsection debug_san_subsec Adaptive Debug Sanitizers (PUBLIC Propagation)
 ## @brief Conditionally configures compiler and linker instrumentation for sanitizers.
-## @details Host-side sanitizers (ASan/UBSan) are highly beneficial on CPU backends.
-##          However, on GPU-accelerated backends (CUDA/HIP/SYCL), ASan's massive virtual shadow memory allocation
+## @details Host-side sanitizers (ASan/UBSan) are highly beneficial on CPU target_backends.
+##          However, on GPU-accelerated target_backends (CUDA/HIP/SYCL), ASan's massive virtual shadow memory allocation
 ##          conflicts with the GPU driver's virtual memory mapping tables, triggering a critical initialization
 ##          out-of-memory error.
 ##          To prevent this, the build system queries the active Kokkos hardware configurations and
