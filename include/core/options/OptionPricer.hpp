@@ -222,7 +222,7 @@ namespace quantkos::Engine {
 
             // 4. Analyze shape of option price distribution ONLY if requested
             if (config.mc.analyze_risk_neutral_payoff_distribution) {
-                if (all_payoffs.empty()) {
+                if (all_payoffs.extent(0) == 0) {
                     // Safety check just in case memory allocation failed earlier
                     throw std::runtime_error("Distribution analysis requested, but payoffs array is empty.");
                 }
