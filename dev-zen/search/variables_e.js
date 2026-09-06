@@ -14,7 +14,9 @@ var searchData=
   ['p90_11',['p90',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a66b6eb66db8a701ccd1a302030e8fb4e',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
   ['p95_12',['p95',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a74a1f0972d110699386293b252a31ab7',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
   ['p99_13',['p99',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a880fcf65399855d9521462f6f5a192a6',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
-  ['precision_14',['precision',['../namespacebuilder.html#a97071cf49673c23caaba1be3b2404f37',1,'builder']]],
-  ['prob_5fitm_15',['prob_itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a2b7c7c4212b355ef201b4af7800ce926',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
-  ['psi_5fc_16',['psi_c',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1AndersonQE_01_4.html#a916d3fc2560be5febacaad6b3bf47278',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::AndersonQE &gt;']]]
+  ['pascal60_14',['PASCAL60',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html#a40507370762dc2565026a935e7e1ac10',1,'builder::QuantKosBuilder::ImplementedNvidiaGPUArch']]],
+  ['pascal61_15',['PASCAL61',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html#a28fd762829f61ef4c8f72951ce93cc17',1,'builder::QuantKosBuilder::ImplementedNvidiaGPUArch']]],
+  ['precision_16',['precision',['../namespacebuilder.html#a97071cf49673c23caaba1be3b2404f37',1,'builder']]],
+  ['prob_5fitm_17',['prob_itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a2b7c7c4212b355ef201b4af7800ce926',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
+  ['psi_5fc_18',['psi_c',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1AndersonQE_01_4.html#a916d3fc2560be5febacaad6b3bf47278',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::AndersonQE &gt;']]]
 ];

@@ -14,7 +14,7 @@ var searchData=
   ['tester_2ecpp_11',['Tester.cpp',['../Tester_8cpp.html',1,'']]],
   ['tests_12',['Available Automated Tests',['../md_USER__INPUT__GUIDE.html#autotoc_md119',1,'']]],
   ['tests_5fregistry_13',['tests_registry',['../classquantkos_1_1Tests_1_1TestEngine.html#a2495b96ab1b4b3bb530132c35d9c1bdc',1,'quantkos::Tests::TestEngine']]],
-  ['testsuite_14',['testsuite',['../structquantkos_1_1Tests_1_1TestSuite.html',1,'quantkos::Tests::TestSuite'],['../structquantkos_1_1Tests_1_1TestSuite.html#a2b9930ad1e268e5be2212a55b0ad6300',1,'quantkos::Tests::TestSuite::TestSuite()=default'],['../structquantkos_1_1Tests_1_1TestSuite.html#aebd10490f6cd9bb820a21aa3ba47989c',1,'quantkos::Tests::TestSuite::TestSuite(std::string desc, std::function&lt; bool()&gt; func)']]],
+  ['testsuite_14',['testsuite',['../structquantkos_1_1Tests_1_1TestSuite.html',1,'quantkos::Tests::TestSuite'],['../structquantkos_1_1Tests_1_1TestSuite.html#aebd10490f6cd9bb820a21aa3ba47989c',1,'quantkos::Tests::TestSuite::TestSuite(std::string desc, std::function&lt; bool()&gt; func)'],['../structquantkos_1_1Tests_1_1TestSuite.html#a2b9930ad1e268e5be2212a55b0ad6300',1,'quantkos::Tests::TestSuite::TestSuite()=default']]],
   ['testsutils_2ehpp_15',['TestsUtils.hpp',['../TestsUtils_8hpp.html',1,'']]],
   ['the_20batch_20size_16',['About the Batch Size',['../md_USER__INPUT__GUIDE.html#autotoc_md116',1,'']]],
   ['the_20build_17',['2. Configure the Build',['../md_COMPILATION__GUIDE.html#autotoc_md27',1,'']]],
@@ -47,6 +47,7 @@ var searchData=
   ['total_5fpaths_5ffootprint_5fmb_44',['total_paths_footprint_mb',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a05197a7f530bfd5df1251577ff9f06b1',1,'quantkos::Engine::PathsMCBatchMem']]],
   ['total_5fpayoffs_5ffootprint_5fmb_45',['total_payoffs_footprint_mb',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#af146552b2054fa2d42bd756c09a97954',1,'quantkos::Engine::PathsMCBatchMem']]],
   ['track_5fcurrent_5fprice_46',['track_current_price',['../structquantkos_1_1Engine_1_1PayoffTracker.html#a7010108fc6d4131d61deb3be8bb22edc',1,'quantkos::Engine::PayoffTracker']]],
-  ['txt_47',['TXT',['../namespacequantkos_1_1Implemented.html#a43dc2bec891c242962d31c2e50db07f1a5956a437e724cdfc8b1c70dc7bdeebcb',1,'quantkos::Implemented']]],
-  ['typedefs_2ehpp_48',['Typedefs.hpp',['../Typedefs_8hpp.html',1,'']]]
+  ['turing75_47',['TURING75',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html#a99327065c1e11e4d58c26d2f1184a1a9',1,'builder::QuantKosBuilder::ImplementedNvidiaGPUArch']]],
+  ['txt_48',['TXT',['../namespacequantkos_1_1Implemented.html#a43dc2bec891c242962d31c2e50db07f1a5956a437e724cdfc8b1c70dc7bdeebcb',1,'quantkos::Implemented']]],
+  ['typedefs_2ehpp_49',['Typedefs.hpp',['../Typedefs_8hpp.html',1,'']]]
 ];

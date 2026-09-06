@@ -8,5 +8,6 @@ var searchData=
   ['time_5',['time',['../structquantkos_1_1Config_1_1UInputs.html#a492fd84680a61fdbf1ff193f36ae45f5',1,'quantkos::Config::UInputs']]],
   ['time_5fabsolute_5fbump_5fsize_6',['time_absolute_bump_size',['../structquantkos_1_1Config_1_1MCConfig.html#a601a05af4fbe91f12c89dee98402a7b6',1,'quantkos::Config::MCConfig']]],
   ['timing_7',['Timing',['../structquantkos_1_1Engine_1_1MCResults.html#a867309412dbff1d8aae15ac4c2af9a1d',1,'quantkos::Engine::MCResults']]],
-  ['total_5fn_5fsims_8',['total_n_sims',['../structquantkos_1_1IO_1_1Binary_1_1BinHeader.html#a24696c7dfc18ecbfea6c6e49de720079',1,'quantkos::IO::Binary::BinHeader']]]
+  ['total_5fn_5fsims_8',['total_n_sims',['../structquantkos_1_1IO_1_1Binary_1_1BinHeader.html#a24696c7dfc18ecbfea6c6e49de720079',1,'quantkos::IO::Binary::BinHeader']]],
+  ['turing75_9',['TURING75',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html#a99327065c1e11e4d58c26d2f1184a1a9',1,'builder::QuantKosBuilder::ImplementedNvidiaGPUArch']]]
 ];

@@ -7,9 +7,15 @@ digraph "Graphical Class Hierarchy"
   rankdir="LR";
   Node0 [id="Node000000",label="Enum",height=0.2,width=0.4,color="grey60", fillcolor="#E0E0E0", style="filled",tooltip=" "];
   Node0 -> Node1 [id="edge1_Node000000_Node000001",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node1 [id="Node000001",label="builder.QuantKosBuilder.\lImplementedBackends",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedBackends.html",tooltip=" "];
+  Node1 [id="Node000001",label="builder.QuantKosBuilder.\lImplementedAmdGPUArch",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedAmdGPUArch.html",tooltip=" "];
   Node0 -> Node2 [id="edge2_Node000000_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 [id="Node000002",label="builder.QuantKosBuilder.\lImplementedMath",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedMath.html",tooltip=" "];
+  Node2 [id="Node000002",label="builder.QuantKosBuilder.\lImplementedBackends",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedBackends.html",tooltip=" "];
   Node0 -> Node3 [id="edge3_Node000000_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node3 [id="Node000003",label="builder.QuantKosBuilder.\lImplementedPrecision",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedPrecision.html",tooltip=" "];
+  Node3 [id="Node000003",label="builder.QuantKosBuilder.\lImplementedBuildType",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedBuildType.html",tooltip=" "];
+  Node0 -> Node4 [id="edge4_Node000000_Node000004",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node4 [id="Node000004",label="builder.QuantKosBuilder.\lImplementedMath",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedMath.html",tooltip=" "];
+  Node0 -> Node5 [id="edge5_Node000000_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="builder.QuantKosBuilder.\lImplementedNvidiaGPUArch",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html",tooltip=" "];
+  Node0 -> Node6 [id="edge6_Node000000_Node000006",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node6 [id="Node000006",label="builder.QuantKosBuilder.\lImplementedPrecision",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder_1_1ImplementedPrecision.html",tooltip=" "];
 }

@@ -99,18 +99,24 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder_1_1ImplementedAmdGPUArch.html">ImplementedAmdGPUArch</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder_1_1ImplementedBackends.html">ImplementedBackends</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder_1_1ImplementedBuildType.html">ImplementedBuildType</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder_1_1ImplementedMath.html">ImplementedMath</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html">ImplementedNvidiaGPUArch</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder_1_1ImplementedPrecision.html">ImplementedPrecision</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:acb2c843a129f1eb9ebcc55bc66d650a8" id="r_acb2c843a129f1eb9ebcc55bc66d650a8"><td class="memItemLeft" align="right" valign="top">None&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#acb2c843a129f1eb9ebcc55bc66d650a8">__init__</a> (self, str QuantoKos_root_dir, str workspace_root_dir, bool use_fetchcontent=False, Optional[Dict[str, str]] kokkos_paths=None, Optional[str] yaml_cpp_path=None)</td></tr>
-<tr class="memdesc:acb2c843a129f1eb9ebcc55bc66d650a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the QuantKosBuilder.  <br /></td></tr>
-<tr class="separator:acb2c843a129f1eb9ebcc55bc66d650a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75e316dadf4399cf52cfffebe32ef949" id="r_a75e316dadf4399cf52cfffebe32ef949"><td class="memItemLeft" align="right" valign="top">None&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a75e316dadf4399cf52cfffebe32ef949">__init__</a> (self, str QuantoKos_root_dir, str workspace_root_dir, str build_type=ImplementedBuildType.Release.name, bool build_tests_also=False, bool use_fetchcontent=False, Optional[Dict[str, str]] kokkos_paths=None, Optional[str] yaml_cpp_path=None, Dict[str, str] gpu_arch={ ImplementedBackends.CUDA.name:ImplementedNvidiaGPUArch.AUTO.name, ImplementedBackends.HIP.name:ImplementedAmdGPUArch.AUTO.name, })</td></tr>
+<tr class="memdesc:a75e316dadf4399cf52cfffebe32ef949"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the QuantKosBuilder.  <br /></td></tr>
+<tr class="separator:a75e316dadf4399cf52cfffebe32ef949"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6bc9a013a35392aa6323bbe31f76a6a0" id="r_a6bc9a013a35392aa6323bbe31f76a6a0"><td class="memItemLeft" align="right" valign="top">&quot;QuantKosBuilder&quot;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a6bc9a013a35392aa6323bbe31f76a6a0">from_interactive</a> (cls)</td></tr>
 <tr class="memdesc:a6bc9a013a35392aa6323bbe31f76a6a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactively prompts the user in the terminal with input validation and exit capabilities.  <br /></td></tr>
 <tr class="separator:a6bc9a013a35392aa6323bbe31f76a6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,16 +152,27 @@ Static Protected Member Functions</h2></td></tr>
 <tr class="memitem:ac65e2ed3d26ef022532b753b81fa085e" id="r_ac65e2ed3d26ef022532b753b81fa085e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#ac65e2ed3d26ef022532b753b81fa085e">_get_boolean_choice</a> (str prompt_text, bool default_to_yes=False)</td></tr>
 <tr class="memdesc:ac65e2ed3d26ef022532b753b81fa085e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prompts until a valid boolean decision (y/n) is provided.  <br /></td></tr>
 <tr class="separator:ac65e2ed3d26ef022532b753b81fa085e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad894ad6fc1dd33929554d7178a7cb579" id="r_ad894ad6fc1dd33929554d7178a7cb579"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#ad894ad6fc1dd33929554d7178a7cb579">_get_valid_cmake_config</a> (str prompt_text, str default_path)</td></tr>
-<tr class="memdesc:ad894ad6fc1dd33929554d7178a7cb579"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continuously prompts until a directory containing CMake config files is verified.  <br /></td></tr>
-<tr class="separator:ad894ad6fc1dd33929554d7178a7cb579"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a155e0e86b055535a5a7ec6a9c8878583" id="r_a155e0e86b055535a5a7ec6a9c8878583"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a155e0e86b055535a5a7ec6a9c8878583">_get_enum_choice</a> (str prompt_text, type enum_cls, str default_name)</td></tr>
+<tr class="memdesc:a155e0e86b055535a5a7ec6a9c8878583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prompts the user to select an option from a given Enum class.  <br /></td></tr>
+<tr class="separator:a155e0e86b055535a5a7ec6a9c8878583"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a533b8409727d76a88c369b62f235e256" id="r_a533b8409727d76a88c369b62f235e256"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a533b8409727d76a88c369b62f235e256">_get_valid_cmake_path_config</a> (str prompt_text, str default_path)</td></tr>
+<tr class="memdesc:a533b8409727d76a88c369b62f235e256"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continuously prompts until a directory containing CMake config files is verified.  <br /></td></tr>
+<tr class="separator:a533b8409727d76a88c369b62f235e256"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32e02a2cfe81b1659ae1d75975dd7a2c" id="r_a32e02a2cfe81b1659ae1d75975dd7a2c"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a32e02a2cfe81b1659ae1d75975dd7a2c">_auto_detect_nvidia_arch</a> ()</td></tr>
+<tr class="memdesc:a32e02a2cfe81b1659ae1d75975dd7a2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries the system via nvidia-smi to detect the GPU's Compute Capability.  <br /></td></tr>
+<tr class="separator:a32e02a2cfe81b1659ae1d75975dd7a2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d96699917f57bc80f832b5c7c99ef8" id="r_a17d96699917f57bc80f832b5c7c99ef8"><td class="memItemLeft" align="right" valign="top">Optional[None]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a17d96699917f57bc80f832b5c7c99ef8">_auto_detect_amd_arch</a> ()</td></tr>
+<tr class="memdesc:a17d96699917f57bc80f832b5c7c99ef8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries the system via rocminfo to detect the AMD GPU's gfx version.  <br /></td></tr>
+<tr class="separator:a17d96699917f57bc80f832b5c7c99ef8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Builder class to configure, compile, and install the QuantKos option pricing engine. </p>
-<p>This class manages the CMake build process, allowing compilation against either pre-installed local dependencies or automatic downloads via FetchContent. It abstracts away the generation of CMake flags based on the desired hardware backend, precision, and math mode. </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Should add the possibility of activate tests and release mode </dd></dl>
+<p>This class manages the CMake build process, allowing compilation against either pre-installed local dependencies or automatic downloads via FetchContent. It abstracts away the generation of CMake flags based on the desired hardware backend, precision, and math mode. </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd><p class="startdd">Should add the possibility of activate tests </p>
+<p class="enddd">Check and update gpu arch list </p>
+</dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="acb2c843a129f1eb9ebcc55bc66d650a8" name="acb2c843a129f1eb9ebcc55bc66d650a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb2c843a129f1eb9ebcc55bc66d650a8">&#9670;&#160;</a></span>__init__()</h2>
+<a id="a75e316dadf4399cf52cfffebe32ef949" name="a75e316dadf4399cf52cfffebe32ef949"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75e316dadf4399cf52cfffebe32ef949">&#9670;&#160;</a></span>__init__()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -181,6 +198,18 @@ Static Protected Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">str &#160;</td>
+          <td class="paramname"><em>build_type</em> = <code>ImplementedBuildType.Release.name</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &#160;</td>
+          <td class="paramname"><em>build_tests_also</em> = <code>False</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">bool &#160;</td>
           <td class="paramname"><em>use_fetchcontent</em> = <code>False</code>, </td>
         </tr>
@@ -194,7 +223,16 @@ Static Protected Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">Optional[str] &#160;</td>
-          <td class="paramname"><em>yaml_cpp_path</em> = <code>None</code>&#160;</td>
+          <td class="paramname"><em>yaml_cpp_path</em> = <code>None</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Dict[str, str] &#160;</td>
+          <td class="paramname"><em>gpu_arch</em> = <code>{
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ImplementedBackends.CUDA.name:&#160;ImplementedNvidiaGPUArch.AUTO.name,
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;ImplementedBackends.HIP.name:&#160;ImplementedAmdGPUArch.AUTO.name,
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -209,9 +247,12 @@ Static Protected Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">QuantoKos_root_dir</td><td>Path to the root of the QuantKos root directory. </td></tr>
     <tr><td class="paramname">workspace_root_dir</td><td>Path where 'build' and 'installations' directories will be created. </td></tr>
+    <tr><td class="paramname">build_tests_also</td><td>If True, compiles also the test suite. </td></tr>
     <tr><td class="paramname">use_fetchcontent</td><td>If True, uses CMake FetchContent to download and build dependencies automatically. If False, links against local pre-installed dependencies. </td></tr>
     <tr><td class="paramname">kokkos_paths</td><td>A dictionary mapping backends (e.g., 'SERIAL', 'OPENMP', 'CUDA') to their local Kokkos installation paths. </td></tr>
     <tr><td class="paramname">yaml_cpp_path</td><td>Path to the local yaml-cpp installation directory. </td></tr>
+    <tr><td class="paramname">build_type</td><td>CMake build type: 'Release', 'Debug', or 'RelWithDebInfo'. </td></tr>
+    <tr><td class="paramname">gpu_arch</td><td>Kokkos GPU target architecture for different manufacturers (e.g., CUDA:'AMPERE86', HIP:'VEGA90A'). </td></tr>
   </table>
   </dd>
 </dl>
@@ -219,6 +260,72 @@ Static Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a17d96699917f57bc80f832b5c7c99ef8" name="a17d96699917f57bc80f832b5c7c99ef8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17d96699917f57bc80f832b5c7c99ef8">&#9670;&#160;</a></span>_auto_detect_amd_arch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Optional[None] builder.QuantKosBuilder._auto_detect_amd_arch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queries the system via rocminfo to detect the AMD GPU's gfx version. </p>
+<p>Returns None if no AMD GPU is found. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classbuilder_1_1QuantKosBuilder_a17d96699917f57bc80f832b5c7c99ef8_icgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_a17d96699917f57bc80f832b5c7c99ef8_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
+<a id="a32e02a2cfe81b1659ae1d75975dd7a2c" name="a32e02a2cfe81b1659ae1d75975dd7a2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32e02a2cfe81b1659ae1d75975dd7a2c">&#9670;&#160;</a></span>_auto_detect_nvidia_arch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"> Optional[str] builder.QuantKosBuilder._auto_detect_nvidia_arch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queries the system via nvidia-smi to detect the GPU's Compute Capability. </p>
+<p>Returns None if no NVIDIA GPU is found. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classbuilder_1_1QuantKosBuilder_a32e02a2cfe81b1659ae1d75975dd7a2c_icgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_a32e02a2cfe81b1659ae1d75975dd7a2c_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
 <a id="ac65e2ed3d26ef022532b753b81fa085e" name="ac65e2ed3d26ef022532b753b81fa085e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac65e2ed3d26ef022532b753b81fa085e">&#9670;&#160;</a></span>_get_boolean_choice()</h2>
 
@@ -339,8 +446,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ad894ad6fc1dd33929554d7178a7cb579" name="ad894ad6fc1dd33929554d7178a7cb579"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad894ad6fc1dd33929554d7178a7cb579">&#9670;&#160;</a></span>_get_valid_cmake_config()</h2>
+<a id="a155e0e86b055535a5a7ec6a9c8878583" name="a155e0e86b055535a5a7ec6a9c8878583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a155e0e86b055535a5a7ec6a9c8878583">&#9670;&#160;</a></span>_get_enum_choice()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -349,7 +456,56 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"> str builder.QuantKosBuilder._get_valid_cmake_config </td>
+          <td class="memname"> str builder.QuantKosBuilder._get_enum_choice </td>
+          <td>(</td>
+          <td class="paramtype">str&#160;</td>
+          <td class="paramname"><em>prompt_text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">type&#160;</td>
+          <td class="paramname"><em>enum_cls</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">str&#160;</td>
+          <td class="paramname"><em>default_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prompts the user to select an option from a given Enum class. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classbuilder_1_1QuantKosBuilder_a155e0e86b055535a5a7ec6a9c8878583_icgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_a155e0e86b055535a5a7ec6a9c8878583_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
+<a id="a533b8409727d76a88c369b62f235e256" name="a533b8409727d76a88c369b62f235e256"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a533b8409727d76a88c369b62f235e256">&#9670;&#160;</a></span>_get_valid_cmake_path_config()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"> str builder.QuantKosBuilder._get_valid_cmake_path_config </td>
           <td>(</td>
           <td class="paramtype">str&#160;</td>
           <td class="paramname"><em>prompt_text</em>, </td>
@@ -378,7 +534,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classbuilder_1_1QuantKosBuilder_ad894ad6fc1dd33929554d7178a7cb579_icgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_ad894ad6fc1dd33929554d7178a7cb579_icgraph" alt=""/></div>
+<div class="center"><img src="classbuilder_1_1QuantKosBuilder_a533b8409727d76a88c369b62f235e256_icgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_a533b8409727d76a88c369b62f235e256_icgraph" alt=""/></div>
 </div>
 
 </div>
