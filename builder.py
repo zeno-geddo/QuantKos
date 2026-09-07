@@ -192,7 +192,7 @@ class QuantKosBuilder:
                 # FetchContent option
                 use_fetchcontent = cls._get_boolean_choice(
                     prompt_text="\n> Use FetchContent to automatically download dependencies?",
-                    default_to_yes=False)
+                    default_to_yes=True)
 
                 # GPU Architecture (for FetchContent builds)
                 gpu_arch = {}
@@ -204,9 +204,9 @@ class QuantKosBuilder:
                         enum_cls=cls.ImplementedNvidiaGPUArch,
                         default_name=cls.ImplementedNvidiaGPUArch.AUTO.name
                     )
-                    if selected_arch == cls.ImplementedNvidiaGPUArch.AUTO:
-                        gpu_arch[ImplementedBackends.CUDA.name] = cls._auto_detect_nvidia_arch()
-                    elif selected_arch == cls.ImplementedNvidiaGPUArch.NONE:
+                    if selected_arch == cls.ImplementedNvidiaGPUArch.AUTO.name:
+                        gpu_arch[cls.ImplementedBackends.CUDA.name] = cls._auto_detect_nvidia_arch()
+                    elif selected_arch == cls.ImplementedNvidiaGPUArch.NONE.name:
                         gpu_arch[cls.ImplementedBackends.CUDA.name] = None
                     else:
                         gpu_arch[cls.ImplementedBackends.CUDA.name] = selected_arch
@@ -217,9 +217,9 @@ class QuantKosBuilder:
                         enum_cls=cls.ImplementedAmdGPUArch,
                         default_name=cls.ImplementedAmdGPUArch.AUTO.name
                     )
-                    if selected_arch == cls.ImplementedAmdGPUArch.AUTO:
+                    if selected_arch == cls.ImplementedAmdGPUArch.AUTO.name:
                         gpu_arch[cls.ImplementedBackends.HIP.name] = cls._auto_detect_amd_arch()
-                    elif selected_arch == cls.ImplementedAmdGPUArch.NONE:
+                    elif selected_arch == cls.ImplementedAmdGPUArch.NONE.name:
                         gpu_arch[cls.ImplementedBackends.HIP.name] = None
                     else:
                         gpu_arch[cls.ImplementedBackends.HIP.name] = selected_arch
@@ -389,8 +389,8 @@ class QuantKosBuilder:
 
             return abs_path
 
-    @staticmethod
-    def _auto_detect_nvidia_arch() -> Optional[str]:
+    @classmethod
+    def _auto_detect_nvidia_arch(cls) -> Optional[str]:
         """!
         @brief Queries the system via nvidia-smi to detect the GPU's Compute Capability.
                Returns None if no NVIDIA GPU is found.
@@ -404,35 +404,35 @@ class QuantKosBuilder:
             compute_cap = result.stdout.strip().split('\n')[0].strip()
 
             mapping = {
-                "12.1": ImplementedNvidiaGPUArch.BLACKWELL121.name,
-                "12.0": ImplementedNvidiaGPUArch.BLACKWELL120.name,
-                "10.3": ImplementedNvidiaGPUArch.BLACKWELL103.name,
-                "10.0": ImplementedNvidiaGPUArch.BLACKWELL100.name,
+                "12.1": cls.ImplementedNvidiaGPUArch.BLACKWELL121.name,
+                "12.0": cls.ImplementedNvidiaGPUArch.BLACKWELL120.name,
+                "10.3": cls.ImplementedNvidiaGPUArch.BLACKWELL103.name,
+                "10.0": cls.ImplementedNvidiaGPUArch.BLACKWELL100.name,
 
-                "9.0": ImplementedNvidiaGPUArch.HOPPER90.name,
-                "8.9": ImplementedNvidiaGPUArch.ADA89.name,
-                "8.6": ImplementedNvidiaGPUArch.AMPERE86.name,
-                "8.0": ImplementedNvidiaGPUArch.AMPERE80.name,
-                "7.5": ImplementedNvidiaGPUArch.TURING75.name,
-                "7.0": ImplementedNvidiaGPUArch.VOLTA70.name,
-                "6.1": ImplementedNvidiaGPUArch.PASCAL61.name,
-                "6.0": ImplementedNvidiaGPUArch.PASCAL60.name,
+                "9.0": cls.ImplementedNvidiaGPUArch.HOPPER90.name,
+                "8.9": cls.ImplementedNvidiaGPUArch.ADA89.name,
+                "8.6": cls.ImplementedNvidiaGPUArch.AMPERE86.name,
+                "8.0": cls.ImplementedNvidiaGPUArch.AMPERE80.name,
+                "7.5": cls.ImplementedNvidiaGPUArch.TURING75.name,
+                "7.0": cls.ImplementedNvidiaGPUArch.VOLTA70.name,
+                "6.1": cls.ImplementedNvidiaGPUArch.PASCAL61.name,
+                "6.0": cls.ImplementedNvidiaGPUArch.PASCAL60.name,
             }
 
             arch = mapping.get(compute_cap)
             if arch:
-                print(f"  [INFO] Auto-detected NVIDIA Architecture: {arch} (Compute {compute_cap})")
+                print(f"<\t\tAuto-detected NVIDIA Architecture: {arch} (Compute {compute_cap})")
                 return arch
             else:
-                print(f"  [WARNING] Unrecognized NVIDIA compute capability '{compute_cap}'.")
+                print(f"<  WARNING: Unrecognized NVIDIA compute capability '{compute_cap}'.")
                 return None
 
         except (subprocess.CalledProcessError, FileNotFoundError):
-            print("  [INFO] nvidia-smi not found or failed. No NVIDIA GPU detected.")
+            print("<  WARNING: nvidia-smi not found or failed. No NVIDIA GPU detected.")
             return None
 
-    @staticmethod
-    def _auto_detect_amd_arch() -> Optional[None]:
+    @classmethod
+    def _auto_detect_amd_arch(cls) -> Optional[None]:
         """!
         @brief Queries the system via rocminfo to detect the AMD GPU's gfx version.
                Returns None if no AMD GPU is found.
@@ -459,33 +459,33 @@ class QuantKosBuilder:
             # (Matches Kokkos 4.x architecture naming conventions)
             mapping = {
                 # CDNA / Supercomputing
-                "gfx942": ImplementedAmdGPUArch.MI300X.name,
-                "gfx940": ImplementedAmdGPUArch.MI300A.name,
-                "gfx90a": ImplementedAmdGPUArch.VEGA90A.name,
-                "gfx908": ImplementedAmdGPUArch.VEGA908.name,
-                "gfx906": ImplementedAmdGPUArch.VEGA906.name,
-                "gfx900": ImplementedAmdGPUArch.VEGA900.name,
+                "gfx942": cls.ImplementedAmdGPUArch.MI300X.name,
+                "gfx940": cls.ImplementedAmdGPUArch.MI300A.name,
+                "gfx90a": cls.ImplementedAmdGPUArch.VEGA90A.name,
+                "gfx908": cls.ImplementedAmdGPUArch.VEGA908.name,
+                "gfx906": cls.ImplementedAmdGPUArch.VEGA906.name,
+                "gfx900": cls.ImplementedAmdGPUArch.VEGA900.name,
 
                 # RDNA3 Series
-                "gfx1100": ImplementedAmdGPUArch.NAVI31.name,
-                "gfx1101": ImplementedAmdGPUArch.NAVI32.name,
-                "gfx1102": ImplementedAmdGPUArch.NAVI33.name,
+                "gfx1100": cls.ImplementedAmdGPUArch.NAVI31.name,
+                "gfx1101": cls.ImplementedAmdGPUArch.NAVI32.name,
+                "gfx1102": cls.ImplementedAmdGPUArch.NAVI33.name,
 
                 # RDNA2 Series
-                "gfx1030": ImplementedAmdGPUArch.NAVI21.name,
-                "gfx1031": ImplementedAmdGPUArch.NAVI22.name,
+                "gfx1030": cls.ImplementedAmdGPUArch.NAVI21.name,
+                "gfx1031": cls.ImplementedAmdGPUArch.NAVI22.name,
             }
 
             arch = mapping.get(gfx_version)
             if arch:
-                print(f"  [INFO] Auto-detected AMD Architecture: {arch} ({gfx_version})")
+                print(f"<\t\tAuto-detected AMD Architecture: {arch} ({gfx_version})")
                 return arch
             else:
-                print(f"  [WARNING] Unrecognized AMD gfx version '{gfx_version}'.")
+                print(f"<  WARNING: Unrecognized AMD gfx version '{gfx_version}'.")
                 return None
 
         except (subprocess.CalledProcessError, FileNotFoundError):
-            print("  [INFO] rocminfo not found or failed. No AMD ROCm stack detected.")
+            print("<  WARNING: rocminfo not found or failed. No AMD ROCm stack detected.")
             return None
 
     def build_and_install(self,
@@ -647,7 +647,7 @@ class QuantKosBuilder:
         flags = [
             f"-DCMAKE_INSTALL_PREFIX={install_dir}",
             f"-DCMAKE_BUILD_TYPE={self.build_type}",
-            "-DQKOS_BUILD_DOC=OFF"
+            "-DQKOS_BUILD_DOCS=OFF"
         ]
 
         # Precision Mapping
@@ -656,7 +656,7 @@ class QuantKosBuilder:
                      )
 
         # Math Mode Mapping
-        flags.append("-DQKOS_USE_FAST_MATH=" + ("ON" if math == self.ImplementedMath.FAST.name else "OFF")
+        flags.append("-DQKOS_ENABLE_FAST_MATH=" + ("ON" if math == self.ImplementedMath.FAST.name else "OFF")
                      )
 
         # Buil Test Suite

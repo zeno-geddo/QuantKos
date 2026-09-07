@@ -30,6 +30,7 @@ import sys
 import os
 import re
 import subprocess
+import datetime
 from enum import Enum
 from typing import List, Dict, Optional, Tuple
 
@@ -69,6 +70,13 @@ class QuantKosBenchmark:
         ImplementedTimeRes.T_Greeks.name: r"Time spent evaluating the greeks\s*:\s*([\d\.]+)s",
     }
 
+    class BenchmarkMetrics(Enum):
+        BenchmarkID = 1
+        Build = 2
+        TotalTime = 3
+        PricingTime = 4
+        GreeksTime = 5
+
     def __init__(self, builder: QuantKosBuilder):
         self.builder = builder
         self.benchmarks_conf_filenames: Optional[List[str]] = None
@@ -94,8 +102,7 @@ class QuantKosBenchmark:
         self._ask_required_builds()
         self._build_binaries()
         self._run_benchmarks_and_parse_results()
-
-
+        self._analyze_and_report_results()
 
     def _select_benchmark(self) -> List[str]:
         """!
@@ -114,7 +121,6 @@ class QuantKosBenchmark:
         else:
             # the specific mapped filename for the chosen Enum
             self.benchmarks_conf_filenames = [self.BenchmarksMap[selected_choice]]
-
 
     def _ask_required_builds(self):
         self.target_backends = self._select_build_options("Backends", QuantKosBuilder.ImplementedBackends)
@@ -176,25 +182,25 @@ class QuantKosBenchmark:
     def _run_benchmarks_and_parse_results(self):
         print("\n--- Executing Benchmark Matrix ---")
         path_curr_dir = os.path.abspath(os.path.dirname(__file__))
-        for config_name in self.benchmarks_conf_filenames:
-            config_path = os.path.abspath(os.path.join(path_curr_dir, "configs", config_name))
+        for benchmark_name in self.benchmarks_conf_filenames:
+            config_path = os.path.abspath(os.path.join(path_curr_dir, "configs", benchmark_name))
             for build_name, exe_path in self.executables.items():
-                print(f" > Running {config_name} on [{build_name}]...")
+                print(f" > Running {benchmark_name} on [{build_name}]...")
                 metrics = self._run_quantkos_and_parse_results(exe_path, config_path)
                 print(f" > Done")
                 if metrics:
                     self.results.append({
-                        "Config": config_name,
-                        "Build": build_name,
-                        "Total Time": metrics[0],
-                        "Pricing Time": metrics[1],
-                        "Greeks Time": metrics[2]
+                        self.BenchmarkMetrics.BenchmarkID.name: benchmark_name,
+                        self.BenchmarkMetrics.Build.name: build_name,
+                        self.BenchmarkMetrics.TotalTime.name: metrics[0],
+                        self.BenchmarkMetrics.PricingTime.name: metrics[1],
+                        self.BenchmarkMetrics.GreeksTime.name: metrics[2]
                     })
 
     def _run_quantkos_and_parse_results(self,
-                                         exe_path: str,
-                                         config_path: str,
-                                         print_results: bool = False) -> Optional[Tuple[float, float, float]]:
+                                        exe_path: str,
+                                        config_path: str,
+                                        print_results: bool = False) -> Optional[Tuple[float, float, float]]:
         """Executes QuantKos and parses the timing stdout via regex."""
         try:
             # Assuming the executable takes the config file via CLI like: `./QuantKos --config config.yaml`
@@ -222,8 +228,98 @@ class QuantKosBenchmark:
             print(f"  ❌ Execution crashed: {e}")
             return None
 
+    def _analyze_and_report_results(self):
+        """!
+        @brief Analyzes raw execution metrics, computes speedups,
+               and prints a benchmark table grouped by configuration.
+        @note Benchmarks are exported in CSV.
+        """
+        if not self.results:
+            print("\n❌ No benchmark results to analyze.")
+            return
+
+        print("\n" + "=" * 95)
+        print(
+            f"{'BenchmarkID':<20} | {'Build Variant':<28} | {'Total(s)':<10} | {'Pricing(s)':<10} | {'Greeks(s)':<10} | {'Speedup':<8}")
+        print("-" * 95)
+
+        # Group results by the configuration file used
+        id_benchmarks = set(r[self.BenchmarkMetrics.BenchmarkID.name] for r in self.results)
+
+        for banch_id in id_benchmarks:
+            runs = [r for r in self.results if r[self.BenchmarkMetrics.BenchmarkID.name] == banch_id]
+
+            # Determine the baseline (Preferably SERIAL_DOUBLE, else the slowest total time)
+            baseline_run = next((r for r in runs if "SERIAL_DOUBLE" in r[self.BenchmarkMetrics.Build.name].upper()),
+                                None)
+            if not baseline_run:
+                baseline_run = max(runs, key=lambda x: x[self.BenchmarkMetrics.TotalTime.name])
+            baseline_time = baseline_run[self.BenchmarkMetrics.TotalTime.name]
+
+            # Sort runs by Total Time (fastest first)
+            runs.sort(key=lambda x: x[self.BenchmarkMetrics.TotalTime.name])
+
+            for run in runs:
+                build = run[self.BenchmarkMetrics.Build.name]
+                tot = run[self.BenchmarkMetrics.TotalTime.name]
+                prc = run[self.BenchmarkMetrics.PricingTime.name]
+                grk = run[self.BenchmarkMetrics.GreeksTime.name]
+
+                # Derived Metrics
+                speedup = baseline_time / tot if tot > 0 else 0.0
+
+                speedup_str = f"{speedup:.2f}x"
+                if speedup == 1.0 and build == baseline_run[self.BenchmarkMetrics.Build.name]:
+                    speedup_str = "BASE"
+
+                print(f"{banch_id:<20} | {build:<28} | {tot:<10.4f} | {prc:<10.4f} | {grk:<10.4f} | {speedup_str:<8}")
+
+            print("-" * 95)
+
+        self._export_to_csv()
+
+    def _export_to_csv(self):
+        """!
+        @brief Saves the raw and derived metrics to a CSV file for external analysis.
+        """
+
+        workspace = self.builder.workspace_root
+        reports_dir = os.path.join(workspace, "QuantKos_benchmark_reports")
+        os.makedirs(reports_dir, exist_ok=True)
+
+
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        csv_path = os.path.join(reports_dir, f"benchmark_{timestamp}.csv")
+
+        with open(csv_path, "w") as f:
+            # CSV Header
+            f.write("BenchmarkID,Build,TotalTime_s,PricingTime_s,GreeksTime_s,Speedup\n")
+
+            bench_ids = set(r[self.BenchmarkMetrics.BenchmarkID.name] for r in self.results)
+            for config in bench_ids:
+                runs = [r for r in self.results if r[self.BenchmarkMetrics.BenchmarkID.name] == config]
+                runs.sort(key=lambda x: x[self.BenchmarkMetrics.TotalTime.name])
+
+                # Match baseline selection logic with the terminal table
+                baseline_run = next((r for r in runs if "SERIAL_DOUBLE" in r[self.BenchmarkMetrics.Build.name].upper()), None)
+                if not baseline_run:
+                    baseline_run = max(runs, key=lambda x: x[self.BenchmarkMetrics.TotalTime.name])
+                baseline_time = baseline_run[self.BenchmarkMetrics.TotalTime.name]
+
+                for run in runs:
+                    tot = run[self.BenchmarkMetrics.TotalTime.name]
+                    prc = run[self.BenchmarkMetrics.PricingTime.name]
+                    grk = run[self.BenchmarkMetrics.GreeksTime.name]
+                    speedup = baseline_time / tot if tot > 0 else 0.0
+
+                    f.write(f"{run[self.BenchmarkMetrics.BenchmarkID.name]},"
+                            f"{run[self.BenchmarkMetrics.Build.name]},"
+                            f"{tot:.6f},{prc:.6f},{grk:.6f},{speedup:.4f}\n")
+
+        print(f"\n📊 CSV Report saved to: {csv_path}")
+
 
 if __name__ == "__main__":
-    builder = QuantKosBuilder.from_interactive() # collect info but does not build yet
+    builder = QuantKosBuilder.from_interactive()  # collect info but does not build yet
     benchmarker = QuantKosBenchmark(builder)
-    benchmarker.run_interactive_benchmark() # build with the builder collected informations
+    benchmarker.run_interactive_benchmark()  # build with the builder collected informations

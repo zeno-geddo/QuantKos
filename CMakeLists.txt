@@ -181,7 +181,7 @@ else ()
         FetchContent_Declare(
                 kokkos
                 GIT_REPOSITORY https://github.com/kokkos/kokkos.git
-                GIT_TAG 4.2.00
+                GIT_TAG master #4.5.00
         )
 
         # --- KOKKOS OPTIONS --- (should be added)
