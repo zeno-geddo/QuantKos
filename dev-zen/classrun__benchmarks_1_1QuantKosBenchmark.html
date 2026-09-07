@@ -99,6 +99,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrun__benchmarks_1_1QuantKosBenchmark_1_1BenchmarkMetrics.html">BenchmarkMetrics</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrun__benchmarks_1_1QuantKosBenchmark_1_1ImplementedBenchmarks.html">ImplementedBenchmarks</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrun__benchmarks_1_1QuantKosBenchmark_1_1ImplementedTimeRes.html">ImplementedTimeRes</a></td></tr>
@@ -147,6 +149,12 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a3bc6a3d37612ad30ef994f5127194498"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a3cbb9c6841bf06ced3191c1fb0060e" id="r_a1a3cbb9c6841bf06ced3191c1fb0060e"><td class="memItemLeft" align="right" valign="top">Optional[Tuple[float, float, float]]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrun__benchmarks_1_1QuantKosBenchmark.html#a1a3cbb9c6841bf06ced3191c1fb0060e">_run_quantkos_and_parse_results</a> (self, str exe_path, str config_path, bool print_results=False)</td></tr>
 <tr class="separator:a1a3cbb9c6841bf06ced3191c1fb0060e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1da919a17591a9ff92bd5742f80dc96d" id="r_a1da919a17591a9ff92bd5742f80dc96d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrun__benchmarks_1_1QuantKosBenchmark.html#a1da919a17591a9ff92bd5742f80dc96d">_analyze_and_report_results</a> (self)</td></tr>
+<tr class="memdesc:a1da919a17591a9ff92bd5742f80dc96d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analyzes raw execution metrics, computes speedups, and prints a benchmark table grouped by configuration.  <br /></td></tr>
+<tr class="separator:a1da919a17591a9ff92bd5742f80dc96d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ef86312f4e63bdbabe1663a46ab5dfb" id="r_a1ef86312f4e63bdbabe1663a46ab5dfb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classrun__benchmarks_1_1QuantKosBenchmark.html#a1ef86312f4e63bdbabe1663a46ab5dfb">_export_to_csv</a> (self)</td></tr>
+<tr class="memdesc:a1ef86312f4e63bdbabe1663a46ab5dfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the raw and derived metrics to a CSV file for external analysis.  <br /></td></tr>
+<tr class="separator:a1ef86312f4e63bdbabe1663a46ab5dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Orchestrates the building, execution, and metric extraction of QuantKos benchmarks. </p>
@@ -180,6 +188,45 @@ Protected Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1da919a17591a9ff92bd5742f80dc96d" name="a1da919a17591a9ff92bd5742f80dc96d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1da919a17591a9ff92bd5742f80dc96d">&#9670;&#160;</a></span>_analyze_and_report_results()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">run_benchmarks.QuantKosBenchmark._analyze_and_report_results </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Analyzes raw execution metrics, computes speedups, and prints a benchmark table grouped by configuration. </p>
+<dl class="section note"><dt>Note</dt><dd>Benchmarks are exported in CSV. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classrun__benchmarks_1_1QuantKosBenchmark_a1da919a17591a9ff92bd5742f80dc96d_cgraph.png" border="0" usemap="#aclassrun__benchmarks_1_1QuantKosBenchmark_a1da919a17591a9ff92bd5742f80dc96d_cgraph" alt=""/></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classrun__benchmarks_1_1QuantKosBenchmark_a1da919a17591a9ff92bd5742f80dc96d_icgraph.png" border="0" usemap="#aclassrun__benchmarks_1_1QuantKosBenchmark_a1da919a17591a9ff92bd5742f80dc96d_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
 <a id="ad5029c80439199c9c7fa65b73dc35637" name="ad5029c80439199c9c7fa65b73dc35637"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad5029c80439199c9c7fa65b73dc35637">&#9670;&#160;</a></span>_ask_required_builds()</h2>
 
@@ -238,6 +285,39 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classrun__benchmarks_1_1QuantKosBenchmark_a40f48c2619b66e6c31ce1ea8b43c2086_icgraph.png" border="0" usemap="#aclassrun__benchmarks_1_1QuantKosBenchmark_a40f48c2619b66e6c31ce1ea8b43c2086_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
+<a id="a1ef86312f4e63bdbabe1663a46ab5dfb" name="a1ef86312f4e63bdbabe1663a46ab5dfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ef86312f4e63bdbabe1663a46ab5dfb">&#9670;&#160;</a></span>_export_to_csv()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">run_benchmarks.QuantKosBenchmark._export_to_csv </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Saves the raw and derived metrics to a CSV file for external analysis. </p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classrun__benchmarks_1_1QuantKosBenchmark_a1ef86312f4e63bdbabe1663a46ab5dfb_icgraph.png" border="0" usemap="#aclassrun__benchmarks_1_1QuantKosBenchmark_a1ef86312f4e63bdbabe1663a46ab5dfb_icgraph" alt=""/></div>
 </div>
 
 </div>

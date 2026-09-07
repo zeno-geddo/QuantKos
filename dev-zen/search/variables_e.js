@@ -17,6 +17,7 @@ var searchData=
   ['pascal60_14',['PASCAL60',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html#a40507370762dc2565026a935e7e1ac10',1,'builder::QuantKosBuilder::ImplementedNvidiaGPUArch']]],
   ['pascal61_15',['PASCAL61',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html#a28fd762829f61ef4c8f72951ce93cc17',1,'builder::QuantKosBuilder::ImplementedNvidiaGPUArch']]],
   ['precision_16',['precision',['../namespacebuilder.html#a97071cf49673c23caaba1be3b2404f37',1,'builder']]],
-  ['prob_5fitm_17',['prob_itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a2b7c7c4212b355ef201b4af7800ce926',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
-  ['psi_5fc_18',['psi_c',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1AndersonQE_01_4.html#a916d3fc2560be5febacaad6b3bf47278',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::AndersonQE &gt;']]]
+  ['pricingtime_17',['PricingTime',['../classrun__benchmarks_1_1QuantKosBenchmark_1_1BenchmarkMetrics.html#a2010d08c32df4f45b0a84698ea0863d7',1,'run_benchmarks::QuantKosBenchmark::BenchmarkMetrics']]],
+  ['prob_5fitm_18',['prob_itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a2b7c7c4212b355ef201b4af7800ce926',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
+  ['psi_5fc_19',['psi_c',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1AndersonQE_01_4.html#a916d3fc2560be5febacaad6b3bf47278',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::AndersonQE &gt;']]]
 ];
