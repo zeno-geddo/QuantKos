@@ -90,7 +90,7 @@ $(function() {
 </dd>
 <dt>Member <a class="el" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>  (int argc, char *argv[])</dt>
 <dd><p class="startdd"><a class="anchor" id="_todo000002"></a>Check if it is worth adding std::ios_base::sync_with_stdio(false); and std::cin.tie(NULL); to reduce terminal I/O latency. </p>
-<p class="enddd"><a class="anchor" id="_todo000015"></a>Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural target_backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.  </p>
+<p class="enddd"><a class="anchor" id="_todo000016"></a>Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural target_backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.  </p>
 </dd>
 <dt>File <a class="el" href="main_8cpp.html">main.cpp</a>  </dt>
 <dd><a class="anchor" id="_todo000001"></a>Should add a description to the other files as well.  </dd>
@@ -112,18 +112,20 @@ $(function() {
 <dt>Class <a class="el" href="classquantkos_1_1Engine_1_1MCDispatcher.html">quantkos::Engine::MCDispatcher</a>  </dt>
 <dd><a class="anchor" id="_todo000005"></a>Should improve the dispatching procedure to reduce the compilation time, especially if many other models will be added.  </dd>
 <dt>Class <a class="el" href="classquantkos_1_1Engine_1_1MSolver.html">quantkos::Engine::MSolver&lt; ModelPolicy, SchemePolicy, OptType, OptRight &gt;</a>  </dt>
-<dd><a class="anchor" id="_todo000011"></a>Should implement non-markovian models. This could be modified to work also with a non marlovian integration kernel.  </dd>
+<dd><a class="anchor" id="_todo000012"></a>Should implement non-markovian models. This could be modified to work also with a non marlovian integration kernel.  </dd>
+<dt>Struct <a class="el" href="structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1ImplicitMilstein_01_4.html">quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein &gt;</a>  </dt>
+<dd><a class="anchor" id="_todo000011"></a>When using single precision and fast-math, price can go to inf for extreme parameter choices. Fix it.  </dd>
 <dt>Namespace <a class="el" href="namespacequantkos_1_1IO.html">quantkos::IO</a>  </dt>
-<dd><p class="startdd"><a class="anchor" id="_todo000013"></a>Implement <code>CSVWriter</code> class to handle streaming storage to CSV files for rapid inspections. </p>
+<dd><p class="startdd"><a class="anchor" id="_todo000014"></a>Implement <code>CSVWriter</code> class to handle streaming storage to CSV files for rapid inspections. </p>
 <p class="interdd"></p>
 <p class="interdd">Implement <code>DatabaseWriter</code> class to handle streaming storage directly into SQL-based repositories. </p>
 <p class="interdd"></p>
 <p class="enddd">Add compression support (Zlib/LZ4) for binary path serialization to minimize disk footprint.  </p>
 </dd>
 <dt>Member <a class="el" href="namespacequantkos_1_1Tests_1_1RNG.html#ad9274708d72b4d2d3018680985e2064c">quantkos::Tests::RNG::run_test_gaussian</a>  ()</dt>
-<dd><a class="anchor" id="_todo000014"></a>Fix the warning generated when using GPUs.  </dd>
+<dd><a class="anchor" id="_todo000015"></a>Fix the warning generated when using GPUs.  </dd>
 <dt>Member <a class="el" href="namespacequantkos_1_1Types.html#add413f8237918776840667bce49d99c2">quantkos::Types::Real</a>  </dt>
-<dd><a class="anchor" id="_todo000012"></a>Improve the way single precision is handled </dd>
+<dd><a class="anchor" id="_todo000013"></a>Improve the way single precision is handled </dd>
 </dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

@@ -16,12 +16,13 @@ var searchData=
   ['list_13',['Todo List',['../todo.html',1,'']]],
   ['local_5fpaths_5fbatch_5fview_14',['local_paths_batch_view',['../structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html#a8db1a593f852d48b2f6fa51533145124',1,'quantkos::Engine::MarkovianIntegrationKernel']]],
   ['local_5fpayoff_5fbatch_5fview_15',['local_payoff_batch_view',['../structquantkos_1_1Engine_1_1MarkovianIntegrationKernel.html#a227787ac39d999082f54c3175036472f',1,'quantkos::Engine::MarkovianIntegrationKernel']]],
-  ['lookback_20options_16',['lookback options',['../md_MATH__GUIDE.html#autotoc_md61',1,'Lookback Options'],['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19a7a6e0f4c6a045711b5afb0723f8f52cf',1,'quantkos::Implemented::Lookback Options']]],
-  ['lookbackfixedstrike_17',['LookbackFixedStrike',['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19a4e12eb476467be604549e357d0565b4e',1,'quantkos::Implemented']]],
-  ['lookbackfloatingstrike_18',['LookbackFloatingStrike',['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19a12237d73aeac76b49a5606f403fcf0d6',1,'quantkos::Implemented']]],
-  ['low_19',['Low',['../namespacequantkos_1_1Implemented.html#adfc7d33e979552bae57b2016df8414d7a28d0edd045e05cf5af64e35ae0c4c6ef',1,'quantkos::Implemented']]],
-  ['lsmamerican_2ehpp_20',['LSMAmerican.hpp',['../LSMAmerican_8hpp.html',1,'']]],
-  ['lsmengine_21',['LSMEngine',['../classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html',1,'quantkos::Engine::LSM']]],
-  ['lsmmemory_2ehpp_22',['LSMMemory.hpp',['../LSMMemory_8hpp.html',1,'']]],
-  ['lsregressionbasis_23',['LSRegressionBasis',['../namespacequantkos_1_1Implemented.html#a6ac05326467c4a596e2194d580231d8f',1,'quantkos::Implemented']]]
+  ['log_16',['log',['../classrun__benchmarks_1_1QuantKosBenchmark.html#aae97520eb2634db170e1f1b632404f6e',1,'run_benchmarks::QuantKosBenchmark']]],
+  ['lookback_20options_17',['lookback options',['../md_MATH__GUIDE.html#autotoc_md61',1,'Lookback Options'],['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19a7a6e0f4c6a045711b5afb0723f8f52cf',1,'quantkos::Implemented::Lookback Options']]],
+  ['lookbackfixedstrike_18',['LookbackFixedStrike',['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19a4e12eb476467be604549e357d0565b4e',1,'quantkos::Implemented']]],
+  ['lookbackfloatingstrike_19',['LookbackFloatingStrike',['../namespacequantkos_1_1Implemented.html#ad03dcbc9f37de072f2d764ea2eb33c19a12237d73aeac76b49a5606f403fcf0d6',1,'quantkos::Implemented']]],
+  ['low_20',['Low',['../namespacequantkos_1_1Implemented.html#adfc7d33e979552bae57b2016df8414d7a28d0edd045e05cf5af64e35ae0c4c6ef',1,'quantkos::Implemented']]],
+  ['lsmamerican_2ehpp_21',['LSMAmerican.hpp',['../LSMAmerican_8hpp.html',1,'']]],
+  ['lsmengine_22',['LSMEngine',['../classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html',1,'quantkos::Engine::LSM']]],
+  ['lsmmemory_2ehpp_23',['LSMMemory.hpp',['../LSMMemory_8hpp.html',1,'']]],
+  ['lsregressionbasis_24',['LSRegressionBasis',['../namespacequantkos_1_1Implemented.html#a6ac05326467c4a596e2194d580231d8f',1,'quantkos::Implemented']]]
 ];

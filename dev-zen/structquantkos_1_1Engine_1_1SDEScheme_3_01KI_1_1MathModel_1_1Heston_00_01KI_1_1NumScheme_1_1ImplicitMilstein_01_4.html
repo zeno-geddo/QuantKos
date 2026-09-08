@@ -138,8 +138,9 @@ Public Attributes</h2></td></tr>
 <li><b>Weak Convergence Order</b>: 1.0</li>
 <li>### Mathematical Formulation:</li>
 <li><b>Variance (Eq 7.26)</b>: $v_{n+1} = \frac{v_n + \kappa\theta\Delta t + \sigma\sqrt{v_n\Delta t}Z_v + \frac{1}{4}\sigma^2\Delta t(Z_v^2 - 1)}{1 + \kappa\Delta t}$</li>
-<li><b>Asset Price (Eq 7.8)</b>: Uses the exact same exponential Euler formulation as above. </li>
+<li><b>Asset Price (Eq 7.8)</b>: Uses the exact same exponential Euler formulation as above.</li>
 </ul>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000011">Todo:</a></b></dt><dd>When using single precision and fast-math, price can go to inf for extreme parameter choices. Fix it. </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2815d78c7e113fed9606093c3825d170" name="a2815d78c7e113fed9606093c3825d170"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2815d78c7e113fed9606093c3825d170">&#9670;&#160;</a></span>SDEScheme()</h2>

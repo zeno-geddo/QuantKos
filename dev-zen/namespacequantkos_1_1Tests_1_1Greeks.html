@@ -280,6 +280,11 @@ Here is the caller graph for this function:</div>
 <p>Generates a baseline European option configuration under <a class="el" href="namespacequantkos_1_1Tests_1_1Heston.html" title="Integration tests comparing numerical simulation results with Heston exact analytical solutions.">Heston</a> dynamics. </p>
 <p>Configures a fast-executing European option to validate the finite-difference <a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html" title="Integration tests for validating Monte Carlo finite-difference Greeks.">Greeks</a> engine. The European option is chosen because standard Put-Call Parity identities hold perfectly true for it across any underlying stochastic model (including <a class="el" href="namespacequantkos_1_1Tests_1_1Heston.html" title="Integration tests comparing numerical simulation results with Heston exact analytical solutions.">Heston</a>). </p><dl class="section return"><dt>Returns</dt><dd>A populated configuration with all Greek computation flags enabled. </dd></dl>
 <div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1Greeks_aa0236c1b50541c68d72c56ba853419bf_cgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Greeks_aa0236c1b50541c68d72c56ba853419bf_cgraph" alt=""/></div>
+</div>
+<div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespacequantkos_1_1Tests_1_1Greeks_aa0236c1b50541c68d72c56ba853419bf_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Greeks_aa0236c1b50541c68d72c56ba853419bf_icgraph" alt=""/></div>
@@ -322,7 +327,9 @@ Here is the caller graph for this function:</div>
 </ol>
 <dl class="section note"><dt>Note</dt><dd>Because finite differences on Monte Carlo paths introduce statistical noise, the test enforces a small numerical tolerance rather than exact floating-point equality. in this implementation, it is only required that the parity residuals must be small compared with reasonable numerical scales and the MC price noise.</dd>
 <dd>
-The test purpose is to answer the question : -&gt; Are the call and put <a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html" title="Integration tests for validating Monte Carlo finite-difference Greeks.">Greeks</a> behaving structurally correctly? not something more rigorous like : -&gt; Can I prove at 99.7% confidence that the Greek parity residual is statistically insignificant?</dd></dl>
+The test purpose is to answer the question : -&gt; Are the call and put <a class="el" href="namespacequantkos_1_1Tests_1_1Greeks.html" title="Integration tests for validating Monte Carlo finite-difference Greeks.">Greeks</a> behaving structurally correctly? not something more rigorous like : -&gt; Can I prove at 99.7% confidence that the Greek parity residual is statistically insignificant?</dd>
+<dd>
+When using single precision, vomma is hard to get right (at the moment the test fail vomma with single precision). All the others are ok.</dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>true if all computed parities fall within an empirical tolerance, false otherwise. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
