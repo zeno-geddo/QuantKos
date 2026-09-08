@@ -70,6 +70,8 @@ namespace quantkos::Engine {
          * @todo Better quantify the memory used by all the views
         */
         explicit BackwardLSMMemory(const KC::UInputs &conf) : BatchMem(conf) {
+            const auto start_time = std::chrono::steady_clock::now();
+
             const int N = conf.mc.N_Paths;
             const int T = conf.time.N_time_steps;
 
@@ -112,6 +114,11 @@ namespace quantkos::Engine {
             d_prices_current_time = Kokkos::View<KT::Real *, Kokkos::LayoutLeft>("Device_Time_Slice", N);
             d_best_future_outcomes = Kokkos::View<KT::Real *, Kokkos::LayoutLeft>("Device_Cash_Flows", N);
             h_best_future_outcomes = Kokkos::create_mirror_view(d_best_future_outcomes);
+
+            const auto end_time = std::chrono::steady_clock::now();
+            const std::chrono::duration<double> elapsed = end_time - start_time;
+            std::cout << "  [LSM Memory] Time taken to allocate LSM memory : "<< elapsed.count() <<"s \n";
+
         }
 
         // Delete copies to prevent shared memory issues

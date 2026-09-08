@@ -73,7 +73,13 @@ int main(int argc, char *argv[]) {
     }
 
     // 4. Initialize Kokkos parallel environment (binds GPU contexts/CPU thread pools)
+    std::cout << "  [ Main ] Initializing Kokkos ... \n";
+    const auto start_time = std::chrono::steady_clock::now();
     Kokkos::initialize(argc, argv);
+    const auto end_time = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> elapsed = end_time - start_time;
+    std::cout << "  [ Main ] Time taken to initialize Kokkos : "<< elapsed.count() <<"s \n";
+
     int exit_code = 0;
     {
         namespace KC = quantkos::Config;

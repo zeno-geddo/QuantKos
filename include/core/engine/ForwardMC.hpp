@@ -15,8 +15,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <chrono> // for timing
 #include <utility>
 
 #include "../schemes/markovian/MSolver.hpp"

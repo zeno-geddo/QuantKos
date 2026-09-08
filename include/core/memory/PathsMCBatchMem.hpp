@@ -17,7 +17,7 @@
 
 #include <Kokkos_Core.hpp>
 #include <type_traits>
-
+#include <chrono>
 
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
@@ -72,9 +72,13 @@ namespace quantkos::Engine {
         explicit PathsMCBatchMem(const KC::UInputs &conf) : config(conf),
                                                             require_paths_allocated(config.requires_paths_allocated()) {
             // Memory is allocated during the construction of the class
+            const auto start_time = std::chrono::steady_clock::now();
             allocate_batch_memory();
+            const auto end_time = std::chrono::steady_clock::now();
+            const std::chrono::duration<double> elapsed = end_time - start_time;
             std::cout << "  [Batch Memory] Allocated "<< bytes_to_mb(tot_host_memory_bytes())<< "MB of host memory correctly \n";
             std::cout << "  [Batch Memory] Allocated "<< bytes_to_mb(tot_device_memory_bytes())<< "MB of device memory correctly \n";
+            std::cout << "  [Batch Memory] Time taken to allocate batch memory : "<< elapsed.count() <<"s \n";
         }
 
         /**

@@ -34,7 +34,9 @@ namespace quantkos::Config {
     }
 
     UInputs Parser::parse(const std::string &file) {
-        std::cout << "\n>>> Start Parsing User Inputs...\n\n";
+        const auto start_time = std::chrono::steady_clock::now();
+
+        std::cout << "\n>>> [ Parser ] Start Parsing User Inputs...\n\n";
 
         // ---------------------------------------------------------
         // 1. Sanity Check
@@ -261,6 +263,14 @@ namespace quantkos::Config {
         // ---------------------------------------------------------
         conf.validate();
         conf.print_summary();
+
+        // ---------------------------------------------------------
+        // report timing
+        // ---------------------------------------------------------
+        const auto end_time = std::chrono::steady_clock::now();
+        const std::chrono::duration<double> elapsed = end_time - start_time;
+        std::cout << "  [ Parser ] Time taken to parse the input  : "<< elapsed.count() <<"s \n";
+
 
         return conf;
     }

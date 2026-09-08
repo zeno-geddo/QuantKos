@@ -63,10 +63,20 @@ namespace quantkos::Tests::Greeks {
         config.mc.compute_theta = true;
 
         // Greek Bumps (Standard configurations)
-        config.mc.spot_price_relative_bump_size = 0.001;
-        config.mc.volatility_absolute_bump_size = 0.005; // volatility = sqrt(variance)
-        config.mc.risk_free_rate_absolute_bump_size = 0.0001;
-        config.mc.time_absolute_bump_size = 1.0 / 365.0;
+        if constexpr (KT::is_real_using_single_precision()) {
+            // Use higher bump sizes when using single precision to compute the greeks
+            config.mc.spot_price_relative_bump_size   = 0.02;     // 2% relative
+            config.mc.volatility_absolute_bump_size   = 0.03;     // 3% absolute
+            config.mc.risk_free_rate_absolute_bump_size = 0.005;  // 50 bps
+            config.mc.time_absolute_bump_size         = 7.0 / 365.0; // 1 week
+
+        } else {
+            config.mc.spot_price_relative_bump_size = 0.001;
+            config.mc.volatility_absolute_bump_size = 0.005; // volatility = sqrt(variance)
+            config.mc.risk_free_rate_absolute_bump_size = 0.0001;
+            config.mc.time_absolute_bump_size = 1.0 / 365.0;
+        }
+
 
         // Time
         config.time.t_end = 1.0; // 1 Year
@@ -172,9 +182,10 @@ namespace quantkos::Tests::Greeks {
      *      not something more rigorous like :
      *      -> Can I prove at 99.7% confidence that the Greek parity residual is statistically insignificant?
      *
+     * @note When using single precision, vomma is hard to get right (at the moment the test fail vomma with single precision). All the others are ok.
      *
      * @return true if all computed parities fall within an empirical tolerance, false otherwise.
-     */
+    */
     inline bool run_test() {
         constexpr std::string_view indent = "   ";
         auto config = getDefaultConfigGreekParity();

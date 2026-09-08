@@ -174,7 +174,9 @@ namespace quantkos::Engine {
      * * ### Mathematical Formulation:
      * - **Variance (Eq 7.26)**: $v_{n+1} = \frac{v_n + \kappa\theta\Delta t + \sigma\sqrt{v_n\Delta t}Z_v + \frac{1}{4}\sigma^2\Delta t(Z_v^2 - 1)}{1 + \kappa\Delta t}$
      * - **Asset Price (Eq 7.8)**: Uses the exact same exponential Euler formulation as above.
-     */
+
+     @todo When using single precision and fast-math, price can go to inf for extreme parameter choices. Fix it.
+    */
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein> {
         // Weak Convergence 1., Strong convergence 1.

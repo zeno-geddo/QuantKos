@@ -93,7 +93,7 @@ endif ()
 option(QKOS_ENABLE_SINGLE_PRECISION "Use single precision (float) instead of double ?" OFF)
 if (QKOS_ENABLE_SINGLE_PRECISION)
     add_compile_definitions(QKOS_ENABLE_SINGLE_PRECISION) # Define the preprocessor macro so that float can be actually used
-    message(STATUS "WARNING: Using single precision for the computations may currently cause a degradation in the result quality!")
+    message(STATUS "WARNING: Using single precision for the computations may cause a degradation in the result precision under extreme conditions!")
 endif ()
 
 ## @option QKOS_ENABLE_FAST_MATH
