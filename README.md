@@ -2,34 +2,46 @@
 
 **QuantKos** is a high-performance Monte Carlo option pricing engine written in modern **C++20** and built on top of the **Kokkos** performance portability framework. It provides a single-source implementation capable of targeting serial execution, multi-core CPUs, and modern GPUs while maintaining the same code base.
 
-QuantKos is being developed as a personal research project to explore performance-portable stochastic option pricing. It features a clean modular architecture that separates stochastic models, numerical integration schemes, payoff evaluations, Monte Carlo orchestration ans sensibility analysis, making it easy to extend with new financial models or derivative contracts.
+By leveraging GPU acceleration and precision-tuning, QuantKos can achieve nearly 1000x speedups over standard single-threaded CPU implementations.
+Check out the *Performance & Benchmarks* section below for detailed metrics and hardware analysis.
 
-**Please Note**: QuantKos is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on **Linux**, using **GCC**, **OpenMP**, and **NVIDIA CUDA**.
+
+**Please Note**: Although QuantKos is intended to be portable across all hardware backends supported by Kokkos, it has currently been developed and tested primarily on **Linux**, using **GCC**, **OpenMP**, and **NVIDIA CUDA**.
+
 
 ---
 
 ## ✨ Features
 
-### Performance Portability
+QuantKos is being developed as a personal research project to explore performance-portable stochastic option pricing. 
+It features a clean modular architecture that separates stochastic models, numerical integration schemes, 
+payoff evaluations, Monte Carlo orchestration and sensibility analysis, making it easy to extend with new financial models or derivative contracts.
 
-- Single C++ implementation for multiple hardware architectures
-- Procedural (Serial) execution
+
+### Performance Portability
+Single C++ implementation for multiple hardware architectures:
+- Procedural (Serial) CPU execution
 - Multi-core CPU execution (OpenMP)
 - NVIDIA GPU acceleration (CUDA)
 - Support for additional Kokkos backends (HIP, SYCL, etc.) in principle
 
-### Stochastic Models
+### Build Types
+Flexible build options:
+- Configurable Release, RelWithDebInfo or Debug builds
+- Configurable single- or double-precision builds
+- Configurable ieee-math or fast-math  builds
 
-Currently implemented:
+### Monte Carlo Engine
+The simulation engine includes:
+- Optimized and parallel Monte Carlo path generation, with automatic or customizable batching for very large simulations
+- Memory-aware execution on both CPUs and GPUs
+- Reproducible simulations through configurable random seeds
+- Detailed stdout/log messages
+- Possibility to save the computed trajectories
 
-- Heston stochastic volatility model
-- Bates stochastic volatility jump-diffusion model
-
-The modular architecture makes it reasonably easy to add additional stochastic differential equation (SDE) models.
 
 ### Supported Option Contracts
-
-QuantKos currently supports pricing of
+QuantKos currently supports pricing of:
 
 - European options
 - American options (Longstaff-Schwartz Least-Squares Monte Carlo)
@@ -40,9 +52,16 @@ QuantKos currently supports pricing of
 
 Additional options types can be readily implemented.
 
-### Numerical Methods
+### Stochastic Models
+Currently implemented:
 
-Several discretization schemes are available, including
+- Heston stochastic volatility model
+- Bates stochastic volatility jump-diffusion model
+
+The modular architecture makes it reasonably easy to add additional stochastic differential equation (SDE) models.
+
+### Numerical Methods
+Several discretization schemes are available, including:
 
 - Euler
 - Implicit Milstein
@@ -53,15 +72,8 @@ The implementation follows the numerical methods described in
 > Fabrice D. Rouah,
 > *The Heston Model and its Extensions in Matlab and C#*
 
-### Monte Carlo Engine
+Additional numerical schemes can be readily implemented.
 
-The simulation engine includes
-
-- Parallel Monte Carlo path generation
-- Automatic or customizable batching for very large simulations
-- Memory-aware execution on both CPUs and GPUs
-- Reproducible simulations through configurable random seeds
-- Configurable single- or double-precision builds
 
 ### Sensitivity Analysis (Greeks)
 
@@ -100,6 +112,7 @@ When Doxygen and Graphviz are installed, QuantKos can also generate complete HTM
 ## 🚀 Quick Start
 
 The simplest way to build QuantKos is to let CMake automatically download **Kokkos** and **yaml-cpp** using **FetchContent**.
+The procedure can be automatized using an interactive python builder script calling cmake under the hood.
 
 ### Clone the repository
 
@@ -292,6 +305,66 @@ The automated validation suite currently includes tests for
 - Call-Put parity tests for EU options, checking that the greeks works as expected.
 
 These tests are useful for validating new installations, verifying code modifications, and comparing different hardware backends.
+
+---
+
+## ⚡ Performance & Benchmarks
+
+QuantKos includes an automated Python benchmarking orchestrator (`benchmarks/run_benchmarks.py`) that builds, executes, 
+and compares the execution throughput across different hardware backends, floating-point precisions, and compilation math modes.
+You can run the same benchmarks on your machine, just by calling the runner and following the interactive steps.
+
+### Benchmark Hardware Environment
+
+The benchmarks below were conducted on a Linux laptop with the following hardware specifications:
+* **CPU:** 12th Gen Intel(R) Core(TM) i7-12650H (10 Cores / 16 Threads, up to 4.70 GHz)
+* **GPU:** NVIDIA GeForce RTX 3060 Laptop GPU (Ampere Architecture, Compute Capability 8.6)
+
+### Benchmark Setup
+We here report the reults obtained considering the following implemented benchmark :
+* **Stochastic Model:** Heston Model via AndersenQE Discretization
+* **Simulation Scale:** 5,000,000 Paths × 365 Time Steps ($1.825 \times 10^9$ total SDE trajectory steps)
+* **Details Target Contract:** The parameters used for Asian Option Pricing can be found at : `benchmark/configs/bench_asian_option_price_no_greeks.yaml`. 
+    This benchmark can be selected interactively when running the python benchmark script. 
+
+### Execution Results
+
+ Build Variant | Wall(s) | Overhead(s) | Comp(s)  | WallSpd | CompSpd |
+ :--- | :--- | :--- | :--- | :--- | :--- | 
+ `Release_CUDA_SINGLE_FAST` | 0.2831 | 0.1855 | 0.0976   | **351.53x** | **1019.84x** |
+ `Release_CUDA_SINGLE_IEEE` | 0.4836 | 0.3499 | 0.1336   | 205.82x | 744.55x |
+ `Release_CUDA_DOUBLE_IEEE` | 5.1056 | 0.1865 | 4.9191   | 19.49x | 20.23x |
+ `Release_CUDA_DOUBLE_FAST` | 5.0989 | 0.1727 | 4.9262   | 19.52x | 20.20x |
+ `Release_OPENMP_SINGLE_FAST` | 12.7264 | 0.0137 | 12.7128   | 7.82x | 7.83x |
+ `Release_OPENMP_SINGLE_IEEE` | 13.8612 | 0.0166 | 13.8447   | 7.18x | 7.19x |
+ `Release_OPENMP_DOUBLE_FAST` | 14.9199 | 0.0147 | 14.9052   | 6.67x | 6.68x |
+ `Release_OPENMP_DOUBLE_IEEE` | 15.8384 | 0.0203 | 15.8181   | 6.28x | 6.29x |
+ `Release_SERIAL_SINGLE_FAST` | 67.6384 | 0.0116 | 67.6269   | 1.47x | 1.47x |
+ `Release_SERIAL_SINGLE_IEEE` | 73.2229 | 0.0140 | 73.2089  | 1.36x | 1.36x |
+ `Release_SERIAL_DOUBLE_FAST` | 95.4783 | 0.0220 | 95.4563   | 1.04x | 1.04x |
+ `Release_SERIAL_DOUBLE_IEEE` | 99.5232 | 0.0143 | 99.5089   | **BASE** | **BASE** |
+
+### Technical Insights
+
+1. **Extreme Throughput on GPU (1000x Speedup):**
+   The GPU engine running in Single Precision (FP32) with Fast-Math completes 1.825 billion SDE steps in **under 0.098 seconds**, achieving a **~1020x computation speedup** over the baseline single-threaded CPU execution (`SERIAL_DOUBLE_IEEE` at 99.5s).
+
+2. **The FP32 vs. FP64 GPU Hardware Cliff:**
+   Notice the massive performance gap between `CUDA_SINGLE` (~0.09s) and `CUDA_DOUBLE` (~4.92s) on the GPU—a **~50x speed difference**. 
+   This is not an algorithmic bottleneck; it reflects the **physical architecture of consumer GPUs** (such as the RTX 3060). 
+   Consumer NVIDIA cards have a hardware-restricted FP64-to-FP32 ALU ratio (typically 1:64): 
+   this physical limitation explains why switching from `IEEE` to `FAST` math in double precision yields virtually no performance gain (~4.92s for both). 
+   IN that case execution is bottlenecked by the raw lack of FP64 silicon cores, rendering algorithmic math shortcuts for transcendental functions almost irrelevant.
+3. **Understanding Startup Overhead:**
+   The `Overhead(s)` column measures the delta between total process execution wall-clock time and internal C++ orchestration time (Wall - Comp).
+    * **On CPU backends**, overhead is negligible (~0.01s).
+    * **On GPU backends**, overhead ranges from **0.17s to 0.35s**. This delay is consumed by Kokkos runtime initialization, 
+   CUDA driver context creation, memory allocation, and waking the GPU from low-power idle states (Cold Start penalty). 
+   The initial GPU invocation in a process sequence often pays a slightly higher cold-start tax while the driver initializes the context.
+   Note, in a production environment, the overheads can be almost totally removed by initializing the program (and thus kokkos and getting ready the GPU) before launching the computations. 
+4. **Run-to-Run Variance Note:**
+   Slight variations in execution metrics (few points percent) can occur across consecutive benchmark runs due to CPU thermal throttling, variable background OS usage, etc. 
+   However, these benchmarks accurately represent the architectural performance ratios of the QuantKos engine.
 
 ---
 
