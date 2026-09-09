@@ -2,7 +2,7 @@ var searchData=
 [
   ['q_0',['q',['../structquantkos_1_1Config_1_1MarketConfig.html#ac74b00470e7a7452bbcbc3306bdff395',1,'quantkos::Config::MarketConfig']]],
   ['qkos_5fbuild_5ftype_1',['QKOS_BUILD_TYPE',['../namespaceCMakeLists.html#a56af379b8066228fb0bde07d40cbd0e4',1,'CMakeLists']]],
-  ['quantkos_2',['quantkos',['../index.html#autotoc_md92',1,'▶️ Running QuantKos'],['../md_COMPILATION__GUIDE.html#autotoc_md29',1,'3. Install QuantKos'],['../md_COMPILATION__GUIDE.html#autotoc_md36',1,'5. Run QuantKos'],['../namespacequantkos.html',1,'quantkos'],['../md_COMPILATION__GUIDE.html#autotoc_md30',1,'Step 1: Download QuantKos'],['../md_COMPILATION__GUIDE.html#autotoc_md31',1,'Step 2: Build QuantKos'],['../md_COMPILATION__GUIDE.html#autotoc_md34',1,'Step 3: Install QuantKos']]],
+  ['quantkos_2',['quantkos',['../index.html#autotoc_md93',1,'▶️ Running QuantKos'],['../md_COMPILATION__GUIDE.html#autotoc_md29',1,'3. Install QuantKos'],['../md_COMPILATION__GUIDE.html#autotoc_md36',1,'5. Run QuantKos'],['../namespacequantkos.html',1,'quantkos'],['../md_COMPILATION__GUIDE.html#autotoc_md30',1,'Step 1: Download QuantKos'],['../md_COMPILATION__GUIDE.html#autotoc_md31',1,'Step 2: Build QuantKos'],['../md_COMPILATION__GUIDE.html#autotoc_md34',1,'Step 3: Install QuantKos']]],
   ['quantkos_20_3a_20math_20guide_3',['QuantKos : Math Guide',['../md_MATH__GUIDE.html',1,'']]],
   ['quantkos_3a_20compilation_20guide_4',['QuantKos: Compilation Guide',['../md_COMPILATION__GUIDE.html',1,'']]],
   ['quantkos_3a_20performance_20portable_20monte_20carlo_20option_20pricing_20engine_5',['QuantKos: Performance-Portable Monte Carlo Option Pricing Engine',['../index.html',1,'']]],
@@ -41,5 +41,5 @@ var searchData=
   ['quantkosbuilder_38',['QuantKosBuilder',['../classbuilder_1_1QuantKosBuilder.html',1,'builder']]],
   ['quarter_5fsigma_5fsq_5fdt_39',['quarter_sigma_sq_dt',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1ImplicitMilstein_01_4.html#a9daa66d76cd3c1f274616dd2722d024a',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein &gt;']]],
   ['query_20your_20gpu_20compute_20capability_40',['Step 3.1: Query Your GPU Compute Capability',['../md_COMPILATION__GUIDE.html#autotoc_md22',1,'']]],
-  ['quick_20start_41',['🚀 Quick Start',['../index.html#autotoc_md81',1,'']]]
+  ['quick_20start_41',['🚀 Quick Start',['../index.html#autotoc_md82',1,'']]]
 ];

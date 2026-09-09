@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['✨_20features_0',['✨ Features',['../index.html#autotoc_md71',1,'']]]
+  ['⚡_20performance_20benchmarks_0',['⚡ Performance &amp; Benchmarks',['../index.html#autotoc_md99',1,'']]]
 ];

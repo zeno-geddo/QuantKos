@@ -29,7 +29,7 @@ var searchData=
   ['getdefaultconfiggoodintegrand_26',['getdefaultconfiggoodintegrand',['../namespacequantkos_1_1Tests_1_1LSM.html#a0d8e6ee891c9a60fd6e9ba2dfc665750',1,'quantkos::Tests::LSM::getDefaultConfigGoodIntegrand()'],['../namespacequantkos_1_1Tests_1_1Bates.html#abb2cc79f0772e07e30abe2d0eab424c5',1,'quantkos::Tests::Bates::getDefaultConfigGoodIntegrand()'],['../namespacequantkos_1_1Tests_1_1Heston.html#ab81a7641d68e80e2092f0eb1455b99bc',1,'quantkos::Tests::Heston::getDefaultConfigGoodIntegrand()']]],
   ['getdefaultconfiggreekparity_27',['getDefaultConfigGreekParity',['../namespacequantkos_1_1Tests_1_1Greeks.html#aa0236c1b50541c68d72c56ba853419bf',1,'quantkos::Tests::Greeks']]],
   ['globalrngpool_28',['GlobalRNGPool',['../classquantkos_1_1Engine_1_1RNGManager.html#a2f85393c60687eedb9763de01f3f32ea',1,'quantkos::Engine::RNGManager']]],
-  ['goals_29',['🎯 Project Goals',['../index.html#autotoc_md98',1,'']]],
+  ['goals_29',['🎯 Project Goals',['../index.html#autotoc_md105',1,'']]],
   ['gpu_20accelerated_20cuda_20release_30',['Option C: GPU Accelerated (CUDA / Release)',['../md_COMPILATION__GUIDE.html#autotoc_md20',1,'']]],
   ['gpu_20architecture_31',['3. Targeting Your Specific GPU Architecture',['../md_COMPILATION__GUIDE.html#autotoc_md21',1,'']]],
   ['gpu_20compute_20capability_32',['Step 3.1: Query Your GPU Compute Capability',['../md_COMPILATION__GUIDE.html#autotoc_md22',1,'']]],
@@ -38,7 +38,7 @@ var searchData=
   ['gpu_20toolchain_20cuda_20compiler_20sdk_35',['Step 2 (Required): Install GPU Toolchain (CUDA Compiler &amp; SDK)',['../md_COMPILATION__GUIDE.html#autotoc_md12',1,'']]],
   ['gpus_20cuda_20builds_36',['Running on NVIDIA GPUs (CUDA builds)',['../md_COMPILATION__GUIDE.html#autotoc_md40',1,'']]],
   ['gpus_20optional_37',['Specifying CPU Threads or GPUs (Optional)',['../md_COMPILATION__GUIDE.html#autotoc_md38',1,'']]],
-  ['greeks_38',['greeks',['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7',1,'quantkos::Implemented::Greeks'],['../structquantkos_1_1Engine_1_1MCResults.html#a0de875d39dd9d4203919afbbfe149635',1,'quantkos::Engine::MCResults::Greeks'],['../index.html#autotoc_md77',1,'Sensitivity Analysis (Greeks)']]],
+  ['greeks_38',['greeks',['../namespacequantkos_1_1Implemented.html#a4774a249a855ffe58b9f6daca66361a7',1,'quantkos::Implemented::Greeks'],['../structquantkos_1_1Engine_1_1MCResults.html#a0de875d39dd9d4203919afbbfe149635',1,'quantkos::Engine::MCResults::Greeks'],['../index.html#autotoc_md78',1,'Sensitivity Analysis (Greeks)']]],
   ['greekstime_39',['GreeksTime',['../classrun__benchmarks_1_1QuantKosBenchmark_1_1BenchmarkMetrics.html#a92e887040da4f191cdfd8907f9d67366',1,'run_benchmarks::QuantKosBenchmark::BenchmarkMetrics']]],
   ['guide_40',['guide',['../md_MATH__GUIDE.html',1,'QuantKos : Math Guide'],['../md_COMPILATION__GUIDE.html',1,'QuantKos: Compilation Guide'],['../md_USER__INPUT__GUIDE.html',1,'QuantKos: User Input Guide']]]
 ];

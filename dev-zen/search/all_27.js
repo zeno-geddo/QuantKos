@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['🎯_20project_20goals_0',['🎯 Project Goals',['../index.html#autotoc_md98',1,'']]]
+  ['✨_20features_0',['✨ Features',['../index.html#autotoc_md71',1,'']]]
 ];
