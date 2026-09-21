@@ -87,10 +87,39 @@ namespace quantkos::Implemented {
         TXT, ///< Human-readable text format for debugging/plotting.
     };
 
+    /** @brief Supported verbosity levels. */
+    enum class VerbosityLevel : int {
+        None     = 0, ///< Nothing is printed.
+        Low      = 1, ///< Input message, results.
+        Medium   = 2, ///< Input message, setup info, loop progression with timing, results.
+        High     = 3, ///< Full diagnostic implemented.
+    };
+
+    // Helper to compare VerbosityLevel with integer thresholds
+    constexpr bool operator>=(VerbosityLevel level, const int val) noexcept {
+        return static_cast<int>(level) >= val;
+    }
+
+    constexpr bool operator>=(VerbosityLevel level, VerbosityLevel target) noexcept {
+        return static_cast<int>(level) >= static_cast<int>(target);
+    }
+
     /** @brief Supported basis for Longstaff-Schwarz Algorithm (for American Options). */
     enum class LSRegressionBasis {
         LaguerreP02, ///< Order 2 Laguerre polynomial.
         LaguerreP03, ///< Order 3 Laguerre polynomial.
         LaguerreP04, ///< Order 4 Laguerre polynomial.
+    };
+
+    /** @brief Supported Greeks. */
+    enum class Greeks {
+        Delta, ///< The sensitivity to underlying spot price and gamma, Rate of change of Delta. Computed using Central Difference on Spot price.
+        Gamma,
+        Vega, ///< The sensitivity to volatility. Computed using Central Difference on Initial Volatility.
+        Vomma,
+        Rho, ///< The sensitivity to interest rates. Computed using Central Difference on Risk-Free Rate.
+        Theta, ///< The Sensitivity to final time.
+        Vanna, ///< Cross-sensitivity between spot price and volatility (dDelta/dVol or dVega/dS)
+        //Speed
     };
 }

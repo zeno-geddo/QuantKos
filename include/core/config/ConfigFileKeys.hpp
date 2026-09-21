@@ -124,11 +124,24 @@ namespace quantkos::Keys {
      * @brief Keys for MonteCarlo parameters (expected in the MC block).
      */
     namespace MCParams {
-        static constexpr std::string_view N_Realizations = "N_Paths"; ///< jey for Total number of SDE realizations.
+        static constexpr std::string_view normalize_prices = "Normalize_prices"; ///< Key for bool for normalizing prices.
+        static constexpr std::string_view N_Realizations = "N_Paths"; ///< Key for Total number of SDE realizations.
         static constexpr std::string_view Batch_Size = "Batch_Size"; ///< Key number of paths per kernel launch.
         static constexpr std::string_view RNG_Seed = "RNG_Seed"; ///< Key Initial seed for RNG.
         static constexpr std::string_view Max_VRAM_MB = "Max_VRAM_MB"; ///< Key for limit on GPU VRAM allocation.
         static constexpr std::string_view Max_CPU_RAM_MB = "Max_CPU_RAM_MB"; ///< Limit on CPU host memory allocation.
+        // Payoffs
+        static constexpr std::string_view analyze_risk_neutral_payoff_distribution = "analyze_risk_neutral_payoff_distribution"; ///< Key to analyze the distribution of the risk-neutral discounted payoffs
+        // Greeks
+        static constexpr std::string_view compute_delta_et_gamma = "compute_delta_et_gamma"; ///< Key for computing delta and gamma (greeks).
+        static constexpr std::string_view compute_vega_et_vomma = "compute_vega_et_vomma"; ///< Key for computing vega  and vomma (greeks).
+        static constexpr std::string_view compute_vanna = "compute_vanna"; ///< Key for computing vanna (greeks).
+        static constexpr std::string_view compute_rho = "compute_rho"; ///< Key for computing rho (greeks).
+        static constexpr std::string_view compute_theta = "compute_theta"; ///< Key for computing theta (greeks).
+        static constexpr std::string_view spot_price_relative_bump_size = "spot_price_relative_bump_size"; ///< Key to set delta and gamma bump size (greeks).
+        static constexpr std::string_view volatility_absolute_bump_size = "volatility_absolute_bump_size"; ///< Key to set vega bump size (greeks).
+        static constexpr std::string_view risk_free_rate_absolute_bump_size = "risk_free_rate_absolute_bump_size"; ///< Key to set rho bump size (greeks).
+        static constexpr std::string_view time_absolute_bump_size = "time_absolute_bump_size"; ///< Key to set theta bump size (greeks).
     }
 
     // ------------------------------------------------------------------------
@@ -138,6 +151,7 @@ namespace quantkos::Keys {
      * @brief Keys for Outputs parameters (expected in the Outputs block).
      */
     namespace OutParams {
+        static constexpr std::string_view Verbosity = "Verbosity"; ///< Key for to specify the verbosity level.
         static constexpr std::string_view out_dir = "out_dir"; ///< Key for Target directory for generated logs and paths.
         static constexpr std::string_view Name_Log_File = "Name_Log_File"; ///< Key for Filename for the simulated path storage.
         static constexpr std::string_view Name_Paths_Out_File = "Name_Paths_Out_File"; ///< Key for Filename for the runtime execution log.

@@ -56,6 +56,7 @@ namespace quantkos::Tests::LSM {
         config.mc.Max_CPU_RAM_MB = 10000 ;
         config.mc.Max_VRAM_MB = 400 ;
 
+        config.mc.normalize_prices = true;
         config.mc.N_Paths = 500'000;
         config.mc.batch_size = 0;
 

@@ -24,7 +24,7 @@
  * @details The `quantkos::IO` namespace serves as the primary abstraction layer for data movement between
  * system memory and external storage. Its architecture is built around three core principles:
  * * - **Polymorphism-First Design**: Uses interface blueprints (`WriterBlueprint`, `ReaderBlueprint`) to decouple
- * high-performance compute kernels from specific I/O backends (e.g., CSV, Binary, HDF5).
+ * high-performance compute kernels from specific I/O target_backends (e.g., CSV, Binary, HDF5).
  * - **Memory Safety**: Enforces strict lifecycle management by deleting copy/move constructors, preventing
  * accidental duplication of file handles or heavy memory-mapped structures.
  * - **Batch-Oriented Throughput**: Designed to handle high-dimensional Monte Carlo paths in blocks.

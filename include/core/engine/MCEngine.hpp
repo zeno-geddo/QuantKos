@@ -15,15 +15,109 @@
 
 #pragma once
 
+#include <chrono>
+
 #include "../config/Config.hpp"
 #include "../options/OptionPricer.hpp"
 #include "./../memory/PathsMCBatchMem.hpp"
-#include "./../memory/RAMMemOS.hpp"
+#include "./../memory/MemOSQuery.hpp"
 #include "../../IO/OutManager.hpp"
 #include "../schemes/RandNGenerator.hpp"
 
 namespace quantkos::Engine {
     namespace KIO = quantkos::IO;
+
+    /**
+     * @brief Container holding breakdown of execution durations in seconds.
+     */
+    struct MCTimer {
+    private:
+        using Clock = std::chrono::steady_clock;
+        using TimePoint = std::chrono::time_point<Clock>;
+
+        TimePoint start_total_time{};
+        TimePoint start_pricing_time{};
+        TimePoint start_greeks_time{};
+
+    public:
+        double s_elapsed_total = 0.0;
+        double s_elapsed_for_pricing = 0.0;
+        double s_elapsed_for_greeks = 0.0;
+
+        // --- State-based timing interface ---
+        void start_total() {
+            start_total_time = std::chrono::steady_clock::now();
+        }
+
+        void stop_total() {
+            const auto now = std::chrono::steady_clock::now();
+            s_elapsed_total = std::chrono::duration<double>(now - start_total_time).count();
+        }
+
+        void start_pricing() {
+            start_pricing_time = std::chrono::steady_clock::now();
+        }
+
+        void stop_pricing() {
+            const auto now = std::chrono::steady_clock::now();
+            s_elapsed_for_pricing = std::chrono::duration<double>(now - start_pricing_time).count();
+        }
+
+        void start_greeks() {
+            start_greeks_time = std::chrono::steady_clock::now();
+        }
+
+        void stop_greeks() {
+            const auto now = std::chrono::steady_clock::now();
+            s_elapsed_for_greeks = std::chrono::duration<double>(now - start_greeks_time).count();
+        }
+
+        /**
+     * @brief Optional helper to print a clean summary table to the console.
+     */
+        void print_summary() const {
+            constexpr std::string_view indent = "  ";
+            std::cout << "\n\n" << indent << "========================================\n";
+            std::cout << indent << "        MC ELAPSED TIME    \n";
+            std::cout << indent << "========================================\n";
+            std::cout << indent << " Total time spent for the computations    : " << s_elapsed_total << "s\n";
+            std::cout << indent << " Time spent evaluating the option price   : " << s_elapsed_for_pricing << "s\n";
+            std::cout << indent << " Time spent evaluating the greeks         : " << s_elapsed_for_greeks << "s\n";
+            std::cout << indent << "========================================\n";
+        }
+    };
+
+    /**
+   * @brief Container holding the final risk-neutral Greeks.
+   */
+    struct MCGreeks {
+        // --- First & Second Order Greeks ---
+        double delta = 0.0; ///> First-order sensitivity to spot price (S)
+        double gamma = 0.0; ///> Second-order sensitivity to spot price (Delta curvature w.r.t S)
+        double vega = 0.0; ///> First-order sensitivity to volatility (v0)
+        double vomma = 0.0; ///> Second-order sensitivity to volatility (Vega curvature w.r.t vol, also Volga)
+        double vanna = 0.0; ///> Cross-sensitivity between spot price and volatility (dDelta/dVol or dVega/dS)
+        double rho = 0.0; ///> First-order sensitivity to risk-free interest rate (r)
+        double theta = 0.0; ///> First-order sensitivity to time decay (passage of time t)
+
+        /**
+     * @brief Optional helper to print a clean summary table to the console.
+     */
+        void print_summary() const {
+            constexpr std::string_view indent = "  ";
+            std::cout << "\n\n" << indent << "========================================\n";
+            std::cout << indent << "        MONTE CARLO GREEKS    \n";
+            std::cout << indent << "========================================\n";
+            std::cout << indent << " Delta <-> Sensitivity to underlying spot price (S)    : " << delta << "\n";
+            std::cout << indent << " Gamma <-> Delta curvature                             : " << gamma << "\n";
+            std::cout << indent << " Vega <-> Sensitivity to volatility (v0)               : " << vega << "\n";
+            std::cout << indent << " Vomma <-> Vega curvature                              : " << vomma << "\n";
+            std::cout << indent << " Vanna <-> Cross sensitivity (spot price - volatility) : " << vanna << "\n";
+            std::cout << indent << " Rho <-> Sensitivity to interest rates (r)             : " << rho << "\n";
+            std::cout << indent << " Theta <-> Sensitivity to time decay (T)               : " << theta << "\n";
+            std::cout << indent << "========================================\n";
+        }
+    };
 
     /**
      * @brief Immutable snapshot container for Monte Carlo simulation outputs.
@@ -36,6 +130,8 @@ namespace quantkos::Engine {
         const Config::UInputs MCConfig; ///< Deep copy of the user parameters used to run the simulation.
         const OptionPricer::MCOpPrices OptionPrice;
         ///< Deep copy of the pricing statistics, standard errors, and confidence intervals.
+        const MCGreeks Greeks; ///< Deep copy of the computed Greeks
+        const MCTimer Timing; ///< Deep copy of elapsed time for computation
     };
 
 
@@ -126,17 +222,16 @@ namespace quantkos::Engine {
          * - Detailed memory allocation maps (reusable batch footprint vs. unrolled full matrix bounds)
          */
         void print_pre_execution_diagnostic() const {
-
             constexpr std::string_view indent = "  ";
 
             std::cout << "\n" << indent << "========================================================\n";
             std::cout << indent << "                    MC EXECUTION SPACE                       \n";
             std::cout << indent << "========================================================\n";
             std::cout << indent << " [Hardware Backend Framework]\n";
+            std::cout << indent << "   Build Mode               :  " << KT::get_build_mode_string() << "\n";
             std::cout << indent << "   Active Execution Space   :  " << batch_mem.execution_space_name() << "\n";
-            std::cout << indent << "   Compute Precision Type   :  " << (sizeof(KT::Real) == 8
-                                                                             ? "64-bit Double"
-                                                                             : "32-bit Float") << "\n";
+            std::cout << indent << "   Compute Precision Type   :  " << KT::get_precision_string() << "\n";
+            std::cout << indent << "   Use Fast Math            :  " << KT::get_fast_math_string() << "\n";
             std::cout << indent << "--------------------------------------------------------\n";
             std::cout << indent << " [Simulation Matrix Framework]\n";
             std::cout << indent << "   Total MC Simulations        :  " << config.mc.N_Paths << "\n";
@@ -152,17 +247,21 @@ namespace quantkos::Engine {
                     n_full_batches() << "\n";
             std::cout << indent << "   N Sims Per Partial Batch       :  " << batch_mem.
                     n_sims_left_over_after_full_batches() << "\n";
+            std::cout << indent << "   Paths MEM allocated ?          :  " << batch_mem.are_paths_allocated() << "\n";
             std::cout << indent << "   Batch Paths MEM Footprint      :  " << batch_mem.bytes_to_mb(
                 batch_mem.device_paths_memory_bytes()) << " MB\n";
+            std::cout << indent << "   Payoffs MEM allocated ?        :  1\n";
             std::cout << indent << "   Batch Payoffs MEM Footprint    :  " << batch_mem.bytes_to_mb(
                 batch_mem.device_payoffs_memory_bytes()) << " MB\n";
             std::cout << indent << "   Batch TOT MEM Footprint        :  " << batch_mem.bytes_to_mb(
                 batch_mem.tot_device_memory_bytes()) << " MB\n";
-            std::cout << indent << "   Full MC Paths MEM Footprint    :  " << batch_mem.total_paths_footprint_mb() <<
+            std::cout << indent << "   Est. Full MC Paths MEM Footprint   :  " << batch_mem.total_paths_footprint_mb()
+                    <<
                     " MB\n";
-            std::cout << indent << "   Full MC Payoffs MEM Footprint  :  " << batch_mem.total_payoffs_footprint_mb() <<
+            std::cout << indent << "   Est. Full MC Payoffs MEM Footprint :  " << batch_mem.total_payoffs_footprint_mb()
+                    <<
                     " MB\n";
-            std::cout << indent << "   Available RAM (OS Query)       :  " << get_available_memory_from_os_mb() <<
+            std::cout << indent << "   Remaining RAM (OS Query)           :  " << get_available_memory_from_os_mb() <<
                     " MB\n";
             std::cout << indent << "========================================================\n" << std::endl;
         }
@@ -229,15 +328,21 @@ namespace quantkos::Engine {
          */
         explicit BackwardLSMProgressTracker(const Config::UInputs &conf)
             : config(conf), steps_completed(0) {
+            total_lsm_steps = config.time.N_time_steps - 1;
         }
 
         /// @name Lifecycle Protocols
         ///@{
         BackwardLSMProgressTracker(const BackwardLSMProgressTracker &) = delete;
+
         BackwardLSMProgressTracker &operator=(const BackwardLSMProgressTracker &) = delete;
+
         BackwardLSMProgressTracker(BackwardLSMProgressTracker &&) = default;
+
         BackwardLSMProgressTracker &operator=(BackwardLSMProgressTracker &&) = delete;
+
         ~BackwardLSMProgressTracker() = default;
+
         ///@}
 
         /**
@@ -260,26 +365,39 @@ namespace quantkos::Engine {
          */
         void update_progress() {
             steps_completed++;
-            print_progress_bar(steps_completed);
+
+            // Calculate current integer percentage
+            if (total_lsm_steps <= 0) return; // Prevent division by zero if there are almost no time steps
+            const int current_percent = static_cast<int>(
+                (static_cast<float>(steps_completed) / static_cast<float>(total_lsm_steps)) * 100.0f
+            );
+
+            // Print the progress bar if target percentage reached
+            if (current_percent >= last_printed_percent + update_interval_percent) {
+                print_progress_bar(steps_completed);
+                last_printed_percent = current_percent; // Update the threshold
+            }
         }
 
         /**
          * @brief Completes the progress bar and seals the terminal section.
          */
         void finalize_tracking() {
-            const int total_lsm_steps = config.time.N_time_steps - 1;
             print_progress_bar(total_lsm_steps);
             std::cout << "\n\n  ========================================================\n" << std::endl;
         }
 
     private:
         const Config::UInputs &config; ///< Reference to the master configuration tree
+        int total_lsm_steps; //< Internal counter keeping the loop size (// T-1 regressions steps)
         int steps_completed; ///< Internal counter bridging the reverse induction loop mapping
+        static constexpr int update_interval_percent = 10;
+        //< Frequency, in percentage of the total, when to print time steps
+        int last_printed_percent = 0; ///< Internal counter keeping the last percentage printed
         std::chrono::steady_clock::time_point start_time; ///< Starting time of the backward phase
 
         void print_progress_bar(const int current_step) const {
             constexpr int bar_width = 20;
-            const int total_lsm_steps = config.time.N_time_steps - 1; // T-1 regressions
 
             // Prevent division by zero if there are almost no time steps
             if (total_lsm_steps <= 0) return;
@@ -296,7 +414,7 @@ namespace quantkos::Engine {
             }
 
             std::cout << "] " << percentage_done << "% "
-                      << "(" << current_step << "/" << total_lsm_steps << " Time Slices)";
+                    << "(" << current_step << "/" << total_lsm_steps << " Time Slices)";
 
             if (current_step > 0) {
                 const auto current_time = std::chrono::steady_clock::now();
@@ -307,8 +425,8 @@ namespace quantkos::Engine {
                 const double eta_seconds = total_estimated_time - elapsed_seconds;
 
                 std::cout << std::fixed << std::setprecision(1)
-                          << "(T: " << elapsed_seconds << "s | "
-                          << "ETA: " << (current_step == total_lsm_steps ? 0.0 : eta_seconds) << "s)\r";
+                        << "(T: " << elapsed_seconds << "s | "
+                        << "ETA: " << (current_step == total_lsm_steps ? 0.0 : eta_seconds) << "s)\r";
             }
             std::cout << "\r" << std::flush;
         }
@@ -337,7 +455,7 @@ namespace quantkos::Engine {
  * @param Solver Reference to the specialized temporal integration solver.
  * @param OWriter Reference to the output file persistence and logging manager.
  * @param MCTracker Reference to the console execution progress bar and ETA tracker.
- * @param host_deep_copy The injected lambda or callable functor containing batch-specific host copy logic.
+ * @param custom_host_deep_copy The injected lambda or callable functor containing batch-specific host copy logic.
  *
  * * ### Host-Device Execution Lifecycle Flow:
      * ```text
@@ -375,56 +493,255 @@ namespace quantkos::Engine {
         const SolverType &Solver,
         KIO::OutputManager &OWriter,
         ForwardMCProgressTracker &MCTracker,
-        HostDeepCopy &&host_deep_copy // Lambda function to copy desired data to host
+        HostDeepCopy &&custom_host_deep_copy // Lambda function to copy desired data to host
     ) {
-        //       [ HOST (CPU) ]                                         [ DEVICE (GPU) ]
-        //
-        //  MCRunner Loop Fires
-        //           │
-        //           ▼
-        //  SDESolver::execute_batch()
-        //           │
-        //           ▼
-        //  Instantiate IntegrationKernel
-        //  (Flattens data onto CPU Stack)
-        //           │
-        //           ▼
-        //  Kokkos::parallel_for()  =======[ PCIe Bus Pass ]=======>  GPU Spawns N Threads
-        //                                                                     │
-        //                                                                     ▼
-        //                                                          kernel.operator()(n_p)
-        //                                                                     │
-        //                                                                     ▼
-        //                                                          Time Loop (0 to N_Steps)
-        //                                                                     │
-        //                                                                     ▼
-        //                                                          scheme.evolve_step()
-        //                                                                     │
-        //                                                                     ▼
-        //                                                          Coalesced VRAM Write
-
-
         const int full_batch_size = BatchMem.n_sims_per_batch;
         const int n_full_batches = BatchMem.n_full_batches();
         const int n_sims_left_over = BatchMem.n_sims_left_over_after_full_batches();
         const int n_total_batch_loops = BatchMem.total_batch_loops();
 
         MCTracker.start_tracking();
-        for (int b = 0; b < n_total_batch_loops; ++b) {
-            const int current_batch_size = (b < n_full_batches) ? full_batch_size : n_sims_left_over;
+        for (int n_curr_batch = 0; n_curr_batch < n_total_batch_loops; ++n_curr_batch) {
+            const int current_batch_size = (n_curr_batch < n_full_batches) ? full_batch_size : n_sims_left_over;
 
             // 1. Fire parallel integration kernels on the active Kokkos execution space (Device/GPU)
             Solver.execute_batch(current_batch_size, BatchMem, RNGen);
 
             // 2. Execute the custom host-device synchronization policy (e.g. DMA transfers, accumulation)
-            host_deep_copy(b, current_batch_size); // Note : Injected via Lambda
+            custom_host_deep_copy(n_curr_batch, current_batch_size); // Note : Injected via Lambda
 
             // 3. Write path diagnostics/trajectories to the file system if configured
             OWriter.save_paths_batch_if_needed(current_batch_size, BatchMem); //Save batch to disk
 
             // 4. Advance progress and compute linear clock ETA using the tracker defined in the Canvas
-            MCTracker.update_progress(b + 1);
+            MCTracker.update_progress(n_curr_batch + 1);
         }
         MCTracker.finalize_tracking();
+    }
+
+
+    /**
+     * @brief Universal Monte Carlo orchestrator for base pricing and finite-difference Greeks computation.
+     *
+     * @details
+     * This template function acts as the central execution backbone for all Monte Carlo engines
+     * (both Forward-Only and Forward-Backward/LSM). It decouples the high-level orchestration
+     * of Greek bumps and memory management from the low-level numerical pricing logic.
+     *
+     * The execution pipeline is strictly divided into three phases:
+     * - **Phase 1: Zero-Allocation Memory Setup**
+     *   Allocates the heavy GPU/CPU memory matrix (`MemoryType`) exactly once. This completely
+     *   eliminates memory thrashing (OS-level re-allocations) during the multiple simulation
+     *   passes required for the Greeks.
+     * - **Phase 2: Base Pricing Step**
+     *   Executes the injected `pricing_function` using the master configuration. This step
+     *   handles all standard I/O (e.g., saving paths to disk if required etc.) and distribution analysis.
+     * - **Phase 3: Greek Computation (CRN & Central Differences)**
+     *   If Greeks are requested, the engine generates a stripped-down `base_greek_cfg` that
+     *   systematically mutes unrequired I/O operations and array sorting. It then performs
+     *   central-difference bumps ($S_0$, $v_0$, $r$) and feeds them back into the pricing
+     *   function. Because the spoofed configurations retain the original random seed, the
+     *   underlying engine naturally executes using Common Random Numbers (CRN), guaranteeing
+     *   stable derivative approximations.
+     *
+     * @tparam MemoryType The specialized heavy memory manager class (e.g., `PathsMCBatchMem`
+     *         for European/Path-Dependent options, or `BackwardLSMMemory` for American LSM).
+     * @tparam PricingCallable A lambda or functor containing the specific simulation logic.
+     *         Must match the signature: `OptionPricer::MCOpPrices(const KC::UInputs& cfg, MemoryType& Mem)`.
+     *
+     * @param config The master user configuration containing market parameters, simulation settings,
+     *        and flags indicating which Greeks to compute.
+     * @param pricing_function The injected executable strategy that performs a single Monte Carlo pass.
+     *
+     * @return MCResults A snapshot struct containing a copy of the input config,
+     *         the base option price (with statistical errors), and the computed Greeks.
+     *
+     */
+    template<typename MemoryType, typename PricingCallable>
+    inline MCResults execute_mc_framework(const KC::UInputs &config, PricingCallable &&pricing_function) {
+        // 1. Allocate Heavy Memory ONCE for the exact type requested
+        MemoryType Mem(config);
+
+        // Initialize container to track timing
+        MCTimer Timer;
+        Timer.start_total();
+
+        // 2. Get the option Price
+        Timer.start_pricing();
+        OptionPricer::MCOpPrices ref_option_price_data = pricing_function(config, Mem);
+        Timer.stop_pricing();
+
+        // 3. Compute Greeks if needed (Using the generic pricing callable)
+        MCGreeks greeks{};
+        if (config.must_compute_greeks()) {
+            // Track greeks timing
+            Timer.start_greeks();
+
+            // Create a copy where spoofing params common to all greeks
+            KC::UInputs base_greek_cfg = config;
+            base_greek_cfg.mc.analyze_risk_neutral_payoff_distribution = false; // payoffs never stored and sorted
+            base_greek_cfg.output.filename_paths_out = ""; // So that paths for the greeks are never saved
+            // should introduce and rewrite a flag that tell if to print or not, and during the greeks should be low verbosity
+
+            if (base_greek_cfg.mc.compute_delta_et_gamma) {
+                std::cout << "\n\n  >>> Computing Delta & Gamma...\n";
+                // Get initial price and price bump considering that it could have been normalized
+                const auto S0 = base_greek_cfg.market.S0;
+                const auto h_S = S0 * base_greek_cfg.mc.spot_price_relative_bump_size;
+                auto h_S_real_scale = h_S;
+                if (base_greek_cfg.mc.normalize_prices) {
+                    const auto S0_real_scale = base_greek_cfg.get_price_scaling_factor();
+                    h_S_real_scale = S0_real_scale * base_greek_cfg.mc.spot_price_relative_bump_size;
+                }
+
+                KC::UInputs cfg_up = base_greek_cfg;
+                cfg_up.market.S0 = S0 + h_S;
+                double p_up = pricing_function(cfg_up, Mem).option_price;
+
+                KC::UInputs cfg_down = base_greek_cfg;
+                cfg_down.market.S0 = S0 - h_S;
+                double p_down = pricing_function(cfg_down, Mem).option_price;
+
+                // NOTE : Divide by the bump in the real scale to match the scale of the real output prices
+                greeks.delta = (p_up - p_down) / (2.0 * h_S_real_scale);
+                greeks.gamma = (p_up - 2.0 * ref_option_price_data.option_price + p_down) /
+                               (h_S_real_scale * h_S_real_scale);
+            }
+
+            if (base_greek_cfg.mc.compute_vega_et_vomma) {
+                // Approach 1
+                std::cout << "\n\n  >>> Computing Vega...\n";
+                const double var0 = base_greek_cfg.market.v0;
+                const double vol0 = std::sqrt(var0);
+                const double h_vol = base_greek_cfg.mc.volatility_absolute_bump_size;
+
+                KC::UInputs cfg_up = base_greek_cfg;
+                const double vol_up = vol0 + h_vol;
+                const double var_up = vol_up * vol_up;
+                cfg_up.market.v0 = var_up; // variance instead of volatility required
+                double p_up = pricing_function(cfg_up, Mem).option_price;
+
+                KC::UInputs cfg_down = base_greek_cfg;
+                const double vol_down = vol0 - h_vol;
+                const double var_down = vol_down * vol_down;
+                cfg_down.market.v0 = var_down; // variance instead of volatility required
+                double p_down = pricing_function(cfg_down, Mem).option_price;
+
+                greeks.vega = (p_up - p_down) / (2.0 * h_vol);
+                greeks.vomma = (p_up - 2.0 * ref_option_price_data.option_price + p_down) / (h_vol * h_vol);
+            }
+
+            if (base_greek_cfg.mc.compute_rho) {
+                std::cout << "\n\n  >>> Computing Rho...\n";
+                const double r = base_greek_cfg.market.r;
+                const double h_r = base_greek_cfg.mc.risk_free_rate_absolute_bump_size;
+
+                KC::UInputs cfg_up = base_greek_cfg;
+                cfg_up.market.r = r + h_r;
+                double p_up = pricing_function(cfg_up, Mem).option_price;
+
+                KC::UInputs cfg_down = base_greek_cfg;
+                cfg_down.market.r = r - h_r;
+                double p_down = pricing_function(cfg_down, Mem).option_price;
+
+                greeks.rho = (p_up - p_down) / (2.0 * h_r);
+            }
+
+            if (base_greek_cfg.mc.compute_theta) {
+                std::cout << "\n\n  >>> Computing Theta...\n";
+                const double T = base_greek_cfg.time.t_end; // time to maturity
+                const double h_T = base_greek_cfg.mc.time_absolute_bump_size;
+
+                // Safety check: Ensure the option has more time left than the bump size
+                if (T > h_T) {
+                    KC::UInputs cfg_down = base_greek_cfg;
+
+                    // Continuous Maturity Shift: Shrink T, but keep N_time_steps the same
+                    // NOTE: To price the option from the perspective of tomorrow using a simulation that starts at $0$,
+                    // we set the total simulation horizon ($t_{\text{end}}$) to the remaining time: $T - h_T$.
+                    // In other words, we are standing at higher unit time (e.g. tomorrow), so, because 1 unit time has elapsed,
+                    // the time remaining until maturity is now T−ht
+                    cfg_down.time.t_end = T - h_T;
+
+                    // Manually compress the continuous grid step to fit the new time, but keep N_time_steps the same
+                    cfg_down.time.dt = cfg_down.time.t_end / base_greek_cfg.time.N_time_steps;
+
+                    // Now run the pricing function with the compressed grid (the grid has the same shape)
+                    double p_down = pricing_function(cfg_down, Mem).option_price;
+
+                    // Annualized Theta: (Price with perspective of tomorrow - Price with perspective of today) / time elapsed
+                    greeks.theta = (p_down - ref_option_price_data.option_price) / h_T;
+                } else {
+                    std::cout <<
+                            "   [Warning] Option too close to expiry to compute finite-difference Theta. Theta set to zero.\n";
+                    greeks.theta = 0.0;
+                }
+            }
+
+            if (base_greek_cfg.mc.compute_vanna) {
+                std::cout << "\n\n  >>> Computing Vanna...\n";
+
+                // Get bump on S0
+                const double S0 = base_greek_cfg.market.S0;
+                const double h_S = S0 * base_greek_cfg.mc.spot_price_relative_bump_size;
+                auto h_S_real_scale = h_S;
+                if (base_greek_cfg.mc.normalize_prices) {
+                    // Handle price normalization for the denominator
+                    h_S_real_scale = base_greek_cfg.get_price_scaling_factor() * base_greek_cfg.mc.
+                                     spot_price_relative_bump_size;
+                }
+
+                // Get bumped var0
+                const double var0 = base_greek_cfg.market.v0;
+                const double vol0 = std::sqrt(var0);
+                const double h_vol = base_greek_cfg.mc.volatility_absolute_bump_size;
+                const double vol_up = vol0 + h_vol;
+                const double vol_down = vol0 - h_vol;
+                const double var_up = vol_up * vol_up;
+                const double var_down = vol_down * vol_down;
+
+                // 1. Up-Up (Spot Up, Vol Up)
+                KC::UInputs cfg_uu = base_greek_cfg;
+                cfg_uu.market.S0 = S0 + h_S;
+                cfg_uu.market.v0 = var_up;
+                double p_uu = pricing_function(cfg_uu, Mem).option_price;
+
+                // 2. Down-Up (Spot Down, Vol Up)
+                KC::UInputs cfg_du = base_greek_cfg;
+                cfg_du.market.S0 = S0 - h_S;
+                cfg_du.market.v0 = var_up;
+                double p_du = pricing_function(cfg_du, Mem).option_price;
+
+                // 3. Up-Down (Spot Up, Vol Down)
+                KC::UInputs cfg_ud = base_greek_cfg;
+                cfg_ud.market.S0 = S0 + h_S;
+                cfg_ud.market.v0 = var_down;
+                double p_ud = pricing_function(cfg_ud, Mem).option_price;
+
+                // 4. Down-Down (Spot Down, Vol Down)
+                KC::UInputs cfg_dd = base_greek_cfg;
+                cfg_dd.market.S0 = S0 - h_S;
+                cfg_dd.market.v0 = var_down;
+                double p_dd = pricing_function(cfg_dd, Mem).option_price;
+
+                // Vanna 2D Stencil
+                const double inv_denom = 1.0 / (4.0 * h_S_real_scale * h_vol);
+                greeks.vanna = (p_uu - p_du - p_ud + p_dd) * inv_denom;
+            }
+
+            // Eval time and print results
+            Timer.stop_greeks();
+            greeks.print_summary(); // print the summary of the greeks computed
+        }
+
+        // 4. Return combined results
+        Timer.stop_total();
+        Timer.print_summary();
+        return MCResults{
+            .MCConfig = config,
+            .OptionPrice = ref_option_price_data,
+            .Greeks = greeks,
+            .Timing = Timer
+        };
     }
 }

@@ -21,7 +21,7 @@
 #include "../Typedefs.hpp"
 #include "../config/Config.hpp"
 #include "PathsMCBatchMem.hpp"
-#include "RAMMemOS.hpp"
+#include "MemOSQuery.hpp"
 
 namespace quantkos::Engine {
     namespace KT = quantkos::Types;
@@ -70,6 +70,8 @@ namespace quantkos::Engine {
          * @todo Better quantify the memory used by all the views
         */
         explicit BackwardLSMMemory(const KC::UInputs &conf) : BatchMem(conf) {
+            const auto start_time = std::chrono::steady_clock::now();
+
             const int N = conf.mc.N_Paths;
             const int T = conf.time.N_time_steps;
 
@@ -112,6 +114,11 @@ namespace quantkos::Engine {
             d_prices_current_time = Kokkos::View<KT::Real *, Kokkos::LayoutLeft>("Device_Time_Slice", N);
             d_best_future_outcomes = Kokkos::View<KT::Real *, Kokkos::LayoutLeft>("Device_Cash_Flows", N);
             h_best_future_outcomes = Kokkos::create_mirror_view(d_best_future_outcomes);
+
+            const auto end_time = std::chrono::steady_clock::now();
+            const std::chrono::duration<double> elapsed = end_time - start_time;
+            std::cout << "  [LSM Memory] Time taken to allocate LSM memory : "<< elapsed.count() <<"s \n";
+
         }
 
         // Delete copies to prevent shared memory issues
@@ -141,7 +148,7 @@ namespace quantkos::Engine {
             // Note: subview only gives a window, it does not allocate any new memory
 
             // 0. Move data to host using PCIe BUS, it is the slowest copy (cannot copy directly from gpu to master matrix in cpu)
-            BatchMem.deep_copy_to_host();
+            BatchMem.deep_copy_paths_to_host_if_needed();
 
             // 1. Create Target: CPU Master Matrix subview
             const int path_start_idx = batch_idx * BatchMem.n_sims_per_batch;

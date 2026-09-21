@@ -56,7 +56,7 @@
  * @param argv Array of command-line argument strings. `argv[1]` can optionally contain a YAML test filter.
  * @return int Returns @c 0 if all executed test suites pass their composite mathematical and
  * statistical tolerance thresholds; returns the number of failed suites otherwise.
- * @todo Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.
+ * @todo Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural target_backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.
  */
 int main(int argc, char *argv[]) {
     // 1. Initialize the parallel hardware backend (binds thread pools / GPU virtual contexts)
@@ -94,6 +94,9 @@ int main(int argc, char *argv[]) {
         tester.register_test("AmericanOption",
                              "American Option LSM",
                              KTE::LSM::run_test);
+        tester.register_test("EUGreeksPutCallParity",
+                             "Check that EU option Greeks obey put-call parity",
+                             KTE::Greeks::run_test);
 
         // 4. Run active tests (Automatically filters using argv[1] if a valid YAML configuration is parsed)
         failed_tests = tester.run_tests(argc, argv);
@@ -105,6 +108,7 @@ int main(int argc, char *argv[]) {
             std::cout << indent << " STATUS   : ALL PASSED OK \n";
         } else {
             std::cout << indent << " STATUS   : FAILED (" << failed_tests << " suite(s) broke constraints)\n";
+            std::cerr << indent << " STATUS   : FAILED (" << failed_tests << " suite(s) broke constraints)\n";
         }
         std::cout << indent << "**************************************************\n\n" << std::endl;
     } // CRITICAL: Local scope ends here. All test variables, managers, registries, and Kokkos

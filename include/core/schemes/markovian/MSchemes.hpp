@@ -18,6 +18,7 @@
 #include <Kokkos_Core.hpp>
 #include "../../config/Config.hpp"
 #include "../../config/ConfigFileEnums.hpp"
+#include "core/schemes/RandNGenerator.hpp"
 
 namespace quantkos::Engine {
     namespace KI = quantkos::Implemented;
@@ -52,14 +53,15 @@ namespace quantkos::Engine {
             throw std::runtime_error("SDESolver math kernel not yet implemented for this scheme combination!");
         }
 
-        // Dummy fallback function to allow un-specialized paths to compile successfully
+        /**
+         * @brief Dummy fallback function to allow un-specialized paths to compile successfully
+         * @return Just return the input price and variance $(S_{n}, v_{n})$.
+         */
         template<typename RNGeneratorType>
-
-
-
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &rn_generator) const {
-            return {S_n, v_n};
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &rn_generator) const {
+            return SDEState{.S = S_n, .v = v_n};
         }
     };
 
@@ -125,16 +127,16 @@ namespace quantkos::Engine {
          * @param S_n Asset price at time $t_n$.
          * @param v_n Variance at time $t_n$.
          * @param local_rn_generator Kokkos Thread-local normal random number generator.
-         * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
+         * @return The updated state $(S_{n+1}, v_{n+1})$.
          */
         template<typename RNGeneratorType>
-
-
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &local_rn_generator) const {
             // Get Random Normal Variables
-            KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
-            KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            const auto [Z_1, Z_2] = NormalPair<RNGeneratorType>{}(local_rn_generator);
 
             // Cholesky Decomposition for correlated Brownian Motion
             const KT::Real Z_v = Z_1;
@@ -144,13 +146,13 @@ namespace quantkos::Engine {
             // Mathematically: (r - q)dt - (v_n * 0.5 * dt) + (sqrt(v_n) * sqrt(dt)) * Z_S
             const KT::Real sqrt_v_n = Kokkos::sqrt(v_n);
             const KT::Real exponent = r_minus_q_dt - (v_n * half_dt) + (sqrt_v_n * sqrt_dt) * Z_S;
-            const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Special Function Unit (SFU) Call
+            const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Special Function Unit (SFU) Call (slow)
 
             // EVOLVE & TRUNCATE VARIANCE (Fused Multiply-Add (FMA) optimized variance step)
             KT::Real v_np1 = v_n * one_minus_k_dt + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v;
             v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
 
-            return {S_np1, v_np1};
+            return SDEState{.S = S_np1, .v = v_np1};
         }
     };
 
@@ -172,7 +174,9 @@ namespace quantkos::Engine {
      * * ### Mathematical Formulation:
      * - **Variance (Eq 7.26)**: $v_{n+1} = \frac{v_n + \kappa\theta\Delta t + \sigma\sqrt{v_n\Delta t}Z_v + \frac{1}{4}\sigma^2\Delta t(Z_v^2 - 1)}{1 + \kappa\Delta t}$
      * - **Asset Price (Eq 7.8)**: Uses the exact same exponential Euler formulation as above.
-     */
+
+     @todo When using single precision and fast-math, price can go to inf for extreme parameter choices. Fix it.
+    */
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein> {
         // Weak Convergence 1., Strong convergence 1.
@@ -219,15 +223,16 @@ namespace quantkos::Engine {
          * @param S_n Asset price at time $t_n$.
          * @param v_n Variance at time $t_n$.
          * @param local_rn_generator Kokkos Thread-local normal random number generator.
-         * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
+         * @return The updated state  $(S_{n+1}, v_{n+1})$.
          */
         template<typename RNGeneratorType>
-
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &local_rn_generator) const {
             // Get Random Normal Variables
-            const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
-            const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_1 = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_2 = static_cast<KT::Real>(local_rn_generator.normal());
+            const auto [Z_1, Z_2] = NormalPair<RNGeneratorType>{}(local_rn_generator);
 
             // Cholesky Decomposition for correlated Brownian Motion
             const KT::Real Z_v = Z_1;
@@ -244,7 +249,7 @@ namespace quantkos::Engine {
             KT::Real v_np1 = implicit_denominator_v *
                              (v_n + k_theta_dt + (sigma_sqrt_dt * sqrt_v_n) * Z_v + milstein_correction);
             v_np1 = Kokkos::fmax(v_np1, KT::real_zero);
-            return {S_np1, v_np1};
+            return SDEState{.S = S_np1, .v = v_np1};
         }
     };
 
@@ -266,7 +271,8 @@ namespace quantkos::Engine {
      * - **Regime 2 (Exponential / Low Variance)**: If $\psi > 1.5$, variance is drawn from an exponential
      * distribution with a probability mass at zero (Eq 7.37).
      * * Integrates the asset price using a Martingale-corrected method (Eq 7.48, 7.49, 7.50, 7.51).
-     */
+    @note This is not optimal on gpu because it can trigger several wrap divergence and requires calling heavy mathematical function such erf
+    */
     template<>
     struct SDEScheme<KI::MathModel::Heston, KI::NumScheme::AndersonQE> {
         // Precomputed constant scalar invariants
@@ -275,6 +281,10 @@ namespace quantkos::Engine {
         KT::Real sqrt_dt;
         KT::Real rho;
         KT::Real rho_complement;
+
+        // QE-Specific eps security values
+        KT::Real eps_param = KT::is_real_using_single_precision() ? 1e-6f : 1e-12;
+        KT::Real eps_psi = KT::is_real_using_single_precision() ? 1e-6f : 1e-12;
 
         // QE-Specific Structural Constants
         KT::Real psi_c = KT::real_1p5; // 1.5 as in Anderson
@@ -308,9 +318,9 @@ namespace quantkos::Engine {
             inv_sqrt_2 = static_cast<KT::Real>(1.0 / std::sqrt(2.0));
             exp_minus_k_dt = std::exp(-k * dt);
 
-            // Handle case k =0
-            if (k < static_cast<KT::Real>(1e-8)) {
-                // Catch case whene there is not drift
+            // Handle case k = 0
+            if (k < eps_param) {
+                // Catch case when there is not drift
                 // Compute them with theorem de l'hopital
                 theta_m_factor = KT::real_zero;
                 s2_factor_1 = sigma * sigma * dt;
@@ -325,7 +335,7 @@ namespace quantkos::Engine {
 
             // Handle case sigma=0
             KT::Real rho_div_simga;
-            if (sigma < static_cast<KT::Real>(1e-8)) {
+            if (sigma < eps_param) {
                 // To handle Black Scholes degeneration
                 rho_div_simga = KT::real_zero;
                 rho = KT::real_zero; // If sigma is near zero, correlation is mathematically meaningless
@@ -350,63 +360,72 @@ namespace quantkos::Engine {
          * @return The updated state tuple $(S_{n+1}, v_{n+1})$.
          */
         template<typename RNGeneratorType>
-
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &local_rn_generator) const {
             // Generate noise
-            const KT::Real Z_V = static_cast<KT::Real>(local_rn_generator.normal());
-            const KT::Real Z_indep = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_V = static_cast<KT::Real>(local_rn_generator.normal());
+            //const KT::Real Z_indep = static_cast<KT::Real>(local_rn_generator.normal());
+            const auto [Z_V, Z_indep] = NormalPair<RNGeneratorType>{}(local_rn_generator);
 
             // Determine Distribution Shape (Psi)
             // (Compute Conditional Mean (m) and Variance (s^2) of V(t+dt))
             const KT::Real m = v_n * exp_minus_k_dt + theta_m_factor; // (Eq. 7.41, F. Rouah)
             const KT::Real s2 = v_n * s2_factor_1 + s2_factor_2; // (Eq. 7.41, F. Rouah)
-            const KT::Real psi = s2 / (m * m); // (After Eq. 7.42, F. Rouah)
+            // const KT::Real psi = s2 / (m * m); // (After Eq. 7.42, F. Rouah)
 
             // ====================================================================
             // DIVERGENCE CONTROL BLOCK (for variance computation)
             // ====================================================================
             KT::Real v_np1;
-            KT::Real M; // Terms for matingale correction used to compute K0
-            if (psi <= static_cast<KT::Real>(1e-8)) {
-                // REGIME 0: Deterministic Limit (Black-Scholes Degeneration)
-                // If psi is zero, variance is deterministic. Bypass the division-by-zero.
-                v_np1 = m;
-                M = KT::real_one; // The MGF of a deterministic constant is exactly 1.0
-                // NOte: this first if will not cause divergence because all threads will go here if using BS
-            } else if (psi <= psi_c) {
-                // REGIME 1: Quadratic (High Variance)
-                const KT::Real inv_psi = KT::real_one / psi;
-                const KT::Real b2 = KT::real_two * inv_psi - KT::real_one +
-                                    Kokkos::sqrt(KT::real_two * inv_psi *
-                                                 (KT::real_two * inv_psi - KT::real_one)
-                                    ); // Eq. 7.42, F. Rouah
-                const KT::Real a = m / (KT::real_one + b2); // Eq. 7.42, F. Rouah
-                const KT::Real b_plus_Zv = Kokkos::sqrt(b2) + Z_V; // Eq. 7.37, F. Rouah
-                v_np1 = a * b_plus_Zv * b_plus_Zv; // Eq. 7.37, F. Rouah
-                // Term for Martingale correction
-                const KT::Real safe_A = Kokkos::fmin(A, (KT::real_05 / a) - static_cast<KT::Real>(1e-6));
-                const KT::Real term_Aa = KT::real_one - KT::real_two * safe_A * a;
-                M = Kokkos::exp((safe_A * b2 * a) / term_Aa) / Kokkos::sqrt(term_Aa); // Eq. 7.50, F. Rouah
+            KT::Real M; // Terms for martingale correction used to compute K0
+            if (m <= eps_param) {
+                // REGIME 0a: Case when m=0 since vn=0 and theta=0
+                v_np1 = KT::real_zero;
+                M = KT::real_one;
             } else {
-                // REGIME 2: Exponential (Low Variance)
-                const KT::Real p = (psi - KT::real_one) / (psi + KT::real_one); // Eq. 7.43, F. Rouah
-                const KT::Real beta = (KT::real_one - p) / m; // Eq. 7.43, F. Rouah
-
-                // Recover the Uniform variable U_V from Z_V : U_V = CDF(Z_V).
-                const KT::Real U_V = KT::real_05 * (KT::real_one + Kokkos::erf(Z_V * inv_sqrt_2)); // Eq. 7.40, F. Rouah
-
-                // Update v
-                if (U_V <= p) {
-                    v_np1 = KT::real_zero; // Eq. 7.40, F. Rouah
+                const KT::Real psi = s2 / (m * m); // (After Eq. 7.42, F. Rouah)
+                if (psi <= eps_psi) {
+                    // REGIME 0b: Deterministic Limit (Black-Scholes Degeneration)
+                    // NOte: this first if will not cause divergence because all threads will go here if using BS
+                    // If psi is zero, variance is deterministic. Bypass the division-by-zero.
+                    v_np1 = m;
+                    M = KT::real_one; // The MGF of a deterministic constant is exactly 1.0
+                } else if (psi <= psi_c) {
+                    // REGIME 1: Quadratic (High Variance)
+                    const KT::Real inv_psi = KT::real_one / psi;
+                    const KT::Real b2 = KT::real_two * inv_psi - KT::real_one +
+                                        Kokkos::sqrt(KT::real_two * inv_psi *
+                                                     (KT::real_two * inv_psi - KT::real_one)
+                                        ); // Eq. 7.42, F. Rouah
+                    const KT::Real a = m / (KT::real_one + b2); // Eq. 7.42, F. Rouah
+                    const KT::Real b_plus_Zv = Kokkos::sqrt(b2) + Z_V; // Eq. 7.37, F. Rouah
+                    v_np1 = a * b_plus_Zv * b_plus_Zv; // Eq. 7.37, F. Rouah
+                    // Term for Martingale correction
+                    const KT::Real safe_A = Kokkos::fmin(A, (KT::real_05 / a) - eps_param);
+                    const KT::Real term_Aa = KT::real_one - KT::real_two * safe_A * a;
+                    M = Kokkos::exp((safe_A * b2 * a) / term_Aa) / Kokkos::sqrt(term_Aa); // Eq. 7.50, F. Rouah
                 } else {
-                    // Protect against log singularity at U_V == 1.0
-                    const KT::Real safe_U = Kokkos::fmin(U_V, KT::real_one - static_cast<KT::Real>(1e-8));
-                    v_np1 = (Kokkos::log((KT::real_one - p) / (KT::real_one - safe_U))) / beta; // Eq. 7.40, F. Rouah
+                    // REGIME 2: Exponential (Low Variance)
+                    const KT::Real p = (psi - KT::real_one) / (psi + KT::real_one); // Eq. 7.43, F. Rouah
+                    const KT::Real beta = (KT::real_one - p) / m; // Eq. 7.43, F. Rouah
+
+                    // Recover the Uniform variable U_V from Z_V : U_V = CDF(Z_V).
+                    const KT::Real U_V = KT::real_05 * (KT::real_one + Kokkos::erf(Z_V * inv_sqrt_2));
+                    // Eq. 7.40, F. Rouah
+                    // Update v
+                    if (U_V <= p) {
+                        v_np1 = KT::real_zero; // Eq. 7.40, F. Rouah
+                    } else {
+                        // Protect against log singularity at U_V == 1.0
+                        const KT::Real safe_U = Kokkos::fmin(U_V, KT::real_one - eps_param);
+                        v_np1 = (Kokkos::log((KT::real_one - p) / (KT::real_one - safe_U))) / beta;
+                        // Eq. 7.40, F. Rouah
+                    }
+                    // Term for Martingale correction
+                    const KT::Real safe_A = Kokkos::fmin(A, beta - eps_param);
+                    M = p + (beta * (KT::real_one - p)) / (beta - safe_A); // Eq. 7.51, F. Rouah
                 }
-                // Term for Martingale correction
-                const KT::Real safe_A = Kokkos::fmin(A, beta - static_cast<KT::Real>(1e-6));
-                M = p + (beta * (KT::real_one - p)) / (beta - safe_A); // Eq. 7.51, F. Rouah
             }
 
             // ====================================================================
@@ -414,11 +433,12 @@ namespace quantkos::Engine {
             // ====================================================================
             const KT::Real K0 = -Kokkos::log(M) - (K1 + K3 * KT::real_05) * v_n; // Eq. 7.49, F. Rouah (4Martingale)
             const KT::Real integrated_sigma = (K3 * v_n + K4 * v_np1); // Eq. 7.48, F. Rouah
-            const KT::Real exponent = r_minus_q_dt + K0 + (K1 * v_n + K2 * v_np1) +
+            const KT::Real exponent = r_minus_q_dt + K0 +
+                                      (K1 * v_n + K2 * v_np1) +
                                       (Kokkos::sqrt(integrated_sigma) * Z_indep); // Eq. 7.48, F. Rouah
             const KT::Real S_np1 = S_n * Kokkos::exp(exponent); // Eq. 7.48, F. Rouah
 
-            return {S_np1, v_np1};
+            return SDEState{.S = S_np1, .v = v_np1};
         }
     };
 
@@ -470,8 +490,9 @@ namespace quantkos::Engine {
         * @brief Evolves the Heston model and then applies discrete Poisson jumps.
         */
         template<typename RNGeneratorType>
-        KOKKOS_INLINE_FUNCTION
-        SDEState evolve_step(const KT::Real S_n, const KT::Real v_n, RNGeneratorType &local_rn_generator) const {
+        KOKKOS_INLINE_FUNCTION SDEState evolve_step(const KT::Real S_n,
+                                                    const KT::Real v_n,
+                                                    RNGeneratorType &local_rn_generator) const {
             // 1. Evolve the continuous part using the spoofed Heston core
             auto [S_temp, v_next] = heston_core.evolve_step(S_n, v_n, local_rn_generator);
 
@@ -484,7 +505,7 @@ namespace quantkos::Engine {
                 // Multiply random fractions util accumulated value drops below the target threshold
                 // The number of multiplications done maps to the exact number of jumps occurred inside the discrete interval
                 N++;
-                p *= static_cast<KT::Real>(local_rn_generator.drand());
+                p *= get_uniform(local_rn_generator); //static_cast<KT::Real>(local_rn_generator.drand());
             } while (p >= exp_minus_lambda_dt);
 
             // 3. Draw the jump size and update price
@@ -492,8 +513,8 @@ namespace quantkos::Engine {
             if (N > 0) {
                 // Compute current jump size
                 // Note : The total log-jump size is \sum_{i=1}^{N}(mu_J + sigma_J*Z_{J,I}) = N*mu_J + sqrt(N)*sigma_J*Z_{J}
-                const KT::Real real_N = static_cast<KT::Real>(N);
-                const KT::Real Z = static_cast<KT::Real>(local_rn_generator.normal());
+                const auto real_N = static_cast<KT::Real>(N);
+                const KT::Real Z = NormalPair<decltype(local_rn_generator), true>{}(local_rn_generator).Z1;
                 const KT::Real aggregate_mu = real_N * mu_J;
                 const KT::Real aggregate_sigma = Kokkos::sqrt(real_N) * sigma_J;
                 const KT::Real jump_magnitude = Kokkos::exp(aggregate_mu + aggregate_sigma * Z);
@@ -501,7 +522,7 @@ namespace quantkos::Engine {
                 // Update Price : multiply the continuous stock price by the exponentiated jump sum.
                 S_next *= jump_magnitude;
             }
-            return {S_next, v_next};
+            return SDEState{.S = S_next, .v = v_next};
         }
 
     private:
@@ -511,8 +532,7 @@ namespace quantkos::Engine {
          * @param orig_config The master user configuration.
          * @return A modified configuration object designed for continuous Heston core where the mertingale correction has been applied.
          */
-        KOKKOS_INLINE_FUNCTION
-        static KC::UInputs create_spoofed_config_from_original(const KC::UInputs &orig_config) {
+        KOKKOS_INLINE_FUNCTION static KC::UInputs create_spoofed_config_from_original(const KC::UInputs &orig_config) {
             KC::UInputs spoofed_config = orig_config; // copy the input config
 
             // 1. C++ Object Slicing: Copies ALL base Heston fields (k, theta, sigma, rho) in one go

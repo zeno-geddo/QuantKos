@@ -46,7 +46,7 @@ namespace quantkos::Engine::Analytical::Bates {
      * @param j Probability component index (1 or 2).
      * @return The real value of the integrated component.
      */
-    inline double bates_integrand_albrecher_formulation(double phi, const KC::UInputs &conf, int j) {
+    inline double bates_integrand_albrecher_formulation(const double phi, const KC::UInputs &conf, int j) {
         const auto bates = conf.model.bates;
         const auto m = conf.market;
         const double K = conf.options.StrikePrice;
@@ -138,8 +138,8 @@ namespace quantkos::Engine::Analytical::Bates {
         const double K = conf.options.StrikePrice;
         const double T = conf.time.t_end;
 
-        double P1 = Probability(conf, 1, upper_bound);
-        double P2 = Probability(conf, 2, upper_bound);
+        const double P1 = Probability(conf, 1, upper_bound);
+        const double P2 = Probability(conf, 2, upper_bound);
 
         return m.S0 * std::exp(-m.q * T) * P1 - K * std::exp(-m.r * T) * P2;
     }

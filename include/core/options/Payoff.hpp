@@ -84,7 +84,7 @@ namespace quantkos::Engine {
     template<KI::OptType OptType, KI::OptRight OptRight>
     struct PayoffTracker {
         // Registers allocated only if needed; otherwise optimized out by the compiler
-        KT::Real S_sum; ///< Running summation of asset prices along the path (Used for Asian averages).
+        double S_sum; ///< Running summation of asset prices along the path (Used for Asian averages).
         KT::Real S_max; ///< Absolute running maximum asset price observed (Used for Upper Barriers / Max Lookbacks)
         KT::Real S_min; ///< Absolute running minimum asset price observed (Used for Lower Barriers / Min Lookbacks).
 
@@ -94,7 +94,7 @@ namespace quantkos::Engine {
          * @param S0 Initial spot price of the underlying asset.
          */
         KOKKOS_INLINE_FUNCTION PayoffTracker(const KT::Real S0)
-            : S_sum(KT::real_zero), S_max(S0), S_min(S0) {
+            : S_sum(0.0), S_max(S0), S_min(S0) {
         }
 
         // Tract the target price (To be called inside the time loop)
@@ -107,7 +107,7 @@ namespace quantkos::Engine {
         */
         KOKKOS_INLINE_FUNCTION void track_current_price(const KT::Real S) {
             if constexpr (OptType == KI::OptType::Asian) {
-                S_sum += S;
+                S_sum += static_cast<double>(S); // Safe double-precision accumulation
             }
             // Group all options that care about the path CEILING
             else if constexpr (
@@ -165,7 +165,8 @@ namespace quantkos::Engine {
             if constexpr (OptType == KI::OptType::European) {
                 payoff = Payoff<OptRight>::evaluate_payoff(S, Strike);
             } else if constexpr (OptType == KI::OptType::Asian) {
-                const KT::Real avg_price = S_sum / static_cast<KT::Real>(n_t_steps);
+                const double avg_price_db = S_sum / static_cast<double>(n_t_steps);
+                const auto avg_price = static_cast<KT::Real>(avg_price_db);
                 payoff = Payoff<OptRight>::evaluate_payoff(avg_price, Strike);
             }
             // --------------------------------------------------------

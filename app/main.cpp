@@ -39,7 +39,7 @@
  * * @details This function implements the application lifecycle:
  * 1. Prints a welcome message and system metadata.
  * 2. Checks CLI arguments to see if a `--help` flag or valid configuration path is supplied.
- * 3. Boots up Kokkos to initialize hardware backends (CPU threads or GPU VRAM).
+ * 3. Boots up Kokkos to initialize hardware target_backends (CPU threads or GPU VRAM).
  * 4. Parses the YAML simulation parameters.
  * 5. Launches high-throughput simulation runs on the active compute device.
  * 6. Shuts down the parallel environment safely, avoiding memory leaks.
@@ -73,7 +73,13 @@ int main(int argc, char *argv[]) {
     }
 
     // 4. Initialize Kokkos parallel environment (binds GPU contexts/CPU thread pools)
+    std::cout << "  [ Main ] Initializing Kokkos ... \n";
+    const auto start_time = std::chrono::steady_clock::now();
     Kokkos::initialize(argc, argv);
+    const auto end_time = std::chrono::steady_clock::now();
+    const std::chrono::duration<double> elapsed = end_time - start_time;
+    std::cout << "  [ Main ] Time taken to initialize Kokkos : "<< elapsed.count() <<"s \n";
+
     int exit_code = 0;
     {
         namespace KC = quantkos::Config;

@@ -121,6 +121,19 @@ namespace quantkos::Implemented {
         return m;
     }
 
+    // --- Specialization: VerbosityLevel ---
+    /** @brief Specialization Mapping string identifiers to available specify the verbosity. */
+    template<>
+    inline const std::map<std::string, VerbosityLevel> &StrEnumMap<VerbosityLevel>::get() {
+        static const std::map<std::string, VerbosityLevel> m = {
+            {"None", VerbosityLevel::None},
+            {"Low", VerbosityLevel::Low},
+            {"Medium", VerbosityLevel::Medium},
+            {"High", VerbosityLevel::High},
+        };
+        return m;
+    }
+
     // --------------------------------------------------------
     // 2. Enum -> String
     // --------------------------------------------------------

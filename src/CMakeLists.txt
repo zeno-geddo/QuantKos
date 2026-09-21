@@ -18,6 +18,7 @@
 ## @details This file defines the core 'QuantKos_core' library target, configures precision compiler definitions,
 ##          binds package dependencies, and manages compiler and linker flags for multiple build configurations (Release, Debug, etc.).
 ## @author Zeno GEDDO
+## @note More info about the flags on : https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 ## @date 2026
 
 # -----------------------------------------------------------------------------
@@ -35,7 +36,7 @@ add_library(QuantKos_core
 # -----------------------------------------------------------------------------
 # 2. APPLY OPTIONS
 # -----------------------------------------------------------------------------
-## @section def_sec 2. Preprocessor & Precision Setup
+## @section def_sec 2a. Precision Setup
 ## @brief Controls internal float/double type matching based on user toggles.
 ## @details Inspects the user build option `QKOS_ENABLE_SINGLE_PRECISION`. If enabled, it sets
 ##          the compiler flag `QKOS_USE_SINGLE_PRECISION` publicly, ensuring correct 32-bit float matching
@@ -48,6 +49,80 @@ else ()
     message(STATUS "Precision: DOUBLE (double)")
 endif ()
 
+## @section def_sec 2b. FastMath Setup
+## @brief Controls fast math setups based on user toggles.
+## @details Inspects the user build option `QKOS_ENABLE_FAST_MATH`.
+## If enabled, fast math flags are included during compilation.
+
+if (QKOS_ENABLE_FAST_MATH)
+    message(STATUS "Math Mode: FAST-MATH ENABLED (Aggressive Floating Points optimizations active)")
+    target_compile_definitions(QuantKos_core PUBLIC QKOS_USE_FAST_MATH)
+
+    # 1. Host Compiler Fast-Math Flags (GCC / Clang / AppleClang)
+    target_compile_options(QuantKos_core PUBLIC
+            $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
+            -ffast-math
+            >
+    )
+
+    # 2. GPU Compiler Fast-Math Flags (CUDA / NVCC)
+    # Passed when Kokkos CUDA backend is active (works with nvcc_wrapper or native CUDA language)
+    if (Kokkos_ENABLE_CUDA)
+        message(STATUS "  └--> Applying CUDA GPU fast-math (--use_fast_math)")
+        target_compile_options(QuantKos_core PUBLIC
+                $<$<BOOL:${Kokkos_ENABLE_CUDA}>:SHELL:--use_fast_math>
+        )
+    endif ()
+
+    # 3. GPU Compiler Fast-Math Flags (AMD / HIP)
+    if (Kokkos_ENABLE_HIP)
+        message(STATUS "  └--> Applying AMD / HIP GPU fast-math (-ffast-math)")
+        target_compile_options(QuantKos_core PUBLIC
+                $<$<BOOL:${Kokkos_ENABLE_HIP}>:-ffast-math>
+        )
+    endif ()
+else ()
+    message(STATUS "Math Mode: STRICT IEEE preserved (aggressive FAST-MATH disabled)")
+endif ()
+
+
+## @section def_sec 2c. Optimization report setup
+## @brief Controls the generation of cpu optimization report.
+## @details Inspects the user build option `QKOS_ENABLE_CPU_OPT_REPORTS`.
+## If enabled, optimization reports concerning inlining and vectorizations are saved in the build.
+if (QKOS_ENABLE_CPU_OPT_REPORTS)
+    message(STATUS "Compiler Diagnostics: Optimization Reports ENABLED. If using GCC, data are saved to gcc_cpu_optimization_report.txt. If using Clang, data are printed to the terminal.")
+    message(STATUS "On GCC/Clang)")
+
+
+    target_compile_options(QuantKos_core PUBLIC
+            # --- GNU GCC Options (Outputs to file) ---
+            $<$<CXX_COMPILER_ID:GNU>:
+            # Combines vec + inline + optimized + missed into ONE destination file
+            -fopt-info-vec-inline-optimized-missed=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            #-fopt-info-inline-optimized #=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            #-fopt-info-vec-all #=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            #-fopt-info-vec-optimized=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            #-fopt-info-vec-missed=${CMAKE_CURRENT_BINARY_DIR}/gcc_cpu_optimization_report.txt
+            >
+
+            # --- Clang & AppleClang Options (Outputs directly to Terminal stderr) ---
+            $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
+            -Rpass=loop-vectorize          # Reports successfully vectorized loops
+            -Rpass-missed=loop-vectorize   # Reports loops that failed vectorization
+            -Rpass-analysis=loop-vectorize # Detailed analysis on vectorization decisions
+            -Rpass=inline                  # Reports successfully inlined functions
+            >
+    )
+
+endif ()
+
+## @section def_sec 2d. Link-Time Optimization setup
+# Apply LTO specifically to QuantKos_core after the target exists
+if (CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+    set_property(TARGET QuantKos_core PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 
 # -----------------------------------------------------------------------------
 # 3. LINKING & INCLUDES
@@ -59,12 +134,36 @@ endif ()
 ##   downstream to automatically find and link these frameworks.
 ## - **target_include_directories**: Employs CMake generator expressions to isolate development-time headers
 ##   (`$<BUILD_INTERFACE>`) from installed distribution headers (`$<INSTALL_INTERFACE>`).
-
 target_link_libraries(QuantKos_core PUBLIC
         Kokkos::kokkos
         yaml-cpp
         # ....
 )
+
+# --- Silence warnings in Third-Party dependencies ---
+# The compiler treats these as untouchable system files (like <vector> or <iostream>).
+# It completely mutes all warnings inside these files (-isystem /path/to/headers).
+# Get include paths from Kokkos
+if (TARGET Kokkos::kokkos)
+    get_target_property(KOKKOS_INCLUDES Kokkos::kokkos INTERFACE_INCLUDE_DIRECTORIES)
+    if (KOKKOS_INCLUDES)
+        target_include_directories(QuantKos_core SYSTEM PUBLIC ${KOKKOS_INCLUDES})
+    endif ()
+endif ()
+
+# Get include paths from yaml-cpp
+if (TARGET yaml-cpp::yaml-cpp)
+    get_target_property(YAML_INCLUDES yaml-cpp::yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)
+    if (YAML_INCLUDES)
+        target_include_directories(QuantKos_core SYSTEM PUBLIC ${YAML_INCLUDES})
+    endif ()
+elseif (TARGET yaml-cpp)
+    get_target_property(YAML_INCLUDES yaml-cpp INTERFACE_INCLUDE_DIRECTORIES)
+    if (YAML_INCLUDES)
+        target_include_directories(QuantKos_core SYSTEM PUBLIC ${YAML_INCLUDES})
+    endif ()
+endif ()
+
 target_include_directories(QuantKos_core PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
         $<INSTALL_INTERFACE:include>
@@ -81,16 +180,18 @@ target_include_directories(QuantKos_core PUBLIC
 ## - `-Wpedantic`: Rejects non-standard compiler-specific C++ extensions.
 ## - `-Wshadow`: Triggers warnings when local variables shadow outer scope declarations.
 ## - `-Wnon-virtual-dtor`: Flags classes with virtual methods that are missing virtual destructors.
-
-target_compile_options(QuantKos_core PRIVATE
+## @note Base warnings active in ALL build modes (Release, RelWithDebInfo, Debug), Strict / Noisy warnings active ONLY in Debug mode
+target_compile_options(QuantKos_core PUBLIC
         # Configuration for GNU GCC
         #$<$<CXX_COMPILER_ID:GNU>:
         $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>>:
         -Wall                       # Enable most commonly used warning messages
         -Wextra                     # Enable additional warnings not covered by -Wall
+        -Wnon-virtual-dtor          # Warn if a class with virtual functions has a non-virtual destructor
+        $<$<CONFIG:Debug>:
         -Wpedantic                  # Strictly enforce ISO C++ standards (rejects non-standard extensions)
         -Wshadow                    # Warn when a variable shadows another variable in an outer scope
-        -Wnon-virtual-dtor          # Warn if a class with virtual functions has a non-virtual destructor
+        >
         >
 
 )
@@ -116,7 +217,7 @@ target_compile_options(QuantKos_core PUBLIC
 ## @section debug_sec 6. Debug Mode Configurations
 ## @brief Optimization and runtime sanitization configurations for Debug targets.
 ## @details Sets optimization to `-O0` to preserve execution structure during step-by-step debugging.
-target_compile_options(QuantKos_core PRIVATE
+target_compile_options(QuantKos_core PUBLIC
         $<$<CONFIG:Debug>:
         -O0                         # Disable optimizations for accurate step-through debugging
         -g                          # Include debug symbols for GDB/LLDB/CLion
@@ -126,8 +227,8 @@ target_compile_options(QuantKos_core PRIVATE
 
 ## @subsection debug_san_subsec Adaptive Debug Sanitizers (PUBLIC Propagation)
 ## @brief Conditionally configures compiler and linker instrumentation for sanitizers.
-## @details Host-side sanitizers (ASan/UBSan) are highly beneficial on CPU backends.
-##          However, on GPU-accelerated backends (CUDA/HIP/SYCL), ASan's massive virtual shadow memory allocation
+## @details Host-side sanitizers (ASan/UBSan) are highly beneficial on CPU target_backends.
+##          However, on GPU-accelerated target_backends (CUDA/HIP/SYCL), ASan's massive virtual shadow memory allocation
 ##          conflicts with the GPU driver's virtual memory mapping tables, triggering a critical initialization
 ##          out-of-memory error.
 ##          To prevent this, the build system queries the active Kokkos hardware configurations and
@@ -138,7 +239,7 @@ set(QKOS_SAFE_TO_USE_SANITIZERS ON)
 if (Kokkos_ENABLE_CUDA OR Kokkos_ENABLE_HIP OR Kokkos_ENABLE_SYCL)
     set(QKOS_SAFE_TO_USE_SANITIZERS OFF)
     message(STATUS "GPU backend active in Kokkos (CUDA/HIP/SYCL). Host-side AddressSanitizer disabled to prevent memory initialization conflicts.")
-endif()
+endif ()
 
 # 2. Apply sanitizer flags only if we are compiling for a CPU-only architecture
 if (QKOS_SAFE_TO_USE_SANITIZERS)
@@ -158,7 +259,7 @@ if (QKOS_SAFE_TO_USE_SANITIZERS)
             -fsanitize=undefined        # Link UndefinedBehaviorSanitizer runtime
             >
     )
-endif()
+endif ()
 
 # -----------------------------------------------------------------------------
 # 7. RELEASE COMPILER FLAGS (Only active in Release build : -DCMAKE_BUILD_TYPE=Release)
@@ -168,21 +269,17 @@ endif()
 ## @details Maximizes runtime execution performance:
 ## - `-O3`: Activates loop vectorization, automatic inlining, and registers.
 ## - `-march=native`: Inspects and exploits instruction sets (like AVX-512) native to the compilation host.
-## - `-flto`: Link Time Optimization; performs cross-file optimizations across files.
-## - `-fno-math-errno`: Bypasses updating POSIX error variables after math commands, enabling SIMD execution.
-target_compile_options(QuantKos_core PRIVATE
+## - `-fno-math-errno`: Bypasses updating POSIX error variables after math commands, enabling SIMD execution. (set before in the global optimizations)
+target_compile_options(QuantKos_core PUBLIC
         $<$<CONFIG:Release>:
         -O3                         # High-level optimization: vectorization, loop unrolling, and inlining
         -march=native               # Tune code for the specific CPU features (AVX, AVX-512) of the host machine
-        -flto                       # Link Time Optimization: allows optimizations across different translation units
-        # -ffast-math               # Enable aggressive math optimizations, breaks IEEE-754 floating point standards to go faster (may break NaN checks and precision)
         >
 )
 
 # Linker flags for LTO (Link Time Optimization)
-target_link_options(QuantKos_core PRIVATE
+target_link_options(QuantKos_core PUBLIC
         $<$<CONFIG:Release>:
-        -flto                       # Required during linking to perform cross-file optimizations
         -O3                         # Ensures the linker uses the same optimization level as the compiler
         >
 )
@@ -196,19 +293,17 @@ target_link_options(QuantKos_core PRIVATE
 ## @brief Production performance with debugging symbols active under `-DCMAKE_BUILD_TYPE=RelWithDebInfo`.
 ## @details Maintains the exact performance optimizations of `-O3` and LTO, but compiles in debug
 ##          mapping coordinates (`-g`) and frame pointers to support profiling tools (e.g., perf, VTune, Valgrind).
-target_compile_options(QuantKos_core PRIVATE
+target_compile_options(QuantKos_core PUBLIC
         $<$<CONFIG:RelWithDebInfo>:
         -O3                         # Keep maximum speed
         -march=native               # Keep vectorization
-        -flto                       # Keep LTO
         -g                          # ADD debug symbols for profiling (perf, VTune, Valgrind)
         -fno-omit-frame-pointer     # Keep the call stack clean so the profiler can read it
         >
 )
 
-target_link_options(QuantKos_core PRIVATE
+target_link_options(QuantKos_core PUBLIC
         $<$<CONFIG:RelWithDebInfo>:
-        -flto                       # Required for LTO
         -O3                         # Ensures the linker uses the same optimization level as the compiler
         >
 )
@@ -223,7 +318,7 @@ target_link_options(QuantKos_core PRIVATE
 ##          under `lib/` and `bin/`, packing dependencies inside the `QuantKosTargets` export list.
 
 install(TARGETS QuantKos_core
-        EXPORT QuantKosTargets          # Creates a "package" name for others to find
+        EXPORT QuantKosTargets       # Creates a "package" name for others to find
         LIBRARY DESTINATION lib      # Where .so files go
         ARCHIVE DESTINATION lib      # Where .a files go
         RUNTIME DESTINATION bin)     # Where .dll files go (Windows)

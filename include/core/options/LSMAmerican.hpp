@@ -40,15 +40,15 @@ namespace quantkos::Engine::LSM {
     template<size_t NBasis = 4>
     struct Coeffs {
         //  C = M^{-1} B, where M = (X^T X), B = (X^T Y), C regression coeffs to be found
-        KT::Real C[NBasis] = {0.0}; ///< Flat stack allocation storing the polynomial coefficients.
+        double C[NBasis] = {0.0}; ///< Flat stack allocation storing the polynomial coefficients.
 
         /** @brief Provides mutable reference access to a coefficient by index. */
         KOKKOS_INLINE_FUNCTION
-        KT::Real &operator[](size_t i) { return C[i]; }
+        double &operator[](size_t i) { return C[i]; }
 
         /** @brief Provides read-only constant reference access to a coefficient by index. */
         KOKKOS_INLINE_FUNCTION
-        const KT::Real &operator[](size_t i) const { return C[i]; } // Allows reading: auto val = my_coeffs[0];
+        const double &operator[](size_t i) const { return C[i]; } // Allows reading: auto val = my_coeffs[0];
     };
 
     /**
@@ -61,15 +61,15 @@ namespace quantkos::Engine::LSM {
     struct Matrix {
         //  C = M^{-1} B, where M = (X^T X), B = (X^T Y), C regression coeffs to be found
         // Components Matrix $M = (X^T X)$ (symmetric matrix)
-        KT::Real M[NBasis][NBasis] = {}; ///< Fixed stack array representing the $N \times N$ matrix.
+        double M[NBasis][NBasis] = {}; ///< Fixed stack array representing the $N \times N$ matrix.
 
         /** @brief Elements access operator for mutable configurations. */
         KOKKOS_INLINE_FUNCTION
-        KT::Real &operator()(size_t i, size_t j) { return M[i][j]; }
+        double &operator()(size_t i, size_t j) { return M[i][j]; }
 
         /** @brief Elements access operator for read-only constant matrices. */
         KOKKOS_INLINE_FUNCTION
-        const KT::Real &operator()(size_t i, size_t j) const { return M[i][j]; }
+        const double &operator()(size_t i, size_t j) const { return M[i][j]; }
 
         /**
          * @brief In-place component-wise accumulation operator.
@@ -80,9 +80,7 @@ namespace quantkos::Engine::LSM {
          */
         KOKKOS_INLINE_FUNCTION
         Matrix &operator+=(const Matrix &src) {
-#pragma unroll
             for (size_t i = 0; i < NBasis; ++i) {
-#pragma unroll
                 for (size_t j = 0; j < NBasis; ++j) {
                     M[i][j] += src.M[i][j];
                 }
@@ -99,15 +97,15 @@ namespace quantkos::Engine::LSM {
     struct Vector {
         //  C = M^{-1} B, where M = (X^T X), B = (X^T Y), C regression coeffs to be found
         //  Components Vector $B = (X^T Y)$
-        KT::Real B[NBasis] = {}; ///< 1D Stack buffer tracking cross-product results.
+        double B[NBasis] = {}; ///< 1D Stack buffer tracking cross-product results.
 
         /** @brief Access operator for localized mutable parameters. */
         KOKKOS_INLINE_FUNCTION
-        KT::Real &operator()(size_t i) { return B[i]; }
+        double &operator()(size_t i) { return B[i]; }
 
         /** @brief Access operator for read-only constant vectors. */
         KOKKOS_INLINE_FUNCTION
-        const KT::Real &operator()(size_t i) const { return B[i]; }
+        const double &operator()(size_t i) const { return B[i]; }
 
         /**
          * @brief Component-wise accumulation operator.
@@ -116,7 +114,6 @@ namespace quantkos::Engine::LSM {
          */
         KOKKOS_INLINE_FUNCTION
         Vector &operator+=(const Vector &src) {
-#pragma unroll
             for (size_t i = 0; i < NBasis; ++i) {
                 B[i] += src.B[i];
             }
@@ -132,7 +129,7 @@ namespace quantkos::Engine::LSM {
      */
     template<size_t NBasis = 4>
     struct RegressionSums {
-        KT::Real count{0.0}; ///< Number of paths that successfully qualified as In-The-Money.
+        double count{0.0}; ///< Number of paths that successfully qualified as In-The-Money.
         Matrix<NBasis> M; ///< Aggregated equation matrix.
         Vector<NBasis> B; ///< Aggregated projected cash flow vector.
 
@@ -168,18 +165,36 @@ namespace quantkos::Engine::LSM {
          * - $L_3(x) = 1 - 3x + \frac{3}{2}x^2 - \frac{1}{6}x^3$
          * - $L_4(x) = 1 - 4x + 3x^2 - \frac{2}{3}x^3 + \frac{1}{24}x^4$
          * * @param X The normalized price coordinate ($S_t / K$).
-         * @param L Stack reference array to populate with evaluated polynomial levels.
+         * @param L Stack reference array to populate with evaluated polynomial levels (L Passed by reference as a fixed array size).
+         * @note The values of the polynomial are computed using the homer scheme, so that the numeber of multiplications is reduced and the the results are more stable.
          */
         KOKKOS_INLINE_FUNCTION
         static void evaluate(const KT::Real X, KT::Real (&L)[NBasis]) {
-            // L Passed by reference as a fixed array size
-            L[0] = 1.0;
-            if constexpr (NBasis > 1) L[1] = 1.0 - X;
-            if constexpr (NBasis > 2) L[2] = 1.0 - 2.0 * X + 0.5 * X * X;
-            if constexpr (NBasis > 3) L[3] = 1.0 - 3.0 * X + 1.5 * X * X - (X * X * X) / 6.0;
+            // Older form
+            //L[0] = 1.0;
+            //if constexpr (NBasis > 1) L[1] = 1.0 - X;
+            //if constexpr (NBasis > 2) L[2] = 1.0 - 2.0 * X + 0.5 * X * X;
+            //if constexpr (NBasis > 3) L[3] = 1.0 - 3.0 * X + 1.5 * X * X - (X * X * X) / 6.0;
+            //if constexpr (NBasis > 4)
+            //    L[4] = 1.0 - 4.0 * X + 3.0 * X * X - (2.0 / 3.0) * X * X * X + (1.0 / 24.0) * X *
+            //           X * X * X;
+
+            // Homer's form
+            L[0] = KT::real_one;
+
+            if constexpr (NBasis > 1) L[1] = KT::real_one - X;
+
+            if constexpr (NBasis > 2)
+                L[2] = ((KT::real_05 * X - KT::real_two) * X) + KT::real_one;
+
+            if constexpr (NBasis > 3)
+                L[3] = (((static_cast<KT::Real>(-1.0 / 6.0) * X + KT::real_1p5) * X
+                        - KT::real_3) * X) + KT::real_one;
+
             if constexpr (NBasis > 4)
-                L[4] = 1.0 - 4.0 * X + 3.0 * X * X - (2.0 / 3.0) * X * X * X + (1.0 / 24.0) * X *
-                       X * X * X;
+                L[4] = ((((static_cast<KT::Real>(1.0 / 24.0) * X - static_cast<KT::Real>(2.0 / 3.0)) * X
+                         + KT::real_3) * X - KT::real_4) * X)
+                         + KT::real_one;
         }
     };
 
@@ -207,7 +222,7 @@ namespace quantkos::Engine::LSM {
         // =================================================================
         // STEP 0 : Chose the basis for the regression
         // =================================================================
-        /** @brief Translates structural configuration enums to compile-time capacity constraints. */
+        /** @brief Chose the basis for the regression. Translates structural configuration enums to compile-time capacity constraints. */
         static constexpr size_t get_n_basis() {
             if constexpr (Basis == KI::LSRegressionBasis::LaguerreP02) {
                 return 3;
@@ -246,7 +261,7 @@ namespace quantkos::Engine::LSM {
             }
             )
             ;
-            Kokkos::fence();
+            // Kokkos::fence(); // Fence not needed since there is a deep copty after
         }
 
         // =================================================================
@@ -266,14 +281,14 @@ namespace quantkos::Engine::LSM {
                                                              const DevView1D &d_best_future_outcomes,
                                                              const KT::Real discount_factor,
                                                              const KT::Real strike_price) {
-            // 1. Compute terms M and B of linear system MC = B
-            // NOTE : Run the parallel reduction on the GPU to get terms needed in the matrix multiplication
+            // 1. Compute terms matrix M and vector B of linear system MC = B
+            // NOTE : Run the parallel reduction on the GPU to get terms needed in the matrix multiplication.
             const RegressionSums<NBasis> sums = compute_regression_sums_on_device(d_slice_prices_at_target_time,
                 d_best_future_outcomes,
                 discount_factor,
                 strike_price);
 
-            // 2. Get C = M^-1 B
+            // 2. Get the coefs, C = M^-1 B
             // Solve the system containing the (NBasisxNBasis) matrix on the CPU Host
             return solve_system_on_host_cholesky(sums);
         }
@@ -303,26 +318,27 @@ namespace quantkos::Engine::LSM {
 
             Kokkos::parallel_for("LSM_Update_Cashflows", N, KOKKOS_LAMBDA(const int i)
             {
+                // Get variables needed for the exercise decision
                 const KT::Real S = d_slice_prices_at_target_time(i);
                 const KT::Real intrinsic_val = Payoff<OptRight>::evaluate_payoff(S, strike_price);
                 const KT::Real discounted_future_cf = d_best_future_outcomes(i) * discount_factor;
 
                 // Early exercise decision (ITM branch)
                 if (intrinsic_val > KT::real_zero) {
-                    KT::Real expected_val_of_holding = evaluate_expected_val_of_holding(ls_coeffs, S, strike_price);
+                     const KT::Real expected_val_of_holding = evaluate_expected_val_of_holding(ls_coeffs, S, strike_price);
                     // Continuation value
                     d_best_future_outcomes(i) = (intrinsic_val > expected_val_of_holding)
                                                     ? intrinsic_val
                                                     : discounted_future_cf;
                     // if : intrinsic_val > expected_val_of_holding the option is exercised (holding will be statistically worst). The future cash flow is overwritten with the intrinsic_val of today
-                    // else : we hold the option, based on statistical average of all paths, holding will likely yield a bigg payout in the future
+                    // else : we hold the option, based on statistical average of all paths, holding will likely yield a bigger payout in the future
                 } else {
                     d_best_future_outcomes(i) = discounted_future_cf; // Hold since exiting is impossible
                 }
             }
             )
             ;
-            Kokkos::fence();
+            // Kokkos::fence(); // // Fence not needed since there is a deep copty after
         }
 
         // =================================================================
@@ -344,7 +360,7 @@ namespace quantkos::Engine::LSM {
             }
             )
             ;
-            Kokkos::fence();
+            // Kokkos::fence(); // Fence not needed, there is a deepcopy just after
         }
 
         // =================================================================
@@ -370,7 +386,7 @@ namespace quantkos::Engine::LSM {
             const int N_prices = d_slice_prices.extent(0);
 
             Kokkos::parallel_reduce("LSM_Compute_Regression_Sums", N_prices,
-                                    KOKKOS_LAMBDA(const int i, RegressionSums<NBasis> & local)
+                                    KOKKOS_LAMBDA(const int i, RegressionSums<NBasis> & regr_sum)
             {
                 const KT::Real S = d_slice_prices(i);
                 const KT::Real intrinsic_val = Payoff<OptRight>::evaluate_payoff(S, strike_price);
@@ -385,15 +401,13 @@ namespace quantkos::Engine::LSM {
 
                     // Update M and B using the unified templated logic
                     // The compiler should unroll these loops, making it as fast as manual coding
-#pragma unroll
                     for (size_t row = 0; row < NBasis; ++row) {
-                        local.B(row) += L[row] * Y;
-#pragma unroll
+                        regr_sum.B(row) += static_cast<double>(L[row]) * Y;
                         for (size_t col = 0; col < NBasis; ++col) {
-                            local.M(row, col) += L[row] * L[col];
+                            regr_sum.M(row, col) += static_cast<double>(L[row]) * static_cast<double>(L[col]);
                         }
                     }
-                    local.count += 1.0;
+                    regr_sum.count += 1.0;
                 }
             }
             ,
@@ -413,7 +427,7 @@ namespace quantkos::Engine::LSM {
          * @return The computed expected continuation value.
          */
         KOKKOS_INLINE_FUNCTION
-        static KT::Real evaluate_expected_val_of_holding(const Coeffs<NBasis> &coeffs,
+        static double evaluate_expected_val_of_holding(const Coeffs<NBasis> &coeffs,
                                                          const KT::Real S,
                                                          const KT::Real strike_price) {
             const KT::Real X = S / strike_price;
@@ -422,12 +436,11 @@ namespace quantkos::Engine::LSM {
             // Use the unified basis evaluator
             LaguerreBasis<NBasis>::evaluate(X, L);
 
-            KT::Real continuation_value = 0.0;
+            double continuation_value = 0.0;
 
             // Accumulate the weighted sum (coeffs * basis)
-#pragma unroll
             for (size_t i = 0; i < NBasis; ++i) {
-                continuation_value += coeffs.C[i] * L[i];
+                continuation_value += coeffs.C[i] * static_cast<double>(L[i]);
             }
 
             return continuation_value;
@@ -446,12 +459,11 @@ namespace quantkos::Engine::LSM {
          */
         static Coeffs<NBasis> solve_system_on_host_cholesky(const RegressionSums<NBasis> &sums) {
             // If not enough paths to form a basis, return zero coefficients
-            if (sums.count < static_cast<KT::Real>(NBasis)) return Coeffs<NBasis>{};
+            if (sums.count < static_cast<double>(NBasis)) return Coeffs<NBasis>{};
 
             // Tikhonov Regularization
             // Add a tiny amount of noise (1 part per million) relative to the signal present in the data (average diagonal element)
             //             KT::Real trace = 0.0;
-            // #pragma unroll
             //             for (size_t i = 0; i < NBasis; ++i) {
             //                 trace += sums.M(i, i);
             //             }
@@ -459,34 +471,32 @@ namespace quantkos::Engine::LSM {
             //             constexpr KT::Real eps_factor = std::is_same_v<KT::Real, float> ? 1e-4 : 1e-6;
             //             const KT::Real reg = std::max(eps_factor * avg_diag, eps_factor);
 
-            constexpr KT::Real reg = std::is_same_v<KT::Real, float> ? 1e-4 : 1e-6;
+
 
             // 1. Prepare local M and B
-            KT::Real M[NBasis][NBasis];
-            KT::Real B[NBasis];
+            constexpr double reg = 1e-8;
+            double M[NBasis][NBasis];
+            double B[NBasis];
 
-#pragma unroll
             for (size_t i = 0; i < NBasis; ++i) {
                 B[i] = sums.B(i);
-#pragma unroll
                 for (size_t j = 0; j < NBasis; ++j) {
                     M[i][j] = sums.M(i, j) + ((i == j) ? reg : 0.0);
                 }
             }
 
             // 2. Cholesky Decomposition: M = L * L^T
-            KT::Real L[NBasis][NBasis] = {0.0};
+            double L[NBasis][NBasis] = {0.0}; // Here L stands for lower
 
-            const KT::Real singularity_limit = std::is_same_v<KT::Real, float> ? 1e-6 : 1e-14;
+            constexpr double singularity_limit = 1e-14;
 
             for (size_t i = 0; i < NBasis; ++i) {
                 for (size_t j = 0; j <= i; ++j) {
-                    KT::Real s = 0.0;
-#pragma unroll
+                    double s = 0.0;
                     for (size_t k = 0; k < j; ++k) s += L[i][k] * L[j][k];
 
                     if (i == j) {
-                        KT::Real val = M[i][i] - s;
+                        const double val = M[i][i] - s;
                         if (val < singularity_limit) return Coeffs<NBasis>{}; // Not pos-def
                         L[i][i] = std::sqrt(val);
                     } else {
@@ -496,10 +506,9 @@ namespace quantkos::Engine::LSM {
             }
 
             // 3. Forward substitution: L * y = B
-            KT::Real y[NBasis];
+            double y[NBasis];
             for (size_t i = 0; i < NBasis; ++i) {
-                KT::Real s = 0.0;
-#pragma unroll
+                double s = 0.0;
                 for (size_t k = 0; k < i; ++k) s += L[i][k] * y[k];
                 y[i] = (B[i] - s) / L[i][i];
             }
@@ -507,8 +516,7 @@ namespace quantkos::Engine::LSM {
             // 4. Backward substitution: L^T * C = y
             Coeffs<NBasis> C;
             for (int i = static_cast<int>(NBasis) - 1; i >= 0; --i) {
-                KT::Real s = 0.0;
-#pragma unroll
+                double s = 0.0;
                 for (size_t k = i + 1; k < NBasis; ++k) s += L[k][i] * C[k];
                 C[i] = (y[i] - s) / L[i][i];
             }

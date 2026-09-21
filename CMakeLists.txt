@@ -37,9 +37,9 @@
 ##         While these toolchains conform to the standards used, they are
 ##         currently untested.
 
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.25)
 project(QuantKos VERSION 0.1.0
-        DESCRIPTION "High-performance parallel Monte Carlo option pricing engine."
+        DESCRIPTION "High-performance, platform independent parallel Monte Carlo option pricing engine."
         HOMEPAGE_URL "https://github.com/zenogeddo/QuantKos"
         LANGUAGES CXX)
 
@@ -91,6 +91,22 @@ endif ()
 ## @brief Activates 32-bit single precision (float) calculations instead of 64-bit double precision.
 ## @details Increases parallel memory bandwidth on GPU hardware, but reduces numeric precision.
 option(QKOS_ENABLE_SINGLE_PRECISION "Use single precision (float) instead of double ?" OFF)
+if (QKOS_ENABLE_SINGLE_PRECISION)
+    add_compile_definitions(QKOS_ENABLE_SINGLE_PRECISION) # Define the preprocessor macro so that float can be actually used
+    message(STATUS "WARNING: Using single precision for the computations may cause a degradation in the result precision under extreme conditions!")
+endif ()
+
+## @option QKOS_ENABLE_FAST_MATH
+## @brief Enable aggressive non-IEEE fast-math optimizations
+option(QKOS_ENABLE_FAST_MATH "Enable aggressive non-IEEE compliant fast-math optimizations" OFF)
+if (QKOS_ENABLE_FAST_MATH)
+    add_compile_definitions(QKOS_ENABLE_FAST_MATH) # Define the preprocessor macro so that float can be actually used
+    message(STATUS "WARNING: Enable aggressive non-IEEE fast-math optimizations!")
+endif ()
+
+## @option QKOS_ENABLE_CPU_OPT_REPORTS
+## @brief Enable generating text files showing the inlining and vectorization performed
+option(QKOS_ENABLE_CPU_OPT_REPORTS "Enable compiler optimization reports (inlining/vectorization)" OFF)
 
 ## @option QKOS_ENABLE_TESTS
 ## @brief Directs CMake to compile the unit test suite and configure CTest execution.
@@ -165,7 +181,7 @@ else ()
         FetchContent_Declare(
                 kokkos
                 GIT_REPOSITORY https://github.com/kokkos/kokkos.git
-                GIT_TAG 4.2.00
+                GIT_TAG master #4.5.00
         )
 
         # --- KOKKOS OPTIONS --- (should be added)
@@ -188,15 +204,24 @@ endif ()
 # Interprocedural Optimization (LTO) Adaptive Safeguard
 # Link-Time Optimization (LTO) -> During the final linking step, the compiler performs a secondary optimization pass looking at the entire project at once
 # -----------------------------------------------------------------------------
-# Query active accelerator backends inside Kokkos
+# Query active accelerator target_backends inside Kokkos
 if (Kokkos_ENABLE_CUDA OR Kokkos_ENABLE_HIP OR Kokkos_ENABLE_SYCL)
     # GPU active: Force LTO OFF to prevent device-code 'fatbinData' linker collisions
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
     message(STATUS "GPU backend active in Kokkos. Host Link-Time Optimization (LTO) disabled to prevent compilation conflicts.")
 else ()
-    # CPU only: Turn LTO ON to maximize host-side optimization and cross-file inlining
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-    message(STATUS "CPU-only target. Host Link-Time Optimization (LTO/IPO) is ENABLED.")
+    # CPU only: Check if the compiler actually supports IPO/LTO
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ipo_supported OUTPUT ipo_output)
+
+    if (ipo_supported)
+        # CPU only: Turn LTO ON to maximize host-side optimization and cross-file inlining
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+        message(STATUS "CPU-only target. Host Link-Time Optimization (LTO/IPO) is ENABLED.")
+    else ()
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
+        message(WARNING "CPU-only target, but compiler does NOT support IPO/LTO. Disabled. Details: ${ipo_output}")
+    endif ()
 endif ()
 
 
@@ -207,6 +232,10 @@ endif ()
 ## @brief Source Library Tree Assembly. Traverses the `src/` directory to build the core mathematical integration and model solvers.
 add_subdirectory(src)
 
+# Pass active configuration name to C++ preprocessor
+target_compile_definitions(QuantKos_core PUBLIC
+        QKOS_BUILD_TYPE="$<CONFIG>"
+)
 
 # -----------------------------------------------------------------------------
 # 6. Build the App and Tests (Consumers)

@@ -76,9 +76,9 @@ namespace quantkos::Engine {
          * @return An aggregated MCResults structure containing option prices, uncertainties, and execution metrics.
          */
         MCResults launch_montecarlo() {
-            std::cout << "\n>>> Starting Monte Carlo Simulation...\n" << std::endl;
+            std::cout << "\n>>> Starting Monte Carlo Simulation...\n\n";
             const MCResults results = dispatch_model();
-            std::cout << "\n>>> Simulation completed successfully!\n" << std::endl;
+            std::cout << "\n>>> Simulation completed successfully!\n\n";
             return results;
         }
 
@@ -221,10 +221,10 @@ namespace quantkos::Engine {
         MCResults execute_selected_runner() {
             if constexpr (OptType == KI::OptType::American) {
                 // If it is American, the compiler ONLY consider this branch.
-                return ForwardBackwardMCRunner<ModelPolicy, SchemePolicy, OptRight>(config).get_option_price();
+                return ForwardBackwardMCRunner<ModelPolicy, SchemePolicy, OptRight>(config).run();
             } else {
                 // For all other options, the compiler ONLY consider this branch.
-                return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).get_option_prices();
+                return ForwardMCRunner<ModelPolicy, SchemePolicy, OptType, OptRight>(config).run();
             }
         }
     };

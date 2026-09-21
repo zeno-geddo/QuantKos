@@ -50,6 +50,7 @@ Time:
   Inp_DT: 0.00025
 
 MC:
+  Normalize_prices: true 
   N_Paths: 500000
   Batch_Size: 0
   RNG_Seed: 88471920573105
@@ -214,13 +215,24 @@ $$
 
 The MC block controls the Monte Carlo simulation.
 
-| Parameter | Description                                                                               |
-|---|-------------------------------------------------------------------------------------------|
-| N_Paths | Total number of simulated Monte Carlo paths.                                              |
-| Batch_Size | Number of paths processed simultaneously in a batch (it allow for very large simulation). |
-| RNG_Seed | Seed used by the random number generator.                                                 |
-| Max_VRAM_MB | Maximum GPU memory allowed.                                                               |
-| Max_CPU_RAM_MB | Maximum host memory allowed.                                                              |
+| Parameter        | Description                                                                                                                                                                                                                      |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Normalize_prices | If true, it normalizes monetary parameters relative to S0 (if false, keeps everything untouched).                                                                                                                                |
+| N_Paths          | Total number of simulated Monte Carlo paths.                                                                                                                                                                                     |
+| Batch_Size       | Number of paths processed simultaneously in a batch (it allow for very large simulation).                                                                                                                                        |
+| RNG_Seed         | Seed used by the random number generator.                                                                                                                                                                                        |
+| Max_VRAM_MB      | Maximum GPU memory allowed.                                                                                                                                                                                                      |
+| Max_CPU_RAM_MB   | Maximum host memory allowed.                                                                                                                                                                                                     |
+| analyze_risk_neutral_payoff_distribution   | If true, analyze the distribution of the risk-neutral discounted payoffs. Note: to analyze the disrtibution the payoffs need to be sorted on CPU, and this take times. Too speed up, be sure to use openmp also when using cuda. |
+| compute_delta_et_gamma | If true, computes the option's Delta and Gamma using central finite differences. |
+| spot_price_relative_bump_size | The relative shift applied to the spot price (S0) to compute Delta and Gamma (e.g., `0.001` for a 0.1% bump). |
+| compute_vega_et_vomma | If true, computes the option's Vega and Vomma using central finite differences. |
+| compute_vanna | If true, computes the option's Vanna using 2D finite differences. |
+| volatility_absolute_bump_size | The absolute shift applied to the initial volatility/variance to compute Vega (e.g., `0.001` for a 10 bps bump). |
+| compute_rho | If true, computes the option's Rho using central finite differences. |
+| risk_free_rate_absolute_bump_size | The absolute shift applied to the risk-free rate to compute Rho (e.g., `0.0001` for a 1 bp bump). |
+| compute_theta | If true, computes the option's Theta (time decay). |
+
 
 #### About the Batch Size
 
