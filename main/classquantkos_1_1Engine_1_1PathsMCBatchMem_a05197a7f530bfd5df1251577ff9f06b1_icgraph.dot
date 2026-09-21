@@ -1,0 +1,11 @@
+digraph "quantkos::Engine::PathsMCBatchMem::total_paths_footprint_mb"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="quantkos::Engine::PathsMCBatch\lMem::total_paths_footprint_mb",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Estimates the full, unrolled paths footprint in MB if all simulation steps were kept in RAM at once."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::Forward\lMCProgressTracker::print\l_pre_execution_diagnostic",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCProgressTracker.html#a57df6da9144fc09429fa458d04016f6e",tooltip="Formats and outputs an exhaustive audit of execution parameters and hardware memory footprints."];
+}

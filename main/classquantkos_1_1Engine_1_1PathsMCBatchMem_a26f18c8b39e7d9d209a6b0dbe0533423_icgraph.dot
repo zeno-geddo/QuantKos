@@ -1,0 +1,11 @@
+digraph "quantkos::Engine::PathsMCBatchMem::deep_copy_paths_to_host_if_needed"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="quantkos::Engine::PathsMCBatch\lMem::deep_copy_paths_to_host\l_if_needed",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Copies current batch path data from the device to the host."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::Backward\lLSMMemory::copy_current\l_mc_batch_to_master_mc_matrix",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1BackwardLSMMemory.html#a123cbfed3e40a4cda17068ebb6259e53",tooltip="Transfers a completed path batch from the GPU to the Master Matrix on the Host."];
+}

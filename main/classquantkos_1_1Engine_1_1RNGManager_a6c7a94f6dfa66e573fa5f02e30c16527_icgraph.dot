@@ -1,0 +1,11 @@
+digraph "quantkos::Engine::RNGManager::get_global_rng_pool"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="quantkos::Engine::RNGManager\l::get_global_rng_pool",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Passes access to the GPU random memory pool to the parallel execution batches."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::MSolver\l::execute_batch",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1MSolver.html#ab2ea829e69c1612baf822ef895ce1bfd",tooltip="Launches the Monte Carlo path simulation for the current batch calling the integration kernel."];
+}

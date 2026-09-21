@@ -1,0 +1,13 @@
+digraph "quantkos::Config::UInputs::apply_price_scaling"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="quantkos::Config::UInputs\l::apply_price_scaling",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Normalizes monetary parameters relative to S0. Help protecting algorithms from floating-point overflo..."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::Forward\lBackwardMCRunner::ForwardBackward\lMCRunner",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardBackwardMCRunner.html#a9a8429cb42ca0fb64781c72deeb772a7",tooltip="Constructs a forward-backward runner instance bound to the master user configuration."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="quantkos::Engine::Forward\lMCRunner::ForwardMCRunner",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1ForwardMCRunner.html#a809f946458d460c4f3a55665ed23dc86",tooltip="Constructs a forward runner instance given the user parameters."];
+}

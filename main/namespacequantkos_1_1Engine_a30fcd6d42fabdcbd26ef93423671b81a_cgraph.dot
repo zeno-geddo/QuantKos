@@ -1,0 +1,11 @@
+digraph "quantkos::Engine::get_available_memory_from_os_mb"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="quantkos::Engine::get\l_available_memory_from_os_mb",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Retrieves the amount of physical RAM currently available on the system."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::get\l_ram_available_memory\l_from_os_kb",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Engine.html#aa2bb7c749a362127cf8045610d02c8f8",tooltip="Retrieves the amount of physical RAM currently available on the system."];
+}

@@ -1,0 +1,11 @@
+digraph "builder.QuantKosBuilder._get_enum_choice"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="builder.QuantKosBuilder.\l_get_enum_choice",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Prompts the user to select an option from a given Enum class."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="builder.QuantKosBuilder.from\l_interactive",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder.html#a6bc9a013a35392aa6323bbe31f76a6a0",tooltip="Interactively prompts the user in the terminal with input validation and exit capabilities."];
+}

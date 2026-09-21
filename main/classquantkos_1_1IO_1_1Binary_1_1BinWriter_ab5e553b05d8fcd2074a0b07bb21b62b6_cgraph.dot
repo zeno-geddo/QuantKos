@@ -1,0 +1,13 @@
+digraph "quantkos::IO::Binary::BinWriter::save_paths_batch_if_needed"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="quantkos::IO::Binary\l::BinWriter::save_paths\l_batch_if_needed",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Writes an active batch of path prices directly to the open binary stream."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Engine::PathsMCBatch\lMem::is_host_contiguous",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#aa284dd41bfa9db6733fa10ac12f7d75b",tooltip="Dynamically audits if the host memory allocation slice is physically contiguous in memory."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="quantkos::Engine::PathsMCBatch\lMem::is_host_row_major",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a4b0c59de421d363dacdb7c9ae20c32f2",tooltip="Compile-time check verifying if the Host View layout is Row-Major (LayoutRight, or C-Style)."];
+}
