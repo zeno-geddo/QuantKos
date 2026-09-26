@@ -488,6 +488,67 @@ class QuantKosBuilder:
             print("<  WARNING: rocminfo not found or failed. No AMD ROCm stack detected.")
             return None
 
+
+    @staticmethod
+    def _get_multiple_enum_choice(prompt_text: str, enum_cls: type) -> List[str]:
+        """!
+        @brief Prompts the user to select multiple options (comma-separated or 'all') from an Enum.
+        """
+        valid_names = [e.name for e in enum_cls]
+        prompt = f"{prompt_text} (comma-separated, or 'all') [{', '.join(valid_names)}]: "
+        while True:
+            choice = input(prompt).strip().upper()
+            if choice in ['', 'ALL']:
+                return valid_names
+
+            selected = [x.strip() for x in choice.split(',')]
+            invalid = [x for x in selected if x not in valid_names]
+            if invalid:
+                print(f"  ❌ Invalid options: {invalid}. Choose from: {valid_names}")
+                continue
+            return selected
+
+    def run_interactive_build_loop(self):
+        """!
+        @brief Runs an interactive terminal loop allowing the user to compile specific targets sequentially.
+        """
+        print("\n" + "=" * 60)
+        print(" MANUAL TARGET COMPILATION")
+        print("=" * 60)
+
+        while True:
+            backend = self._get_enum_choice(
+                prompt_text="\n> Select Execution Backend",
+                enum_cls=self.ImplementedBackends,
+                default_name=self.ImplementedBackends.OPENMP.name
+            )
+
+            precision = self._get_enum_choice(
+                prompt_text="\n> Select Floating-Point Precision",
+                enum_cls=self.ImplementedPrecision,
+                default_name=self.ImplementedPrecision.DOUBLE.name
+            )
+
+            math_mode = self._get_enum_choice(
+                prompt_text="\n> Select Math Mode",
+                enum_cls=self.ImplementedMath,
+                default_name=self.ImplementedMath.IEEE.name
+            )
+
+            print(f"\n🚀 Initiating build for: [{backend} | {precision} | {math_mode}]")
+
+            self.build_and_install(
+                precision=precision,
+                math=math_mode,
+                backend=backend
+            )
+
+            if not self._get_boolean_choice("\n> Do you want to build another configuration?", False):
+                print("\n✅ Build phase completed. Exiting.")
+                break
+
+
+
     def build_and_install(self,
                           precision: str,
                           math: str,
@@ -746,24 +807,14 @@ class QuantKosBuilder:
 
         return flags
 
-
 if __name__ == "__main__":
 
     builder = QuantKosBuilder.from_interactive()
     if builder is None:
         print("Warning, builder was not created because interactive build was interrupted. ")
     else:
-        # for backend in builder.ImplementedBackends:
-        #     for precision in builder.ImplementedPrecision:
-        #         for math in builder.ImplementedMath:
-        #             builder.build_and_install(precision=precision.name,
-        #                                       math=math.name,
-        #                                       backend=backend.name)
+        builder.run_interactive_build_loop()
 
-        builder.build_and_install(precision=builder.ImplementedPrecision.DOUBLE.name,
-                                  math=builder.ImplementedMath.IEEE.name,
-                                  backend=builder.ImplementedBackends.OPENMP.name)
-
-        # /home/zen/software/installations/kokkos-5/single_core/lib/cmake/Kokkos
-        # /home/zen/software/installations/kokkos-5/openmp/lib/cmake/Kokkos
-        # /home/zen/software/installations/kokkos-5/cuda/lib/cmake/Kokkos
+        # /home/xxxx/software/installations/kokkos-5/single_core/lib/cmake/Kokkos
+        # /home/xxxx/software/installations/kokkos-5/openmp/lib/cmake/Kokkos
+        # /home/xxxx/software/installations/kokkos-5/cuda/lib/cmake/Kokkos

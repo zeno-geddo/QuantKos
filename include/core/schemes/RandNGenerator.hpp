@@ -35,7 +35,8 @@ namespace quantkos::Engine {
      * * This class initializes a `Kokkos::Random_XorShift64_Pool`, which allocates thousands of
      * independent random number sequences directly inside the GPU's memory. Each sequence is
      * seeded with a slightly shifted variant of your master initial seed.
-     */
+     * @note IMPORTANT ! Identical seeds alone do not guarantee identical paths when the models consume different numbers of random draws.
+    */
     class RNGManager {
     public:
         // Expose the underlying Kokkos Pool type for the kernels

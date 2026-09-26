@@ -127,11 +127,16 @@ class QuantKosBenchmark:
             self.benchmarks_conf_filenames = [self.BenchmarksMap[selected_choice]]
 
     def _ask_required_builds(self):
-        self.target_backends = self._select_build_options("Backends", QuantKosBuilder.ImplementedBackends)
-        self.target_precisions = self._select_build_options("Precisions", QuantKosBuilder.ImplementedPrecision)
-        self.target_math_modes = self._select_build_options("Math Modes", QuantKosBuilder.ImplementedMath)
+        self.target_backends = QuantKosBuilder._get_multiple_enum_choice(
+            "\n> Select Backends to benchmark", QuantKosBuilder.ImplementedBackends)
 
-        # Filter out target_backends that were skipped during builder setup (when FetchContent = False)
+        self.target_precisions = QuantKosBuilder._get_multiple_enum_choice(
+            "\n> Select Precisions to benchmark", QuantKosBuilder.ImplementedPrecision)
+
+        self.target_math_modes = QuantKosBuilder._get_multiple_enum_choice(
+            "\n> Select Math Modes to benchmark", QuantKosBuilder.ImplementedMath)
+
+        # Filter out target_backends that were skipped during builder setup
         if not self.builder.use_fetchcontent and self.builder.kokkos_paths:
             valid_backends = []
             for b in self.target_backends:
@@ -143,22 +148,6 @@ class QuantKosBenchmark:
 
         if not self.target_backends:
             raise ValueError("\n❌ No valid target_backends available to build. Aborting benchmark.")
-
-    def _select_build_options(self, name: str, enum_cls) -> List[str]:
-        """Helper to let the user select multiple comma-separated enum values."""
-        valid_names = [e.name for e in enum_cls]
-        prompt = f"> Select {name} to benchmark (comma-separated, or 'all') [{', '.join(valid_names)}]: "
-        while True:
-            choice = input(prompt).strip().upper()
-            if choice in ['', 'ALL']:
-                return valid_names
-
-            selected = [x.strip() for x in choice.split(',')]
-            invalid = [x for x in selected if x not in valid_names]
-            if invalid:
-                print(f"  ❌ Invalid options: {invalid}. Choose from: {valid_names}")
-                continue
-            return selected
 
     def _build_binaries(self):
         print("\n--- Starting Building ---")

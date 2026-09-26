@@ -153,7 +153,7 @@ namespace quantkos::HELP {
                 << "    " << K::MathModelParams::rho <<
                 ": 0.7    # Correlation between price and variance Brownian motions\n"
                 << "  ],\n"
-                << "  [" << K::MathModelParams::IDHestonBlock << " :\n"
+                << "  [" << K::MathModelParams::IDBatesBlock << " :\n"
                 << "    " << K::MathModelParams::k << ": 2.       # Mean reversion speed of the variance (kappa)\n"
                 << "    " << K::MathModelParams::theta << ": 0.04 # Long-term mean of the variance\n"
                 << "    " << K::MathModelParams::sigma << ": 0.3  # Volatility of the variance (vol-of-vol)\n"

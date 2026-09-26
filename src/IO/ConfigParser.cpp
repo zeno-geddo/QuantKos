@@ -55,7 +55,7 @@ namespace quantkos::Config {
             throw std::runtime_error("Config Error: Invalid YAML syntax -> " + std::string(e.what()));
         }
 
-        UInputs conf;
+        UInputs conf; // Generate config container
 
         // ---------------------------------------------------------
         // 3. Market Section
@@ -111,8 +111,16 @@ namespace quantkos::Config {
         if (root[str(KK::Model)]) {
             const auto &node = root[str(KK::Model)];
 
+            // Enforce exactly one model block to prevent overwriting
+            const bool has_heston = node[str(KK::MathModelParams::IDHestonBlock)].IsDefined();
+            const bool has_bates = node[str(KK::MathModelParams::IDBatesBlock)].IsDefined();
+            if (has_heston && has_bates) {
+                throw std::runtime_error("Config Error: Cannot define both Heston and Bates models simultaneously.");
+            }
+
             // Check for Heston Sub-block
-            if (node[str(KK::MathModelParams::IDHestonBlock)]) {
+            if (has_heston) {
+                conf.model.id_model = KI::MathModel::Heston;
                 const auto &h = node[str(KK::MathModelParams::IDHestonBlock)];
                 if (h[str(KK::MathModelParams::k)])
                     conf.model.heston.k = h[str(KK::MathModelParams::k)].as<Real>();
@@ -123,20 +131,28 @@ namespace quantkos::Config {
                 if (h[str(KK::MathModelParams::rho)])
                     conf.model.heston.rho = h[str(KK::MathModelParams::rho)].as<Real>();
             }
-
-            // Check for Bates Sub-block (Placeholder for future)
-            if (node[str(KK::MathModelParams::IDBatesBlock)]) {
-                // Implementation for Bates parameters would go here
+            // Check for Bates Sub-block
+            else if (has_bates) {
+                conf.model.id_model = KI::MathModel::Bates;
                 const auto &b = node[str(KK::MathModelParams::IDBatesBlock)];
-
+                // Heston params
                 if (b[str(KK::MathModelParams::k)])
-                    conf.model.heston.k = b[str(KK::MathModelParams::k)].as<Real>();
+                    conf.model.bates.k = b[str(KK::MathModelParams::k)].as<Real>();
                 if (b[str(KK::MathModelParams::theta)])
-                    conf.model.heston.theta = b[str(KK::MathModelParams::theta)].as<Real>();
+                    conf.model.bates.theta = b[str(KK::MathModelParams::theta)].as<Real>();
                 if (b[str(KK::MathModelParams::sigma)])
-                    conf.model.heston.sigma = b[str(KK::MathModelParams::sigma)].as<Real>();
+                    conf.model.bates.sigma = b[str(KK::MathModelParams::sigma)].as<Real>();
                 if (b[str(KK::MathModelParams::rho)])
-                    conf.model.heston.rho = b[str(KK::MathModelParams::rho)].as<Real>();
+                    conf.model.bates.rho = b[str(KK::MathModelParams::rho)].as<Real>();
+                // Merton params
+                if (b[str(KK::MathModelParams::lambda_J)])
+                    conf.model.bates.lambda_J = b[str(KK::MathModelParams::lambda_J)].as<Real>();
+                if (b[str(KK::MathModelParams::mu_J)])
+                    conf.model.bates.mu_J = b[str(KK::MathModelParams::mu_J)].as<Real>();
+                if (b[str(KK::MathModelParams::sigma_J)])
+                    conf.model.bates.sigma_J = b[str(KK::MathModelParams::sigma_J)].as<Real>();
+            } else {
+                throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Model) + "' has requested a non implemented model!");
             }
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::Model) + "' missing.");
@@ -208,22 +224,24 @@ namespace quantkos::Config {
             if (node[str(KK::MCParams::compute_delta_et_gamma)])
                 conf.mc.compute_delta_et_gamma = node[str(KK::MCParams::compute_delta_et_gamma)].as<bool>();
             if (node[str(KK::MCParams::spot_price_relative_bump_size)])
-                conf.mc.spot_price_relative_bump_size = node[str(KK::MCParams::spot_price_relative_bump_size)].as<double>();
+                conf.mc.spot_price_relative_bump_size = node[str(KK::MCParams::spot_price_relative_bump_size)].as<
+                    double>();
             if (node[str(KK::MCParams::compute_vega_et_vomma)])
                 conf.mc.compute_vega_et_vomma = node[str(KK::MCParams::compute_vega_et_vomma)].as<bool>();
             if (node[str(KK::MCParams::compute_vanna)])
                 conf.mc.compute_vanna = node[str(KK::MCParams::compute_vanna)].as<bool>();
             if (node[str(KK::MCParams::volatility_absolute_bump_size)])
-                conf.mc.volatility_absolute_bump_size = node[str(KK::MCParams::volatility_absolute_bump_size)].as<double>();
+                conf.mc.volatility_absolute_bump_size = node[str(KK::MCParams::volatility_absolute_bump_size)].as<
+                    double>();
             if (node[str(KK::MCParams::compute_rho)])
                 conf.mc.compute_rho = node[str(KK::MCParams::compute_rho)].as<bool>();
             if (node[str(KK::MCParams::risk_free_rate_absolute_bump_size)])
-                conf.mc.risk_free_rate_absolute_bump_size = node[str(KK::MCParams::risk_free_rate_absolute_bump_size)].as<double>();
+                conf.mc.risk_free_rate_absolute_bump_size = node[str(KK::MCParams::risk_free_rate_absolute_bump_size)].
+                        as<double>();
             if (node[str(KK::MCParams::compute_theta)])
                 conf.mc.compute_theta = node[str(KK::MCParams::compute_theta)].as<bool>();
             if (node[str(KK::MCParams::time_absolute_bump_size)])
                 conf.mc.time_absolute_bump_size = node[str(KK::MCParams::time_absolute_bump_size)].as<double>();
-
         } else {
             throw std::runtime_error("Config Error: Mandatory block '" + str(KK::MC) + "' missing.");
         }
@@ -238,7 +256,7 @@ namespace quantkos::Config {
                 conf.output.verbosity = KI::string_to_enum<KI::VerbosityLevel>(
                     node[str(KK::OutParams::Verbosity)].as<std::string>(),
                     str(KK::OutParams::Verbosity)
-                    );
+                );
             }
 
             if (node[str(KK::OutParams::out_dir)])
@@ -269,7 +287,7 @@ namespace quantkos::Config {
         // ---------------------------------------------------------
         const auto end_time = std::chrono::steady_clock::now();
         const std::chrono::duration<double> elapsed = end_time - start_time;
-        std::cout << "  [ Parser ] Time taken to parse the input  : "<< elapsed.count() <<"s \n";
+        std::cout << "  [ Parser ] Time taken to parse the input  : " << elapsed.count() << "s \n";
 
 
         return conf;
