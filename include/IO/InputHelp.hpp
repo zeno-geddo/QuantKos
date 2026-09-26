@@ -189,7 +189,12 @@ namespace quantkos::HELP {
                 << "  " << K::MCParams::RNG_Seed <<
                 ": 184467440737095  # Random Number Generator Seed (uint62_t, must be > 0)\n"
                 << "  " << K::MCParams::Max_VRAM_MB << ": 256           # Max Available VRAM \n"
-                << "  " << K::MCParams::Max_CPU_RAM_MB << ": 4000       # Max Available RAM \n";
+                << "  " << K::MCParams::Max_CPU_RAM_MB << ": 4000       # Max Available RAM \n"
+                << "  " << K::MCParams::compute_delta_et_gamma << ": true      # If true, compute delta, the sensitivity to underlying spot price and gamma, Rate of change of Delta. \n"
+                << "  " << K::MCParams::compute_vega_et_vomma << ": true      # If true, compute vega, the sensitivity to underlying volatility and vomma, Rate of change of vega. \n"
+                << "  " << K::MCParams::compute_vanna << ": true      # If true, compute vanna. \n"
+                << "  " << K::MCParams::compute_rho << ": true      # If true, compute rho, i.e. the sensitivity to interest rates. \n"
+                << "  " << K::MCParams::compute_theta << ": true      # If true, compute theta, i.e. the Sensitivity to final time \n";
 
         // Output Section
         // ---------------------------------------------------------

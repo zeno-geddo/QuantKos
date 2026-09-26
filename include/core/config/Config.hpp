@@ -40,6 +40,7 @@ namespace quantkos::Config {
     // Alias for easier access to the keys
     namespace KI = quantkos::Implemented;
     namespace KK = quantkos::Keys;
+    namespace KT = quantkos::Types;
     using Real = quantkos::Types::Real;
 
     /**
@@ -434,11 +435,11 @@ namespace quantkos::Config {
 
         /**
        * @brief Validates hardware limits and simulation parameters.
-       * @param market_config Structure for containing the market parameters
-       *
+       * @param market_config Ref for Structure containing the market parameters
+       * @param t_end Final maturity time (T).
        * @throw std::invalid_argument If inputs are out of range, or violate memory bounds.
        */
-        void validate(const MarketConfig market_config) const {
+        void validate(const MarketConfig &market_config, const Real t_end) const {
             if (N_Paths < 1)
                 throw std::invalid_argument(
                     config_err_msg(KK::MC, KK::MCParams::N_Realizations, "Must be a positive integer."));
@@ -466,14 +467,14 @@ namespace quantkos::Config {
                     config_err_msg(KK::MC, KK::MCParams::Max_CPU_RAM_MB, "must be a positive integer."));
 
             if (must_compute_greeks()) {
-                validate_bump_sizes_for_greeks_computations(market_config);
+                validate_bump_sizes_for_greeks_computations(market_config, t_end);
             }
         }
 
         /** @brief Tells if at least one of the greeks must be computed
         */
         [[nodiscard]] bool must_compute_greeks() const {
-            if (compute_delta_et_gamma || compute_vega_et_vomma || compute_rho || compute_theta) {
+            if (compute_delta_et_gamma || compute_vega_et_vomma || compute_vanna || compute_rho || compute_theta) {
                 return true;
             }
 
@@ -485,46 +486,79 @@ namespace quantkos::Config {
      * @brief Validates that Greek bump sizes are mathematically safe.
      * @details Prevents division-by-zero (if h=0) and catastrophic truncation
      * errors caused by excessively large finite difference steps.
-     * @param market_config Structure for containing the market parameters
+     * @param market_config Ref to structure containing the market parameters
+     * @param t_end Final maturity time (T).
      * @throws std::invalid_argument If any bump size falls outside the mathematically stable bounds.
      */
-        void validate_bump_sizes_for_greeks_computations(const MarketConfig market_config) const {
-            // 1. Spot Bump Check (Relative)
-            if (spot_price_relative_bump_size <= 0.0 || spot_price_relative_bump_size > 0.05) {
-                throw std::invalid_argument(
-                    config_err_msg(KK::MC,
-                                   KK::MCParams::spot_price_relative_bump_size,
-                                   "must be strictly positive and <= 5% (0.05)."));
+        void validate_bump_sizes_for_greeks_computations(const MarketConfig &market_config, const Real t_end) const {
+            // 1. Spot Bump Check (Relative) : Required for Delta, Gamma, and Vanna
+            if (compute_delta_et_gamma || compute_vanna) {
+                if (spot_price_relative_bump_size <= 0.0 || spot_price_relative_bump_size > 0.05) {
+                    throw std::invalid_argument(
+                        config_err_msg(KK::MC,
+                                       KK::MCParams::spot_price_relative_bump_size,
+                                       "must be strictly positive and <= 5% (0.05)."));
+                }
+                // Check that bump can be seen by current precision
+                const Real s0 = market_config.S0;
+                const Real s_plus = s0 * (static_cast<Real>(1.0) + static_cast<Real>(spot_price_relative_bump_size));
+                if (s_plus == s0) {
+                    throw std::invalid_argument(
+                        config_err_msg(KK::MC, KK::MCParams::spot_price_relative_bump_size,
+                                       std::string("Spot bump is too small; "
+                                           "bumped S0 collapses to S0 under current pricing precision")
+                                       + KT::get_precision_string() + ".\n"));
+                }
             }
 
-            // 2. Volatility Bump Check (Absolute)
-            if (volatility_absolute_bump_size <= 0.0 || volatility_absolute_bump_size > 0.10) {
-                throw std::invalid_argument(
-                    config_err_msg(KK::MC,
-                                   KK::MCParams::volatility_absolute_bump_size,
-                                   "must be strictly positive and <= 0.10."));
-            }
-            if (volatility_absolute_bump_size >= market_config.v0) {
-                throw std::invalid_argument(
-                    config_err_msg(KK::MC,
-                                   KK::MCParams::volatility_absolute_bump_size,
-                                   "must be smaller that the initial volatility v0."));
+            // 2. Volatility Bump Check (Absolute): Required for Vega, Vomma, and Vanna
+            // 2. Volatility Bump Check
+            if (compute_vega_et_vomma || compute_vanna) {
+                const Real vol0 = std::sqrt(market_config.v0);
+                if (volatility_absolute_bump_size <= 0.0 || volatility_absolute_bump_size > vol0) {
+                    throw std::invalid_argument(
+                        config_err_msg(KK::MC,
+                                       KK::MCParams::volatility_absolute_bump_size,
+                                       "must be strictly positive and and strictly smaller than sqrt(v0) "
+                                       "when Vega/Vomma or Vanna is requested"));
+                }
+                // Check that ok with current precision
+                const Real vol0_plus = vol0 + static_cast<Real>(volatility_absolute_bump_size);
+                if (vol0_plus == vol0) {
+                    throw std::invalid_argument(
+                        config_err_msg(KK::MC, KK::MCParams::volatility_absolute_bump_size,
+                                       std::string("Volatility bump is too small; bumped sqrt(v0) collapses "
+                                           "under current pricing precision")
+                                       + KT::get_precision_string() + ".\n"));
+                }
             }
 
             // 3. Interest Rate Bump Check (Absolute)
-            if (risk_free_rate_absolute_bump_size <= 0.0 || risk_free_rate_absolute_bump_size > 0.05) {
-                throw std::invalid_argument(
-                    config_err_msg(KK::MC,
-                                   KK::MCParams::volatility_absolute_bump_size,
-                                   "must be strictly positive and <= 0.05."));
+            if (compute_rho) {
+                if (risk_free_rate_absolute_bump_size <= 0.0 || risk_free_rate_absolute_bump_size > 0.05) {
+                    throw std::invalid_argument(
+                        config_err_msg(KK::MC,
+                                       KK::MCParams::volatility_absolute_bump_size,
+                                       "must be strictly positive and <= 0.05."));
+                }
+                const Real r = market_config.r;
+                const Real r_plus = r + static_cast<Real>(risk_free_rate_absolute_bump_size);
+                if (r_plus == r) {
+                    throw std::invalid_argument(
+                        config_err_msg(KK::MC, KK::MCParams::risk_free_rate_absolute_bump_size,
+                                       std::string("Rate bump is too small; bumped r collapses under "
+                                           "current pricing precision ")
+                                       + KT::get_precision_string() + ".\n"));
+                }
             }
 
             // 4. Time Bump Check (Absolute)
-            if (time_absolute_bump_size <= 0.0 || time_absolute_bump_size > 1.0) {
-                throw std::invalid_argument(
-                    config_err_msg(KK::MC,
-                                   KK::MCParams::time_absolute_bump_size,
-                                   "must be strictly positive and <= 1.0 year."));
+            if (compute_theta) {
+                if (time_absolute_bump_size <= 0.0 || time_absolute_bump_size >= t_end) {
+                    throw std::invalid_argument(
+                        config_err_msg(KK::MC, KK::MCParams::time_absolute_bump_size,
+                                       "must be strictly positive and strictly smaller than T_End (t_end) when Theta is requested."));
+                }
             }
         }
 
@@ -663,7 +697,7 @@ namespace quantkos::Config {
             model.validate();
             scheme.validate();
             time.validate();
-            mc.validate(market);
+            mc.validate(market, time.t_end);
             output.validate();
 
             std::cout << "  [ Config ] Input configuration validated successfully\n\n";
