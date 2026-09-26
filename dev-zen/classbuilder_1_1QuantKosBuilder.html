@@ -120,7 +120,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6bc9a013a35392aa6323bbe31f76a6a0" id="r_a6bc9a013a35392aa6323bbe31f76a6a0"><td class="memItemLeft" align="right" valign="top">&quot;QuantKosBuilder&quot;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a6bc9a013a35392aa6323bbe31f76a6a0">from_interactive</a> (cls)</td></tr>
 <tr class="memdesc:a6bc9a013a35392aa6323bbe31f76a6a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interactively prompts the user in the terminal with input validation and exit capabilities.  <br /></td></tr>
 <tr class="separator:a6bc9a013a35392aa6323bbe31f76a6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d8aeb37b997861d6af0e5a1db513642" id="r_a4d8aeb37b997861d6af0e5a1db513642"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a4d8aeb37b997861d6af0e5a1db513642">build_and_install</a> (self, str <a class="el" href="namespacebuilder.html#a97071cf49673c23caaba1be3b2404f37">precision</a>, str <a class="el" href="namespacebuilder.html#aa2bde1f9b2d19595f3d3bc645d45c715">math</a>, str <a class="el" href="namespacebuilder.html#addd7e0d9fead8504d51d32f55945a296">backend</a>)</td></tr>
+<tr class="memitem:af180902c4635321f6710c5bdcde4eb8b" id="r_af180902c4635321f6710c5bdcde4eb8b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#af180902c4635321f6710c5bdcde4eb8b">run_interactive_build_loop</a> (self)</td></tr>
+<tr class="memdesc:af180902c4635321f6710c5bdcde4eb8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs an interactive terminal loop allowing the user to compile specific targets sequentially.  <br /></td></tr>
+<tr class="separator:af180902c4635321f6710c5bdcde4eb8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d8aeb37b997861d6af0e5a1db513642" id="r_a4d8aeb37b997861d6af0e5a1db513642"><td class="memItemLeft" align="right" valign="top">Optional[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a4d8aeb37b997861d6af0e5a1db513642">build_and_install</a> (self, str precision, str math, str backend)</td></tr>
 <tr class="memdesc:a4d8aeb37b997861d6af0e5a1db513642"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures, builds, and installs the QuantKos engine for a specific configuration, saving the build log to both the build and install directories.  <br /></td></tr>
 <tr class="separator:a4d8aeb37b997861d6af0e5a1db513642"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -143,7 +146,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:aec9a27b69a75f05106b499acee0c8311" id="r_aec9a27b69a75f05106b499acee0c8311"><td class="memItemLeft" align="right" valign="top">None&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#aec9a27b69a75f05106b499acee0c8311">_save_log</a> (self, str target_dir, str filename)</td></tr>
 <tr class="memdesc:aec9a27b69a75f05106b499acee0c8311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper method to safely write accumulated build logs to a file.  <br /></td></tr>
 <tr class="separator:aec9a27b69a75f05106b499acee0c8311"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a598db384b8fbc604ed7bd3074684272f" id="r_a598db384b8fbc604ed7bd3074684272f"><td class="memItemLeft" align="right" valign="top">List[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a598db384b8fbc604ed7bd3074684272f">_get_cmake_flags</a> (self, str <a class="el" href="namespacebuilder.html#a97071cf49673c23caaba1be3b2404f37">precision</a>, str <a class="el" href="namespacebuilder.html#aa2bde1f9b2d19595f3d3bc645d45c715">math</a>, str <a class="el" href="namespacebuilder.html#addd7e0d9fead8504d51d32f55945a296">backend</a>, str install_dir)</td></tr>
+<tr class="memitem:a598db384b8fbc604ed7bd3074684272f" id="r_a598db384b8fbc604ed7bd3074684272f"><td class="memItemLeft" align="right" valign="top">List[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a598db384b8fbc604ed7bd3074684272f">_get_cmake_flags</a> (self, str precision, str math, str backend, str install_dir)</td></tr>
 <tr class="memdesc:a598db384b8fbc604ed7bd3074684272f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates the required CMake configuration flags for the requested build strategy.  <br /></td></tr>
 <tr class="separator:a598db384b8fbc604ed7bd3074684272f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -164,6 +167,9 @@ Static Protected Member Functions</h2></td></tr>
 <tr class="memitem:a533b8409727d76a88c369b62f235e256" id="r_a533b8409727d76a88c369b62f235e256"><td class="memItemLeft" align="right" valign="top">str&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a533b8409727d76a88c369b62f235e256">_get_valid_cmake_path_config</a> (str prompt_text, str default_path)</td></tr>
 <tr class="memdesc:a533b8409727d76a88c369b62f235e256"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continuously prompts until a directory containing CMake config files is verified.  <br /></td></tr>
 <tr class="separator:a533b8409727d76a88c369b62f235e256"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a971fb17448e2bdd14001e43137ed2ad9" id="r_a971fb17448e2bdd14001e43137ed2ad9"><td class="memItemLeft" align="right" valign="top">List[str]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbuilder_1_1QuantKosBuilder.html#a971fb17448e2bdd14001e43137ed2ad9">_get_multiple_enum_choice</a> (str prompt_text, type enum_cls)</td></tr>
+<tr class="memdesc:a971fb17448e2bdd14001e43137ed2ad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prompts the user to select multiple options (comma-separated or 'all') from an Enum.  <br /></td></tr>
+<tr class="separator:a971fb17448e2bdd14001e43137ed2ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Builder class to configure, compile, and install the QuantKos option pricing engine. </p>
@@ -497,6 +503,44 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a971fb17448e2bdd14001e43137ed2ad9" name="a971fb17448e2bdd14001e43137ed2ad9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a971fb17448e2bdd14001e43137ed2ad9">&#9670;&#160;</a></span>_get_multiple_enum_choice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"> List[str] builder.QuantKosBuilder._get_multiple_enum_choice </td>
+          <td>(</td>
+          <td class="paramtype">str&#160;</td>
+          <td class="paramname"><em>prompt_text</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">type&#160;</td>
+          <td class="paramname"><em>enum_cls</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Prompts the user to select multiple options (comma-separated or 'all') from an Enum. </p>
+
+</div>
+</div>
 <a id="a533b8409727d76a88c369b62f235e256" name="a533b8409727d76a88c369b62f235e256"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a533b8409727d76a88c369b62f235e256">&#9670;&#160;</a></span>_get_valid_cmake_path_config()</h2>
 
@@ -799,6 +843,11 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classbuilder_1_1QuantKosBuilder_a4d8aeb37b997861d6af0e5a1db513642_cgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_a4d8aeb37b997861d6af0e5a1db513642_cgraph" alt=""/></div>
 </div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classbuilder_1_1QuantKosBuilder_a4d8aeb37b997861d6af0e5a1db513642_icgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_a4d8aeb37b997861d6af0e5a1db513642_icgraph" alt=""/></div>
+</div>
 
 </div>
 </div>
@@ -824,6 +873,31 @@ Here is the call graph for this function:</div>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="classbuilder_1_1QuantKosBuilder_a6bc9a013a35392aa6323bbe31f76a6a0_cgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_a6bc9a013a35392aa6323bbe31f76a6a0_cgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
+<a id="af180902c4635321f6710c5bdcde4eb8b" name="af180902c4635321f6710c5bdcde4eb8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af180902c4635321f6710c5bdcde4eb8b">&#9670;&#160;</a></span>run_interactive_build_loop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">builder.QuantKosBuilder.run_interactive_build_loop </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Runs an interactive terminal loop allowing the user to compile specific targets sequentially. </p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classbuilder_1_1QuantKosBuilder_af180902c4635321f6710c5bdcde4eb8b_cgraph.png" border="0" usemap="#aclassbuilder_1_1QuantKosBuilder_af180902c4635321f6710c5bdcde4eb8b_cgraph" alt=""/></div>
 </div>
 
 </div>

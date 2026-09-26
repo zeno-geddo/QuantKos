@@ -135,7 +135,8 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><p>Host-side manager for the massive GPU random number generator pool. </p>
 <ul>
 <li>Generating random numbers in parallel on a GPU is tricky because thousands of threads cannot share the same random seed without generating the exact same numbers.</li>
-<li>This class initializes a <code>Kokkos::Random_XorShift64_Pool</code>, which allocates thousands of independent random number sequences directly inside the GPU's memory. Each sequence is seeded with a slightly shifted variant of your master initial seed. </li>
+<li>This class initializes a <code>Kokkos::Random_XorShift64_Pool</code>, which allocates thousands of independent random number sequences directly inside the GPU's memory. Each sequence is seeded with a slightly shifted variant of your master initial seed. <dl class="section note"><dt>Note</dt><dd>IMPORTANT ! Identical seeds alone do not guarantee identical paths when the models consume different numbers of random draws. </dd></dl>
+</li>
 </ul>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a2f85393c60687eedb9763de01f3f32ea" name="a2f85393c60687eedb9763de01f3f32ea"></a>

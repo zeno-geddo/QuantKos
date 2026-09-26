@@ -8,4 +8,6 @@ digraph "builder.QuantKosBuilder._get_boolean_choice"
   Node1 [id="Node000001",label="builder.QuantKosBuilder.\l_get_boolean_choice",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Prompts until a valid boolean decision (y/n) is provided."];
   Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node2 [id="Node000002",label="builder.QuantKosBuilder.from\l_interactive",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder.html#a6bc9a013a35392aa6323bbe31f76a6a0",tooltip="Interactively prompts the user in the terminal with input validation and exit capabilities."];
+  Node1 -> Node3 [id="edge2_Node000001_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="builder.QuantKosBuilder.run\l_interactive_build_loop",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classbuilder_1_1QuantKosBuilder.html#af180902c4635321f6710c5bdcde4eb8b",tooltip="Runs an interactive terminal loop allowing the user to compile specific targets sequentially."];
 }
