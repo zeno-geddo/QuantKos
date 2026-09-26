@@ -537,11 +537,15 @@ class QuantKosBuilder:
 
             print(f"\n🚀 Initiating build for: [{backend} | {precision} | {math_mode}]")
 
-            self.build_and_install(
+            result_path = self.build_and_install(
                 precision=precision,
                 math=math_mode,
                 backend=backend
             )
+
+            if result_path is None:
+                print("\n A fatal error occurred during the build. Please check the log do find out more.")
+                sys.exit(1) # Force script to report failure to the OS
 
             if not self._get_boolean_choice("\n> Do you want to build another configuration?", False):
                 print("\n✅ Build phase completed. Exiting.")
@@ -631,11 +635,12 @@ class QuantKosBuilder:
         start_time = time.perf_counter()
 
         # Print and accumulate output
-        command_str = f"\n\n>>> Executing: {' '.join(command)} (in {working_dir})\n" + "-" * 60 + "\n"
+        command_str = f"\n\n>>> Executing: {' '.join(command)} \n(in {working_dir})\n" + "-" * 60 + "\n"
         print(command_str)
         full_output = command_str
         self.out_str += command_str
 
+        # Create child process
         process = subprocess.Popen(  # Popen to stream stdout in real-time, child process is created
             command,
             cwd=working_dir,
@@ -654,18 +659,22 @@ class QuantKosBuilder:
                 stdout_lines.append(line)
         process.stdout.close()
         return_code = process.wait()  # Retrieving the exit status
-        if return_code != 0:
-            msg = f" ! Error executing {' '.join(command)}\n\n{result.stderr}"
-            raise RuntimeError(msg)
 
-        # Show elapsed time
+        # Get and show elapsed time
         elapsed_time = time.perf_counter() - start_time
-        time_msg = f"\nElapsed time  : {elapsed_time}s"
+        time_msg = f"\nElapsed time  : {elapsed_time:.2f}s"
         print(time_msg)
 
-        # return all the outputs that were produced
-        full_output += "".join(stdout_lines) + time_msg
-        self.out_str += full_output
+        # update full output
+        subprocess_output = "".join(stdout_lines) + time_msg + "\n" + "-" * 60 + "\n"
+        full_output += subprocess_output
+        self.out_str += subprocess_output
+
+        # Check exit status and raise error with the exact code
+        if return_code != 0:
+            msg = f" ! Error: Command exited with status {return_code}\nCommand: {' '.join(command)}"
+            raise RuntimeError(msg)
+
         return full_output
 
     def _save_log(self, target_dir: str, filename: str) -> None:
@@ -702,7 +711,7 @@ class QuantKosBuilder:
 
         if self.build_type not in [bt.name for bt in self.ImplementedBuildType]:
             msg = f" Built type {self.build_type} not in implemented types : {self.ImplementedBuildType}"
-            raise Valueerror(msg)
+            raise ValueError(msg)
 
         # Common CMake flags
         flags = [
@@ -769,7 +778,7 @@ class QuantKosBuilder:
             elif backend == self.ImplementedBackends.CUDA.name:
                 target_arch = self.gpu_arch.get(self.ImplementedBackends.CUDA.name)
                 if target_arch is None:
-                    raise ValueErrror(
+                    raise ValueError(
                         "! ERROR ! Skipping CUDA Compilation because cuda architecture was not provided as input of the class."
                         f"Please provide one of the following architectures : {self.ImplementedNvidiaGPUArch}")
                 if target_arch not in [bt.name for bt in self.ImplementedNvidiaGPUArch]:

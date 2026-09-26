@@ -557,7 +557,7 @@ namespace quantkos::Config {
             std::cout << indent << "    Evaluate Vanna                  :    " << compute_vanna << "\n";
             if (compute_vanna) {
                 std::cout << indent << "      -> S0 Bump Size (Rel)      :    " << spot_price_relative_bump_size <<
-                       "\n";
+                        "\n";
                 std::cout << indent << "      -> Vol0 Bump Size (Abs)       :    " << volatility_absolute_bump_size <<
                         "\n";
             }
@@ -587,7 +587,7 @@ namespace quantkos::Config {
         std::string out_dir = "outputs"; ///< Target directory for generated logs and paths.
         std::string filename_paths_out = "QuantKos.paths"; ///< Filename for the simulated path storage.
         std::string filename_log = "QuantKos.log"; ///< Filename for the runtime execution log.
-        KI::IOFormat format = KI::IOFormat::TXT; ///< Output Data format (e.g., BIN or TXT).
+        KI::IOFormat format = KI::IOFormat::BIN; ///< Output Data format (e.g., BIN or TXT).
 
         void print(const std::string_view indent = "") const {
             std::cout << indent << "  [" << KK::Output << "]\n"
@@ -622,6 +622,14 @@ namespace quantkos::Config {
                         "' could not be prepared or accessed.\nDetails: " + e.what()
                     );
                 }
+            }
+
+            // Reject currently unsupported writers before simulation allocation
+            if (format != KI::IOFormat::BIN) {
+                throw std::invalid_argument(
+                    "[Configuration Error] Unsupported output format requested. "
+                    "Currently, only the BIN (Binary) writer is fully implemented and supported."
+                );
             }
         }
     };
