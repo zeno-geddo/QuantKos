@@ -122,6 +122,7 @@ namespace quantkos::Engine {
         */
         void accumulate_batch_payoffs(const DevBatchPayoffView &d_payoffs,
                                       const int curr_batch_size) {
+
             // STEP 1 : Get Batch Sum and ITM count on device
             PayoffsBatchStats batch_stats;
             const auto eps = eps_payoff;
@@ -166,19 +167,25 @@ namespace quantkos::Engine {
                      / static_cast<double>(new_total_paths));
 
             // Update trackers
+            const size_t old_n_payoffs_processed = n_payoffs_processed;
             n_payoffs_processed = new_total_paths;
             itm_count += batch_itm_count;
 
 
             // STEP 4 : OPTIONAL: Store arrays ONLY if distribution analysis is active ---
             if (config.mc.analyze_risk_neutral_payoff_distribution) {
+                // Validate destination bounds to prevent silent memory corruption
+                if (old_n_payoffs_processed + curr_batch_size > all_payoffs.extent(0)) {
+                    throw std::runtime_error("Fatal: Attempted to copy batch beyond allocated payoff storage bounds.");
+                }
+
                 // 1. Destination subview (Where to put it in the global array)
-                const auto dest_slice = std::make_pair(current_path_idx, current_path_idx + curr_batch_size);
-                const auto destination_subview = Kokkos::subview(all_payoffs, dest_slice);
+                const auto dest_range = std::make_pair(old_n_payoffs_processed, old_n_payoffs_processed + curr_batch_size);
+                const auto destination_subview = Kokkos::subview(all_payoffs, dest_range);
 
                 // 2. Source subview (Only copy the valid computed paths from this batch buffer!)
-                const auto src_slice = std::make_pair(0, curr_batch_size);
-                const auto source_subview = Kokkos::subview(d_payoffs, src_slice);
+                const auto src_range = std::make_pair(0, curr_batch_size);
+                const auto source_subview = Kokkos::subview(d_payoffs, src_range);
 
                 // 3. Perform device-to-device copy with matching extents
                 Kokkos::deep_copy(destination_subview, source_subview);
