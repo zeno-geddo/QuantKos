@@ -9,5 +9,6 @@ var searchData=
   ['inp_5fdt_6',['inp_dt',['../structquantkos_1_1Config_1_1TimeConfig.html#a5d45e335cf37465c54cf19b5ffa6919d',1,'quantkos::Config::TimeConfig']]],
   ['inv_5fsqrt_5f2_7',['inv_sqrt_2',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1AndersonQE_01_4.html#a963b475b6e5dd3311cff3f029f6afa98',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::AndersonQE &gt;']]],
   ['is_5fcomputed_8',['is_computed',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a8c9ea8cabebdbc9a7bc35042b2c7ed10',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
-  ['itm_9',['itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1PayoffsBatchStats.html#a1b02998f094a594ba723d067192d47cb',1,'quantkos::Engine::OptionPricer::PayoffsBatchStats']]]
+  ['is_5ffinite_9',['is_finite',['../structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html#a41ddc287d5e8258eefb80d7efcf43c0b',1,'quantkos::Tests::Utils::OptionPriceErr']]],
+  ['itm_10',['itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1PayoffsBatchStats.html#a1b02998f094a594ba723d067192d47cb',1,'quantkos::Engine::OptionPricer::PayoffsBatchStats']]]
 ];

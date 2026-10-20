@@ -110,12 +110,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a7ba58271fae7a001558c83b87d90e476" id="r_a7ba58271fae7a001558c83b87d90e476"><td class="memItemLeft" align="right" valign="top">KE::MCResults&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Utils.html#a7ba58271fae7a001558c83b87d90e476">run_simulation</a> (<a class="el" href="structquantkos_1_1Config_1_1UInputs.html">KC::UInputs</a> config)</td></tr>
 <tr class="memdesc:a7ba58271fae7a001558c83b87d90e476"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stateless entry point that validates configuration states and launches a simulation run.  <br /></td></tr>
 <tr class="separator:a7ba58271fae7a001558c83b87d90e476"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41850290b7c24e312279624812d9d678" id="r_a41850290b7c24e312279624812d9d678"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Utils.html#a41850290b7c24e312279624812d9d678">are_finite</a> (const double num_price, const double expected_price, const double stat_error)</td></tr>
+<tr class="memdesc:a41850290b7c24e312279624812d9d678"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check that results of MC and ref price are finite.  <br /></td></tr>
+<tr class="separator:a41850290b7c24e312279624812d9d678"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13d8fab4d954bb4361f6cdadd94a034b" id="r_a13d8fab4d954bb4361f6cdadd94a034b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Utils.html#a13d8fab4d954bb4361f6cdadd94a034b">is_valid_run</a> (const double num_price, const double expected_price, const double stat_error, const double z_limit=3.0)</td></tr>
+<tr class="memdesc:a13d8fab4d954bb4361f6cdadd94a034b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strictly validates mathematical outputs against NaN, Inf, and statistical bounds.  <br /></td></tr>
+<tr class="separator:a13d8fab4d954bb4361f6cdadd94a034b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7e2d8e918ec0460eddd8acd2882a264" id="r_aa7e2d8e918ec0460eddd8acd2882a264"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html">OptionPriceErr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Utils.html#aa7e2d8e918ec0460eddd8acd2882a264">compare_numerical_and_expected_option_price</a> (<a class="el" href="structquantkos_1_1Config_1_1UInputs.html">quantkos::Config::UInputs</a> &amp;config, const double expected_price, const std::string_view indent=&quot;   &quot;)</td></tr>
 <tr class="memdesc:aa7e2d8e918ec0460eddd8acd2882a264"><td class="mdescLeft">&#160;</td><td class="mdescRight">Launches a single simulation block and evaluates absolute error against an exact benchmark.  <br /></td></tr>
 <tr class="separator:aa7e2d8e918ec0460eddd8acd2882a264"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4b583357276e528e8363769d60422fc" id="r_ae4b583357276e528e8363769d60422fc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Utils.html#ae4b583357276e528e8363769d60422fc">evaluate_quality_numerical_results</a> (const std::vector&lt; <a class="el" href="structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html">OptionPriceErr</a> &gt; &amp;convergence_results, const std::string_view indent=&quot;   &quot;)</td></tr>
-<tr class="memdesc:ae4b583357276e528e8363769d60422fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Audits weak convergence trends and performs statistical hypothesis testing.  <br /></td></tr>
-<tr class="separator:ae4b583357276e528e8363769d60422fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a416b1bd841a92105e89ac47052dfbc73" id="r_a416b1bd841a92105e89ac47052dfbc73"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Utils.html#a416b1bd841a92105e89ac47052dfbc73">evaluate_quality_convergence_results</a> (const std::vector&lt; <a class="el" href="structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html">OptionPriceErr</a> &gt; &amp;convergence_results, const std::string_view indent=&quot;   &quot;)</td></tr>
+<tr class="memdesc:a416b1bd841a92105e89ac47052dfbc73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Audits weak convergence trends and performs statistical hypothesis testing.  <br /></td></tr>
+<tr class="separator:a416b1bd841a92105e89ac47052dfbc73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b57a4bcb249c0dfb7dec2bd4348661a" id="r_a0b57a4bcb249c0dfb7dec2bd4348661a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacequantkos_1_1Tests_1_1Utils.html#a0b57a4bcb249c0dfb7dec2bd4348661a">run_weak_convergence_test</a> (const std::string_view test_name, <a class="el" href="structquantkos_1_1Config_1_1UInputs.html">KC::UInputs</a> config, const double expected_option_price, const std::vector&lt; std::pair&lt; <a class="el" href="namespacequantkos_1_1Implemented.html#a97f1bf0cc5d401b8a2450fe1b2da7aa6">KI::MathModel</a>, <a class="el" href="namespacequantkos_1_1Implemented.html#a4891217b10509468c9ada24f07f0f374">KI::NumScheme</a> &gt; &gt; &amp;models_to_test, const std::vector&lt; int &gt; &amp;time_grid_resolutions, const std::string_view indent=&quot;   &quot;)</td></tr>
 <tr class="memdesc:a0b57a4bcb249c0dfb7dec2bd4348661a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Automates a multi-model weak convergence analysis.  <br /></td></tr>
 <tr class="separator:a0b57a4bcb249c0dfb7dec2bd4348661a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -123,6 +129,56 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Common test execution helper functions and statistical analysis tools. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a id="a41850290b7c24e312279624812d9d678" name="a41850290b7c24e312279624812d9d678"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41850290b7c24e312279624812d9d678">&#9670;&#160;</a></span>are_finite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool quantkos::Tests::Utils::are_finite </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>num_price</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>expected_price</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>stat_error</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Check that results of MC and ref price are finite. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if results are finite, false otherwise </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1Utils_a41850290b7c24e312279624812d9d678_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Utils_a41850290b7c24e312279624812d9d678_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
 <a id="aa7e2d8e918ec0460eddd8acd2882a264" name="aa7e2d8e918ec0460eddd8acd2882a264"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa7e2d8e918ec0460eddd8acd2882a264">&#9670;&#160;</a></span>compare_numerical_and_expected_option_price()</h2>
 
@@ -172,7 +228,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A populated <a class="el" href="structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html" title="Data snapshot tracking simulation errors and steps for a specific grid resolution.">OptionPriceErr</a> tracking structural step errors. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A populated <a class="el" href="structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html" title="Data snapshot tracking simulation errors and steps for a specific grid resolution.">OptionPriceErr</a> tracking structural step errors and mathematical validity flags. </dd></dl>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -186,8 +242,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="ae4b583357276e528e8363769d60422fc" name="ae4b583357276e528e8363769d60422fc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4b583357276e528e8363769d60422fc">&#9670;&#160;</a></span>evaluate_quality_numerical_results()</h2>
+<a id="a416b1bd841a92105e89ac47052dfbc73" name="a416b1bd841a92105e89ac47052dfbc73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a416b1bd841a92105e89ac47052dfbc73">&#9670;&#160;</a></span>evaluate_quality_convergence_results()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -196,7 +252,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool quantkos::Tests::Utils::evaluate_quality_numerical_results </td>
+          <td class="memname">bool quantkos::Tests::Utils::evaluate_quality_convergence_results </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html">OptionPriceErr</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>convergence_results</em>, </td>
@@ -229,14 +285,14 @@ Here is the caller graph for this function:</div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>true if the highest-resolution error resides within statistical noise bounds; false otherwise. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the highest-resolution error resides within statistical noise bounds; false otherwise. False is returned also if some results are not finite at any refinement level </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Once the discretization error falls below the standard error, the total error stops shrinking linearly, and it flattens out and begins jumping around randomly due to Monte Carlo noise. </dd></dl>
 </li>
 </ul>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="namespacequantkos_1_1Tests_1_1Utils_ae4b583357276e528e8363769d60422fc_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Utils_ae4b583357276e528e8363769d60422fc_icgraph" alt=""/></div>
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1Utils_a416b1bd841a92105e89ac47052dfbc73_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Utils_a416b1bd841a92105e89ac47052dfbc73_icgraph" alt=""/></div>
 </div>
 
 </div>
@@ -327,6 +383,67 @@ Here is the caller graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="namespacequantkos_1_1Tests_1_1Utils_ae07ad4b57fc25a56afdd8b0a52cbf31e_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Utils_ae07ad4b57fc25a56afdd8b0a52cbf31e_icgraph" alt=""/></div>
+</div>
+
+</div>
+</div>
+<a id="a13d8fab4d954bb4361f6cdadd94a034b" name="a13d8fab4d954bb4361f6cdadd94a034b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13d8fab4d954bb4361f6cdadd94a034b">&#9670;&#160;</a></span>is_valid_run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool quantkos::Tests::Utils::is_valid_run </td>
+          <td>(</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>num_price</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>expected_price</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>stat_error</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>z_limit</em> = <code>3.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Strictly validates mathematical outputs against NaN, Inf, and statistical bounds. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if valid and within tolerance, false if broken. </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1Utils_a13d8fab4d954bb4361f6cdadd94a034b_cgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Utils_a13d8fab4d954bb4361f6cdadd94a034b_cgraph" alt=""/></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="namespacequantkos_1_1Tests_1_1Utils_a13d8fab4d954bb4361f6cdadd94a034b_icgraph.png" border="0" usemap="#anamespacequantkos_1_1Tests_1_1Utils_a13d8fab4d954bb4361f6cdadd94a034b_icgraph" alt=""/></div>
 </div>
 
 </div>

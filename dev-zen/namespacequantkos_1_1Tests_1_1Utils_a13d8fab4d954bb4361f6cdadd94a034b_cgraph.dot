@@ -1,0 +1,11 @@
+digraph "quantkos::Tests::Utils::is_valid_run"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="LR";
+  Node1 [id="Node000001",label="quantkos::Tests::Utils\l::is_valid_run",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Strictly validates mathematical outputs against NaN, Inf, and statistical bounds."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="quantkos::Tests::Utils\l::are_finite",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$namespacequantkos_1_1Tests_1_1Utils.html#a41850290b7c24e312279624812d9d678",tooltip="Check that results of MC and ref price are finite."];
+}

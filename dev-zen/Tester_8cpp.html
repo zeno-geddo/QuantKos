@@ -149,7 +149,7 @@ Functions</h2></td></tr>
 <p>Implements the testing suite lifecycle:</p><ol type="1">
 <li>Boots up the default parallel execution space (e.g., CUDA streams or OpenMP CPU threads).</li>
 <li>Standardizes formatting and prints structural console run headers.</li>
-<li>Registers all quantitative finance validation suites (RNG, Binary IO, SDE continuous drift, and European/American option convergence targets).</li>
+<li>Registers all quantitative finance validation suites (RNG, Binary IO, SDE continuous drift, and European/American option convergence targets ...).</li>
 <li>Executes either a YAML-filtered list of test IDs or runs the full suite as a fallback.</li>
 <li>Tallies results, presents a final success/failure summary block, and shuts down Kokkos safely.</li>
 </ol>
@@ -159,12 +159,12 @@ Functions</h2></td></tr>
 <li><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">argc</td><td>Number of command-line arguments. </td></tr>
-    <tr><td class="paramname">argv</td><td>Array of command-line argument strings. <code>argv[1]</code> can optionally contain a YAML test filter. </td></tr>
+    <tr><td class="paramname">argv</td><td>Array of command-line argument strings. <code>argv[1]</code> can optionally contain a YAML test filter.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>int Returns <code>0</code> if all executed test suites pass their composite mathematical and statistical tolerance thresholds; returns the number of failed suites otherwise. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000016">Todo:</a></b></dt><dd>Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural target_backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing. </dd></dl>
+</li>
+<li><dl class="section return"><dt>Returns</dt><dd>int Returns <code>0</code> if all executed test suites pass. Returns a positive integer representing the number of failed test suites. Returns <code>-1</code> on fatal configuration or setup errors. </dd></dl>
 </li>
 </ul>
 

@@ -7,5 +7,6 @@ var searchData=
   ['is_5fhost_5fcol_5fmajor_4',['is_host_col_major',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a172f2771802e5eba4580ecdc0d27bac9',1,'quantkos::Engine::PathsMCBatchMem']]],
   ['is_5fhost_5fcontiguous_5',['is_host_contiguous',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#aa284dd41bfa9db6733fa10ac12f7d75b',1,'quantkos::Engine::PathsMCBatchMem']]],
   ['is_5fhost_5frow_5fmajor_6',['is_host_row_major',['../classquantkos_1_1Engine_1_1PathsMCBatchMem.html#a4b0c59de421d363dacdb7c9ae20c32f2',1,'quantkos::Engine::PathsMCBatchMem']]],
-  ['is_5freal_5fusing_5fsingle_5fprecision_7',['is_real_using_single_precision',['../namespacequantkos_1_1Types.html#a8c704f9d43e21008b8b480926176195a',1,'quantkos::Types']]]
+  ['is_5freal_5fusing_5fsingle_5fprecision_7',['is_real_using_single_precision',['../namespacequantkos_1_1Types.html#a8c704f9d43e21008b8b480926176195a',1,'quantkos::Types']]],
+  ['is_5fvalid_5frun_8',['is_valid_run',['../namespacequantkos_1_1Tests_1_1Utils.html#a13d8fab4d954bb4361f6cdadd94a034b',1,'quantkos::Tests::Utils']]]
 ];
