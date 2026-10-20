@@ -77,7 +77,7 @@ namespace quantkos::Tests {
          * @brief Executes registered tests based on provided configuration in input yalm file or runs all if none provided.
          * @param argc The number of command-line arguments.
          * @param argv Array of command-line arguments. If argv[1] is a YAML file, only tests listed there are run.
-         * @return int The total number of failed tests. Returns 0 if all tests passed.
+         * @return int The total number of failed tests. Returns 0 if all tests passed. Returns -1 on fatal configuration/setup errors.
          */
         int run_tests(const int argc, char *argv[]) {
             // Check for help flag
@@ -85,20 +85,28 @@ namespace quantkos::Tests {
                 return 0;
             }
 
-            // Determine tests to run
+            // Parse tests to run
             std::vector<std::string> id_tests_to_run;
             if (argc > 1) {
                 try {
                     // Try to see in the yalm configuration file which are the test to run
                     std::cout << "Opening YAML file at: " << argv[1] << std::endl;
                     const YAML::Node tests_config = YAML::LoadFile(argv[1]);
-                    for (const auto &node: tests_config["run_tests"]) {
-                        id_tests_to_run.push_back(node.as<std::string>());
+                    if (tests_config["run_tests"]) {
+                        for (const auto &node: tests_config["run_tests"]) {
+                            id_tests_to_run.push_back(node.as<std::string>());
+                        }
+                    } else {
+                        const std::string err_smg = "[ FATAL ERROR ] Test configuration is empty, "
+                                "'run_tests' node not found!\n";
+                        std::cerr << err_smg;
+                        std::cerr << get_help_message() << std::endl;
+                        return -1;
                     }
                 } catch (...) {
                     std::cerr << "Error: Could not parse YAML file or file not found.\n";
                     std::cerr << get_help_message() << std::endl;
-                    return 1;
+                    return -1;
                 }
             } else {
                 // Run all tests if not yalm file is passed
@@ -107,59 +115,82 @@ namespace quantkos::Tests {
                 }
             }
 
-            // Execute tests
-            int n_tests_failed = 0;
+            // Check almost one test is been requested
+            if (id_tests_to_run.empty()) {
+                std::cerr << indent << "[ FATAL ERROR ] Test configuration is empty. No tests requested.\n";
+                std::cerr << get_help_message() << std::endl;
+                return -1;
+            }
+
+            // Check that name tests is ok
             for (const auto &id_test: id_tests_to_run) {
-                const bool test_required = static_cast<bool>(tests_registry.count(id_test));
-                // 1 if there is the key, 0 else
-                if (test_required) {
-                    const auto &target_test_suite = tests_registry.at(id_test);
-                    try {
-                        const bool test_passed = target_test_suite.test_function();
-                        if (test_passed) {
-                            std::cout << indent << "[ SUCCESS ] " << target_test_suite.description <<
-                                    " Suite passed successfully.\n\n";
-                        } else {
-                            std::cout << indent << "[ TEST FAILURE ] " << target_test_suite.description <<
-                                    " Suite detected an error!\n\n";
-                            std::cerr << indent << "[ TEST FAILURE ] " << target_test_suite.description <<
-                                    " Suite detected an error!\n\n";
-                            n_tests_failed++;
-                        }
-                    } catch (const std::runtime_error &e) {
-                        std::cout << indent << "[ FATAL RUNTIME ERROR ] " << target_test_suite.description
-                                << " Suite made the software crash failed with: \n\n " << e.what() << "\n\n";
-                        std::cerr << indent << "[ FATAL RUNTIME ERROR ] " << target_test_suite.description
-                                << " Suite made the software crash failed with: \n\n " << e.what() << "\n\n";
-                        n_tests_failed++;
-                    } catch (...) {
-                        std::cout << indent << "[ FATAL ERROR ] " << target_test_suite.description <<
-                                " Suite made the software crash!\n\n";
-                        std::cerr << indent << "[ FATAL ERROR ] " << target_test_suite.description <<
-                                " Suite made the software crash!\n\n";
+                if (tests_registry.count(id_test) == 0) {
+                    std::cerr << indent << "[ FATAL ERROR ] Unknown test name requested: '" << id_test << "'\n";
+                    std::cerr << indent << "Aborting test execution to prevent a silent pass.\n";
+                    return -1;
+                }
+            }
+
+            // Execute tests requested
+            int n_tests_failed = 0;
+            int n_tests_executed = 0;
+            for (const auto &id_test: id_tests_to_run) {
+                const auto &target_test_suite = tests_registry.at(id_test);
+                n_tests_executed++; // Track execution regardless of test success/failure/crash
+                try {
+                    const bool test_passed = target_test_suite.test_function();
+                    if (test_passed) {
+                        std::cout << indent << "[ SUCCESS ] " << target_test_suite.description <<
+                                " Suite passed successfully.\n\n";
+                    } else {
+                        std::cout << indent << "[ TEST FAILURE ] " << target_test_suite.description <<
+                                " Suite detected an error!\n\n";
+                        std::cerr << indent << "[ TEST FAILURE ] " << target_test_suite.description <<
+                                " Suite detected an error!\n\n";
                         n_tests_failed++;
                     }
+                } catch (const std::runtime_error &e) {
+                    std::cout << indent << "[ FATAL RUNTIME ERROR ] " << target_test_suite.description
+                            << " Suite made the software crash failed with: \n\n " << e.what() << "\n\n";
+                    std::cerr << indent << "[ FATAL RUNTIME ERROR ] " << target_test_suite.description
+                            << " Suite made the software crash failed with: \n\n " << e.what() << "\n\n";
+                    n_tests_failed++;
+                } catch (...) {
+                    std::cout << indent << "[ FATAL ERROR ] " << target_test_suite.description <<
+                            " Suite made the software crash!\n\n";
+                    std::cerr << indent << "[ FATAL ERROR ] " << target_test_suite.description <<
+                            " Suite made the software crash!\n\n";
+                    n_tests_failed++;
                 }
+            }
+
+            if (n_tests_executed == 0) {
+                std::cerr << indent << "[ FATAL ERROR ] Zero tests were executed.\n";
+                return -1;
             }
             return n_tests_failed;
         }
 
     private:
+        /**
+         * @brief Create user help message.
+         * @return std::string containing help message
+        */
         std::string get_help_message() {
             // Start with a short explanation
             std::ostringstream oss;
             oss << "Usage: ./Test [YAML_CONFIG_FILE] [--help]\n\n"
-                                    "Options:\n" <<
-                                    indent << "--help    Display this help message.\n\n"
-                                    "YAML Configuration Format:\n"
-                                    "To run specific tests, create a YAML file with a 'run_tests' sequence:\n\n"
-                                    "run_tests:\n"
-                                    "  - \"test_id_1\"\n"
-                                    "  - \"test_id_2\"\n\n"
-                                    "If no YAML file is provided, the engine will execute all registered tests.\n"
-                                    "List Available tests :\n";
+                    "Options:\n" <<
+                    indent << "--help    Display this help message.\n\n"
+                    "YAML Configuration Format:\n"
+                    "To run specific tests, create a YAML file with a 'run_tests' sequence:\n\n"
+                    "run_tests:\n"
+                    "  - \"test_id_1\"\n"
+                    "  - \"test_id_2\"\n\n"
+                    "If no YAML file is provided, the engine will execute all registered tests.\n"
+                    "List Available tests :\n";
             // Show the id of the implemented tests
-            for (const auto& [id, suite] : tests_registry) {
+            for (const auto &[id, suite]: tests_registry) {
                 oss << indent << " - " << id << "  #  " << suite.description + "\n";
             }
 

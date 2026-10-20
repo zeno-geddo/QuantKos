@@ -150,6 +150,11 @@ namespace quantkos::Tests::Greeks {
         std::cout << indent << " " << name << " Parity | Expected: " << expected
                 << " | Computed: " << num << " | Error: " << error << " | Tol: " << tol << "\n";
 
+        if (!std::isfinite(error) || !std::isfinite(tol)) {
+            std::cout << "     [ FAILED ]\n";
+            return false;
+        }
+
         if (error > tol) {
             std::cout << "     [ FAILED ]\n";
             return false;

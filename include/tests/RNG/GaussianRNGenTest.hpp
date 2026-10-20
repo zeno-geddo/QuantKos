@@ -192,6 +192,11 @@ namespace quantkos::Tests::RNG {
         std::cout << indent << "[   INFO   ] Measured Mean     : " << mean << "\n";
         std::cout << indent << "[   INFO   ] Measured Variance : " << variance << "\n";
 
+        if (!std::isfinite(mean) || !std::isfinite(variance)) {
+            std::cerr << indent << "[  FATAL  ] RNG produced NaN or Inf values!\n";
+            return false;
+        }
+
         if (std::abs(mean - 0.0) > 0.005) {
             std::cerr << indent << "[  FAILED  ] RNG Mean drifted unacceptably far from 0.0!\n";
             test_passed = false;
@@ -331,6 +336,11 @@ namespace quantkos::Tests::RNG {
         std::cout << indent << "[   INFO   ] Measured Mean     : " << mean << "\n";
         std::cout << indent << "[   INFO   ] Measured Variance : " << variance << "\n";
 
+        if (!std::isfinite(mean) || !std::isfinite(variance)) {
+            std::cerr << indent << "[  FATAL  ] Custom RNG produced NaN or Inf values!\n";
+            return false;
+        }
+
         if (std::abs(mean - 0.0) > 0.005) {
             std::cerr << indent << "[  FAILED  ] Custom RNG Mean drifted unacceptably far from 0.0!\n";
             test_passed = false;
@@ -361,8 +371,8 @@ namespace quantkos::Tests::RNG {
  @todo Fix the warning generated when using GPUs.
 */
     inline bool run_test_gaussian() {
-        bool test_passed = test_default_kokkos_gaussian();
-        test_passed =run_test_custom_gaussian();
+        bool test_passed = false;
+        test_passed = test_default_kokkos_gaussian() && run_test_custom_gaussian();
         return test_passed;
     }
 }

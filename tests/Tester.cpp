@@ -45,7 +45,7 @@
  * 1. Boots up the default parallel execution space (e.g., CUDA streams or OpenMP CPU threads).
  * 2. Standardizes formatting and prints structural console run headers.
  * 3. Registers all quantitative finance validation suites (RNG, Binary IO, SDE continuous drift,
- * and European/American option convergence targets).
+ * and European/American option convergence targets ...).
  * 4. Executes either a YAML-filtered list of test IDs or runs the full suite as a fallback.
  * 5. Tallies results, presents a final success/failure summary block, and shuts down Kokkos safely.
  * * @note Just like in the primary application main, the test registry execution is isolated
@@ -54,14 +54,14 @@
  * and reference-cleared before @c Kokkos::finalize() is executed, preventing memory-access violations.
  * * @param argc Number of command-line arguments.
  * @param argv Array of command-line argument strings. `argv[1]` can optionally contain a YAML test filter.
- * @return int Returns @c 0 if all executed test suites pass their composite mathematical and
- * statistical tolerance thresholds; returns the number of failed suites otherwise.
- * @todo Should write a script that automatically compile and install QuantKos with cuda, openmp, and procedural target_backends. Then this script should also launch this test or a lighter benchmark to see how well the code is performing.
+ * * @return int Returns @c 0 if all executed test suites pass.
+ * Returns a positive integer representing the number of failed test suites.
+ * Returns @c -1 on fatal configuration or setup errors.
  */
 int main(int argc, char *argv[]) {
     // 1. Initialize the parallel hardware backend (binds thread pools / GPU virtual contexts)
     Kokkos::initialize(argc, argv);
-    int failed_tests = 0;
+    int test_return_code = -1;
     {
         // 2. Output the stylized welcome banner and engine metadata (Matches app/main.cpp output paradigms)
         constexpr std::string_view indent{"   "};
@@ -99,14 +99,17 @@ int main(int argc, char *argv[]) {
                              KTE::Greeks::run_test);
 
         // 4. Run active tests (Automatically filters using argv[1] if a valid YAML configuration is parsed)
-        failed_tests = tester.run_tests(argc, argv);
+        test_return_code = tester.run_tests(argc, argv);
 
         // 5. Output stylized testing summary results and compliance metrics
         std::cout << indent << "**************************************************\n";
         std::cout << indent << "             EXECUTION RUN COMPLETE               \n";
-        if (failed_tests == 0) {
+        if (test_return_code == 0) {
             std::cout << indent << " STATUS   : ALL PASSED OK \n";
+        } else if (test_return_code < 0) {
+            std::cout << indent << " STATUS   : FAILED (Fatal configuration/setup errors, no tests were run) \n";
         } else {
+            const int failed_tests = test_return_code;
             std::cout << indent << " STATUS   : FAILED (" << failed_tests << " suite(s) broke constraints)\n";
             std::cerr << indent << " STATUS   : FAILED (" << failed_tests << " suite(s) broke constraints)\n";
         }
@@ -117,5 +120,5 @@ int main(int argc, char *argv[]) {
     // 6. Release parallel runtime execution spaces and free up system resources
     Kokkos::finalize();
 
-    return failed_tests == 0 ? 0 : 1;
+    return test_return_code;
 }

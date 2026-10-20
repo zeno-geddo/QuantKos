@@ -111,6 +111,12 @@ option(QKOS_ENABLE_CPU_OPT_REPORTS "Enable compiler optimization reports (inlini
 ## @option QKOS_ENABLE_TESTS
 ## @brief Directs CMake to compile the unit test suite and configure CTest execution.
 option(QKOS_ENABLE_TESTS "Build unit tests ?" ON)
+if (QKOS_ENABLE_TESTS)
+    if (QKOS_ENABLE_FAST_MATH)
+        message(STATUS "WARNING: Numerical validation and tests could silently pass when QKOS_ENABLE_FAST_MATH=OFF. "
+                "Fast-math allows compilers to optimize away std::isfinite() checks, causing test assertions to pass silently on NaNs.")
+    endif ()
+endif ()
 
 ## @option QKOS_ENABLE_FETCHCONTENT
 ## @brief Allows the build system to automatically download and compile missing dependencies from GitHub.
