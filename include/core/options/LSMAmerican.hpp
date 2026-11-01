@@ -189,12 +189,12 @@ namespace quantkos::Engine::LSM {
 
             if constexpr (NBasis > 3)
                 L[3] = (((static_cast<KT::Real>(-1.0 / 6.0) * X + KT::real_1p5) * X
-                        - KT::real_3) * X) + KT::real_one;
+                         - KT::real_3) * X) + KT::real_one;
 
             if constexpr (NBasis > 4)
                 L[4] = ((((static_cast<KT::Real>(1.0 / 24.0) * X - static_cast<KT::Real>(2.0 / 3.0)) * X
-                         + KT::real_3) * X - KT::real_4) * X)
-                         + KT::real_one;
+                          + KT::real_3) * X - KT::real_4) * X)
+                       + KT::real_one;
         }
     };
 
@@ -254,13 +254,12 @@ namespace quantkos::Engine::LSM {
                                          const KT::Real strike_price) {
             // Note: It assumes that d_slice_prices_at_target_time is given at last time (not passing mem since the labda would try capture and load it in kokkos)
             const int N = d_slice_prices_at_target_time.extent(0);
-            Kokkos::parallel_for("LSM_Init_Cashflows", N, KOKKOS_LAMBDA(const int i)
-            {
-                KT::Real target_price = d_slice_prices_at_target_time(i);
-                d_best_future_outcomes(i) = Payoff<OptRight>::evaluate_payoff(target_price, strike_price);
-            }
-            )
-            ;
+            Kokkos::parallel_for("LSM_Init_Cashflows", N, KOKKOS_LAMBDA(const int i) {
+                                     KT::Real target_price = d_slice_prices_at_target_time(i);
+                                     d_best_future_outcomes(i) = Payoff<OptRight>::evaluate_payoff(
+                                         target_price, strike_price);
+                                 }
+            );
             // Kokkos::fence(); // Fence not needed since there is a deep copty after
         }
 
@@ -316,51 +315,107 @@ namespace quantkos::Engine::LSM {
                                      const KT::Real strike_price) {
             const int N = d_slice_prices_at_target_time.extent(0);
 
-            Kokkos::parallel_for("LSM_Update_Cashflows", N, KOKKOS_LAMBDA(const int i)
-            {
-                // Get variables needed for the exercise decision
-                const KT::Real S = d_slice_prices_at_target_time(i);
-                const KT::Real intrinsic_val = Payoff<OptRight>::evaluate_payoff(S, strike_price);
-                const KT::Real discounted_future_cf = d_best_future_outcomes(i) * discount_factor;
+            Kokkos::parallel_for("LSM_Update_Cashflows", N, KOKKOS_LAMBDA(const int i) {
+                                     // Get variables needed for the exercise decision
+                                     const KT::Real S = d_slice_prices_at_target_time(i);
+                                     const KT::Real intrinsic_val = Payoff<OptRight>::evaluate_payoff(S, strike_price);
+                                     const KT::Real discounted_future_cf = d_best_future_outcomes(i) * discount_factor;
 
-                // Early exercise decision (ITM branch)
-                if (intrinsic_val > KT::real_zero) {
-                     const KT::Real expected_val_of_holding = evaluate_expected_val_of_holding(ls_coeffs, S, strike_price);
-                    // Continuation value
-                    d_best_future_outcomes(i) = (intrinsic_val > expected_val_of_holding)
-                                                    ? intrinsic_val
-                                                    : discounted_future_cf;
-                    // if : intrinsic_val > expected_val_of_holding the option is exercised (holding will be statistically worst). The future cash flow is overwritten with the intrinsic_val of today
-                    // else : we hold the option, based on statistical average of all paths, holding will likely yield a bigger payout in the future
-                } else {
-                    d_best_future_outcomes(i) = discounted_future_cf; // Hold since exiting is impossible
-                }
-            }
-            )
-            ;
+                                     // Early exercise decision (ITM branch)
+                                     if (intrinsic_val > KT::real_zero) {
+                                         const KT::Real expected_val_of_holding = evaluate_expected_val_of_holding(
+                                             ls_coeffs, S, strike_price);
+                                         // Continuation value
+                                         d_best_future_outcomes(i) = (intrinsic_val > expected_val_of_holding)
+                                                                         ? intrinsic_val
+                                                                         : discounted_future_cf;
+                                         // if : intrinsic_val > expected_val_of_holding the option is exercised (holding will be statistically worst). The future cash flow is overwritten with the intrinsic_val of today
+                                         // else : we hold the option, based on statistical average of all paths, holding will likely yield a bigger payout in the future
+                                     } else {
+                                         d_best_future_outcomes(i) = discounted_future_cf;
+                                         // Hold since exiting is impossible
+                                     }
+                                 }
+            );
             // Kokkos::fence(); // // Fence not needed since there is a deep copty after
         }
 
+        // // =================================================================
+        // // STEP 4: Final t=1 to t=0 Discounting
+        // // =================================================================
+        // /**
+        //  * @brief STEP 4: Applies the final discount factor from $t = 1$ to $t = 0$.
+        //  * * Multiplies the remaining optimal cash flow trajectories by the final discount factor
+        //  * to bring all values back to time zero.
+        //  * * @param d_best_future_outcomes 1D cash flow target view matrix vector.
+        //  * @param discount_factor Final continuous discount factor fraction step value.
+        //  */
+        // static void apply_final_discount(const DevView1D &d_best_future_outcomes,
+        //                                  const KT::Real discount_factor) {
+        //     const int N = d_best_future_outcomes.extent(0);
+        //     Kokkos::parallel_for("LSM_Final_Discount", N, KOKKOS_LAMBDA(const int i) {
+        //                              d_best_future_outcomes(i) *= discount_factor;
+        //                          }
+        //     );
+        //     // Kokkos::fence(); // Fence not needed, there is a deepcopy just after
+        // }
+
         // =================================================================
-        // STEP 4: Final t=1 to t=0 Discounting
+        // STEP 4: Final t=1 to t=0 Discounting & Day-Zero Exercise Decision
         // =================================================================
         /**
-         * @brief STEP 4: Applies the final discount factor from $t = 1$ to $t = 0$.
-         * * Multiplies the remaining optimal cash flow trajectories by the final discount factor
-         * to bring all values back to time zero.
-         * * @param d_best_future_outcomes 1D cash flow target view matrix vector.
-         * @param discount_factor Final continuous discount factor fraction step value.
+         * @brief Applies the final discount factor from $t = \Delta t$ to $t = 0$ and evaluates
+         *        the optimal immediate exercise decision at day zero ($t = 0$).
+         *
+         * @details Unlike historical time steps where asset prices are scattered across different
+         *          locations (requiring a conditional regression curve), all simulated paths at $t = 0$
+         *          originate from the exact same initial conditions ($S_0$ and $v_0$). Because $S_0$
+         *          is a uniform scalar, the continuation value collapses from a conditional expectation
+         *          ($E[Y|X]$) into a global unconditional expected value ($E[Y]$).
+         *
+         * This function executes a two-phase day-zero evaluation:
+         * 1. **Parallel Discount & Reduction (`Kokkos::parallel_reduce`)**: Multiplies every path's cashflow
+         *    by the final `discount_factor` and simultaneously aggregates the total sum to compute
+         *    the statistical mean continuation value ($\bar{Y}$).
+         * 2. **Global Exercise Check**: Evaluates the intrinsic payoff of exercising immediately at $S_0$.
+         *    If `intrinsic_today > mean_continuation`, it indicates that waiting is disadvantageous on average,
+         *    so the entire path vector is globally overwritten with `intrinsic_today`. Otherwise, the
+         *    discounted future cashflows are preserved.
+         *
+         * This pattern avoids hardware warp divergence on the GPU while maintaining rigorous
+         * consistency with rational option exercise boundaries.
+         *
+         * @param d_best_future_outcomes 1D cash flow target view vector to be discounted and updated.
+         * @param discount_factor Final continuous discount factor spanning from $t = \Delta t$ to $t = 0$.
+         * @param S0 Initial underlying asset spot price ($t = 0$).
+         * @param strike_price Contract exercise strike price ($K$).
          */
         static void apply_final_discount(const DevView1D &d_best_future_outcomes,
-                                         const KT::Real discount_factor) {
+                                         const KT::Real discount_factor,
+                                         const KT::Real S0,
+                                         const KT::Real strike_price) {
             const int N = d_best_future_outcomes.extent(0);
-            Kokkos::parallel_for("LSM_Final_Discount", N, KOKKOS_LAMBDA(const int i)
-            {
-                d_best_future_outcomes(i) *= discount_factor;
+
+            // 1. Discount the future cashflows to today and calculate their sum via parallel reduction
+            double total_discounted_cf = 0.0;
+            Kokkos::parallel_reduce("LSM_Final_Discount_And_Sum", N,
+                KOKKOS_LAMBDA(const int i, double& lsum) {
+                    d_best_future_outcomes(i) *= discount_factor;
+                    lsum += d_best_future_outcomes(i);
+                }, total_discounted_cf);
+
+            // 2. Calculate the statistical mean of holding the option (unconditional expectation)
+            const double mean_continuation = total_discounted_cf / static_cast<double>(N);
+
+            // 3. Calculate immediate exercise value today at S0
+            const KT::Real intrinsic_today = Payoff<OptRight>::evaluate_payoff(S0, strike_price);
+
+            // 4. If immediate exercise is optimal on average, replace all path outcomes globally
+            if (intrinsic_today > mean_continuation) {
+                Kokkos::parallel_for("LSM_Immediate_Exercise", N, KOKKOS_LAMBDA(const int i) {
+                    d_best_future_outcomes(i) = intrinsic_today;
+                });
             }
-            )
-            ;
-            // Kokkos::fence(); // Fence not needed, there is a deepcopy just after
         }
 
         // =================================================================
@@ -386,34 +441,34 @@ namespace quantkos::Engine::LSM {
             const int N_prices = d_slice_prices.extent(0);
 
             Kokkos::parallel_reduce("LSM_Compute_Regression_Sums", N_prices,
-                                    KOKKOS_LAMBDA(const int i, RegressionSums<NBasis> & regr_sum)
-            {
-                const KT::Real S = d_slice_prices(i);
-                const KT::Real intrinsic_val = Payoff<OptRight>::evaluate_payoff(S, strike_price);
+                                    KOKKOS_LAMBDA(const int i, RegressionSums<NBasis> &regr_sum) {
+                                        const KT::Real S = d_slice_prices(i);
+                                        const KT::Real intrinsic_val = Payoff<OptRight>::evaluate_payoff(
+                                            S, strike_price);
 
-                if (intrinsic_val > KT::real_zero) {
-                    const KT::Real Y = d_best_future_outcomes(i) * discount_factor;
-                    const KT::Real X = S / strike_price;
+                                        if (intrinsic_val > KT::real_zero) {
+                                            const KT::Real Y = d_best_future_outcomes(i) * discount_factor;
+                                            const KT::Real X = S / strike_price;
 
-                    // Evaluate the basis polynomials into a local stack buffer
-                    KT::Real L[NBasis];
-                    LaguerreBasis<NBasis>::evaluate(X, L);
+                                            // Evaluate the basis polynomials into a local stack buffer
+                                            KT::Real L[NBasis];
+                                            LaguerreBasis<NBasis>::evaluate(X, L);
 
-                    // Update M and B using the unified templated logic
-                    // The compiler should unroll these loops, making it as fast as manual coding
-                    for (size_t row = 0; row < NBasis; ++row) {
-                        regr_sum.B(row) += static_cast<double>(L[row]) * Y;
-                        for (size_t col = 0; col < NBasis; ++col) {
-                            regr_sum.M(row, col) += static_cast<double>(L[row]) * static_cast<double>(L[col]);
-                        }
-                    }
-                    regr_sum.count += 1.0;
-                }
-            }
-            ,
-            total_sums
-            )
-            ;
+                                            // Update M and B using the unified templated logic
+                                            // The compiler should unroll these loops, making it as fast as manual coding
+                                            for (size_t row = 0; row < NBasis; ++row) {
+                                                regr_sum.B(row) += static_cast<double>(L[row]) * Y;
+                                                for (size_t col = 0; col < NBasis; ++col) {
+                                                    regr_sum.M(row, col) += static_cast<double>(L[row]) * static_cast<
+                                                        double>(L[col]);
+                                                }
+                                            }
+                                            regr_sum.count += 1.0;
+                                        }
+                                    }
+                                    ,
+                                    total_sums
+            );
             return total_sums;
         }
 
@@ -428,8 +483,8 @@ namespace quantkos::Engine::LSM {
          */
         KOKKOS_INLINE_FUNCTION
         static double evaluate_expected_val_of_holding(const Coeffs<NBasis> &coeffs,
-                                                         const KT::Real S,
-                                                         const KT::Real strike_price) {
+                                                       const KT::Real S,
+                                                       const KT::Real strike_price) {
             const KT::Real X = S / strike_price;
             KT::Real L[NBasis];
 
@@ -455,11 +510,12 @@ namespace quantkos::Engine::LSM {
          * 3. Backward Substitution: $L^T \cdot C = y$
          * * @param sums Aggregated regression matrix and vector entries computed on the device.
          * @return A populated Coeffs structure containing the solved weights. If the matrix is
-         * singular or there are fewer ITM paths than basis functions, it returns a zeroed structure.
+         * singular or there are fewer ITM paths than basis functions, it returns a statistical mean fallback
+         * (first coeff = mean, other coeffs set to zero).
          */
         static Coeffs<NBasis> solve_system_on_host_cholesky(const RegressionSums<NBasis> &sums) {
-            // If not enough paths to form a basis, return zero coefficients
-            if (sums.count < static_cast<double>(NBasis)) return Coeffs<NBasis>{};
+            // If not enough paths to form a basis, Use statistical mean fallback
+            if (sums.count < static_cast<double>(NBasis)) return compute_fallback_coefficients(sums);
 
             // Tikhonov Regularization
             // Add a tiny amount of noise (1 part per million) relative to the signal present in the data (average diagonal element)
@@ -470,7 +526,6 @@ namespace quantkos::Engine::LSM {
             //             const KT::Real avg_diag = trace / static_cast<KT::Real>(NBasis);
             //             constexpr KT::Real eps_factor = std::is_same_v<KT::Real, float> ? 1e-4 : 1e-6;
             //             const KT::Real reg = std::max(eps_factor * avg_diag, eps_factor);
-
 
 
             // 1. Prepare local M and B
@@ -497,7 +552,8 @@ namespace quantkos::Engine::LSM {
 
                     if (i == j) {
                         const double val = M[i][i] - s;
-                        if (val < singularity_limit) return Coeffs<NBasis>{}; // Not pos-def
+                        // Use statistical mean fallback if matrix is singular/not positive-definite
+                        if (val < singularity_limit) return compute_fallback_coefficients(sums);
                         L[i][i] = std::sqrt(val);
                     } else {
                         L[i][j] = (M[i][j] - s) / L[j][j];
@@ -522,6 +578,38 @@ namespace quantkos::Engine::LSM {
             }
 
             return C;
+        }
+
+
+        /**
+         * @brief Computes an intercept-only regression fallback when standard Cholesky decomposition fails.
+         *
+         * @details In the Longstaff-Schwartz Method, regressions fail when the covariance matrix is
+         * singular (e.g., multicollinearity from paths bunching together) or when there are fewer
+         * In-The-Money (ITM) paths than basis functions. In these cases, estimating the conditional
+         * expectation $E[Y|X]$ is mathematically impossible.
+         *
+         * Instead of returning zeroed coefficients (which forces an artificial $0.0$ continuation
+         * value and triggers incorrect early exercise on every ITM path), this fallback computes
+         * the Best Unbiased Estimator: the unconditional expectation $E[Y]$.
+         *
+         * Because the 0-th Laguerre polynomial is a constant ($L_0(X) = 1$), `sums.B(0)` contains
+         * the pure sum of all discounted future cashflows. Dividing this by `sums.count` yields
+         * the statistical mean ($\bar{Y}$). Setting $\beta_0 = \bar{Y}$ and all other coefficients
+         * to $0.0$ draws a flat horizontal line, safely reverting the time-step to a European
+         * holding baseline and preserving path stability.
+         *
+         * @param sums Aggregated regression matrix and vector entries computed on the device.
+         * @return A Coeffs structure with $\beta_0$ set to the mean continuation value, and zeroes elsewhere.
+         */
+        static Coeffs<NBasis> compute_fallback_coefficients(const RegressionSums<NBasis> &sums) {
+            Coeffs<NBasis> fallback{};
+            if (sums.count > 0.0) {
+                // sums.B(0) is the sum of all discounted Y values.
+                // Dividing by the ITM path count gives the simple average continuation value.
+                fallback.C[0] = sums.B(0) / sums.count;
+            }
+            return fallback;
         }
     };
 }

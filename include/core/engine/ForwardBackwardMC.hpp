@@ -222,7 +222,7 @@ namespace quantkos::Engine {
             BTracker.update_progress();
 
             // THE BACKWARD TIME MARCH
-            for (int t = nT - 2; t > 0; --t) {
+            for (int t = nT - 2; t >= 0; --t) {
                 // A. Memory Orchestration: Stream CPU RAM -> GPU VRAM
                 Mem.bring_host_prices_time_slice_to_device(t);
 
@@ -242,7 +242,10 @@ namespace quantkos::Engine {
             }
 
             // 3. FINALIZATION (t = 0)
-            EngineLSM::apply_final_discount(Mem.d_best_future_outcomes, discount_factor);
+            EngineLSM::apply_final_discount(Mem.d_best_future_outcomes,
+                                            discount_factor,
+                                            loc_config.market.S0,
+                                            strike_price);
 
             // Pull final results back to CPU (Not needed)
             // Mem.bring_device_cash_flows_to_host();

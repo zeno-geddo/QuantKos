@@ -2,12 +2,12 @@
 # TESTS
 # ==========================================
 run_tests:
-  #- AmericanOption
-  #- Bates
-  #- BlackScholes
-  #- Heston
-  #- IOBin
-  #- NoNoise
-  #- RNG
+  - AmericanOption
+  - Bates
+  - BlackScholes
+  - Heston
+  - IOBin
+  - NoNoise
+  - RNG
   - EUGreeksPutCallParity
 

@@ -49,12 +49,12 @@ namespace quantkos::Tests::LSM {
         auto config = KC::UInputs();
 
         config.model.id_model = KI::MathModel::Heston,
-        config.scheme.id_scheme = KI::NumScheme::ImplicitMilstein,
+                config.scheme.id_scheme = KI::NumScheme::ImplicitMilstein,
 
-        config.output.format = KI::IOFormat::BIN;
+                config.output.format = KI::IOFormat::BIN;
         config.output.filename_paths_out = "";
-        config.mc.Max_CPU_RAM_MB = 10000 ;
-        config.mc.Max_VRAM_MB = 400 ;
+        config.mc.Max_CPU_RAM_MB = 10000;
+        config.mc.Max_VRAM_MB = 400;
 
         config.mc.normalize_prices = true;
         config.mc.N_Paths = 500'000;
@@ -102,7 +102,7 @@ namespace quantkos::Tests::LSM {
      * $$ \text{Total Tolerance} = 3 \cdot \epsilon_{\text{stat}} + \max(V_{\text{ref}} \cdot 10\%, 0.1) $$
      * Where:
      * - $3 \cdot \epsilon_{\text{stat}}$ is the strict $3$-$\sigma$ (99.7% confidence interval) statistical error boundary.
-     * - $\max(V_{\text{ref}} \cdot 10\%, 0.1)$ represents the maximum allowed discretization bias arising from
+     * - $\max(V_{\text{ref}} \cdot 2\%, 0.02)$ represents the maximum allowed discretization bias arising from
      * approximating continuous exercise boundaries with discrete time-steps.
      * * @return true if all swept spot prices fall within their composite statistical and bias thresholds for the maximum resolution adopted; false otherwise.
      */
@@ -111,13 +111,13 @@ namespace quantkos::Tests::LSM {
         bool all_tests_passed = true;
         auto config = getDefaultConfigGoodIntegrand();
 
-        // Reference values from Rouah, pag 213
+        // Reference values from Rouah, pag 212 (from Ikonen and Toivanen (2008))
         const std::map<double, double> S0_putPrice_map{
-            {8., 1.99958},
-            {9., 1.103571},
-            {10., 0.519039},
-            {11., 0.226137},
-            {12., 0.082123},
+            {8., 2.0000},
+            {9., 1.107641},
+            {10., 0.520030},
+            {11., 0.213668},
+            {12., 0.082036},
         };
 
         for (const auto pair: S0_putPrice_map) {
@@ -136,28 +136,38 @@ namespace quantkos::Tests::LSM {
             std::cout << "\n" << indent << "--------------------------------------------------------------------\n";
             std::cout << indent << ">>> Go back to the tester ...\n";
 
-            // Check absolute erroror
+            // Explicitly check for NaNs and Infinities first
+            if (!std::isfinite(MCRes.OptionPrice.option_price) || !std::isfinite(MCRes.OptionPrice.standard_error)) {
+                std::cout << indent << "[  FAILED  ] Simulation returned non-finite numbers (NaN or Inf)!" << std::endl;
+                std::cerr << indent << "[  FAILED  ] Simulation returned non-finite numbers (NaN or Inf)!" << std::endl;
+                all_tests_passed = false;
+                continue; // Skip the rest of the checks for this strike
+            }
+
+            // Check absolute error
             const KT::Real num_price = MCRes.OptionPrice.option_price;
             const KT::Real abs_error = std::abs(num_price - expected_price);
+            const KT::Real rel_error = (std::abs(num_price - expected_price) / expected_price) * static_cast<KT::Real>(100.);
 
             // Statistical Tolerance (3-Sigma Rule: 99.7% Confidence Interval)
             const KT::Real stat_error = MCRes.OptionPrice.standard_error;
             const KT::Real stat_tolerance = 3.0 * stat_error;
-            // Discretization Bias Tolerance
-            const KT::Real bias_tolerance = std::max(expected_price * 0.1, 0.1);
+            // Discretization Bias Tolerance (Max 2% relative error, with a tiny floor for deep OTM)
+            const KT::Real bias_tolerance = std::max(expected_price * 0.02, 0.005);
             // Total allowed tolerance
             const KT::Real total_tolerance = stat_tolerance + bias_tolerance;
 
-
-            std::cout << indent << " Expe price: " << expected_price
+            std::cout << indent << " Ref price: " << expected_price
                     << " | Num Price: " << num_price
-                    << " | Error: " << abs_error
-                    << " | Stat Error: " << stat_error
+                    << " \n | Abs Error: " << abs_error
+                    << " | Rel Error %: " << rel_error
+                    << " \n | Stat Error: " << stat_error
                     << " | Bias: " << bias_tolerance
                     << " | Allowed Tol Err: " << total_tolerance << "\n";
 
             if (abs_error > total_tolerance) {
-                std::cerr << indent << "[  FAILED  ] Error exceeds composite tolerance!" << std::endl;
+                std::cerr << indent << "[  FAILED  ] Error exceeds composite tolerance "
+                        "(statistical tolerance + bias tolerance)!" << std::endl;
                 all_tests_passed = false;
             } else {
                 std::cout << indent << "[  PASSED  ] Result is within statistical bounds." << std::endl;

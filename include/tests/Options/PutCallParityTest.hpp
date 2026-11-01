@@ -193,6 +193,11 @@ namespace quantkos::Tests::Greeks {
     */
     inline bool run_test() {
         constexpr std::string_view indent = "   ";
+        std::cout << "\n\n" << indent << "====================================================================\n"
+                << indent << "          TEST 8 : Put-Call Parity Check             \n"
+                << indent << "====================================================================\n";
+
+
         auto config = getDefaultConfigGreekParity();
         config.validate();
 

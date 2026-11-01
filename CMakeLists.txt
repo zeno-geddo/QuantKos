@@ -309,6 +309,7 @@ endif ()
 ## @section install_sec
 ## @brief Project Installation Execution. Collects system resources and copies user templates directly to the localized path hierarchy.
 install(FILES README.md QuantKosConfig.yaml DESTINATION share)
+install(FILES README.md TestserConfig.yaml DESTINATION share)
 
 
 # =============================================================================
