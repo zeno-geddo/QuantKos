@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['parameters_0',['Parameters',['../md_USER__INPUT__GUIDE.html#autotoc_md119',1,'Bates Parameters'],['../md_MATH__GUIDE.html#autotoc_md47',1,'Common Market Parameters'],['../md_MATH__GUIDE.html#autotoc_md51',1,'Core Parameters'],['../md_USER__INPUT__GUIDE.html#autotoc_md118',1,'Heston Parameters'],['../md_MATH__GUIDE.html#autotoc_md52',1,'Jump Parameters'],['../md_MATH__GUIDE.html#autotoc_md49',1,'Parameters']]],
+  ['part_20i_3a_20mandatory_20requirements_1',['Part I: Mandatory Requirements',['../md_COMPILATION__GUIDE.html#autotoc_md2',1,'']]],
+  ['part_20ii_3a_20recommended_20development_20profiling_20tools_2',['Part II: Recommended Development &amp;amp; Profiling Tools',['../md_COMPILATION__GUIDE.html#autotoc_md6',1,'']]],
+  ['performance_20benchmarks_3',['⚡ Performance &amp;amp; Benchmarks',['../index.html#autotoc_md99',1,'']]],
+  ['performance_20characteristics_4',['Performance Characteristics',['../namespacequantkos_1_1IO_1_1Binary.html#autotoc_md44',1,'']]],
+  ['performance_20portability_5',['Performance Portability',['../index.html#autotoc_md72',1,'']]],
+  ['performance_20portable_20monte_20carlo_20option_20pricing_20engine_6',['QuantKos: Performance-Portable Monte Carlo Option Pricing Engine',['../index.html',1,'']]],
+  ['portability_7',['Performance Portability',['../index.html#autotoc_md72',1,'']]],
+  ['portable_20monte_20carlo_20option_20pricing_20engine_8',['QuantKos: Performance-Portable Monte Carlo Option Pricing Engine',['../index.html',1,'']]],
+  ['precision_20setup_9',['2a. Precision Setup',['../namespaceCMakeLists.html#def_sec',1,'']]],
+  ['prerequisites_10',['1. Prerequisites',['../md_COMPILATION__GUIDE.html#autotoc_md1',1,'']]],
+  ['prerequisites_20on_20linux_11',['🐧 2. Installing the System level Prerequisites on Linux',['../md_COMPILATION__GUIDE.html#autotoc_md10',1,'']]],
+  ['pricing_20engine_12',['Pricing Engine',['../index.html',1,'QuantKos: Performance-Portable Monte Carlo Option Pricing Engine'],['../md_COMPILATION__GUIDE.html#autotoc_md41',1,'Running the Option Pricing Engine']]],
+  ['pricing_20methodology_13',['Pricing Methodology',['../md_MATH__GUIDE.html#autotoc_md68',1,'']]],
+  ['procedural_20single_20core_20release_14',['Option A: Procedural Single Core (Release)',['../md_COMPILATION__GUIDE.html#autotoc_md18',1,'']]],
+  ['production_20release_20optimization_20configuration_15',['6. Production Release Optimization Configuration',['../namespaceCMakeLists.html#release_sec',1,'']]],
+  ['profiling_20optimization_20configuration_16',['6.5 Profiling Optimization Configuration',['../namespaceCMakeLists.html#reldeb_sec',1,'']]],
+  ['profiling_20suite_20nvidia_20nsight_17',['C. GPU Profiling Suite (NVIDIA Nsight)',['../md_COMPILATION__GUIDE.html#autotoc_md9',1,'']]],
+  ['profiling_20tools_18',['Profiling Tools',['../md_COMPILATION__GUIDE.html#autotoc_md6',1,'Part II: Recommended Development &amp;amp; Profiling Tools'],['../md_COMPILATION__GUIDE.html#autotoc_md14',1,'Step 3 (Optional): Install Standalone GPU Profiling Tools']]],
+  ['project_20goals_19',['🎯 Project Goals',['../index.html#autotoc_md105',1,'']]],
+  ['propagation_20',['Adaptive Debug Sanitizers (PUBLIC Propagation)',['../namespaceCMakeLists.html#debug_san_subsec',1,'']]],
+  ['public_20optimization_20flags_21',['3.5. Public Optimization Flags',['../namespaceCMakeLists.html#public_opt_sec',1,'']]],
+  ['public_20propagation_22',['Adaptive Debug Sanitizers (PUBLIC Propagation)',['../namespaceCMakeLists.html#debug_san_subsec',1,'']]],
+  ['python_20builder_20recommended_23',['Interactive Python Builder (Recommended)',['../index.html#autotoc_md84',1,'']]]
+];

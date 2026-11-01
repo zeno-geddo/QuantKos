@@ -1,7 +1,29 @@
 var searchData=
 [
-  ['quantkos_20_3a_20math_20guide_0',['QuantKos : Math Guide',['../md_MATH__GUIDE.html',1,'']]],
-  ['quantkos_3a_20compilation_20guide_1',['QuantKos: Compilation Guide',['../md_COMPILATION__GUIDE.html',1,'']]],
-  ['quantkos_3a_20performance_20portable_20monte_20carlo_20option_20pricing_20engine_2',['QuantKos: Performance-Portable Monte Carlo Option Pricing Engine',['../index.html',1,'']]],
-  ['quantkos_3a_20user_20input_20guide_3',['QuantKos: User Input Guide',['../md_USER__INPUT__GUIDE.html',1,'']]]
+  ['a_20build_20directory_0',['Create a build directory',['../index.html#autotoc_md86',1,'']]],
+  ['a_20building_20tool_1',['A. Building Tool',['../md_COMPILATION__GUIDE.html#autotoc_md7',1,'']]],
+  ['a_20core_20build_20tools_2',['A. Core Build Tools',['../md_COMPILATION__GUIDE.html#autotoc_md3',1,'']]],
+  ['a_20release_20build_3',['Configure a Release build',['../index.html#autotoc_md87',1,'']]],
+  ['a_3a_20build_20without_20using_20fetchcontent_4',['Option A: Build without using FetchContent',['../md_COMPILATION__GUIDE.html#autotoc_md32',1,'']]],
+  ['a_3a_20procedural_20single_20core_20release_5',['Option A: Procedural Single Core (Release)',['../md_COMPILATION__GUIDE.html#autotoc_md18',1,'']]],
+  ['about_20the_20batch_20size_6',['About the Batch Size',['../md_USER__INPUT__GUIDE.html#autotoc_md123',1,'']]],
+  ['about_20the_20documentation_20generated_7',['About the Documentation Generated',['../md_COMPILATION__GUIDE.html#autotoc_md35',1,'']]],
+  ['accelerated_20cuda_20release_8',['Option C: GPU Accelerated (CUDA / Release)',['../md_COMPILATION__GUIDE.html#autotoc_md20',1,'']]],
+  ['adaptive_20debug_20sanitizers_20public_20propagation_9',['Adaptive Debug Sanitizers (PUBLIC Propagation)',['../namespaceCMakeLists.html#debug_san_subsec',1,'']]],
+  ['american_20option_10',['American Option',['../md_MATH__GUIDE.html#autotoc_md67',1,'']]],
+  ['analysis_20greeks_11',['Sensitivity Analysis (Greeks)',['../index.html#autotoc_md78',1,'']]],
+  ['analysis_20warnings_12',['4. Default Static Analysis Warnings',['../namespaceCMakeLists.html#warning_sec',1,'']]],
+  ['and_20in_13',['and In',['../md_MATH__GUIDE.html#autotoc_md60',1,'Down-and-In'],['../md_MATH__GUIDE.html#autotoc_md59',1,'Up-and-In']]],
+  ['and_20install_14',['and Install',['../md_COMPILATION__GUIDE.html#autotoc_md28',1,'3. Build and Install'],['../index.html#autotoc_md85',1,'Standard CMake Build and Install']]],
+  ['and_20install_20kokkos_205_15',['Step 4 (Recommended) : Dowload, Build and Install Kokkos 5',['../md_COMPILATION__GUIDE.html#autotoc_md15',1,'']]],
+  ['and_20install_20yaml_20cpp_16',['Step 4 (Recommended): Download, Build and Install yaml-cpp',['../md_COMPILATION__GUIDE.html#autotoc_md25',1,'']]],
+  ['and_20out_17',['and Out',['../md_MATH__GUIDE.html#autotoc_md58',1,'Down-and-Out'],['../md_MATH__GUIDE.html#autotoc_md57',1,'Up-and-Out']]],
+  ['application_20deployment_20rules_18',['(Application Deployment Rules)',['..//home/runner/work/QuantKos/QuantKos/app/CMakeLists.txt#install_app_sec',1,'']]],
+  ['architecture_19',['3. Targeting Your Specific GPU Architecture',['../md_COMPILATION__GUIDE.html#autotoc_md21',1,'']]],
+  ['asian_20option_20',['Asian Option',['../md_MATH__GUIDE.html#autotoc_md55',1,'']]],
+  ['asset_20or_20nothing_21',['Asset-or-Nothing',['../md_MATH__GUIDE.html#autotoc_md66',1,'']]],
+  ['author_22',['👤 Author',['../index.html#autotoc_md111',1,'']]],
+  ['automated_20test_20configuration_23',['2. Automated Test Configuration',['../md_USER__INPUT__GUIDE.html#autotoc_md125',1,'']]],
+  ['automated_20tests_24',['Available Automated Tests',['../md_USER__INPUT__GUIDE.html#autotoc_md126',1,'']]],
+  ['available_20automated_20tests_25',['Available Automated Tests',['../md_USER__INPUT__GUIDE.html#autotoc_md126',1,'']]]
 ];

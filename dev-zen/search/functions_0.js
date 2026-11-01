@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['_5f_5finit_5f_5f_0',['__init__',['../classbuilder_1_1QuantKosBuilder.html#a75e316dadf4399cf52cfffebe32ef949',1,'builder.QuantKosBuilder.__init__()'],['../classrun__benchmarks_1_1QuantKosBenchmark.html#ad133871ba7c5231b6feeab78c1d04abf',1,'run_benchmarks.QuantKosBenchmark.__init__(self, QuantKosBuilder builder)']]],
+  ['_5f_5finit_5f_5f_0',['__init__',['../classrun__benchmarks_1_1QuantKosBenchmark.html#ad133871ba7c5231b6feeab78c1d04abf',1,'run_benchmarks.QuantKosBenchmark.__init__()'],['../classbuilder_1_1QuantKosBuilder.html#a75e316dadf4399cf52cfffebe32ef949',1,'builder.QuantKosBuilder.__init__()']]],
   ['_5fanalyze_5fand_5freport_5fresults_1',['_analyze_and_report_results',['../classrun__benchmarks_1_1QuantKosBenchmark.html#a1da919a17591a9ff92bd5742f80dc96d',1,'run_benchmarks::QuantKosBenchmark']]],
   ['_5fask_5frequired_5fbuilds_2',['_ask_required_builds',['../classrun__benchmarks_1_1QuantKosBenchmark.html#ad5029c80439199c9c7fa65b73dc35637',1,'run_benchmarks::QuantKosBenchmark']]],
   ['_5fauto_5fdetect_5famd_5farch_3',['_auto_detect_amd_arch',['../classbuilder_1_1QuantKosBuilder.html#adee1dfb5ce57ed9211d17f2b3f4a7053',1,'builder::QuantKosBuilder']]],

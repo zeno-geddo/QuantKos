@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['math_20guide_0',['QuantKos : Math Guide',['../md_MATH__GUIDE.html',1,'']]],
-  ['monte_20carlo_20option_20pricing_20engine_1',['QuantKos: Performance-Portable Monte Carlo Option Pricing Engine',['../index.html',1,'']]]
+  ['7_20target_20library_20export_20rules_0',['7. Target Library Export Rules',['..//home/runner/work/QuantKos/QuantKos/src/CMakeLists.txt#install_lib_sec',1,'']]]
 ];

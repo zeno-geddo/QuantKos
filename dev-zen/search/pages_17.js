@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['on_20linux_0',['🐧 2. Installing the System level Prerequisites on Linux',['../md_COMPILATION__GUIDE.html#autotoc_md10',1,'']]],
+  ['on_20multiple_20cpu_20cores_20openmp_20builds_1',['Running on Multiple CPU Cores (OpenMP builds)',['../md_COMPILATION__GUIDE.html#autotoc_md39',1,'']]],
+  ['on_20nvidia_20gpus_20cuda_20builds_2',['Running on NVIDIA GPUs (CUDA builds)',['../md_COMPILATION__GUIDE.html#autotoc_md40',1,'']]],
+  ['openmp_3',['OpenMP',['../index.html#autotoc_md89',1,'']]],
+  ['openmp_20builds_4',['Running on Multiple CPU Cores (OpenMP builds)',['../md_COMPILATION__GUIDE.html#autotoc_md39',1,'']]],
+  ['openmp_20release_5',['Option B: Multi-Core CPU (OpenMP / Release)',['../md_COMPILATION__GUIDE.html#autotoc_md19',1,'']]],
+  ['optimization_20configuration_6',['Optimization Configuration',['../namespaceCMakeLists.html#release_sec',1,'6. Production Release Optimization Configuration'],['../namespaceCMakeLists.html#reldeb_sec',1,'6.5 Profiling Optimization Configuration']]],
+  ['optimization_20flags_7',['3.5. Public Optimization Flags',['../namespaceCMakeLists.html#public_opt_sec',1,'']]],
+  ['option_8',['Option',['../md_MATH__GUIDE.html#autotoc_md67',1,'American Option'],['../md_MATH__GUIDE.html#autotoc_md55',1,'Asian Option'],['../md_MATH__GUIDE.html#autotoc_md54',1,'European Option']]],
+  ['option_20a_3a_20build_20without_20using_20fetchcontent_9',['Option A: Build without using FetchContent',['../md_COMPILATION__GUIDE.html#autotoc_md32',1,'']]],
+  ['option_20a_3a_20procedural_20single_20core_20release_10',['Option A: Procedural Single Core (Release)',['../md_COMPILATION__GUIDE.html#autotoc_md18',1,'']]],
+  ['option_20b_3a_20build_20using_20fetchcontent_11',['Option B: Build using FetchContent',['../md_COMPILATION__GUIDE.html#autotoc_md33',1,'']]],
+  ['option_20b_3a_20multi_20core_20cpu_20openmp_20release_12',['Option B: Multi-Core CPU (OpenMP / Release)',['../md_COMPILATION__GUIDE.html#autotoc_md19',1,'']]],
+  ['option_20c_3a_20gpu_20accelerated_20cuda_20release_13',['Option C: GPU Accelerated (CUDA / Release)',['../md_COMPILATION__GUIDE.html#autotoc_md20',1,'']]],
+  ['option_20contracts_14',['Option Contracts',['../md_MATH__GUIDE.html#autotoc_md53',1,'Supported Option Contracts'],['../index.html#autotoc_md75',1,'Supported Option Contracts']]],
+  ['option_20pricing_20engine_15',['Option Pricing Engine',['../index.html',1,'QuantKos: Performance-Portable Monte Carlo Option Pricing Engine'],['../md_COMPILATION__GUIDE.html#autotoc_md41',1,'Running the Option Pricing Engine']]],
+  ['optional_16',['Specifying CPU Threads or GPUs (Optional)',['../md_COMPILATION__GUIDE.html#autotoc_md38',1,'']]],
+  ['optional_20_3a_20install_20standalone_20gpu_20profiling_20tools_17',['Step 3 (Optional): Install Standalone GPU Profiling Tools',['../md_COMPILATION__GUIDE.html#autotoc_md14',1,'']]],
+  ['options_18',['Options',['../md_MATH__GUIDE.html#autotoc_md56',1,'Barrier Options'],['../md_MATH__GUIDE.html#autotoc_md64',1,'Binary Options'],['../md_MATH__GUIDE.html#autotoc_md61',1,'Lookback Options'],['../md_USER__INPUT__GUIDE.html#autotoc_md116',1,'Options']]],
+  ['or_20gpus_20optional_19',['Specifying CPU Threads or GPUs (Optional)',['../md_COMPILATION__GUIDE.html#autotoc_md38',1,'']]],
+  ['or_20nothing_20',['or Nothing',['../md_MATH__GUIDE.html#autotoc_md66',1,'Asset-or-Nothing'],['../md_MATH__GUIDE.html#autotoc_md65',1,'Cash-or-Nothing']]],
+  ['out_21',['Out',['../md_MATH__GUIDE.html#autotoc_md58',1,'Down-and-Out'],['../md_MATH__GUIDE.html#autotoc_md57',1,'Up-and-Out']]],
+  ['output_22',['Output',['../md_USER__INPUT__GUIDE.html#autotoc_md124',1,'']]],
+  ['output_3a_23',['Understanding the Output:',['../md_COMPILATION__GUIDE.html#autotoc_md23',1,'']]]
+];

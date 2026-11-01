@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['m_0',['m',['../structquantkos_1_1Engine_1_1LSM_1_1Matrix.html#a29448a98ad05248f4a516299fa3fca38',1,'quantkos::Engine::LSM::Matrix::M'],['../structquantkos_1_1Engine_1_1LSM_1_1RegressionSums.html#aa4176dadb19381bae8412622bf0bf160',1,'quantkos::Engine::LSM::RegressionSums::M']]],
+  ['m_0',['M',['../structquantkos_1_1Engine_1_1LSM_1_1Matrix.html#a29448a98ad05248f4a516299fa3fca38',1,'quantkos::Engine::LSM::Matrix::M'],['../structquantkos_1_1Engine_1_1LSM_1_1RegressionSums.html#aa4176dadb19381bae8412622bf0bf160',1,'quantkos::Engine::LSM::RegressionSums::M']]],
   ['march_1',['march',['../namespaceCMakeLists.html#a4e8c5fb1127fbda823a3eb33c8eae716',1,'CMakeLists']]],
   ['market_2',['market',['../structquantkos_1_1Config_1_1UInputs.html#a824849de60f2e5a42b45e3106600a0c1',1,'quantkos::Config::UInputs']]],
   ['max_5fcpu_5fram_5fmb_3',['Max_CPU_RAM_MB',['../structquantkos_1_1Config_1_1MCConfig.html#af1d63d04adcea79012872bb21b5c874d',1,'quantkos::Config::MCConfig']]],
@@ -12,5 +12,5 @@ var searchData=
   ['mi300x_9',['MI300X',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedAmdGPUArch.html#a308f9932b989e55abf8a4012078cef81',1,'builder::QuantKosBuilder::ImplementedAmdGPUArch']]],
   ['missed_10',['missed',['../namespaceCMakeLists.html#adaea7cad1c3db27460f01ed215edd7a4',1,'CMakeLists']]],
   ['model_11',['model',['../structquantkos_1_1Config_1_1UInputs.html#a13c42fffe825e2a19e556cdda1d318e4',1,'quantkos::Config::UInputs']]],
-  ['mu_5fj_12',['mu_j',['../structquantkos_1_1Config_1_1MathModelConfig_1_1Bates.html#a8752b7631b545df938068551977741b0',1,'quantkos::Config::MathModelConfig::Bates::mu_J'],['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Bates_00_01SchemePolicy_01_4.html#adf7334afe6ee175d838ddb3b6cd64905',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Bates, SchemePolicy &gt;::mu_J']]]
+  ['mu_5fj_12',['mu_J',['../structquantkos_1_1Config_1_1MathModelConfig_1_1Bates.html#a8752b7631b545df938068551977741b0',1,'quantkos::Config::MathModelConfig::Bates::mu_J'],['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Bates_00_01SchemePolicy_01_4.html#adf7334afe6ee175d838ddb3b6cd64905',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Bates, SchemePolicy &gt;::mu_J']]]
 ];

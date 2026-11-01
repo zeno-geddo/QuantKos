@@ -12,4 +12,6 @@ digraph "quantkos::Engine::LSM::LSMEngine::perform_cross_paths_regression"
   Node3 [id="Node000003",label="quantkos::Engine::LSM\l::LaguerreBasis::evaluate",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$structquantkos_1_1Engine_1_1LSM_1_1LaguerreBasis.html#ad7d43a70deff035b6f43e95882f38b4a",tooltip="Evaluates orthogonal Laguerre functions up to degree 4."];
   Node1 -> Node4 [id="edge3_Node000001_Node000004",color="steelblue1",style="solid",tooltip=" "];
   Node4 [id="Node000004",label="quantkos::Engine::LSM\l::LSMEngine::solve_system\l_on_host_cholesky",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html#a17760738b46e7e5f0c27aad0ab1e296e",tooltip="Solves the system of normal equations ($M \\cdot C = B$) on the CPU host via Cholesky decomposition."];
+  Node4 -> Node5 [id="edge4_Node000004_Node000005",color="steelblue1",style="solid",tooltip=" "];
+  Node5 [id="Node000005",label="quantkos::Engine::LSM\l::LSMEngine::compute\l_fallback_coefficients",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$classquantkos_1_1Engine_1_1LSM_1_1LSMEngine.html#adf0220cc04e5c417076a38f91c34bfc4",tooltip="Computes an intercept-only regression fallback when standard Cholesky decomposition fails."];
 }

@@ -9,5 +9,5 @@ var searchData=
   ['analysis_6',['analysis',['../namespaceCMakeLists.html#a2adfe12464605c492be474c262aeb154',1,'CMakeLists']]],
   ['analyze_5frisk_5fneutral_5fpayoff_5fdistribution_7',['analyze_risk_neutral_payoff_distribution',['../structquantkos_1_1Config_1_1MCConfig.html#a9a377f7a4c416a25e0e7235f11b7bece',1,'quantkos::Config::MCConfig']]],
   ['asiannogreeks_8',['AsianNoGreeks',['../classrun__benchmarks_1_1QuantKosBenchmark_1_1ImplementedBenchmarks.html#adfdf7e6ae7e2ad6121ecd5ccc8f8c3e1',1,'run_benchmarks::QuantKosBenchmark::ImplementedBenchmarks']]],
-  ['auto_9',['auto',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html#a23a8e8b8f636211a6a416ebb837f44b9',1,'builder.QuantKosBuilder.ImplementedNvidiaGPUArch.AUTO'],['../classbuilder_1_1QuantKosBuilder_1_1ImplementedAmdGPUArch.html#a131e85fee06f3e7aa9a86cf6b6b2d025',1,'builder.QuantKosBuilder.ImplementedAmdGPUArch.AUTO']]]
+  ['auto_9',['AUTO',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedNvidiaGPUArch.html#a23a8e8b8f636211a6a416ebb837f44b9',1,'builder.QuantKosBuilder.ImplementedNvidiaGPUArch.AUTO'],['../classbuilder_1_1QuantKosBuilder_1_1ImplementedAmdGPUArch.html#a131e85fee06f3e7aa9a86cf6b6b2d025',1,'builder.QuantKosBuilder.ImplementedAmdGPUArch.AUTO']]]
 ];

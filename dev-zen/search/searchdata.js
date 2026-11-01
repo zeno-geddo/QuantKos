@@ -5,11 +5,11 @@ var indexSectionsWithContent =
   2: "bckqr",
   3: "abcdfghilmnoprtu",
   4: "_abcdefghilmnoprstuvw~",
-  5: "abcdefghiklmnopqrstvwz",
+  5: "abcdefghiklmnopqrstuvwyz",
   6: "cdghr",
   7: "gilmnov",
   8: "abcdeghilmnprstv",
-  9: ":cegilmopqtu"
+  9: "12345678:abcdefghijklmnopqrstuvwy▶⚙⚡✨🎯🐧👤📄📚🚀🤝🧪"
 };
 
 var indexSectionNames =

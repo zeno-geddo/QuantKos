@@ -58,16 +58,13 @@ digraph "include/core/memory/MemoryTypes.hpp"
   Node2 -> Node17 [id="edge33_Node000002_Node000017",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node2 -> Node18 [id="edge34_Node000002_Node000018",dir="back",color="steelblue1",style="solid",tooltip=" "];
   Node2 -> Node20 [id="edge35_Node000002_Node000020",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node20 [id="Node000020",label="include/core/memory\l/LSMMemory.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$LSMMemory_8hpp.html",tooltip=" "];
+  Node20 [id="Node000020",label="include/core/schemes\l/markovian/MSolver.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$MSolver_8hpp.html",tooltip=" "];
   Node20 -> Node5 [id="edge36_Node000020_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 -> Node21 [id="edge37_Node000002_Node000021",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node21 [id="Node000021",label="include/core/schemes\l/markovian/MSolver.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$MSolver_8hpp.html",tooltip=" "];
-  Node21 -> Node5 [id="edge38_Node000021_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node21 -> Node17 [id="edge39_Node000021_Node000017",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node2 -> Node12 [id="edge40_Node000002_Node000012",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node1 -> Node22 [id="edge41_Node000001_Node000022",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node22 [id="Node000022",label="include/core/options\l/OptionPricer.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$OptionPricer_8hpp.html",tooltip=" "];
-  Node22 -> Node5 [id="edge42_Node000022_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node22 -> Node17 [id="edge43_Node000022_Node000017",dir="back",color="steelblue1",style="solid",tooltip=" "];
-  Node22 -> Node18 [id="edge44_Node000022_Node000018",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node20 -> Node17 [id="edge37_Node000020_Node000017",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 -> Node12 [id="edge38_Node000002_Node000012",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node1 -> Node21 [id="edge39_Node000001_Node000021",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node21 [id="Node000021",label="include/core/options\l/OptionPricer.hpp",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$OptionPricer_8hpp.html",tooltip=" "];
+  Node21 -> Node5 [id="edge40_Node000021_Node000005",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node21 -> Node17 [id="edge41_Node000021_Node000017",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node21 -> Node18 [id="edge42_Node000021_Node000018",dir="back",color="steelblue1",style="solid",tooltip=" "];
 }

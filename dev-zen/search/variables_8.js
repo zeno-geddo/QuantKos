@@ -4,11 +4,13 @@ var searchData=
   ['id_5fmodel_1',['id_model',['../structquantkos_1_1Config_1_1MathModelConfig.html#a448fa0b3950212d2c19ba08c2524b432',1,'quantkos::Config::MathModelConfig']]],
   ['id_5fscheme_2',['id_scheme',['../structquantkos_1_1Config_1_1NumSchemeConfig.html#a8f8f2ef1dcb9f9b637ccced2c88ff7da',1,'quantkos::Config::NumSchemeConfig']]],
   ['ieee_3',['IEEE',['../classbuilder_1_1QuantKosBuilder_1_1ImplementedMath.html#a76bf03aa674e87862ac8a282e84bb3ef',1,'builder::QuantKosBuilder::ImplementedMath']]],
-  ['implicit_5fdenominator_5fv_4',['implicit_denominator_v',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1ImplicitMilstein_01_4.html#a872ca20afd08dff4ebb578e9e53ec602',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein &gt;']]],
-  ['indent_5',['indent',['../classquantkos_1_1Tests_1_1TestEngine.html#afc8d0d237e6e142f9105792046117ec8',1,'quantkos::Tests::TestEngine']]],
-  ['inp_5fdt_6',['inp_dt',['../structquantkos_1_1Config_1_1TimeConfig.html#a5d45e335cf37465c54cf19b5ffa6919d',1,'quantkos::Config::TimeConfig']]],
-  ['inv_5fsqrt_5f2_7',['inv_sqrt_2',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1AndersonQE_01_4.html#a963b475b6e5dd3311cff3f029f6afa98',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::AndersonQE &gt;']]],
-  ['is_5fcomputed_8',['is_computed',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a8c9ea8cabebdbc9a7bc35042b2c7ed10',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
-  ['is_5ffinite_9',['is_finite',['../structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html#a41ddc287d5e8258eefb80d7efcf43c0b',1,'quantkos::Tests::Utils::OptionPriceErr']]],
-  ['itm_10',['itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1PayoffsBatchStats.html#a1b02998f094a594ba723d067192d47cb',1,'quantkos::Engine::OptionPricer::PayoffsBatchStats']]]
+  ['implementedbackends_4',['ImplementedBackends',['../classbuilder_1_1QuantKosBuilder.html#a0e52ac58cbfdc23435118052886bb05c',1,'builder::QuantKosBuilder']]],
+  ['implicit_5fdenominator_5fv_5',['implicit_denominator_v',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1ImplicitMilstein_01_4.html#a872ca20afd08dff4ebb578e9e53ec602',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein &gt;']]],
+  ['indent_6',['indent',['../classquantkos_1_1Tests_1_1TestEngine.html#afc8d0d237e6e142f9105792046117ec8',1,'quantkos::Tests::TestEngine']]],
+  ['inp_5fdt_7',['inp_dt',['../structquantkos_1_1Config_1_1TimeConfig.html#a5d45e335cf37465c54cf19b5ffa6919d',1,'quantkos::Config::TimeConfig']]],
+  ['install_5froot_8',['install_root',['../classbuilder_1_1QuantKosBuilder.html#a94384b283a6cef030166f924148422d5',1,'builder::QuantKosBuilder']]],
+  ['inv_5fsqrt_5f2_9',['inv_sqrt_2',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1AndersonQE_01_4.html#a963b475b6e5dd3311cff3f029f6afa98',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::AndersonQE &gt;']]],
+  ['is_5fcomputed_10',['is_computed',['../structquantkos_1_1Engine_1_1OptionPricer_1_1MCOpPrices.html#a8c9ea8cabebdbc9a7bc35042b2c7ed10',1,'quantkos::Engine::OptionPricer::MCOpPrices']]],
+  ['is_5ffinite_11',['is_finite',['../structquantkos_1_1Tests_1_1Utils_1_1OptionPriceErr.html#a41ddc287d5e8258eefb80d7efcf43c0b',1,'quantkos::Tests::Utils::OptionPriceErr']]],
+  ['itm_12',['itm',['../structquantkos_1_1Engine_1_1OptionPricer_1_1PayoffsBatchStats.html#a1b02998f094a594ba723d067192d47cb',1,'quantkos::Engine::OptionPricer::PayoffsBatchStats']]]
 ];

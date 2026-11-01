@@ -8,6 +8,7 @@ var searchData=
   ['k_5ftheta_5fdt_5',['k_theta_dt',['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1Euler_01_4.html#aa5bc3c82b853fcf0d938b1fc134f8889',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::Euler &gt;::k_theta_dt'],['../structquantkos_1_1Engine_1_1SDEScheme_3_01KI_1_1MathModel_1_1Heston_00_01KI_1_1NumScheme_1_1ImplicitMilstein_01_4.html#af88e942dfb1ec0ea78a2770297271b73',1,'quantkos::Engine::SDEScheme&lt; KI::MathModel::Heston, KI::NumScheme::ImplicitMilstein &gt;::k_theta_dt']]],
   ['kokkos_205_6',['Step 4 (Recommended) : Dowload, Build and Install Kokkos 5',['../md_COMPILATION__GUIDE.html#autotoc_md15',1,'']]],
   ['kokkos_20flag_7',['Step 3.2: Match Your Compute Capability to the Kokkos Flag',['../md_COMPILATION__GUIDE.html#autotoc_md24',1,'']]],
-  ['kokkosdefgaussianrngtestkernel_8',['KokkosDefGaussianRNGTestKernel',['../structquantkos_1_1Tests_1_1RNG_1_1KokkosDefGaussianRNGTestKernel.html',1,'quantkos::Tests::RNG']]],
-  ['kops_3a_3atests_3a_3aiobin_9',['IOBIN',['../namespaceKOps_1_1Tests_1_1IOBIN.html',1,'KOps::Tests']]]
+  ['kokkos_5fpaths_8',['kokkos_paths',['../classbuilder_1_1QuantKosBuilder.html#a10a579e3b10f2189eae7e87c83a2b93b',1,'builder::QuantKosBuilder']]],
+  ['kokkosdefgaussianrngtestkernel_9',['KokkosDefGaussianRNGTestKernel',['../structquantkos_1_1Tests_1_1RNG_1_1KokkosDefGaussianRNGTestKernel.html',1,'quantkos::Tests::RNG']]],
+  ['kops_3a_3atests_3a_3aiobin_10',['IOBIN',['../namespaceKOps_1_1Tests_1_1IOBIN.html',1,'KOps::Tests']]]
 ];
